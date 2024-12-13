@@ -1,0 +1,100 @@
+.toolsContainer {
+  @apply relative py-20 px-4 sm:px-6 lg:px-8 bg-black;
+}
+
+.toolsContent {
+  @apply max-w-7xl mx-auto;
+}
+
+.titleContainer {
+  @apply mb-12 flex justify-center;
+}
+
+.mainTitle {
+  @apply text-4xl md:text-5xl font-bold font-plus-jakarta text-white flex items-center gap-3 justify-center;
+}
+
+.gradientText {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
+}
+
+.toolIcon {
+  @apply text-[#8B5CF6];
+}
+
+.contentWrapper {
+  @apply flex flex-col gap-12;
+}
+
+.tabsContainer {
+  @apply flex flex-row space-x-8 justify-start border-b border-white/10;
+}
+
+.tab {
+  @apply text-white/50 text-sm font-plus-jakarta relative transition-all duration-300 z-0 pb-4 px-1;
+}
+
+.tab:hover:not(.activeTab) {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
+}
+
+/* Primary glow */
+.tab:hover:not(.activeTab)::before {
+  content: "";
+  @apply absolute blur-md opacity-20 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
+  width: 80%;
+  height: 60%;
+  left: 10%;
+  top: 20%;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+/* Secondary stronger glow */
+.tab:hover:not(.activeTab)::after {
+  content: "";
+  @apply absolute blur-sm opacity-15 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
+  width: 70%;
+  height: 50%;
+  left: 15%;
+  top: 25%;
+  z-index: -2;
+  border-radius: 50%;
+}
+
+.activeTab {
+  @apply text-white;
+}
+
+.activeTab::after {
+  content: "";
+  @apply absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
+}
+
+.contentContainer {
+  @apply grid lg:grid-cols-2 gap-12 items-center w-full;
+}
+
+.textContent {
+  @apply space-y-6;
+}
+
+.title {
+  @apply text-sm md:text-sm font-bold font-plus-jakarta bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
+}
+
+.subtitle {
+  @apply text-xl md:text-xl font-plus-jakarta bg-clip-text text-white;
+}
+
+.description {
+  @apply text-xl text-white/70;
+}
+
+.videoContainer {
+  @apply relative rounded-2xl overflow-hidden bg-[#0A0A0A] border border-white/10;
+}
+
+.video {
+  @apply max-w-[600px] h-full object-cover;
+}

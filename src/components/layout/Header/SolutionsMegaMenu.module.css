@@ -1,0 +1,17 @@
+.megaMenuContainer {
+  @apply absolute left-1/2 transform -translate-x-1/2 w-full max-w-7xl;
+  position: absolute;
+  z-index: 1001;
+}
+
+.megaMenuContent {
+  @apply relative bg-black/95 backdrop-blur-xl rounded-2xl p-6 mt-2 border border-white/10;
+  position: relative;
+  z-index: 1001;
+}
+
+.dropdownBackdrop {
+  @apply fixed inset-0 bg-black/50 backdrop-blur-sm;
+  position: fixed;
+  z-index: 999;
+}

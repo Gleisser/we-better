@@ -1,0 +1,64 @@
+.featuresContainer {
+  @apply relative z-10;
+  @apply py-20 px-4 sm:px-6 lg:px-8 bg-black;
+}
+
+.featuresContainer > div {
+  @apply max-w-7xl mx-auto;
+}
+
+.featuresCard {
+  @apply grid md:grid-cols-3 gap-8;
+}
+
+.featuresCardOuterGlow {
+  @apply absolute -inset-[1px] rounded-3xl bg-gradient-to-r from-[#4267b2]/80 via-[#6f42c1]/80 to-[#4267b2]/80 opacity-0 blur-2xl transition-all duration-500;
+}
+
+.featuresCardInnerGlow {
+  @apply absolute -inset-[1px] rounded-3xl bg-gradient-to-r from-[#4267b2]/50 via-[#6f42c1]/50 to-[#4267b2]/50 opacity-0 blur-lg transition-all duration-500;
+}
+
+:global(.group:hover) .featuresCardOuterGlow {
+  @apply opacity-100;
+}
+
+:global(.group:hover) .featuresCardInnerGlow {
+  @apply opacity-100;
+}
+
+.featuresCardContent {
+  @apply relative bg-[#0A0A0A] rounded-2xl p-8 border border-white/10 h-full;
+}
+
+.featuresCardTitleArrowSection {
+  @apply flex justify-between items-start mb-6;
+}
+
+.featuresCardTitle {
+  @apply text-2xl font-bold font-plus-jakarta text-white;
+}
+
+.featuresCardArrowContainer {
+  @apply w-8 h-8 rounded-full border border-white/20 flex items-center justify-center overflow-hidden transition-all duration-300;
+  transform: rotate(-45deg);
+}
+
+:global(.group:hover) .featuresCardArrowContainer {
+  @apply bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] border-transparent;
+  transform: rotate(0deg);
+}
+
+.featuresCardArrow {
+  @apply w-4 h-4 text-white/70 transition-colors duration-300;
+}
+
+.featuresCardArrowDefault {
+  composes: featuresCardArrow;
+  @apply block group-hover:hidden;
+}
+
+.featuresCardArrowHover {
+  composes: featuresCardArrow;
+  @apply hidden group-hover:block group-hover:text-white;
+}

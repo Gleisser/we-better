@@ -1,0 +1,44 @@
+.partnersContainer {
+  @apply relative py-20 bg-black;
+}
+
+.partnersContent {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.title {
+  @apply text-3xl md:text-4xl lg:text-5xl font-plus-jakarta font-bold text-white text-center mb-16;
+}
+
+.highlight {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
+}
+
+.logoGrid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.logoContainer {
+  @apply flex items-center justify-center p-8 rounded-2xl bg-[#0A0A0A] border border-white/10 w-full transition-all duration-300;
+  aspect-ratio: 16/9;
+}
+
+.logoContainer:hover {
+  @apply border-white/20 bg-white/5;
+}
+
+.logo {
+  @apply w-full h-10 object-contain opacity-70 transition-opacity duration-300;
+  filter: brightness(0) invert(1);
+}
+
+.largeLogo {
+  @apply h-16;
+  transform: scale(1.5);
+}
+
+.logoContainer:hover .logo {
+  @apply opacity-100;
+}

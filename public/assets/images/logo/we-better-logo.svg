@@ -1,0 +1,59 @@
+<svg width="628" height="160" viewBox="0 0 628 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradient Definition -->
+  <defs>
+    <linearGradient id="wGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF00FF"/>
+      <stop offset="50%" stop-color="#9933FF"/>
+      <stop offset="100%" stop-color="#00CCFF"/>
+    </linearGradient>
+    <!-- Shadow gradient for 3D effect -->
+    <linearGradient id="shadow" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(0,0,0,0.3)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+  </defs>
+
+  <!-- W Shape with smooth curves - wider spread -->
+  <path d="
+    M60 40
+    C65 40, 75 110, 80 130
+    C85 150, 95 70, 110 40
+    C125 10, 135 90, 140 130
+    C145 150, 155 70, 170 40
+    " 
+    stroke="url(#wGradient)" 
+    stroke-width="28" 
+    fill="none"
+    stroke-linecap="round"
+  />
+  
+  <!-- Shadow path for 3D effect -->
+  <path d="
+    M63 43
+    C68 43, 78 113, 83 133
+    C88 153, 98 73, 113 43
+    C128 13, 138 93, 143 133
+    C148 153, 158 73, 173 43
+    " 
+    stroke="url(#shadow)" 
+    stroke-width="28" 
+    fill="none"
+    stroke-linecap="round"
+    opacity="0.5"
+  />
+  
+  <!-- "We Better" Text - Centered -->
+  <text 
+    x="50%" 
+    y="50%" 
+    fill="white" 
+    font-family="Arial" 
+    font-size="72" 
+    font-weight="bold"
+    text-anchor="middle" 
+    dominant-baseline="middle"
+    transform="translate(120, 0)"
+  >
+    We Better
+  </text>
+</svg> 

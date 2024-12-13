@@ -1,0 +1,83 @@
+<svg width="628" height="160" viewBox="0 0 628 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="mainGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF00FF"/>
+      <stop offset="50%" stop-color="#9933FF"/>
+      <stop offset="100%" stop-color="#00CCFF"/>
+    </linearGradient>
+    
+    <linearGradient id="glowGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF00FF" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#00CCFF" stop-opacity="0"/>
+    </linearGradient>
+    
+    <!-- Clip Path for the icon -->
+    <clipPath id="iconClip">
+      <path d="
+        M80 30 
+        L120 130 
+        L160 30
+        A40 40 0 0 1 200 70
+        L160 130
+        L200 130
+        A40 40 0 0 0 240 90
+        L240 30
+        Z
+      "/>
+    </clipPath>
+  </defs>
+
+  <!-- Glow Effect -->
+  <circle cx="160" cy="80" r="100" fill="url(#glowGradient)" filter="blur(20px)"/>
+
+  <!-- Main Icon -->
+  <g clip-path="url(#iconClip)">
+    <!-- Background fill with gradient -->
+    <rect x="0" y="0" width="628" height="160" fill="url(#mainGradient)"/>
+    
+    <!-- Overlay pattern for depth -->
+    <path d="
+      M80 30 
+      L120 130 
+      L160 30
+      A40 40 0 0 1 200 70
+      L160 130
+      L200 130
+      A40 40 0 0 0 240 90
+      L240 30
+      Z
+    " 
+    fill="rgba(255,255,255,0.1)"
+    transform="translate(2,2)"
+    />
+  </g>
+
+  <!-- Company Name -->
+  <text 
+    x="280" 
+    y="80" 
+    fill="white" 
+    font-family="Inter, Arial, sans-serif" 
+    font-size="64" 
+    font-weight="700"
+    letter-spacing="-1"
+    dominant-baseline="middle"
+  >
+    We Better
+  </text>
+
+  <!-- Subtle shine effects -->
+  <path 
+    d="M100 40 L140 60" 
+    stroke="rgba(255,255,255,0.4)" 
+    stroke-width="2"
+    opacity="0.5"
+  />
+  <path 
+    d="M180 50 L220 70" 
+    stroke="rgba(255,255,255,0.4)" 
+    stroke-width="2"
+    opacity="0.5"
+  />
+</svg> 

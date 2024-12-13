@@ -1,0 +1,146 @@
+.footer {
+  @apply bg-black text-white/70 pt-20 pb-8;
+}
+
+.footerContent {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.topSection {
+  @apply grid grid-cols-1 lg:grid-cols-12 gap-16;
+}
+
+.menuLinks {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-16 lg:col-span-8;
+}
+
+.rightSection {
+  @apply space-y-16 lg:col-span-4;
+}
+
+.linkColumn {
+  @apply space-y-6;
+}
+
+.categoryTitle {
+  @apply text-xl text-white font-plus-jakarta font-semibold;
+}
+
+.linkList {
+  @apply space-y-4;
+}
+
+.link {
+  @apply hover:text-white transition-colors duration-200;
+}
+
+.storeButtons {
+  @apply flex flex-col space-y-4 mt-6;
+}
+
+.storeLink img {
+  @apply h-12 w-auto;
+}
+
+.socialIcons {
+  @apply flex flex-wrap gap-6 mt-6;
+}
+
+.socialLink {
+  @apply opacity-70 hover:opacity-100 transition-opacity duration-200;
+}
+
+.socialLink img {
+  @apply w-6 h-6;
+}
+
+.bottomSection {
+  @apply mt-20 pt-8 border-t border-white/10 flex flex-col items-center space-y-8;
+}
+
+.companyInfo {
+  @apply flex flex-col items-center text-center space-y-4;
+}
+
+.logo {
+  @apply h-12 w-auto;
+}
+
+.companyDetails {
+  @apply text-sm;
+}
+
+.legalLinks {
+  @apply flex flex-wrap justify-center gap-6;
+}
+
+.legalLink {
+  @apply text-sm hover:text-white transition-colors duration-200;
+}
+
+.copyright {
+  @apply text-sm text-center;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .footer {
+    @apply pt-12;
+  }
+
+  .topSection {
+    @apply grid-cols-1 gap-12;
+  }
+
+  .menuLinks {
+    @apply grid-cols-1 gap-12;
+  }
+
+  .linkColumn {
+    @apply text-center;
+  }
+
+  .categoryTitle {
+    @apply text-lg mb-6;
+  }
+
+  .linkList {
+    @apply flex flex-col items-center;
+  }
+
+  .rightSection {
+    @apply space-y-12;
+  }
+
+  .getApp {
+    @apply flex flex-col items-center;
+  }
+
+  .storeButtons {
+    @apply items-center;
+  }
+
+  .social {
+    @apply flex flex-col items-center;
+  }
+
+  .socialIcons {
+    @apply justify-center;
+  }
+
+  .bottomSection {
+    @apply mt-12 space-y-6;
+  }
+
+  .companyInfo {
+    @apply space-y-3;
+  }
+
+  .legalLinks {
+    @apply flex-col items-center gap-4;
+  }
+
+  .copyright {
+    @apply text-xs;
+  }
+}

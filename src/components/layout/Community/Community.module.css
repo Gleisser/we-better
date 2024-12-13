@@ -1,0 +1,155 @@
+.communityContainer {
+  @apply relative py-12 overflow-hidden;
+  background: linear-gradient(
+    180deg,
+    rgba(91, 44, 134, 0.5) 0%,
+    rgba(91, 44, 134, 0) 100%
+  );
+}
+
+.communityContainer::after {
+  content: "";
+  @apply absolute bottom-0 left-0 right-0 h-32;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 100%
+  );
+}
+
+.communityContent {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-start gap-32;
+}
+
+.leftColumn {
+  @apply flex-1 space-y-6 max-w-lg pt-8;
+}
+
+.discordLabel {
+  @apply inline-flex px-4 py-2 rounded-full text-sm text-white/90 backdrop-blur-sm;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.title {
+  @apply text-3xl md:text-4xl lg:text-5xl font-bold font-plus-jakarta text-white;
+}
+
+.highlight {
+  color: #5865f2;
+}
+
+.discordButton {
+  @apply inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white font-medium transition-all duration-300;
+  background-color: #5865f2;
+}
+
+.discordButton:hover {
+  @apply opacity-90;
+}
+
+.discordIcon {
+  @apply w-6 h-6;
+}
+
+.rightColumn {
+  @apply flex-1 relative h-[400px] overflow-hidden -mt-24;
+  perspective: 1200px;
+  margin-right: -15rem;
+}
+
+.profileColumns {
+  @apply flex gap-4 absolute inset-0;
+  will-change: transform;
+  transform-style: preserve-3d;
+  padding-right: 2rem;
+  width: calc(100% + 2rem);
+}
+
+.profileColumn {
+  @apply flex-1 relative transition-transform duration-300;
+  height: 900px;
+  min-width: 120px;
+}
+
+.profileImage {
+  @apply w-full h-full object-cover rounded-lg;
+  object-position: center 0%;
+  transform: scale(0.7);
+  mask-image: linear-gradient(to bottom, black, black 90%, transparent);
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .communityContainer {
+    @apply py-8;
+    min-height: auto;
+    position: relative;
+  }
+
+  .communityContent {
+    @apply flex-col gap-8 items-center;
+    position: relative;
+    padding: 0;
+  }
+
+  .leftColumn {
+    @apply flex flex-col items-center text-center w-full pt-4;
+    max-width: 100%;
+    margin-bottom: 4rem;
+  }
+
+  .title {
+    @apply text-3xl;
+    max-width: 300px;
+  }
+
+  .discordLabel {
+    @apply text-center;
+  }
+
+  .discordButton {
+    margin-bottom: 4rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .rightColumn {
+    @apply relative w-full;
+    height: 40vh;
+    margin: 2rem 0 1rem 0;
+    padding: 0;
+    overflow: visible;
+    perspective: none;
+    z-index: 1;
+    width: 100vw;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .profileColumns {
+    @apply flex gap-2;
+    position: relative;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    margin: 0;
+    margin-bottom: -3rem;
+  }
+
+  .profileColumn {
+    @apply flex-1;
+    height: 374px;
+    min-width: 60px;
+    opacity: 1;
+    visibility: visible;
+    margin: 0;
+  }
+
+  .profileImage {
+    @apply w-full h-full object-cover rounded-lg;
+    transform: scale(1.1);
+    object-position: center;
+    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  }
+}

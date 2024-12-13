@@ -1,0 +1,127 @@
+.heroContainer {
+  @apply relative min-h-screen flex flex-col items-center justify-center overflow-visible px-4 bg-black;
+  padding-bottom: 20rem;
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+}
+
+.contentWrapper {
+  @apply relative mx-auto flex w-full max-w-7xl flex-col items-center justify-center gap-4 text-center mt-20;
+  position: relative;
+  z-index: 2;
+}
+
+.title {
+  @apply text-3xl sm:text-6xl font-bold text-white mb-6 font-plus-jakarta;
+}
+
+.subtitle {
+  @apply text-xl sm:text-2xl text-white/80 mb-8 max-w-2xl mx-auto font-plus-jakarta;
+}
+
+.description {
+  @apply max-w-[42rem] leading-normal text-gray-500 sm:text-lg sm:leading-8;
+}
+
+.ctaContainer {
+  @apply flex flex-col sm:flex-row justify-center gap-4;
+  margin-bottom: 6rem;
+}
+
+.primaryCta {
+  @apply rounded-full bg-blue-600 px-8 py-2 font-medium text-white transition-colors hover:bg-blue-700;
+}
+
+.secondaryCta {
+  @apply rounded-full border border-gray-300 bg-white px-8 py-2 font-medium transition-colors hover:bg-gray-50;
+}
+
+.previewContainer {
+  @apply relative w-full max-w-6xl mx-auto;
+  position: relative;
+  margin-top: 2rem;
+  z-index: 3;
+}
+
+/* Main preview/dashboard image */
+.mainPreview {
+  @apply relative w-full;
+  z-index: 3;
+}
+
+.mobilePreviewImage {
+  @apply w-full h-auto;
+  border-radius: 12px;
+}
+
+/* Adjust floating images size */
+.floatingImage {
+  @apply absolute w-auto h-auto max-w-[300px] sm:max-w-[400px];
+  z-index: 4 !important;
+  &:first-child {
+    top: 8rem;
+  }
+  &:last-child {
+    top: 8rem;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .heroContainer {
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    padding-bottom: 4rem;
+  }
+
+  .contentWrapper {
+    padding: 0 16px;
+    width: 100%;
+  }
+
+  .title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 2.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.125rem;
+    padding: 0 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .ctaContainer {
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 4rem;
+  }
+
+  .primaryCta, .secondaryCta {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  .previewContainer {
+    @apply max-w-full;
+  }
+
+  .floatingImage {
+    display: none; /* Hide floating images on mobile */
+  }
+
+  .mainPreview {
+    @apply w-full px-4;
+    margin-bottom: 1rem;
+  }
+
+  .mobilePreviewImage {
+    @apply w-full;
+    max-height: 60vh;
+    object-fit: contain;
+  }
+}

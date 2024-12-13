@@ -1,0 +1,95 @@
+.preFooterContainer {
+  @apply relative py-12 bg-black overflow-hidden;
+  background: linear-gradient(
+    180deg,
+    rgba(91, 44, 134, 0.3) 0%,
+    rgba(91, 44, 134, 0) 100%
+  );
+}
+
+.preFooterContent {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-16;
+}
+
+.leftColumn {
+  @apply flex-1 space-y-8 max-w-lg;
+}
+
+.title {
+  @apply text-3xl md:text-4xl lg:text-5xl font-plus-jakarta font-bold text-white;
+}
+
+.highlight {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
+}
+
+.actionContainer {
+  @apply space-y-4;
+}
+
+.button {
+  @apply inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white font-medium transition-all duration-300;
+  background: linear-gradient(to right, #8b5cf6, #d946ef);
+}
+
+.button:hover {
+  @apply opacity-90 transform scale-[1.02];
+}
+
+.arrow {
+  @apply w-5 h-5 transition-transform duration-300;
+}
+
+.button:hover .arrow {
+  transform: translateX(4px);
+}
+
+.note {
+  @apply text-sm text-white/70;
+}
+
+.rightColumn {
+  @apply flex-1 relative;
+  min-width: 600px;
+}
+
+.imageContainer {
+  @apply relative rounded-2xl overflow-hidden bg-[#0A0A0A] border border-white/10;
+  height: 400px;
+  width: 100%;
+}
+
+.image {
+  @apply w-full h-full object-cover;
+  object-position: top;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .preFooterContent {
+    @apply flex-col gap-8;
+  }
+
+  .leftColumn {
+    @apply flex flex-col items-center text-center w-full;
+    max-width: 100%;
+  }
+
+  .title {
+    @apply text-3xl;
+    max-width: 300px; /* Limit width for better readability */
+  }
+
+  .actionContainer {
+    @apply flex flex-col items-center;
+  }
+
+  .rightColumn {
+    min-width: unset; /* Remove fixed min-width */
+    width: 100%;
+  }
+
+  .imageContainer {
+    height: 300px; /* Slightly smaller height for mobile */
+  }
+}

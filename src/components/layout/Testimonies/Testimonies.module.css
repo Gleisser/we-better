@@ -1,0 +1,78 @@
+.testimoniesContainer {
+  @apply relative py-20 bg-black;
+}
+
+.testimoniesContent {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.header {
+  @apply text-center max-w-3xl mx-auto mb-16 space-y-4;
+}
+
+.title {
+  @apply text-3xl md:text-4xl lg:text-5xl font-plus-jakarta font-bold text-white;
+}
+
+.highlight {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
+}
+
+.description {
+  @apply text-lg text-white/70 mt-4;
+}
+
+.testimonials {
+  @apply grid md:grid-cols-3 gap-8;
+}
+
+.testimonialCard {
+  @apply flex flex-col justify-between p-8 rounded-2xl bg-white/5 border border-white/10;
+  min-height: 280px;
+}
+
+.testimonialText {
+  @apply text-lg text-white/90 font-light italic;
+}
+
+.author {
+  @apply flex items-center gap-3 mt-6;
+}
+
+.avatar {
+  @apply w-10 h-10 rounded-full;
+}
+
+.authorName {
+  @apply text-sm text-white/70;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .testimoniesContainer {
+    @apply py-12;
+  }
+
+  .testimonialCard {
+    @apply text-center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .testimonialText {
+    @apply text-base;
+  }
+
+  .author {
+    @apply flex-col items-center gap-2;
+  }
+
+  .avatar {
+    @apply w-12 h-12; /* Slightly larger avatar on mobile */
+  }
+
+  .authorName {
+    @apply text-sm;
+  }
+}
