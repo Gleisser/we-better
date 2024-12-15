@@ -56,8 +56,6 @@ export const Hero = () => {
   };
 
   const heroData = (error || showFallback) ? fallbackData : data?.data;
-
-  console.log(heroData);
   
   return (
     <div className={styles.heroContainer}>

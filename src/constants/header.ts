@@ -1,10 +1,10 @@
 export const HEADER_CONSTANTS = {
     Features: {
-        id: 'features',
+        id: 'Highlight',
         title: 'Features',
     },
     Solutions: {
-        id: 'solutions',
+        id: 'SVG',
         title: 'Solutions',
     },
     Resources: {
@@ -31,18 +31,21 @@ export const HEADER_CONSTANTS = {
 
 export const MEGA_MENU_CONFIG = [
     {
+        id: 1,
         href: '#features',
         title: HEADER_CONSTANTS.Features.title,
-        menuType: HEADER_CONSTANTS.Features.id
+        type: "Highlight"
     },
     {
+        id: 2,
         href: '#solutions',
         title: HEADER_CONSTANTS.Solutions.title,
-        menuType: HEADER_CONSTANTS.Solutions.id
+        type: "SVG"
     },
     {
+        id: 3,
         href: '#resources',
         title: HEADER_CONSTANTS.Resources.title,
-        menuType: HEADER_CONSTANTS.Resources.id
+        type: "BLOG"
     }
 ] as const;

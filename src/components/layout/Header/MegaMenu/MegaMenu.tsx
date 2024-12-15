@@ -1,24 +1,30 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { MegaMenuProps } from './types';
+import { API_CONFIG } from '@/lib/api-config';
+const fallbackMenuItems = [
+  {
+    id: 1,
+    title: "AI Art Generator",
+    description: "Generate art, illustrations and more with prompts.",
+    href: "#",
+  },
+  {
+    id: 2,
+    title: "AI Video Generator",
+    description: "Turn your images into stunning animations and explore a new dimension of video storytelling.",
+    href: "#",
+  },
+  {
+    id: 3,
+    title: "Transparent PNG Generator",
+    description: "Instantly generate true background-free visual elements.",
+    href: "#",
+  },
+];
 
-const MegaMenu = ({ isOpen, onClose }: MegaMenuProps) => {
-  const menuItems = [
-    {
-      title: "AI Art Generator",
-      description: "Generate art, illustrations and more with prompts.",
-      link: "#",
-    },
-    {
-      title: "AI Video Generator",
-      description: "Turn your images into stunning animations and explore a new dimension of video storytelling.",
-      link: "#",
-    },
-    {
-      title: "Transparent PNG Generator",
-      description: "Instantly generate true background-free visual elements.",
-      link: "#",
-    },
-  ];
+const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps) => {
+  const menuItems = menuData?.menu_links || fallbackMenuItems;
+  const blogPost = menuData?.menu_blog_post;
 
   return (
     <AnimatePresence>
@@ -31,15 +37,14 @@ const MegaMenu = ({ isOpen, onClose }: MegaMenuProps) => {
           className="absolute left-0 top-[calc(100%+8px)] bg-black border border-white/10 rounded-xl w-[561px] shadow-xl font-plus-jakarta"
           onMouseLeave={onClose}
         >
-          {/* Rest of the existing MegaMenu content */}
           <div className="p-6">
             <div className="grid grid-cols-[1.5fr,1fr] gap-6">
               {/* Menu items */}
               <div className="space-y-4">
-                {menuItems.map((item, index) => (
+                {menuItems.map((item) => (
                   <a 
-                    key={index}
-                    href={item.link}
+                    key={item.id || item.href}
+                    href={item.href}
                     className="block group text-white hover:text-white visited:text-white active:text-white focus:text-white"
                   >
                     <div className="flex items-start space-x-3">
@@ -63,7 +68,7 @@ const MegaMenu = ({ isOpen, onClose }: MegaMenuProps) => {
               <div className="space-y-3">
                 <div className="aspect-[4/3] rounded-lg overflow-hidden bg-black/20">
                   <img
-                    src="/assets/images/hero/app_hero_img.webp"
+                    src={blogPost && API_CONFIG.imageBaseURL + blogPost?.cover?.formats?.medium?.url || "/assets/images/hero/app_hero_img.webp"}
                     alt="AI Platform Preview"
                     className="w-full h-full object-cover"
                   />
@@ -74,10 +79,10 @@ const MegaMenu = ({ isOpen, onClose }: MegaMenuProps) => {
                     <span className="text-[#6366F1] text-xs font-semibold">NEW</span>
                   </div>
                   <h3 className="text-white text-sm font-semibold font-plus-jakarta">
-                    Discover Phoenix by Leonardo.Ai
+                    {blogPost?.title || "Discover Phoenix by Leonardo.Ai"}
                   </h3>
                   <p className="text-white/60 text-xs leading-relaxed">
-                    Our first foundational model is here, changing everything you know about AI image generation.
+                    {blogPost?.description || "Our first foundational model is here, changing everything you know about AI image generation."}
                   </p>
                 </div>
               </div>

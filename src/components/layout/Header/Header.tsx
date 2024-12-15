@@ -8,16 +8,19 @@ import { HEADER_CONSTANTS, MEGA_MENU_CONFIG } from '@/constants/header';
 import NavItem from './NavItem';
 import HamburgerButton from './HamburgerButton';
 import MobileMenu from './MobileMenu';
-import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+import { useMenu } from '@/hooks/useMenu';
 
 const Header = () => {
+  const { data } = useMenu();
   const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
   const [isSolutionsOpen, setIsSolutionsOpen] = useState(false);
   const [isResourcesOpen, setResourcesOpen] = useState(false);
   const { scrollY } = useScroll();
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const megamenus = data?.data.megamenus || MEGA_MENU_CONFIG;
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -31,25 +34,34 @@ const Header = () => {
     setHasScrolled(latest > 10);
   });
 
-  const getMegaMenuState = (menuType: string) => {
+  enum MenuType {
+    Highlight = "Highlight",
+    SVG = "SVG",
+    Blog = "Blog"
+  }
+
+  const getMegaMenuState = (menuType: MenuType) => {
     switch (menuType) {
-      case HEADER_CONSTANTS.Features.id:
+      case MenuType.Highlight:
         return {
           isOpen: isFeaturesOpen,
           setIsOpen: setIsFeaturesOpen,
-          Component: MegaMenu
+          Component: MegaMenu,
+          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.Highlight)
         };
-      case HEADER_CONSTANTS.Solutions.id:
+      case MenuType.SVG:
         return {
           isOpen: isSolutionsOpen,
           setIsOpen: setIsSolutionsOpen,
-          Component: SolutionsMegaMenu
+          Component: SolutionsMegaMenu,
+          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.SVG)
         };
-      case HEADER_CONSTANTS.Resources.id:
+      case MenuType.Blog:
         return {
           isOpen: isResourcesOpen,
           setIsOpen: setResourcesOpen,
-          Component: ResourcesMegaMenu
+          Component: ResourcesMegaMenu,
+          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.Blog)
         };
       default:
         return null;
@@ -83,12 +95,12 @@ const Header = () => {
             </Link>
             
             <nav className={styles.headerNav}>
-              {MEGA_MENU_CONFIG.map((item) => {
-                const menuState = getMegaMenuState(item.menuType);
+              {megamenus.map((item) => {
+                const menuState = getMegaMenuState(item.type);
                 return (
                   <NavItem
-                    key={item.href}
-                    href={item.href}
+                    key={item.id}
+                    href='#'
                     title={item.title}
                     isOpen={menuState?.isOpen}
                     onMouseEnter={() => menuState?.setIsOpen(true)}
@@ -98,16 +110,23 @@ const Header = () => {
                         <menuState.Component
                           isOpen={menuState.isOpen}
                           onClose={() => menuState.setIsOpen(false)}
+                          menuData={menuState.menuData}
                         />
                       )
                     }
                   />
                 );
               })}
-
-              <NavItem href="#teams" title={HEADER_CONSTANTS.Teams.title} />
-              <NavItem href="#developers" title={HEADER_CONSTANTS.Developers.title} />
-              <NavItem href="#creators" title={HEADER_CONSTANTS.Creators.title} />
+              {data?.data.links.map((link) => (
+                <NavItem key={link.id} href={link.href} title={link.title} />
+              ))}
+              {!data && (
+                <>
+                  <NavItem href="#teams" title={HEADER_CONSTANTS.Teams.title} />
+                  <NavItem href="#developers" title={HEADER_CONSTANTS.Developers.title} />
+                  <NavItem href="#creators" title={HEADER_CONSTANTS.Creators.title} />
+                </>
+              )}
             </nav>
 
             <div className={styles.mobileControls}>
@@ -123,13 +142,7 @@ const Header = () => {
         </div>
       </motion.header>
       <MobileMenu isOpen={isMobileMenuOpen} />
-      {createPortal(
-        <>
-          {isSolutionsOpen && <SolutionsMegaMenu />}
-          {isResourcesOpen && <ResourcesMegaMenu />}
-        </>,
-        document.body
-      )}
+      {isResourcesOpen && <ResourcesMegaMenu isOpen={isResourcesOpen} onClose={() => setResourcesOpen(false)} />}
     </>
   );
 };

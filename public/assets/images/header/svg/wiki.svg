@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <path d="M4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V4" stroke="url(#wiki-gradient)" stroke-width="2" stroke-linecap="round"/>
+  <path d="M13 2H11C9.89543 2 9 2.89543 9 4C9 5.10457 9.89543 6 11 6H13C14.1046 6 15 5.10457 15 4C15 2.89543 14.1046 2 13 2Z" stroke="url(#wiki-gradient)" stroke-width="2"/>
+  <path d="M8 10H16M8 14H16M8 18H13" stroke="url(#wiki-gradient)" stroke-width="2" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="wiki-gradient" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6f42c1"/>
+      <stop offset="1" stop-color="#e83e8c"/>
+    </linearGradient>
+  </defs>
+</svg> 
