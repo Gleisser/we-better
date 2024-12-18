@@ -29,23 +29,31 @@ export const HEADER_CONSTANTS = {
     },
 }
 
+export enum MenuType {
+    Highlight = "Highlight",
+    SVG = "SVG",
+    Blog = "Blog"
+}
+
 export const MEGA_MENU_CONFIG = [
     {
         id: 1,
         href: '#features',
         title: HEADER_CONSTANTS.Features.title,
-        type: "Highlight"
+        type: MenuType.Highlight
     },
     {
         id: 2,
         href: '#solutions',
         title: HEADER_CONSTANTS.Solutions.title,
-        type: "SVG"
+        type: MenuType.SVG
     },
     {
         id: 3,
         href: '#resources',
         title: HEADER_CONSTANTS.Resources.title,
-        type: "BLOG"
+        type: MenuType.Blog
     }
 ] as const;
+
+

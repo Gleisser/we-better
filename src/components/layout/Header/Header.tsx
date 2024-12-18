@@ -4,7 +4,7 @@ import MegaMenu from './MegaMenu';
 import SolutionsMegaMenu from './SolutionsMegaMenu';
 import ResourcesMegaMenu from './ResourcesMegaMenu';
 import styles from './Header.module.css';
-import { HEADER_CONSTANTS, MEGA_MENU_CONFIG } from '@/constants/header';
+import { HEADER_CONSTANTS, MEGA_MENU_CONFIG, MenuType } from '@/constants/header';
 import NavItem from './NavItem';
 import HamburgerButton from './HamburgerButton';
 import MobileMenu from './MobileMenu';
@@ -34,11 +34,7 @@ const Header = () => {
     setHasScrolled(latest > 10);
   });
 
-  enum MenuType {
-    Highlight = "Highlight",
-    SVG = "SVG",
-    Blog = "Blog"
-  }
+
 
   const getMegaMenuState = (menuType: MenuType) => {
     switch (menuType) {

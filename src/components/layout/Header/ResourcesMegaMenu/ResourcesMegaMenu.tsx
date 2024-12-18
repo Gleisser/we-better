@@ -34,8 +34,6 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
     },
   ];
 
-  console.log(menuData);
-
   const latestPost = menuData?.menu_blog_post;
 
   return (

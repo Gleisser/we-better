@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import styles from './Showcase.module.css';
-import { SHOWCASE_ITEMS } from '@/constants/showcase';
+import { SHOWCASE } from '@/constants/showcase';
+import { useShowcase } from '@/hooks/useShowcase';
+import { API_CONFIG } from '@/lib/api-config';
 
 const Showcase = () => {
+  const { data: showcase } = useShowcase();
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [hoveredItem, setHoveredItem] = useState<number | null>(null);
   const [imageIndex, setImageIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -21,9 +24,11 @@ const Showcase = () => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  const totalPages = isMobile ? SHOWCASE_ITEMS.length : Math.ceil(SHOWCASE_ITEMS.length / 4);
+  const belts = showcase?.data.belts || SHOWCASE.belts;
+
+  const totalPages = isMobile ? belts.length : Math.ceil(belts.length / 4);
   const itemsPerPage = isMobile ? 1 : 4;
-  const currentItems = SHOWCASE_ITEMS.slice(
+  const currentItems = belts.slice(
     currentPage * itemsPerPage, 
     (currentPage + 1) * itemsPerPage
   );
@@ -140,8 +145,10 @@ const Showcase = () => {
               >
                 <div className={styles.imageContainer}>
                   <img
-                    src={item.images[hoveredItem === item.id ? imageIndex : 0]}
-                    alt={item.title}
+                    src={showcase && API_CONFIG.imageBaseURL + item.images[hoveredItem === item.id ? imageIndex : 0].img.formats.thumbnail.url 
+                      || item.images[hoveredItem === item.id ? imageIndex : 0].src
+                    }
+                    alt={item.images[hoveredItem === item.id ? imageIndex : 0].alt}
                     className={styles.image}
                   />
                 </div>

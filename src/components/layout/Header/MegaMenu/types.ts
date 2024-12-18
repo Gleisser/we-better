@@ -1,3 +1,5 @@
+import { MegaMenu } from "@/types/menu";
+
 export interface MenuImage {
   id: number;
   width: number;
@@ -42,8 +44,5 @@ export interface MenuBlogPost {
 export interface MegaMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  menuData?: {
-    menu_links?: MenuLink[];
-    menu_blog_post?: MenuBlogPost;
-  };
+  menuData?: MegaMenu | undefined;
 } 

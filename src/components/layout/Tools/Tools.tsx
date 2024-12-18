@@ -1,9 +1,17 @@
 import { useState } from 'react';
 import styles from './Tools.module.css';
 import { TOOLS, Tool } from '@/constants/tools';
+import { useTool } from '@/hooks/useTool';
+import { ToolTab } from '@/types/tool';
+import { API_CONFIG } from '@/lib/api-config';
 
 const Tools = () => {
-  const [activeTab, setActiveTab] = useState<Tool>(TOOLS[0]);
+  const { data } = useTool();
+  const tabs = data?.data?.tabs || TOOLS;
+  const [activeTab, setActiveTab] = useState<ToolTab | Tool>(tabs[0]);
+
+  const gradientText = data?.data?.title.split(' ')[0];
+  const toolName = data?.data?.title.split(' ')[1];
 
   return (
     <section className={styles.toolsContainer}>
@@ -11,7 +19,7 @@ const Tools = () => {
         {/* Title Section */}
         <div className={styles.titleContainer}>
           <h2 className={styles.mainTitle}>
-            <span className={styles.gradientText}>Leonardo's</span> Toolkit
+            <span className={styles.gradientText}>{gradientText || 'WeBetter'}</span> {toolName || 'Toolkit'}
             <svg 
               className={styles.toolIcon} 
               width="24" 
@@ -33,7 +41,7 @@ const Tools = () => {
         <div className={styles.contentWrapper}>
           {/* Tabs Navigation */}
           <div className={styles.tabsContainer}>
-            {TOOLS.map((tool) => (
+            {tabs.map((tool) => (
               <button
                 key={tool.id}
                 onClick={() => setActiveTab(tool)}
@@ -59,9 +67,9 @@ const Tools = () => {
                 loop
                 playsInline
                 className={styles.video}
-                key={activeTab.videoSrc}
+                key={activeTab.videoSrc.id}
               >
-                <source src={activeTab.videoSrc} type="video/webm" />
+                <source src={data?.data && API_CONFIG.imageBaseURL + activeTab.videoSrc.video[0].url || activeTab.videoSrc.video[0].url} type="video/webm" />
               </video>
             </div>
           </div>

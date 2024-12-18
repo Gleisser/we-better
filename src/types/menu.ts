@@ -1,3 +1,5 @@
+import { MenuType } from "@/constants/header";
+
 export interface MenuLink {
     id: number;
     title: string;
@@ -20,7 +22,7 @@ export interface MenuBlogPost {
 export interface MegaMenu {
     id: number;
     title: string;
-    type: string;
+    type: MenuType;
     menu_blog_post: MenuBlogPost;
     menu_links: MenuLink[];
 }
