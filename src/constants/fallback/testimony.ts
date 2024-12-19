@@ -1,7 +1,6 @@
 import { TestimonyItem } from "@/types/testimony";
 
-export const TESTIMONIALS = 
-{
+export const TESTIMONY_FALLBACK = {
     id: 1,
     title: "A community of over [highlight]4 million[/highlight] is waiting for you",
     description: "Leonardo's power extends beyond our revolutionary tools — we are anchored in one of the largest and most supportive AI communities worldwide, and we're deeply committed to it.",
@@ -32,3 +31,5 @@ export const TESTIMONIALS =
         }
     ] as TestimonyItem[]
 }
+
+export default TESTIMONY_FALLBACK;

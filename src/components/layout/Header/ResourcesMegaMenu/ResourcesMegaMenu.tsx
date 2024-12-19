@@ -1,38 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { ResourcesMegaMenuProps } from './types';
 import { API_CONFIG } from '@/lib/api-config';
+import { RESOURCES_MEGA_MENU_FALLBACK } from '@/constants/fallback/megamenu';
 
 const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps) => {
-  const menuItems = menuData?.menu_links || [
-    {
-      title: "News",
-      description: "Your Source for Creativity and Industry Insights.",
-      image: {
-        url: "/assets/images/header/svg/news.svg"
-      }
-    },
-    {
-      title: "Webinars",
-      description: "Live and recorded sessions with our team.",
-      image: {
-        url: "/assets/images/header/svg/webinars.svg"
-      }
-    },
-    {
-      title: "FAQ",
-      description: "Get answers to frequently asked questions.",
-      image: {
-        url: "/assets/images/header/svg/faq.svg"
-      }
-    },
-    {
-      title: "Wiki",
-      description: "Guides from our community.",
-      image: {
-        url: "/assets/images/header/svg/wiki.svg"
-      }
-    },
-  ];
+  const menuItems = menuData?.menu_links || RESOURCES_MEGA_MENU_FALLBACK
 
   const latestPost = menuData?.menu_blog_post;
 
@@ -73,7 +45,11 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
                           month: 'long',
                           day: 'numeric'
                         }) 
-                        : "November 19, 2024"
+                        : new Date().toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })
                       }
                     </p>
                   </div>

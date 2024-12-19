@@ -1,8 +1,9 @@
 import styles from './Testimonies.module.css';
 import { useTestimony } from '@/hooks/useTestimony';
-import { TESTIMONIALS } from '@/constants/testimony';
+import { TESTIMONY_FALLBACK } from '@/constants/fallback';
 import { TestimonyItem } from '@/types/testimony';
 import { API_CONFIG } from '@/lib/api-config';
+import { renderHighlightedText } from '@/utils/textFormatting';
 
 
 
@@ -10,19 +11,22 @@ import { API_CONFIG } from '@/lib/api-config';
 const Testimonies = () => {
   const { data } = useTestimony();
   const isAPI = data?.data;
-  const testimony = data?.data || TESTIMONIALS;
+  const testimony = data?.data || TESTIMONY_FALLBACK;
+  const defaultTitle = <>A community of over <span className={styles.highlight}>4 million</span> is waiting for you</>;
 
   return (
     <section className={styles.testimoniesContainer}>
       <div className={styles.testimoniesContent}>
         <div className={styles.header}>
           <h2 className={styles.title}>
-            A community of over{' '}
-            <span className={styles.highlight}>4 million</span>
-            {' '}is waiting for you
+            {renderHighlightedText({
+              text: testimony?.title,
+              highlightClassName: styles.highlight,
+              fallback: defaultTitle
+            })}
           </h2>
           <p className={styles.description}>
-            Leonardo's power extends beyond our revolutionary tools — we are anchored in one of the largest and most supportive AI communities worldwide, and we're deeply committed to it.
+            {testimony?.description}
           </p>
         </div>
 

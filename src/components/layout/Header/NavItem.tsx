@@ -14,7 +14,6 @@ interface NavItemProps {
 const NavItem = ({
   href,
   title,
-  isOpen,
   onMouseEnter,
   onMouseLeave,
   MegaMenuComponent

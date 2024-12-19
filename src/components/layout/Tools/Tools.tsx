@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import styles from './Tools.module.css';
-import { TOOLS, Tool } from '@/constants/tools';
+import { TOOLS_FALLBACK } from '@/constants/fallback';
 import { useTool } from '@/hooks/useTool';
-import { ToolTab } from '@/types/tool';
+import { Tool, ToolTab } from '@/types/tool';
 import { API_CONFIG } from '@/lib/api-config';
 
 const Tools = () => {
   const { data } = useTool();
-  const tabs = data?.data?.tabs || TOOLS;
+  const tabs = data?.data?.tabs || TOOLS_FALLBACK;
   const [activeTab, setActiveTab] = useState<ToolTab | Tool>(tabs[0]);
 
   const gradientText = data?.data?.title.split(' ')[0];

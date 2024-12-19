@@ -12,7 +12,7 @@ export type Tool = {
   };
 };
 
-export const TOOLS: Tool[] = [
+export const TOOLS_FALLBACK: Tool[] = [
   {
     id: "image-generation",
     title: "Image Generation",
@@ -53,3 +53,5 @@ export const TOOLS: Tool[] = [
     }
   }
 ]; 
+
+export default TOOLS_FALLBACK;

@@ -2,7 +2,7 @@ import Featured from './Featured/Featured';
 import styles from './Features.module.css';
 import FeaturesCard from './Card/FeaturesCard';
 import { useFeature } from '@/hooks/useFeature';
-import { FEATURES_CONSTANTS } from '@/constants/features';
+import { FEATURES_CONSTANTS } from '@/constants/fallback';
 
 const Features = () => {
   const { data, isLoading } = useFeature();

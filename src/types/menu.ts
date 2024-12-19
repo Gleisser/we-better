@@ -1,11 +1,5 @@
 import { MenuType } from "@/constants/header";
-
-export interface MenuLink {
-    id: number;
-    title: string;
-    href: string;
-    description: string;
-}
+import { MenuLink } from "./common/menulink";
 
 export interface MenuBlogPost {
     id: number;

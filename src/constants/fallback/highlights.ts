@@ -1,4 +1,4 @@
-export const HIGHLIGHTS = [
+export const HIGHLIGHTS_FALLBACK = [
   {
     id: 1,
     title: "Concept Art",
@@ -154,3 +154,5 @@ export const HIGHLIGHTS = [
     }
   }
 ];
+
+export default HIGHLIGHTS_FALLBACK;

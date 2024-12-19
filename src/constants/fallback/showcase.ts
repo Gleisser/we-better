@@ -402,8 +402,10 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
   }
 ];
 
-export const SHOWCASE = {
+export const SHOWCASE_FALLBACK = {
   title: "Unveil New Creative Horizons with",
   subtitle: "Fine-tuned Models",
   belts: SHOWCASE_ITEMS,
 }
+
+export default SHOWCASE_FALLBACK;

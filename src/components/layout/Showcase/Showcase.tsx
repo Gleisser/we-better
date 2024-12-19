@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import styles from './Showcase.module.css';
-import { SHOWCASE } from '@/constants/showcase';
+import { SHOWCASE_FALLBACK } from '@/constants/fallback';
 import { useShowcase } from '@/hooks/useShowcase';
 import { API_CONFIG } from '@/lib/api-config';
 
@@ -24,7 +24,7 @@ const Showcase = () => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  const belts = showcase?.data.belts || SHOWCASE.belts;
+  const belts = showcase?.data.belts || SHOWCASE_FALLBACK.belts;
 
   const totalPages = isMobile ? belts.length : Math.ceil(belts.length / 4);
   const itemsPerPage = isMobile ? 1 : 4;

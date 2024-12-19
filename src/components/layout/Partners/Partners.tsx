@@ -1,47 +1,85 @@
+import { usePartner } from '@/hooks/usePartner';
 import styles from './Partners.module.css';
+import { Partner } from '@/types/partner';
+import { API_CONFIG } from '@/lib/api-config';
+import { renderHighlightedText } from '@/utils/textFormatting';
 
-const PARTNERS = [
-  {
-    id: 1,
-    name: 'Lambda',
-    logo: '/assets/images/partners/partner_1.svg',
-    className: ''
-  },
+const PARTNERS : Partner = {
+  id: 1,
+  documentId: '1',
+  title: 'Our [highlight]Partners[/highlight]',
+  brands: [
+    {
+      id: 1,
+      documentId: '1',
+      name: 'Lambda',
+      logo: {
+        img: {
+            url: '/assets/images/partners/partner_1.svg',
+        },
+      },
+    },
   {
     id: 2,
+    documentId: '2',
     name: 'AWS',
-    logo: '/assets/images/partners/partner_2.svg',
-    className: ''
+    logo: {
+      img: {
+        url: '/assets/images/partners/partner_2.svg',
+      },
+    },
   },
   {
     id: 3,
+    documentId: '3',
     name: 'Dedium',
-    logo: '/assets/images/partners/partner_3.svg',
-    className: styles.largeLogo
+    logo: {
+      img: {
+        url: '/assets/images/partners/partner_3.svg',
+      },
+    },
   },
   {
     id: 4,
+    documentId: '4',
     name: 'IQ',
-    logo: '/assets/images/partners/partner_4.svg',
-    className: ''
+    logo: {
+      img: {
+        url: '/assets/images/partners/partner_4.svg',
+      },
+    },
   }
-] as const;
+]} as const;
+
+const defaultTitle = (
+  <>
+    Our <span className={styles.highlight}>Partners</span>
+  </>
+);
 
 const Partners = () => {
+  const { data } = usePartner();
+  const partners = data?.data || PARTNERS;
+  const isAPI = data !== undefined;
+  
   return (
     <section className={styles.partnersContainer}>
       <div className={styles.partnersContent}>
         <h2 className={styles.title}>
-          Our <span className={styles.highlight}>Partners</span>
+          {renderHighlightedText({
+            text: partners?.title,
+            highlightClassName: styles.highlight,
+            fallback: defaultTitle
+          })}
         </h2>
         
         <div className={styles.logoGrid}>
-          {PARTNERS.map((partner) => (
-            <div key={partner.id} className={styles.logoContainer}>
+          {partners.brands.map((brand) => (
+            <div key={brand.id} className={styles.logoContainer}>
               <img
-                src={partner.logo}
-                alt={`${partner.name} logo`}
-                className={`${styles.logo} ${partner.className}`}
+                src={isAPI ? API_CONFIG.imageBaseURL + brand.logo.img.url : brand.logo.img.url}
+                alt={`${brand.name} logo`}
+                className={`${styles.logo} ${brand.name === 'Dedium' ? styles.largeLogo : ''}`}
               />
             </div>
           ))}

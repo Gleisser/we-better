@@ -1,29 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { MegaMenuProps } from './types';
 import { API_CONFIG } from '@/lib/api-config';
-const fallbackMenuItems = [
-  {
-    id: 1,
-    title: "AI Art Generator",
-    description: "Generate art, illustrations and more with prompts.",
-    href: "#",
-  },
-  {
-    id: 2,
-    title: "AI Video Generator",
-    description: "Turn your images into stunning animations and explore a new dimension of video storytelling.",
-    href: "#",
-  },
-  {
-    id: 3,
-    title: "Transparent PNG Generator",
-    description: "Instantly generate true background-free visual elements.",
-    href: "#",
-  },
-];
+import { MEGA_MENU_FALLBACK } from '@/constants/fallback';
+
+
 
 const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps) => {
-  const menuItems = menuData?.menu_links || fallbackMenuItems;
+  const menuItems = menuData?.menu_links || MEGA_MENU_FALLBACK;
   const blogPost = menuData?.menu_blog_post;
 
   return (

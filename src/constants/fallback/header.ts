@@ -56,4 +56,6 @@ export const MEGA_MENU_CONFIG = [
     }
 ] as const;
 
+export default HEADER_CONSTANTS;
+
 

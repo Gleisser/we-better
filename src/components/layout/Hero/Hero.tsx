@@ -1,4 +1,4 @@
-import { HERO_CONSTANTS } from "@/constants/hero";
+import { HERO_FALLBACK } from "@/constants/fallback";
 import styles from "./Hero.module.css";
 import DashboardPreview from "./DashboardPreview";
 import FloatingImage from './FloatingImage';
@@ -39,23 +39,9 @@ export const Hero = () => {
   }, []);
 
   //When the API is not available, we show a fallback component
-  const fallbackData = {
-    title: HERO_CONSTANTS.DEFAULT_TITLE,
-    subtitle: HERO_CONSTANTS.DEFAULT_SUBTITLE,
-    cta_text: HERO_CONSTANTS.DEFAULT_CTA_TEXT,
-    secondary_cta_text: HERO_CONSTANTS.DEFAULT_SECONDARY_CTA_TEXT,
-    images: HERO_CONSTANTS.FLOATING_IMAGES,
-    main_image_mobile: {
-      src: "/assets/images/hero/mobile/app_hero_img-mobile.webp",
-      alt: "We Better Mobile App",
-    },
-    main_image: {
-      src: "/assets/images/hero/app_hero_img.webp",
-      alt: "We Better Dashboard"
-    }
-  };
+  
 
-  const heroData = (error || showFallback) ? fallbackData : data?.data;
+  const heroData = (error || showFallback) ? HERO_FALLBACK : data?.data;
   
   return (
     <div className={styles.heroContainer}>
@@ -93,7 +79,7 @@ export const Hero = () => {
             key={index}
             src={image.src}
             alt={image.alt}
-            className={`${styles.floatingImage} ${HERO_CONSTANTS.FLOATING_IMAGES[index].className} z-40`}
+            className={`${styles.floatingImage} ${HERO_FALLBACK.images[index].className} z-40`}
           />
         ))}
       </div>

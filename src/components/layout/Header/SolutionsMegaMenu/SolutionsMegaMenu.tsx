@@ -1,38 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { SolutionsMegaMenuProps } from './types';
 import { API_CONFIG } from '@/lib/api-config';
+import { SOLUTIONS_MEGA_MENU_FALLBACK } from '@/constants/fallback/megamenu';
 
 const SolutionsMegaMenu = ({ isOpen, onClose, menuData }: SolutionsMegaMenuProps) => {
-  const menuItems = menuData?.menu_links || [
-    {
-      title: "AI Marketing Tools",
-      description: "Instantly upgrade your marketing campaigns.",
-      image: {
-        url: "/assets/images/header/svg/marketing.svg"
-      }
-    },
-    {
-      title: "AI Graphic Design",
-      description: "Instantly upgrade your design workflow.",
-      image: {
-        url: "/assets/images/header/svg/design.svg"
-      }
-    },
-    {
-      title: "AI Print on Demand",
-      description: "Transform your digital art into print-ready masterpieces.",
-      image: {
-        url: "/assets/images/header/svg/print.svg"
-      }
-    },
-    {
-      title: "AI Photography",
-      description: "Uplift your portfolio with our flexible suite of creative AI tools.",
-      image: {
-        url: "/assets/images/header/svg/photo.svg"
-      }
-    },
-  ];
+  const menuItems = menuData?.menu_links || SOLUTIONS_MEGA_MENU_FALLBACK;
 
   return (
     <AnimatePresence>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from './Highlights.module.css';
-import { HIGHLIGHTS } from '../../../constants/highlights';
+import { HIGHLIGHTS_FALLBACK } from '@/constants/fallback';
 import { useHighlight } from '@/hooks/useHighlight';
 import { API_CONFIG } from '@/lib/api-config';
 
@@ -9,7 +9,7 @@ const Highlights = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   // Get highlights from API or use fallback
-  const highlights = data?.data?.slides || HIGHLIGHTS;
+  const highlights = data?.data?.slides || HIGHLIGHTS_FALLBACK;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,10 +29,6 @@ const Highlights = () => {
       </h2>
       <div className={styles.sliderContainer}>
         {highlights.map((highlight, index) => {
-          // const imageFileName = highlight === "and much more" 
-          //   ? "Much-More" 
-          //   : highlight.replace(" ", "-");
-      
           return (
             <div 
               key={highlight.id}

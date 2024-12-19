@@ -15,3 +15,5 @@ export const FEATURES_CONSTANTS = [
         buttonText: "Learn more",
     }
 ]
+
+export default FEATURES_CONSTANTS;
