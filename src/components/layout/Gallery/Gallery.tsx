@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from './Gallery.module.css';
-
+import { useGallery } from '@/hooks/useGallery';
+import { API_CONFIG } from '@/lib/api-config';
 const INITIAL_LOAD = 12;
 const LOAD_MORE_COUNT = 8;
 
@@ -168,6 +169,36 @@ const Gallery = () => {
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD);
   const [currentMobileIndex, setCurrentMobileIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const { data: gallery } = useGallery();
+
+  const images = gallery?.data?.images.map((image) => {
+    return {
+      id: image.id,
+      src: `${API_CONFIG.imageBaseURL}${image.url}`,
+      alt: image.alternativeText,
+      size: image.height > 400 ? 'large' : 'small'
+    }
+  });
+
+  const orderImages = (images: { id: number; src: string; alt: string; size: string; }[] | undefined) => {
+    const orderedImages = [];
+
+    const smallImages = images?.filter((image) => image.size === 'small');
+    const largeImages = images?.filter((image) => image.size === 'large');
+
+    if (largeImages && smallImages) {
+      while (smallImages?.length > 0 && largeImages?.length > 0) {
+        orderedImages.push(largeImages.shift());
+        orderedImages.push(smallImages.shift());
+      }
+    }
+
+    return orderedImages;
+  }
+
+  const orderedImages = orderImages(images);
+
+  const galleryImages = orderedImages.length > 0 ? orderedImages : GALLERY_IMAGES;
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -180,24 +211,26 @@ const Gallery = () => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
   
-  const visibleImages = GALLERY_IMAGES.slice(0, visibleCount);
-  const hasMore = visibleCount < GALLERY_IMAGES.length;
+  const visibleImages = galleryImages.slice(0, visibleCount);
+  const hasMore = visibleCount < galleryImages.length;
 
   const handleLoadMore = () => {
-    setVisibleCount(prev => Math.min(prev + LOAD_MORE_COUNT, GALLERY_IMAGES.length));
+    setVisibleCount(prev => Math.min(prev + LOAD_MORE_COUNT, galleryImages.length));
   };
 
   const nextImage = () => {
     setCurrentMobileIndex((prev) => 
-      prev === GALLERY_IMAGES.length - 1 ? 0 : prev + 1
+      prev === galleryImages.length - 1 ? 0 : prev + 1
     );
   };
 
   const prevImage = () => {
     setCurrentMobileIndex((prev) => 
-      prev === 0 ? GALLERY_IMAGES.length - 1 : prev - 1
+      prev === 0 ? galleryImages.length - 1 : prev - 1
     );
   };
+
+  
 
   return (
     <section className={styles.galleryContainer}>
@@ -254,8 +287,8 @@ const Gallery = () => {
             
             <div className={styles.mobileImageContainer}>
               <img
-                src={GALLERY_IMAGES[currentMobileIndex].src}
-                alt={GALLERY_IMAGES[currentMobileIndex].alt}
+                src={galleryImages[currentMobileIndex]?.src}
+                alt={galleryImages[currentMobileIndex]?.alt}
                 className={styles.mobileImage}
               />
             </div>
@@ -274,12 +307,12 @@ const Gallery = () => {
             <div className={styles.masonryGrid}>
               {visibleImages.map((image) => (
                 <div 
-                  key={image.id} 
-                  className={`${styles.masonryItem} ${styles[image.size]}`}
+                  key={image?.id} 
+                  className={`${styles.masonryItem} ${styles[image?.size || 'large']}`}
                 >
                   <img
-                    src={image.src}
-                    alt={image.alt}
+                    src={image?.src}
+                    alt={image?.alt}
                     className={styles.image}
                   />
                 </div>

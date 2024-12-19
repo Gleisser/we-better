@@ -1,27 +1,17 @@
 import styles from './Testimonies.module.css';
+import { useTestimony } from '@/hooks/useTestimony';
+import { TESTIMONIALS } from '@/constants/testimony';
+import { TestimonyItem } from '@/types/testimony';
+import { API_CONFIG } from '@/lib/api-config';
 
-const TESTIMONIALS = [
-  {
-    id: 1,
-    text: "Leonardo gave me a way of expressing myself in a completely new and different way. Without AI I was only a consumer. Now I can create.",
-    author: "Malakai030",
-    avatar: "/assets/images/testimonies/profile_1.webp"
-  },
-  {
-    id: 2,
-    text: "Leo is suitable for those who are just starting their way in the world of AI images, as well as for professionals, who are offered a wide range of tools to work with.",
-    author: "Raini Studios",
-    avatar: "/assets/images/testimonies/profile_2.webp"
-  },
-  {
-    id: 3,
-    text: "With its powerful fined tuned models Leonardo makes A.I art a breeze. The community is also the best I've found to date!",
-    author: "Dee Does A.I",
-    avatar: "/assets/images/testimonies/profile_3.webp"
-  }
-] as const;
+
+
 
 const Testimonies = () => {
+  const { data } = useTestimony();
+  const isAPI = data?.data;
+  const testimony = data?.data || TESTIMONIALS;
+
   return (
     <section className={styles.testimoniesContainer}>
       <div className={styles.testimoniesContent}>
@@ -37,16 +27,16 @@ const Testimonies = () => {
         </div>
 
         <div className={styles.testimonials}>
-          {TESTIMONIALS.map((testimonial) => (
-            <div key={testimonial.id} className={styles.testimonialCard}>
-              <p className={styles.testimonialText}>"{testimonial.text}"</p>
+          {testimony.testimonies.map((item: TestimonyItem ) => (
+            <div key={item.id} className={styles.testimonialCard}>
+              <p className={styles.testimonialText}>"{item.testimony}"</p>
               <div className={styles.author}>
                 <img 
-                  src={testimonial.avatar} 
-                  alt={testimonial.author}
+                  src={isAPI ? API_CONFIG.imageBaseURL + item.profilePic.url : item.profilePic.url} 
+                  alt={item.username}
                   className={styles.avatar}
                 />
-                <span className={styles.authorName}>{testimonial.author}</span>
+                <span className={styles.authorName}>{item.username}</span>
               </div>
             </div>
           ))}

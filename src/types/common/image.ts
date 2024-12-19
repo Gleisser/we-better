@@ -33,3 +33,21 @@ export interface ThumbnailImage {
         };
     };
 }
+
+export interface TopLevelImage {
+    id: number;
+    documentId: string;
+    name: string;
+    alternativeText: string;
+    caption: string;
+    width: number;
+    height: number;
+    src: string;
+    alt: string;
+    url: string;
+    formats: {
+        thumbnail: {
+            url: string;
+        };
+    };
+}
