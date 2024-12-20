@@ -9,7 +9,6 @@ const Footer = () => {
   const { data } = useFooter();
   const footer = data?.data || FOOTER_FALLBACK;
   const isAPI = data !== undefined;
-  console.log(footer);
   return (
     <footer className={styles.footer}>
       <div className={styles.footerContent}>
@@ -21,7 +20,7 @@ const Footer = () => {
                 <h3 className={styles.categoryTitle}>{menu.Title}</h3>
                 <ul className={styles.linkList}>
                   {menu.menu_links.map((link) => (
-                    <li key={link.title}>
+                    <li key={link.id + link.title}>
                       <a href={link.href} className={styles.link}>
                         {link.title}
                       </a>
@@ -38,7 +37,7 @@ const Footer = () => {
               <h3 className={styles.categoryTitle}>Get the App</h3>
               <div className={styles.storeButtons}>
                 {footer.app_stores.map((appStore : AppStore) => (
-                  <a href="#" className={styles.storeLink}>
+                  <a key={appStore.id} href="#" className={styles.storeLink}>
                     <img src={isAPI ? API_CONFIG.imageBaseURL + appStore.images[0].url : appStore.images[0].src} alt={appStore.images[0].name} />
                   </a>
                 ))}
@@ -78,7 +77,7 @@ const Footer = () => {
 
           <div className={styles.legalLinks}>
             {footer.footer_links.map((link) => (
-              <a href={link.href} className={styles.legalLink}>{link.title}</a>
+              <a key={link.id} href={link.href} className={styles.legalLink}>{link.title}</a>
             ))}
           </div>
 
