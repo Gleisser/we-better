@@ -1,7 +1,8 @@
 import styles from '../Features.module.css'
 import { Card } from '../../../../types/features-response'
 import { motion } from 'framer-motion'
-import { FEATURES_CONSTANTS } from '@/constants/features';
+import { ArrowRight, ArrowTopRight } from '@/components/common/icons';
+import { FEATURES_CONSTANTS } from '@/constants/fallback';
 
 type FallbackCard = typeof FEATURES_CONSTANTS[0];
 
@@ -59,34 +60,10 @@ function FeaturesCard({ card }: FeaturesCardProps) {
           {/* Arrow icons remain unchanged */}
           <div className={styles.featuresCardArrowContainer}>
             {/* Default state: arrow pointing top-right */}
-            <svg 
-              className={styles.featuresCardArrowDefault}
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M7 17L17 7M17 7H7M17 7V17" 
-              />
-            </svg>
-
+            <ArrowTopRight className={styles.featuresCardArrowDefault} />
+           
             {/* Hover state: arrow pointing right */}
-            <svg 
-              className={styles.featuresCardArrowHover}
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M5 12h14m-5-5l5 5-5 5" 
-              />
-            </svg>
+            <ArrowRight className={styles.featuresCardArrowHover} />
           </div>
         </div>
         

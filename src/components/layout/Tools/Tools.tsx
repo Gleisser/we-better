@@ -4,6 +4,7 @@ import { TOOLS_FALLBACK } from '@/constants/fallback';
 import { useTool } from '@/hooks/useTool';
 import { Tool, ToolTab } from '@/types/tool';
 import { API_CONFIG } from '@/lib/api-config';
+import { ToolIcon } from '@/components/common/icons';
 
 const Tools = () => {
   const { data } = useTool();
@@ -74,21 +75,7 @@ const Tools = () => {
         <div className={styles.titleContainer}>
           <h2 className={styles.mainTitle}>
             <span className={styles.gradientText}>{gradientText || 'WeBetter'}</span> {toolName || 'Toolkit'}
-            <svg 
-              className={styles.toolIcon} 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none"
-            >
-              <path 
-                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              />
-            </svg>
+            <ToolIcon className={styles.toolIcon} />
           </h2>
         </div>
 

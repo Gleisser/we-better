@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import styles from './Gallery.module.css';
 import { useGallery } from '@/hooks/useGallery';
 import { API_CONFIG } from '@/lib/api-config';
+import { GalleryIcon, MobileNavIcon, MobileNavNextIcon } from '@/components/common/icons';
 const INITIAL_LOAD = 12;
 const LOAD_MORE_COUNT = 8;
 
@@ -273,39 +274,7 @@ const Gallery = () => {
         <div className={styles.header}>
           <h2 className={styles.title}>
             <span className={styles.gradientText}>Platform</span> Gallery
-            <svg 
-              className={styles.paintIcon} 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none"
-            >
-              <path 
-                d="M2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2"
-                stroke="url(#paint-gradient)"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path 
-                d="M12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12"
-                stroke="url(#paint-gradient)"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <defs>
-                <linearGradient
-                  id="paint-gradient"
-                  x1="2"
-                  y1="2"
-                  x2="22"
-                  y2="22"
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop stopColor="#8B5CF6" />
-                  <stop offset="1" stopColor="#D946EF" />
-                </linearGradient>
-              </defs>
-            </svg>
+            <GalleryIcon className={styles.paintIcon} />
           </h2>
         </div>
 
@@ -315,9 +284,7 @@ const Gallery = () => {
               onClick={prevImage} 
               className={`${styles.mobileNavButton} ${styles.prevButton}`}
             >
-              <svg viewBox="0 0 24 24" className={styles.navIcon} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 19l-7-7 7-7" />
-              </svg>
+              <MobileNavIcon className={styles.navIcon} />
             </button>
             
             <div className={styles.mobileImageContainer}>
@@ -335,9 +302,7 @@ const Gallery = () => {
               onClick={nextImage} 
               className={`${styles.mobileNavButton} ${styles.nextButton}`}
             >
-              <svg viewBox="0 0 24 24" className={styles.navIcon} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 5l7 7-7 7" />
-              </svg>
+              <MobileNavNextIcon className={styles.navIcon} />
             </button>
           </div>
         ) : (

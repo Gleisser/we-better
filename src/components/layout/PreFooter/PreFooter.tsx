@@ -3,6 +3,7 @@ import { usePrefooter } from '@/hooks/usePrefooter';
 import { PREFOOTER_FALLBACK } from '@/constants/fallback';
 import { renderHighlightedText } from '@/utils/textFormatting';
 import { API_CONFIG } from '@/lib/api-config';
+import { ButtonArrowIcon } from '@/components/common/icons';
 
 const PreFooter = () => {
   const { data } = usePrefooter();
@@ -32,20 +33,7 @@ const PreFooter = () => {
               className={styles.button}
             >
               {prefooter?.buttonText}
-              <svg 
-                className={styles.arrow} 
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none"
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
-              </svg>
+              <ButtonArrowIcon className={styles.arrow} />
             </a>
             <p className={styles.note}>{prefooter?.buttonDescription}</p>
           </div>

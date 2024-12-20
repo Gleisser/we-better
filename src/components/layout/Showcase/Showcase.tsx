@@ -4,6 +4,7 @@ import styles from './Showcase.module.css';
 import { SHOWCASE_FALLBACK } from '@/constants/fallback';
 import { useShowcase } from '@/hooks/useShowcase';
 import { API_CONFIG } from '@/lib/api-config';
+import { ShowcaseArrowIcon, ShowcaseArrowRightIcon, ShowcaseMobileArrowIcon, ShowcaseMobileArrowRightIcon } from '@/components/common/icons';
 
 const Showcase = () => {
   const { data: showcase } = useShowcase();
@@ -172,14 +173,10 @@ const Showcase = () => {
           {!isMobile && (
             <div className={styles.navigation}>
               <button onClick={prevPage} className={styles.navButton}>
-                <svg viewBox="0 0 24 24" className={styles.navIcon} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 19l-7-7 7-7" />
-                </svg>
+                <ShowcaseArrowIcon className={styles.navIcon} /> 
               </button>
               <button onClick={nextPage} className={styles.navButton}>
-                <svg viewBox="0 0 24 24" className={styles.navIcon} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 5l7 7-7 7" />
-                </svg>
+                <ShowcaseArrowRightIcon className={styles.navIcon} />
               </button>
             </div>
           )}
@@ -253,14 +250,10 @@ const Showcase = () => {
         {isMobile && (
           <div className={styles.navigation}>
             <button onClick={prevPage} className={styles.navButton}>
-              <svg viewBox="0 0 24 24" className={styles.navIcon} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 19l-7-7 7-7" />
-              </svg>
+              <ShowcaseMobileArrowIcon className={styles.navIcon} /> 
             </button>
             <button onClick={nextPage} className={styles.navButton}>
-              <svg viewBox="0 0 24 24" className={styles.navIcon} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 5l7 7-7 7" />
-              </svg>
+              <ShowcaseMobileArrowRightIcon className={styles.navIcon} />
             </button>
           </div>
         )}
