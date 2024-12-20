@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './Gallery.module.css';
 import { useGallery } from '@/hooks/useGallery';
 import { API_CONFIG } from '@/lib/api-config';
@@ -170,6 +170,8 @@ const Gallery = () => {
   const [currentMobileIndex, setCurrentMobileIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const { data: gallery } = useGallery();
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
 
   const images = gallery?.data?.images.map((image) => {
     return {
@@ -197,8 +199,41 @@ const Gallery = () => {
   }
 
   const orderedImages = orderImages(images);
+  const galleryImages = orderedImages?.length > 0 ? orderedImages : GALLERY_IMAGES;
+  const visibleImages = galleryImages.slice(0, visibleCount);
+  
+  useEffect(() => {
+    // Intersection Observer setup
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const img = entry.target as HTMLImageElement;
+            if (img.dataset.src) {
+              img.src = img.dataset.src;
+              img.removeAttribute('data-src');
+              observerRef.current?.unobserve(img);
+            }
+          }
+        });
+      },
+      {
+        rootMargin: '50px 0px',
+        threshold: 0.1
+      }
+    );
 
-  const galleryImages = orderedImages.length > 0 ? orderedImages : GALLERY_IMAGES;
+    // Observe all images
+    imageRefs.current.forEach((imageRef) => {
+      if (imageRef) {
+        observerRef.current?.observe(imageRef);
+      }
+    });
+
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, [visibleImages]);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -211,7 +246,7 @@ const Gallery = () => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
   
-  const visibleImages = galleryImages.slice(0, visibleCount);
+  
   const hasMore = visibleCount < galleryImages.length;
 
   const handleLoadMore = () => {
@@ -287,9 +322,12 @@ const Gallery = () => {
             
             <div className={styles.mobileImageContainer}>
               <img
+                ref={el => imageRefs.current[currentMobileIndex] = el}
                 src={galleryImages[currentMobileIndex]?.src}
+                data-src={galleryImages[currentMobileIndex]?.src}
                 alt={galleryImages[currentMobileIndex]?.alt}
                 className={styles.mobileImage}
+                loading="lazy"
               />
             </div>
 
@@ -305,15 +343,22 @@ const Gallery = () => {
         ) : (
           <>
             <div className={styles.masonryGrid}>
-              {visibleImages.map((image) => (
+              {visibleImages.map((image, index) => (
                 <div 
                   key={image?.id} 
                   className={`${styles.masonryItem} ${styles[image?.size || 'large']}`}
                 >
                   <img
-                    src={image?.src}
+                    ref={el => imageRefs.current[index] = el}
+                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" // Tiny placeholder
+                    data-src={image?.src}
                     alt={image?.alt}
                     className={styles.image}
+                    loading="lazy"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = image?.src || '';
+                    }}
                   />
                 </div>
               ))}

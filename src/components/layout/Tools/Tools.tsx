@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './Tools.module.css';
 import { TOOLS_FALLBACK } from '@/constants/fallback';
 import { useTool } from '@/hooks/useTool';
@@ -9,9 +9,63 @@ const Tools = () => {
   const { data } = useTool();
   const tabs = data?.data?.tabs || TOOLS_FALLBACK;
   const [activeTab, setActiveTab] = useState<ToolTab | Tool>(tabs[0]);
+  const [loadedVideos, setLoadedVideos] = useState<Set<string>>(new Set());
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const gradientText = data?.data?.title.split(' ')[0];
   const toolName = data?.data?.title.split(' ')[1];
+
+  // Setup Intersection Observer for video container
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && videoRef.current) {
+            const videoId = activeTab.videoSrc.id;
+            if (!loadedVideos.has(videoId)) {
+              const videoUrl = data?.data 
+                ? API_CONFIG.imageBaseURL + activeTab.videoSrc.video[0].url 
+                : activeTab.videoSrc.video[0].url;
+              
+              videoRef.current.src = videoUrl;
+              videoRef.current.load();
+              setLoadedVideos(prev => new Set(prev).add(videoId));
+            }
+          }
+        });
+      },
+      {
+        rootMargin: '50px 0px',
+        threshold: 0.1
+      }
+    );
+
+    if (containerRef.current) {
+      observerRef.current.observe(containerRef.current);
+    }
+
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, [activeTab, data?.data, loadedVideos]);
+
+  // Preload next video when tab changes
+  useEffect(() => {
+    if (videoRef.current) {
+      const videoId = activeTab.videoSrc.id;
+      if (!loadedVideos.has(videoId)) {
+        const videoUrl = data?.data 
+          ? API_CONFIG.imageBaseURL + activeTab.videoSrc.video[0].url 
+          : activeTab.videoSrc.video[0].url;
+        
+        videoRef.current.src = videoUrl;
+        videoRef.current.load();
+        setLoadedVideos(prev => new Set(prev).add(videoId));
+      }
+    }
+  }, [activeTab, data?.data, loadedVideos]);
 
   return (
     <section className={styles.toolsContainer}>
@@ -60,16 +114,18 @@ const Tools = () => {
               <p className={styles.description}>{activeTab.description}</p>
             </div>
 
-            <div className={styles.videoContainer}>
+            <div className={styles.videoContainer} ref={containerRef}>
               <video
+                ref={videoRef}
                 autoPlay
                 muted
                 loop
                 playsInline
                 className={styles.video}
                 key={activeTab.videoSrc.id}
+                poster={`/assets/images/tools/${activeTab.id}-poster.webp`}
               >
-                <source src={data?.data && API_CONFIG.imageBaseURL + activeTab.videoSrc.video[0].url || activeTab.videoSrc.video[0].url} type="video/webm" />
+                {/* Source will be set dynamically when in view */}
               </video>
             </div>
           </div>

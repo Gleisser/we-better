@@ -6,13 +6,41 @@ import HeroBackground from './HeroBackground';
 import CtaButton from "./Buttons/CtaButton";
 import SecondaryCtaButton from "./Buttons/SecondaryCtaButton";
 import { motion } from "framer-motion";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useHero } from '@/hooks/useHero';
 
 export const Hero = () => {
   const { data, error, isFetching } = useHero();
   const [isMobile, setIsMobile] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const mainImageRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const img = entry.target as HTMLImageElement;
+            if (img.dataset.src) {
+              img.src = img.dataset.src;
+              img.removeAttribute('data-src');
+              observerRef.current?.unobserve(img);
+            }
+          }
+        });
+      },
+      {
+        rootMargin: '50px 0px',
+        threshold: 0.1
+      }
+    );
+
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     // Show fallback component if loading from the API takes more than 2 seconds
@@ -28,18 +56,11 @@ export const Hero = () => {
       setIsMobile(window.innerWidth <= 768);
     };
 
-    // Initial check
     checkIfMobile();
-
-    // Add event listener
     window.addEventListener('resize', checkIfMobile);
-
-    // Cleanup
+    
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
-
-  //When the API is not available, we show a fallback component
-  
 
   const heroData = (error || showFallback) ? HERO_FALLBACK : data?.data;
   
@@ -65,13 +86,27 @@ export const Hero = () => {
       <div className={styles.previewContainer}>
         <div className={styles.mainPreview}>
           {isMobile ? (
-            <img 
-              src={heroData?.main_image_mobile?.src} 
+            <motion.img 
+              ref={el => {
+                mainImageRef.current = el;
+                if (el) observerRef.current?.observe(el);
+              }}
+              src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+              data-src={heroData?.main_image_mobile?.src}
               alt="Leonardo.AI Mobile App"
               className={styles.mobilePreviewImage}
+              loading="lazy"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             />
           ) : (
-            <DashboardPreview src={heroData?.main_image?.src} alt={heroData?.main_image?.alt} />
+            <DashboardPreview 
+              src={heroData?.main_image?.src} 
+              alt={heroData?.main_image?.alt}
+              ref={mainImageRef}
+              observerRef={observerRef}
+            />
           )}
         </div>
         {heroData?.images.map((image, index) => (
@@ -80,6 +115,11 @@ export const Hero = () => {
             src={image.src}
             alt={image.alt}
             className={`${styles.floatingImage} ${HERO_FALLBACK.images[index].className} z-40`}
+            ref={el => {
+              imageRefs.current[index] = el;
+              if (el) observerRef.current?.observe(el);
+            }}
+            observerRef={observerRef}
           />
         ))}
       </div>

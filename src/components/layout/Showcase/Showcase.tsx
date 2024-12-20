@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import styles from './Showcase.module.css';
 import { SHOWCASE_FALLBACK } from '@/constants/fallback';
@@ -12,6 +12,8 @@ const Showcase = () => {
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
   const [imageIndex, setImageIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -53,14 +55,42 @@ const Showcase = () => {
   useEffect(() => {
     if (hoveredItem) {
       const interval = setInterval(() => {
-        setImageIndex((prev) => (prev + 1) % 3);
+        setImageIndex((prev) => {
+          const nextIndex = (prev + 1) % 3;
+          const currentItemRef = imageRefs.current.find((_, i) => 
+            currentItems[i]?.id === hoveredItem
+          );
+          
+          if (currentItemRef) {
+            const item = currentItems.find(item => item.id === hoveredItem);
+            if (item) {
+              const newSrc = showcase 
+                ? API_CONFIG.imageBaseURL + item.images[nextIndex].img.formats.thumbnail.url
+                : item.images[nextIndex].src;
+              
+              currentItemRef.src = newSrc;
+            }
+          }
+          
+          return nextIndex;
+        });
       }, 1000);
 
       return () => clearInterval(interval);
     } else {
       setImageIndex(0);
+      imageRefs.current.forEach((ref, index) => {
+        if (ref && currentItems[index]) {
+          const item = currentItems[index];
+          const initialSrc = showcase 
+            ? API_CONFIG.imageBaseURL + item.images[0].img.formats.thumbnail.url
+            : item.images[0].src;
+          
+          ref.src = initialSrc;
+        }
+      });
     }
-  }, [hoveredItem]);
+  }, [hoveredItem, showcase, currentItems]);
 
   const nextPage = () => {
     setDirection(1);
@@ -89,6 +119,47 @@ const Showcase = () => {
       }
     }
   };
+
+  useEffect(() => {
+    imageRefs.current = new Array(itemsPerPage).fill(null);
+  }, [currentPage, itemsPerPage]);
+
+  useEffect(() => {
+    observerRef.current?.disconnect();
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const img = entry.target as HTMLImageElement;
+            if (img.dataset.src) {
+              setTimeout(() => {
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+                observerRef.current?.unobserve(img);
+              }, 100);
+            }
+          }
+        });
+      },
+      {
+        rootMargin: '50px 0px',
+        threshold: 0.1
+      }
+    );
+
+    setTimeout(() => {
+      imageRefs.current.forEach((imageRef) => {
+        if (imageRef) {
+          observerRef.current?.observe(imageRef);
+        }
+      });
+    }, 100);
+
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, [currentPage]);
 
   return (
     <section className={styles.showcaseContainer}>
@@ -133,7 +204,7 @@ const Showcase = () => {
             onDragEnd={handleDragEnd}
             whileDrag={{ cursor: "grabbing" }}
           >
-            {currentItems.map((item) => (
+            {currentItems.map((item, index) => (
               <div
                 key={item.id}
                 className={styles.item}
@@ -145,11 +216,31 @@ const Showcase = () => {
               >
                 <div className={styles.imageContainer}>
                   <img
-                    src={showcase && API_CONFIG.imageBaseURL + item.images[hoveredItem === item.id ? imageIndex : 0].img.formats.thumbnail.url 
-                      || item.images[hoveredItem === item.id ? imageIndex : 0].src
+                    ref={el => {
+                      imageRefs.current[index] = el;
+                      if (el) {
+                        observerRef.current?.observe(el);
+                        const initialSrc = showcase 
+                          ? API_CONFIG.imageBaseURL + item.images[0].img.formats.thumbnail.url
+                          : item.images[0].src;
+                        
+                        if (el.src === "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7") {
+                          el.src = initialSrc;
+                        }
+                      }
+                    }}
+                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                    data-src={showcase 
+                      ? API_CONFIG.imageBaseURL + item.images[0].img.formats.thumbnail.url
+                      : item.images[0].src
                     }
                     alt={item.images[hoveredItem === item.id ? imageIndex : 0].alt}
                     className={styles.image}
+                    loading="lazy"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = item.images[0].src;
+                    }}
                   />
                 </div>
                 <h3 className={styles.itemTitle}>{item.title}</h3>

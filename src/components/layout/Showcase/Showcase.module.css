@@ -46,6 +46,15 @@
 
 .image {
   @apply w-full h-full object-cover transition-opacity duration-300;
+  opacity: 0;
+}
+
+.image[src^="data:image"] {
+  opacity: 0;
+}
+
+.image:not([src^="data:image"]) {
+  opacity: 1;
 }
 
 .itemTitle {
