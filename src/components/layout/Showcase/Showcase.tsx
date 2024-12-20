@@ -5,9 +5,10 @@ import { SHOWCASE_FALLBACK } from '@/constants/fallback';
 import { useShowcase } from '@/hooks/useShowcase';
 import { API_CONFIG } from '@/lib/api-config';
 import { ShowcaseArrowIcon, ShowcaseArrowRightIcon, ShowcaseMobileArrowIcon, ShowcaseMobileArrowRightIcon } from '@/components/common/icons';
+import ShowcaseSkeleton from './ShowcaseSkeleton';
 
 const Showcase = () => {
-  const { data: showcase } = useShowcase();
+  const { data: showcase, isLoading, showFallback } = useShowcase();
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
@@ -161,6 +162,10 @@ const Showcase = () => {
       observerRef.current?.disconnect();
     };
   }, [currentPage]);
+
+  if (isLoading && !showFallback) {
+    return <ShowcaseSkeleton />;
+  }
 
   return (
     <section className={styles.showcaseContainer}>

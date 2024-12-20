@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "optimize-svgs": "svgo -f public/assets/images/logo -f src/components/common/icons"
+    "optimize-svgs": "svgo -f public/assets/images/logo --config svgo.config.cjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.7",

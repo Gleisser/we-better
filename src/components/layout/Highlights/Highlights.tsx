@@ -3,6 +3,7 @@ import styles from './Highlights.module.css';
 import { HIGHLIGHTS_FALLBACK } from '@/constants/fallback';
 import { useHighlight } from '@/hooks/useHighlight';
 import { API_CONFIG } from '@/lib/api-config';
+import HighlightsSkeleton from './HighlightsSkeleton';
 
 const Highlights = () => {
   const { data, isLoading, error } = useHighlight();
@@ -81,13 +82,7 @@ const Highlights = () => {
 
   // Don't show loading state if we're going to show fallback
   if (isLoading && !showFallback) {
-    return (
-      <section className={styles.highlightsContainer}>
-        <div className={styles.loadingState}>
-          {/* Optional: Add a nice loading animation here */}
-        </div>
-      </section>
-    );
+    return <HighlightsSkeleton />;
   }
 
   return (

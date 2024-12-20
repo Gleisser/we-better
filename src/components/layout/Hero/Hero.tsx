@@ -8,6 +8,7 @@ import SecondaryCtaButton from "./Buttons/SecondaryCtaButton";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from 'react';
 import { useHero } from '@/hooks/useHero';
+import HeroSkeleton from './HeroSkeleton';
 
 const preloadImage = (src: string) => {
   return new Promise((resolve, reject) => {
@@ -117,6 +118,11 @@ export const Hero = () => {
       preloadCriticalImages();
     }
   }, [data]);
+
+  // Show skeleton while loading
+  if (isFetching && !showFallback) {
+    return <HeroSkeleton />;
+  }
 
   return (
     <div className={styles.heroContainer}>

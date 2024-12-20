@@ -5,6 +5,7 @@ import { useTool } from '@/hooks/useTool';
 import { Tool, ToolTab } from '@/types/tool';
 import { API_CONFIG } from '@/lib/api-config';
 import { ToolIcon } from '@/components/common/icons';
+import ToolsSkeleton from './ToolsSkeleton';
 
 const Tools = () => {
   const { data } = useTool();
@@ -67,6 +68,10 @@ const Tools = () => {
       }
     }
   }, [activeTab, data?.data, loadedVideos]);
+
+  if (data?.isLoading && !data?.showFallback) {
+    return <ToolsSkeleton />;
+  }
 
   return (
     <section className={styles.toolsContainer}>
