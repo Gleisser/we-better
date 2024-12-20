@@ -8,7 +8,7 @@ export function useHighlight() {
     queryKey: HIGHLIGHT_QUERY_KEY,
     queryFn: () => highlightService.getHighlight(),
     staleTime: 1000 * 60 * 15, // 15 minutes
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 1.5 ** attemptIndex, 10000),
   });
 } 

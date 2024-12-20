@@ -5,13 +5,32 @@ import { useHighlight } from '@/hooks/useHighlight';
 import { API_CONFIG } from '@/lib/api-config';
 
 const Highlights = () => {
-  const { data, isLoading } = useHighlight();
+  const { data, isLoading, error } = useHighlight();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showFallback, setShowFallback] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
 
-  const highlights = data?.data?.slides || HIGHLIGHTS_FALLBACK;
+  // Faster fallback strategy
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isLoading || error) {
+        setShowFallback(true);
+      }
+    }, 1000);
+
+    if (data) {
+      setShowFallback(false);
+    }
+
+    return () => clearTimeout(timer);
+  }, [isLoading, error, data]);
+
+  // Determine data source with priority for fallback
+  const highlights = error || showFallback || !data?.data?.slides 
+    ? HIGHLIGHTS_FALLBACK 
+    : data.data.slides;
 
   // Setup Intersection Observer
   useEffect(() => {
@@ -60,7 +79,16 @@ const Highlights = () => {
     return () => clearInterval(interval);
   }, [highlights.length]);
 
-  if (isLoading) return <div>Loading...</div>;
+  // Don't show loading state if we're going to show fallback
+  if (isLoading && !showFallback) {
+    return (
+      <section className={styles.highlightsContainer}>
+        <div className={styles.loadingState}>
+          {/* Optional: Add a nice loading animation here */}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={styles.highlightsContainer}>

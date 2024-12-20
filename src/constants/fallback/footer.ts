@@ -95,8 +95,14 @@ const FOOTER_LINKS = {
               }
             }
           },
+        ]
+      },
+      {
+        id: 1,
+        title: 'Google Play',
+        images: [
           {
-            id: 1,
+            id: 0,
             documentId: '',
             url: '/assets/images/footer/play.svg',
             alternativeText: 'Google Play',

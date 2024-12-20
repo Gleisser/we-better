@@ -9,6 +9,15 @@ import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from 'react';
 import { useHero } from '@/hooks/useHero';
 
+const preloadImage = (src: string) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = resolve;
+    img.onerror = reject;
+    img.src = src;
+  });
+};
+
 export const Hero = () => {
   const { data, error, isFetching } = useHero();
   const [isMobile, setIsMobile] = useState(false);
@@ -43,13 +52,18 @@ export const Hero = () => {
   }, []);
 
   useEffect(() => {
-    // Show fallback component if loading from the API takes more than 2 seconds
     const timer = setTimeout(() => {
-      if (isFetching) setShowFallback(true);
-    }, 2000);
+      if (isFetching || error) {
+        setShowFallback(true);
+      }
+    }, 1000);
+
+    if (data) {
+      setShowFallback(false);
+    }
 
     return () => clearTimeout(timer);
-  }, [isFetching]);
+  }, [isFetching, error, data]);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -62,8 +76,48 @@ export const Hero = () => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  const heroData = (error || showFallback) ? HERO_FALLBACK : data?.data;
-  
+  const heroData = error || showFallback || !data?.data 
+    ? HERO_FALLBACK 
+    : data.data;
+
+  useEffect(() => {
+    const preloadFallbackImages = async () => {
+      const fallbackImagesToPreload = [
+        HERO_FALLBACK.main_image.src,
+        HERO_FALLBACK.main_image_mobile.src,
+        ...HERO_FALLBACK.images.slice(0, 2).map(img => img.src)
+      ];
+
+      try {
+        await Promise.all(fallbackImagesToPreload.map(src => preloadImage(src)));
+      } catch (error) {
+        console.warn('Failed to preload fallback images:', error);
+      }
+    };
+
+    preloadFallbackImages();
+  }, []);
+
+  useEffect(() => {
+    if (data?.data) {
+      const preloadCriticalImages = async () => {
+        const imagesToPreload = [
+          data.data.main_image?.src,
+          data.data.main_image_mobile?.src,
+          ...data.data.images.slice(0, 2).map(img => img.src)
+        ].filter(Boolean) as string[];
+
+        try {
+          await Promise.all(imagesToPreload.map(src => preloadImage(src)));
+        } catch (error) {
+          console.warn('Failed to preload some hero images:', error);
+        }
+      };
+
+      preloadCriticalImages();
+    }
+  }, [data]);
+
   return (
     <div className={styles.heroContainer}>
       <HeroBackground />

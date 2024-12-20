@@ -2,7 +2,7 @@ import { useFooter } from '@/hooks/useFooter';
 import styles from './Footer.module.css';
 import { API_CONFIG } from '@/lib/api-config';
 import { FOOTER_FALLBACK } from '@/constants/fallback';
-import { MenuList } from '@/types/footer';
+import { AppStore, MenuList } from '@/types/footer';
 import { TopLevelImage } from '@/types/common/image';
 
 const Footer = () => {
@@ -37,9 +37,9 @@ const Footer = () => {
             <div className={styles.getApp}>
               <h3 className={styles.categoryTitle}>Get the App</h3>
               <div className={styles.storeButtons}>
-                {footer.app_stores[0]?.images.map((img : TopLevelImage) => (
+                {footer.app_stores.map((appStore : AppStore) => (
                   <a href="#" className={styles.storeLink}>
-                    <img src={isAPI ? API_CONFIG.imageBaseURL + img.url : img.src} alt={img.name} />
+                    <img src={isAPI ? API_CONFIG.imageBaseURL + appStore.images[0].url : appStore.images[0].src} alt={appStore.images[0].name} />
                   </a>
                 ))}
               </div>
