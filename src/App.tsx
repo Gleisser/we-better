@@ -1,6 +1,7 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { queryClient } from './lib/react-query';
+import ErrorBoundary from './components/common/ErrorBoundary/ErrorBoundary';
 import { Header, Hero, Footer } from './components/layout';
 import Features from './components/layout/Features/Features';
 import Highlights from './components/layout/Highlights/Highlights';
@@ -15,22 +16,24 @@ import PreFooter from './components/layout/PreFooter/PreFooter';
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="h-full w-full max-w-[100%] overflow-x-hidden bg-black">
-        <Header />
-        <main className="w-full max-w-[100%] overflow-x-hidden">
-          <Hero />
-          <Features />
-          <Highlights />
-          <Tools />
-          <Showcase />
-          <Gallery />
-          <Community />
-          <Testimonies />
-          <Partners />
-          <PreFooter />
-        </main>
-        <Footer />
-      </div>
+      <ErrorBoundary>
+        <div className="h-full w-full max-w-[100%] overflow-x-hidden bg-black">
+          <Header />
+          <main className="w-full max-w-[100%] overflow-x-hidden">
+            <Hero />
+            <Features />
+            <Highlights />
+            <Tools />
+            <Showcase />
+            <Gallery />
+            <Community />
+            <Testimonies />
+            <Partners />
+            <PreFooter />
+          </main>
+          <Footer />
+        </div>
+      </ErrorBoundary>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
