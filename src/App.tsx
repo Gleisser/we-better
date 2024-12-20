@@ -5,12 +5,12 @@ import ErrorBoundary from './components/common/ErrorBoundary/ErrorBoundary';
 import { Header, Hero, Footer } from './components/layout';
 import Features from './components/layout/Features/Features';
 import Highlights from './components/layout/Highlights/Highlights';
-import Tools from './components/layout/Tools/Tools';
-import Showcase from './components/layout/Showcase/Showcase';
-import Gallery from './components/layout/Gallery/Gallery';
-import Community from './components/layout/Community/Community';
-import Testimonies from './components/layout/Testimonies/Testimonies';
-import Partners from './components/layout/Partners/Partners';
+import { Tools } from './components/layout/Tools';
+import { Showcase } from './components/layout/Showcase';
+import { Gallery } from './components/layout/Gallery';
+import { Community } from './components/layout/Community';
+import { Testimonies } from './components/layout/Testimonies';
+import { Partners } from './components/layout/Partners';
 import PreFooter from './components/layout/PreFooter/PreFooter';
 
 function App() {
