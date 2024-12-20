@@ -1,14 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
+import { createQueryHook } from './utils/createQueryHook';
 import { highlightService } from '@/services/highlight.service';
+import { HighlightResponse } from '@/types/highlight';
 
 export const HIGHLIGHT_QUERY_KEY = ['highlight'] as const;
 
-export function useHighlight() {
-  return useQuery({
-    queryKey: HIGHLIGHT_QUERY_KEY,
-    queryFn: () => highlightService.getHighlight(),
-    staleTime: 1000 * 60 * 15, // 15 minutes
-    retry: 2,
-    retryDelay: (attemptIndex) => Math.min(1000 * 1.5 ** attemptIndex, 10000),
-  });
-} 
+const {
+  useQueryHook: useHighlight,
+  prefetchData: prefetchHighlight,
+  invalidateCache: invalidateHighlightCache,
+} = createQueryHook<HighlightResponse>({
+  queryKey: HIGHLIGHT_QUERY_KEY,
+  queryFn: () => highlightService.getHighlight(),
+});
+
+export { useHighlight, prefetchHighlight, invalidateHighlightCache }; 

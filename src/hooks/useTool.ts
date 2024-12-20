@@ -1,14 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
+import { createQueryHook } from './utils/createQueryHook';
 import { toolService } from '@/services/tool.service';
+import { ToolResponse } from '@/types/tool';
 
 export const TOOL_QUERY_KEY = ['tool'] as const;
 
-export function useTool() {
-  return useQuery({
-    queryKey: TOOL_QUERY_KEY,
-    queryFn: () => toolService.getTools(),
-    staleTime: 1000 * 60 * 15, // 15 minutes
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
-  });
-} 
+const {
+  useQueryHook: useTool,
+  prefetchData: prefetchTool,
+  invalidateCache: invalidateToolCache,
+} = createQueryHook<ToolResponse>({
+  queryKey: TOOL_QUERY_KEY,
+  queryFn: () => toolService.getTools(),
+});
+
+export { useTool, prefetchTool, invalidateToolCache }; 

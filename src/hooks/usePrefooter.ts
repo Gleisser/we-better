@@ -1,14 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
+import { createQueryHook } from './utils/createQueryHook';
 import { prefooterService } from '@/services/prefooter.service';
+import { PrefooterResponse } from '@/types/prefooter';
 
 export const PREFOOTER_QUERY_KEY = ['prefooter'] as const;
 
-export function usePrefooter() {
-  return useQuery({
-    queryKey: PREFOOTER_QUERY_KEY,
-    queryFn: () => prefooterService.getPrefooter(),
-    staleTime: 1000 * 60 * 15, // 15 minutes
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
-  });
-} 
+const {
+  useQueryHook: usePrefooter,
+  prefetchData: prefetchPrefooter,
+  invalidateCache: invalidatePrefooterCache,
+} = createQueryHook<PrefooterResponse>({
+  queryKey: PREFOOTER_QUERY_KEY,
+  queryFn: () => prefooterService.getPrefooter(),
+});
+
+export { usePrefooter, prefetchPrefooter, invalidatePrefooterCache }; 

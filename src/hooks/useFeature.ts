@@ -1,14 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
+import { createQueryHook } from './utils/createQueryHook';
 import { featureService } from '@/services/feature.service';
+import { FeaturesResponse } from '@/types/features-response';
 
 export const FEATURE_QUERY_KEY = ['feature'] as const;
 
-export function useFeature() {
-  return useQuery({
-    queryKey: FEATURE_QUERY_KEY,
-    queryFn: () => featureService.getFeatures(),
-    staleTime: 1000 * 60 * 15, // 15 minutes
-    retry: 2,
-    retryDelay: (attemptIndex) => Math.min(1000 * 1.5 ** attemptIndex, 10000),
-  });
-} 
+const {
+  useQueryHook: useFeature,
+  prefetchData: prefetchFeature,
+  invalidateCache: invalidateFeatureCache,
+} = createQueryHook<FeaturesResponse>({
+  queryKey: FEATURE_QUERY_KEY,
+  queryFn: () => featureService.getFeatures(),
+});
+
+export { useFeature, prefetchFeature, invalidateFeatureCache }; 

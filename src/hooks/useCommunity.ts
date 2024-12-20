@@ -1,14 +1,16 @@
-import { useQuery } from '@tanstack/react-query';
+import { createQueryHook } from './utils/createQueryHook';
 import { communityService } from '@/services/community.service';
+import { CommunityResponse } from '@/types/community';
 
 export const COMMUNITY_QUERY_KEY = ['community'] as const;
 
-export function useCommunity() {
-  return useQuery({
-    queryKey: COMMUNITY_QUERY_KEY,
-    queryFn: () => communityService.getCommunity(),
-    staleTime: 1000 * 60 * 15, // 15 minutes
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
-  });
-} 
+const {
+  useQueryHook: useCommunity,
+  prefetchData: prefetchCommunity,
+  invalidateCache: invalidateCommunityCache,
+} = createQueryHook<CommunityResponse>({
+  queryKey: COMMUNITY_QUERY_KEY,
+  queryFn: () => communityService.getCommunity(),
+});
+
+export { useCommunity, prefetchCommunity, invalidateCommunityCache }; 
