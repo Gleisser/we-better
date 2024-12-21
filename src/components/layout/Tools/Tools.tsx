@@ -19,22 +19,57 @@ const Tools = () => {
   const gradientText = data?.data?.title.split(' ')[0];
   const toolName = data?.data?.title.split(' ')[1];
 
-  // Setup Intersection Observer for video container
+  // Cleanup and setup video on tab change
   useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // First pause current video
+    video.pause();
+
+    // Get new video URL
+    const videoUrl = data?.data 
+      ? API_CONFIG.imageBaseURL + activeTab.videoSrc.video[0].url 
+      : activeTab.videoSrc.video[0].url;
+    
+    // Update video source
+    video.src = videoUrl;
+    video.load();
+
+    // Play when metadata is loaded
+    const handleMetadata = () => {
+      if (video) {
+        video.play().catch(() => {
+          // Ignore abort errors
+        });
+      }
+    };
+
+    video.addEventListener('loadedmetadata', handleMetadata);
+
+    return () => {
+      video.removeEventListener('loadedmetadata', handleMetadata);
+    };
+  }, [activeTab.id, data?.data]);
+
+  // Setup Intersection Observer for visibility
+  useEffect(() => {
+    let isSubscribed = true;
+
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && videoRef.current) {
-            const videoId = activeTab.videoSrc.id;
-            if (!loadedVideos.has(videoId)) {
-              const videoUrl = data?.data 
-                ? API_CONFIG.imageBaseURL + activeTab.videoSrc.video[0].url 
-                : activeTab.videoSrc.video[0].url;
-              
-              videoRef.current.src = videoUrl;
-              videoRef.current.load();
-              setLoadedVideos(prev => new Set(prev).add(videoId));
+          const video = videoRef.current;
+          if (!video || !isSubscribed) return;
+
+          if (entry.isIntersecting) {
+            if (video.paused && video.readyState >= 2) {
+              video.play().catch(() => {
+                // Ignore abort errors
+              });
             }
+          } else {
+            video.pause();
           }
         });
       },
@@ -49,25 +84,10 @@ const Tools = () => {
     }
 
     return () => {
+      isSubscribed = false;
       observerRef.current?.disconnect();
     };
-  }, [activeTab, data?.data, loadedVideos]);
-
-  // Preload next video when tab changes
-  useEffect(() => {
-    if (videoRef.current) {
-      const videoId = activeTab.videoSrc.id;
-      if (!loadedVideos.has(videoId)) {
-        const videoUrl = data?.data 
-          ? API_CONFIG.imageBaseURL + activeTab.videoSrc.video[0].url 
-          : activeTab.videoSrc.video[0].url;
-        
-        videoRef.current.src = videoUrl;
-        videoRef.current.load();
-        setLoadedVideos(prev => new Set(prev).add(videoId));
-      }
-    }
-  }, [activeTab, data?.data, loadedVideos]);
+  }, []);
 
   if (data?.isLoading && !data?.showFallback) {
     return <ToolsSkeleton />;
