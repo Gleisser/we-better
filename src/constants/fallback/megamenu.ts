@@ -80,5 +80,5 @@ export const RESOURCES_MEGA_MENU_FALLBACK = [
       }
     },
   ];
-
 export default MEGA_MENU_FALLBACK;
+

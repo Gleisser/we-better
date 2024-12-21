@@ -4,11 +4,11 @@ export const CSP_POLICY = {
     "'self'",
     "'unsafe-inline'",
     "'unsafe-eval'",
-    "https://*.leonardo.ai",
   ],
   'style-src': [
     "'self'",
     "'unsafe-inline'",
+    "https://fonts.googleapis.com",
   ],
   'img-src': [
     "'self'",
@@ -28,7 +28,8 @@ export const CSP_POLICY = {
   'font-src': [
     "'self'",
     "data:",
-    "https://fonts.gstatic.com"
+    "https://fonts.gstatic.com",
+    "https://fonts.googleapis.com"
   ],
   'frame-src': ["'self'"],
   'worker-src': ["'self'", "blob:"],
