@@ -1,56 +1,8 @@
 import { usePartner } from '@/hooks/usePartner';
 import styles from './Partners.module.css';
-import { Partner } from '@/types/partner';
 import { API_CONFIG } from '@/lib/api-config';
 import { renderHighlightedText } from '@/utils/textFormatting';
-
-const PARTNERS : Partner = {
-  id: 1,
-  documentId: '1',
-  title: 'Our [highlight]Partners[/highlight]',
-  brands: [
-    {
-      id: 1,
-      documentId: '1',
-      name: 'Lambda',
-      logo: {
-        img: {
-            url: '/assets/images/partners/partner_1.svg',
-        },
-      },
-    },
-  {
-    id: 2,
-    documentId: '2',
-    name: 'AWS',
-    logo: {
-      img: {
-        url: '/assets/images/partners/partner_2.svg',
-      },
-    },
-  },
-  {
-    id: 3,
-    documentId: '3',
-    name: 'Dedium',
-    logo: {
-      img: {
-        url: '/assets/images/partners/partner_3.svg',
-      },
-    },
-  },
-  {
-    id: 4,
-    documentId: '4',
-    name: 'IQ',
-    logo: {
-      img: {
-        url: '/assets/images/partners/partner_4.svg',
-      },
-    },
-  }
-]} as const;
-
+import { PARTNERS_FALLBACK } from '@/constants/fallback';
 const defaultTitle = (
   <>
     Our <span className={styles.highlight}>Partners</span>
@@ -59,13 +11,19 @@ const defaultTitle = (
 
 const Partners = () => {
   const { data } = usePartner();
-  const partners = data?.data || PARTNERS;
+  const partners = data?.data || PARTNERS_FALLBACK;
   const isAPI = data !== undefined;
   
   return (
-    <section className={styles.partnersContainer}>
+    <section 
+      className={styles.partnersContainer}
+      aria-labelledby="partners-title"
+    >
       <div className={styles.partnersContent}>
-        <h2 className={styles.title}>
+        <h2 
+          className={styles.title}
+          id="partners-title"
+        >
           {renderHighlightedText({
             text: partners?.title,
             highlightClassName: styles.highlight,
@@ -73,13 +31,23 @@ const Partners = () => {
           })}
         </h2>
         
-        <div className={styles.logoGrid}>
+        <div 
+          className={styles.logoGrid}
+          role="region"
+          aria-label="Partner logos"
+        >
           {partners.brands.map((brand) => (
-            <div key={brand.id} className={styles.logoContainer}>
+            <div 
+              key={brand.id} 
+              className={styles.logoContainer}
+              role="article"
+            >
               <img
                 src={isAPI ? API_CONFIG.imageBaseURL + brand.logo.img.url : brand.logo.img.url}
                 alt={`${brand.name} logo`}
                 className={`${styles.logo} ${brand.name === 'Dedium' ? styles.largeLogo : ''}`}
+                loading="lazy"
+                decoding="async"
               />
             </div>
           ))}

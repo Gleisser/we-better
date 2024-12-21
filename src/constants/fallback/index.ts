@@ -8,3 +8,4 @@ export { default as SHOWCASE_FALLBACK } from './showcase';
 export { default as TESTIMONY_FALLBACK } from './testimony';
 export { default as TOOLS_FALLBACK } from './tools';
 export { default as FOOTER_FALLBACK } from './footer';
+export { default as PARTNERS_FALLBACK } from './partner';

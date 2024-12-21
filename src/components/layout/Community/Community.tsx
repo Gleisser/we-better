@@ -86,15 +86,23 @@ const Community = () => {
   }, []);
 
   return (
-    <section className={styles.communityContainer}>
+    <section 
+      className={styles.communityContainer}
+      aria-labelledby="community-title"
+    >
       <div className={styles.communityContent}>
-        {/* Left Column */}
         <div className={styles.leftColumn}>
-          <div className={styles.discordLabel}>
+          <div 
+            className={styles.discordLabel}
+            aria-label="Discord server ranking"
+          >
             {community?.data?.label || '#3 Discord Server in the World'}
           </div>
           
-          <h2 className={styles.title}>
+          <h2 
+            className={styles.title}
+            id="community-title"
+          >
             {renderHighlightedText({
               text: community?.data?.title,
               highlightClassName: styles.highlight,
@@ -110,21 +118,30 @@ const Community = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             className={styles.discordButton}
+            aria-label="Join our Discord community"
           >
-            <DiscordIcon className={styles.discordIcon} />
+            <DiscordIcon className={styles.discordIcon} aria-hidden="true" />
             {community?.data?.buttonText || 'Join Discord Server'}
           </a>
         </div>
 
-        {/* Right Column - Profile Images */}
-        <div className={styles.rightColumn}>
-          <div className={styles.profileColumns} ref={profilesRef}>
+        <div 
+          className={styles.rightColumn}
+          role="presentation"
+        >
+          <div 
+            className={styles.profileColumns} 
+            ref={profilesRef}
+            aria-hidden="true"
+          >
             {INITIAL_PROFILES.map((profile) => (
               <div key={profile.id} className={styles.profileColumn}>
                 <img 
                   src={profile.src}
                   alt={profile.alt}
                   className={styles.profileImage}
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             ))}
