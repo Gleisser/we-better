@@ -74,39 +74,59 @@ const Tools = () => {
   }
 
   return (
-    <section className={styles.toolsContainer}>
+    <section 
+      className={styles.toolsContainer}
+      aria-labelledby="tools-title"
+    >
       <div className={styles.toolsContent}>
-        {/* Title Section */}
         <div className={styles.titleContainer}>
-          <h2 className={styles.mainTitle}>
+          <h2 
+            className={styles.mainTitle}
+            id="tools-title"
+          >
             <span className={styles.gradientText}>{gradientText || 'WeBetter'}</span> {toolName || 'Toolkit'}
-            <ToolIcon className={styles.toolIcon} />
+            <ToolIcon className={styles.toolIcon} aria-hidden="true" />
           </h2>
         </div>
 
         <div className={styles.contentWrapper}>
-          {/* Tabs Navigation */}
-          <div className={styles.tabsContainer}>
+          <div 
+            className={styles.tabsContainer}
+            role="tablist"
+            aria-label="Tool categories"
+          >
             {tabs.map((tool) => (
               <button
                 key={tool.id}
                 onClick={() => setActiveTab(tool)}
                 className={`${styles.tab} ${tool.id === activeTab.id ? styles.activeTab : ''}`}
+                role="tab"
+                aria-selected={tool.id === activeTab.id}
+                aria-controls={`panel-${tool.id}`}
+                id={`tab-${tool.id}`}
               >
                 {tool.title}
               </button>
             ))}
           </div>
 
-          {/* Content Section */}
-          <div className={styles.contentContainer}>
+          <div 
+            className={styles.contentContainer}
+            role="tabpanel"
+            aria-labelledby={`tab-${activeTab.id}`}
+            id={`panel-${activeTab.id}`}
+          >
             <div className={styles.textContent}>
               <h3 className={styles.title}>{activeTab.title}</h3>
-              <h3 className={styles.subtitle}>{activeTab.subtitle}</h3>
+              <h4 className={styles.subtitle}>{activeTab.subtitle}</h4>
               <p className={styles.description}>{activeTab.description}</p>
             </div>
 
-            <div className={styles.videoContainer} ref={containerRef}>
+            <div 
+              className={styles.videoContainer} 
+              ref={containerRef}
+              role="presentation"
+            >
               <video
                 ref={videoRef}
                 autoPlay
@@ -116,6 +136,7 @@ const Tools = () => {
                 className={styles.video}
                 key={activeTab.videoSrc.id}
                 poster={`/assets/images/tools/${activeTab.id}-poster.webp`}
+                aria-hidden="true"
               >
                 {/* Source will be set dynamically when in view */}
               </video>

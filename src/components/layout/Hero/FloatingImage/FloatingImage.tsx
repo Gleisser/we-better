@@ -1,14 +1,8 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { forwardRef } from 'react';
+import { FloatingImageProps } from './types';
 
-interface Props {
-  src: string;
-  alt: string;
-  className?: string;
-  observerRef?: React.RefObject<IntersectionObserver>;
-}
-
-const FloatingImage = forwardRef<HTMLImageElement, Props>(({ src, alt, className = '', observerRef }, ref) => {
+const FloatingImage = forwardRef<HTMLImageElement, FloatingImageProps>(({ src, alt, className = '', observerRef }, ref) => {
   const { scrollY } = useScroll();
   
   // Extract position information from className
@@ -64,6 +58,8 @@ const FloatingImage = forwardRef<HTMLImageElement, Props>(({ src, alt, className
         ease: "easeOut",
         delay: 0.2
       }}
+      role="presentation"
+      aria-hidden="true"
     >
       <div className="relative w-[250px] h-[250px] group">
         <motion.div 
@@ -86,6 +82,7 @@ const FloatingImage = forwardRef<HTMLImageElement, Props>(({ src, alt, className
             alt={alt}
             className="relative w-full h-full object-cover rounded-3xl shadow-2xl"
             loading="lazy"
+            decoding="async"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
             onLoad={(e) => {

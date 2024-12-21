@@ -23,6 +23,7 @@ export const Hero = () => {
   const { data, error, isFetching } = useHero();
   const [isMobile, setIsMobile] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
   const observerRef = useRef<IntersectionObserver | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const mainImageRef = useRef<HTMLImageElement | null>(null);
@@ -189,13 +190,16 @@ export const Hero = () => {
         <div aria-hidden="true">
           {heroData?.images.map((image, index) => (
             <FloatingImage
-              key={index}
+              key={`floating-image-${index}`}
               src={image.src}
               alt=""
               className={`${styles.floatingImage} ${HERO_FALLBACK.images[index].className} z-40`}
               ref={el => {
                 imageRefs.current[index] = el;
-                if (el) observerRef.current?.observe(el);
+                if (el && !loadedImages.has(index)) {
+                  observerRef.current?.observe(el);
+                  setLoadedImages(prev => new Set(prev).add(index));
+                }
               }}
               observerRef={observerRef}
             />

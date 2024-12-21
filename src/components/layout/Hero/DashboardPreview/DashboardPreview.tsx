@@ -11,7 +11,11 @@ const DashboardPreview = forwardRef<HTMLImageElement, Props>(({ src, alt, observ
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto group">
+    <div 
+      className="relative w-full max-w-4xl mx-auto group"
+      role="presentation"
+      aria-hidden="true"
+    >
       <motion.div 
         className="absolute -inset-4 bg-gradient-to-r from-white/5 to-white/10 rounded-[2rem] backdrop-blur-[2px] border border-white/20"
         whileHover={{ scale: 1.02 }}
@@ -32,6 +36,7 @@ const DashboardPreview = forwardRef<HTMLImageElement, Props>(({ src, alt, observ
           className="relative w-full h-full object-cover opacity-90 transition-opacity duration-500"
           style={{ opacity: isImageLoaded ? 0.9 : 0 }}
           loading="eager"
+          decoding="async"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2 }}
           initial={{ opacity: 0 }}

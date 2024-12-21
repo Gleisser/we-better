@@ -168,20 +168,38 @@ const Showcase = () => {
   }
 
   return (
-    <section className={styles.showcaseContainer}>
+    <section 
+      className={styles.showcaseContainer}
+      aria-labelledby="showcase-title"
+    >
       <div className={styles.showcaseContent}>
         <div className={styles.header}>
-          <h2 className={styles.title}>
+          <h2 
+            className={styles.title}
+            id="showcase-title"
+          >
             <span>Unveil New Creative Horizons</span>
             <span>with <span className={styles.gradientText}>Fine-tuned Models</span></span>
           </h2>
           {!isMobile && (
-            <div className={styles.navigation}>
-              <button onClick={prevPage} className={styles.navButton}>
-                <ShowcaseArrowIcon className={styles.navIcon} /> 
+            <div 
+              className={styles.navigation}
+              role="navigation"
+              aria-label="Showcase navigation"
+            >
+              <button 
+                onClick={prevPage} 
+                className={styles.navButton}
+                aria-label="Previous showcase"
+              >
+                <ShowcaseArrowIcon className={styles.navIcon} aria-hidden="true" /> 
               </button>
-              <button onClick={nextPage} className={styles.navButton}>
-                <ShowcaseArrowRightIcon className={styles.navIcon} />
+              <button 
+                onClick={nextPage} 
+                className={styles.navButton}
+                aria-label="Next showcase"
+              >
+                <ShowcaseArrowRightIcon className={styles.navIcon} aria-hidden="true" />
               </button>
             </div>
           )}
@@ -205,11 +223,15 @@ const Showcase = () => {
             dragElastic={1}
             onDragEnd={handleDragEnd}
             whileDrag={{ cursor: "grabbing" }}
+            role="region"
+            aria-label="Showcase items"
           >
             {currentItems.map((item, index) => (
               <div
                 key={item.id}
                 className={styles.item}
+                role="article"
+                aria-label={item.title}
                 onMouseEnter={() => setHoveredItem(item.id)}
                 onMouseLeave={() => {
                   setHoveredItem(null);
@@ -238,11 +260,8 @@ const Showcase = () => {
                     }
                     alt={item.images[hoveredItem === item.id ? imageIndex : 0].alt}
                     className={styles.image}
-                    loading="lazy"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = item.images[0].src;
-                    }}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    decoding="async"
                   />
                 </div>
                 <h3 className={styles.itemTitle}>{item.title}</h3>
@@ -253,12 +272,24 @@ const Showcase = () => {
         </AnimatePresence>
 
         {isMobile && (
-          <div className={styles.navigation}>
-            <button onClick={prevPage} className={styles.navButton}>
-              <ShowcaseMobileArrowIcon className={styles.navIcon} /> 
+          <div 
+            className={styles.navigation}
+            role="navigation"
+            aria-label="Mobile showcase navigation"
+          >
+            <button 
+              onClick={prevPage} 
+              className={styles.navButton}
+              aria-label="Previous showcase"
+            >
+              <ShowcaseMobileArrowIcon className={styles.navIcon} aria-hidden="true" /> 
             </button>
-            <button onClick={nextPage} className={styles.navButton}>
-              <ShowcaseMobileArrowRightIcon className={styles.navIcon} />
+            <button 
+              onClick={nextPage} 
+              className={styles.navButton}
+              aria-label="Next showcase"
+            >
+              <ShowcaseMobileArrowRightIcon className={styles.navIcon} aria-hidden="true" />
             </button>
           </div>
         )}

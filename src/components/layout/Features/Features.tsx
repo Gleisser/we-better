@@ -24,7 +24,6 @@ const Features = () => {
     return () => clearTimeout(timer);
   }, [isLoading, error, data]);
 
-  // Show skeleton while loading
   if (isLoading && !showFallback) {
     return <FeaturesSkeleton />;
   }
@@ -37,18 +36,33 @@ const Features = () => {
   const title = data?.data?.subtext;
 
   return (
-    <section className={styles.featuresContainer}>
-      <div>
-        <div className={styles.featuresCard}>
+    <section 
+      className={styles.featuresContainer}
+      aria-labelledby="features-title"
+    >
+      <div role="main">
+        <div 
+          className={styles.featuresCard}
+          role="list"
+          aria-label="Feature cards"
+        >
           {cards.map((card, index) => (
-            <FeaturesCard 
-              key={card.id || index} 
-              card={card} 
-              index={index} 
-            />
+            <div 
+              key={card.id || index}
+              role="listitem"
+            >
+              <FeaturesCard 
+                card={card} 
+                index={index} 
+              />
+            </div>
           ))}
         </div>
-        <Featured brands={brands} title={title} />
+        <Featured 
+          brands={brands} 
+          title={title}
+          aria-label="Featured brands"
+        />
       </div>
     </section>
   );

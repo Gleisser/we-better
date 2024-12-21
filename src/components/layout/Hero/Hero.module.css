@@ -59,11 +59,20 @@
 .floatingImage {
   @apply absolute w-auto h-auto max-w-[300px] sm:max-w-[400px];
   z-index: 4 !important;
+  position: absolute;
+  
+  /* First floating image (left side) */
   &:first-child {
-    top: 8rem;
+    left: -10%;
+    top: -120px; /* Adjust this value to move it up */
+    transform: translateY(0);
   }
+  
+  /* Last floating image (right side) */
   &:last-child {
+    right: -10%;
     top: 8rem;
+    transform: translateY(0);
   }
 }
 

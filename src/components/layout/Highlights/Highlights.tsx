@@ -86,44 +86,60 @@ const Highlights = () => {
   }
 
   return (
-    <section className={styles.highlightsContainer}>
-      <h2 className={styles.highlightsTitle}>
-        <span>{data?.data?.title || 'Use Leonardo today for'}</span>
-        <span className={styles.gradientText}>{highlights[activeIndex]?.title}</span>
-      </h2>
-      <div className={styles.sliderContainer}>
-        {highlights.map((highlight, index) => {
-          const imageSrc = data?.data?.slides 
-            ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url 
-            : highlight?.image?.img?.formats?.large?.url;
+    <section 
+      className={styles.highlightsContainer}
+      aria-labelledby="highlights-title"
+    >
+      <div className={styles.highlightsContent}>
+        <h2 
+          className={styles.highlightsTitle}
+          id="highlights-title"
+        >
+          <span>{data?.data?.title || 'Use Leonardo today for'}</span>
+          <span className={styles.gradientText}>{highlights[activeIndex]?.title}</span>
+        </h2>
+        <div 
+          className={styles.sliderContainer}
+          role="region"
+          aria-label="Highlights slider"
+        >
+          {highlights.map((highlight, index) => {
+            const imageSrc = data?.data?.slides 
+              ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url 
+              : highlight?.image?.img?.formats?.large?.url;
 
-          return (
-            <div 
-              key={highlight.id}
-              className={`${styles.slide} ${index === activeIndex ? styles.activeSlide : ''}`}
-            >
-              <img
-                ref={el => {
-                  imageRefs.current[index] = el;
-                  if (el && !loadedImages.has(index)) {
-                    observerRef.current?.observe(el);
+            return (
+              <div 
+                key={highlight.id}
+                className={`${styles.slide} ${index === activeIndex ? styles.activeSlide : ''}`}
+                role="tabpanel"
+                aria-hidden={index !== activeIndex}
+                aria-label={`Slide ${index + 1} of ${highlights.length}`}
+              >
+                <img
+                  ref={el => {
+                    imageRefs.current[index] = el;
+                    if (el && !loadedImages.has(index)) {
+                      observerRef.current?.observe(el);
+                    }
+                  }}
+                  src={index === activeIndex || loadedImages.has(index) 
+                    ? imageSrc 
+                    : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
                   }
-                }}
-                src={index === activeIndex || loadedImages.has(index) 
-                  ? imageSrc 
-                  : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-                }
-                data-src={imageSrc}
-                alt={highlight.title}
-                className={styles.slideImage}
-                loading="lazy"
-                onLoad={() => {
-                  setLoadedImages(prev => new Set(prev).add(index));
-                }}
-              />
-            </div>
-          );
-        })}
+                  data-src={imageSrc}
+                  alt={highlight.title}
+                  className={styles.slideImage}
+                  loading={index === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  onLoad={() => {
+                    setLoadedImages(prev => new Set(prev).add(index));
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

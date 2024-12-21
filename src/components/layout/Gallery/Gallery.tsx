@@ -269,22 +269,33 @@ const Gallery = () => {
   
 
   return (
-    <section className={styles.galleryContainer}>
+    <section 
+      className={styles.galleryContainer}
+      aria-labelledby="gallery-title"
+    >
       <div className={styles.galleryContent}>
         <div className={styles.header}>
-          <h2 className={styles.title}>
+          <h2 
+            className={styles.title}
+            id="gallery-title"
+          >
             <span className={styles.gradientText}>Platform</span> Gallery
-            <GalleryIcon className={styles.paintIcon} />
+            <GalleryIcon className={styles.paintIcon} aria-hidden="true" />
           </h2>
         </div>
 
         {isMobile ? (
-          <div className={styles.mobileGallery}>
+          <div 
+            className={styles.mobileGallery}
+            role="region"
+            aria-label="Mobile gallery navigation"
+          >
             <button 
               onClick={prevImage} 
               className={`${styles.mobileNavButton} ${styles.prevButton}`}
+              aria-label="Previous image"
             >
-              <MobileNavIcon className={styles.navIcon} />
+              <MobileNavIcon className={styles.navIcon} aria-hidden="true" />
             </button>
             
             <div className={styles.mobileImageContainer}>
@@ -295,31 +306,40 @@ const Gallery = () => {
                 alt={galleryImages[currentMobileIndex]?.alt}
                 className={styles.mobileImage}
                 loading="lazy"
+                decoding="async"
               />
             </div>
 
             <button 
               onClick={nextImage} 
               className={`${styles.mobileNavButton} ${styles.nextButton}`}
+              aria-label="Next image"
             >
-              <MobileNavNextIcon className={styles.navIcon} />
+              <MobileNavNextIcon className={styles.navIcon} aria-hidden="true" />
             </button>
           </div>
         ) : (
           <>
-            <div className={styles.masonryGrid}>
+            <div 
+              className={styles.masonryGrid}
+              role="region"
+              aria-label="Gallery grid"
+            >
               {visibleImages.map((image, index) => (
                 <div 
                   key={image?.id} 
                   className={`${styles.masonryItem} ${styles[image?.size || 'large']}`}
+                  role="img"
+                  aria-label={image?.alt}
                 >
                   <img
                     ref={el => imageRefs.current[index] = el}
-                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" // Tiny placeholder
+                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
                     data-src={image?.src}
                     alt={image?.alt}
                     className={styles.image}
                     loading="lazy"
+                    decoding="async"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = image?.src || '';
@@ -334,6 +354,7 @@ const Gallery = () => {
                 <button 
                   onClick={handleLoadMore}
                   className={styles.loadMoreButton}
+                  aria-label="Load more images"
                 >
                   Load More
                 </button>
