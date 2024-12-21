@@ -49,7 +49,6 @@
 .headerNav {
   display: flex;
   align-items: center;
-  gap: 1rem;
   margin: 0 auto;
   padding-right: 200px;
 }
@@ -207,4 +206,14 @@
     padding: 10px 24px;
     font-size: 14px;
   }
+}
+
+/* Add these new styles */
+.navList {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }

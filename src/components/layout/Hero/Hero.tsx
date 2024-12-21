@@ -125,25 +125,41 @@ export const Hero = () => {
   }
 
   return (
-    <div className={styles.heroContainer}>
-      <HeroBackground />
+    <section 
+      className={styles.heroContainer}
+      aria-labelledby="hero-title"
+    >
+      <HeroBackground aria-hidden="true" />
       <motion.div 
         className={styles.contentWrapper}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className={styles.title}>
+        <h1 className={styles.title} id="hero-title">
           <span>{heroData?.title}</span>
         </h1>
-        <h2 className={styles.subtitle}>{heroData?.subtitle}</h2>
-        <div className={styles.ctaContainer}>
-          <CtaButton text={heroData?.cta_text} />
-          <SecondaryCtaButton text={heroData?.secondary_cta_text} />
+        <p className={styles.subtitle}>{heroData?.subtitle}</p>
+        <div 
+          className={styles.ctaContainer}
+          role="group" 
+          aria-label="Call to action"
+        >
+          <CtaButton 
+            text={heroData?.cta_text}
+            aria-label={heroData?.cta_text} 
+          />
+          <SecondaryCtaButton 
+            text={heroData?.secondary_cta_text}
+            aria-label={heroData?.secondary_cta_text}
+          />
         </div>
       </motion.div>
 
-      <div className={styles.previewContainer}>
+      <div 
+        className={styles.previewContainer}
+        role="presentation"
+      >
         <div className={styles.mainPreview}>
           {isMobile ? (
             <motion.img 
@@ -153,7 +169,7 @@ export const Hero = () => {
               }}
               src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
               data-src={heroData?.main_image_mobile?.src}
-              alt="Leonardo.AI Mobile App"
+              alt="Leonardo.AI Mobile App Interface"
               className={styles.mobilePreviewImage}
               loading="lazy"
               initial={{ opacity: 0 }}
@@ -163,27 +179,30 @@ export const Hero = () => {
           ) : (
             <DashboardPreview 
               src={heroData?.main_image?.src} 
-              alt={heroData?.main_image?.alt}
+              alt={heroData?.main_image?.alt || "Leonardo.AI Dashboard Interface"}
               ref={mainImageRef}
               observerRef={observerRef}
             />
           )}
         </div>
-        {heroData?.images.map((image, index) => (
-          <FloatingImage
-            key={index}
-            src={image.src}
-            alt={image.alt}
-            className={`${styles.floatingImage} ${HERO_FALLBACK.images[index].className} z-40`}
-            ref={el => {
-              imageRefs.current[index] = el;
-              if (el) observerRef.current?.observe(el);
-            }}
-            observerRef={observerRef}
-          />
-        ))}
+
+        <div aria-hidden="true">
+          {heroData?.images.map((image, index) => (
+            <FloatingImage
+              key={index}
+              src={image.src}
+              alt=""
+              className={`${styles.floatingImage} ${HERO_FALLBACK.images[index].className} z-40`}
+              ref={el => {
+                imageRefs.current[index] = el;
+                if (el) observerRef.current?.observe(el);
+              }}
+              observerRef={observerRef}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 
