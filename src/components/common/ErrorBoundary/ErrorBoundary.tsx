@@ -3,6 +3,9 @@ import styles from './ErrorBoundary.module.css';
 
 interface Props {
   children: React.ReactNode;
+  fallback?: React.ReactNode;
+  section?: string;
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
 }
 
 interface State {
@@ -20,24 +23,37 @@ class ErrorBoundary extends React.Component<Props, State> {
     return { hasError: true, error };
   }
 
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error(`Error in ${this.props.section || 'component'}:`, error);
+    this.props.onError?.(error, errorInfo);
+  }
+
   render() {
     if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
       return (
         <div className={styles.errorContainer}>
           <div className={styles.errorBackground} />
           <div className={styles.errorContent}>
-            <img 
-              src="/assets/images/error/error.webp" 
-              alt="Error" 
+            <img
+              src="/assets/images/error.webp"
+              alt="Error"
               className={styles.errorImage}
             />
-            <h1 className={styles.errorTitle}>Oops! Something went wrong</h1>
+            <h1 className={styles.errorTitle}>
+              {this.props.section 
+                ? `${this.props.section} is currently unavailable`
+                : 'Something went wrong'
+              }
+            </h1>
             <p className={styles.errorMessage}>
-              Our team of AI robots is working hard to fix this issue.
-              Please try again later!
+              {this.state.error?.message || 'Please try again later'}
             </p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className={styles.refreshButton}
             >
               Try Again
