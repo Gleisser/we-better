@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { RateLimiter } from './rate-limiter';
+import { ENV_CONFIG } from '@/config/env.config';
 
 // Strapi's response structure
 interface StrapiResponse<T> {
@@ -25,16 +26,16 @@ class ApiClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:1337/api',
+      baseURL: ENV_CONFIG.API.URL,
       headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
+        Authorization: `Bearer ${ENV_CONFIG.API.TOKEN}`,
       },
+      timeout: ENV_CONFIG.API.TIMEOUT,
     });
 
     this.rateLimiter = new RateLimiter({
-      maxRequests: 50,
-      timeWindow: 60000,
-      retryAfter: 1000
+      maxRequests: ENV_CONFIG.RATE_LIMIT.MAX_REQUESTS,
+      timeWindow: ENV_CONFIG.RATE_LIMIT.WINDOW,
     });
 
     this.setupInterceptors();
