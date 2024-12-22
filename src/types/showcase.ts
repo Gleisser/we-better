@@ -1,4 +1,5 @@
 import { ThumbnailImage } from '@/types/common/image';
+import { APIResponse } from '@/types/common/meta';
 
 export interface Belt {
     documentId: string;
@@ -16,7 +17,4 @@ export interface Showcase {
     belts: Belt[];
 }
 
-export interface ShowcaseResponse {
-    data: Showcase;
-    meta: Record<string, unknown>;
-}
+export type ShowcaseResponse = APIResponse<Showcase>;

@@ -1,3 +1,5 @@
+import { APIResponse } from "@/types/common/meta";
+
 export interface Community {
     documentId: string;
     id: number;
@@ -6,7 +8,4 @@ export interface Community {
     buttonText: string;
 }
 
-export interface CommunityResponse {
-    data: Community;
-    meta: Record<string, unknown>;
-}
+export type CommunityResponse = APIResponse<Community>;

@@ -1,4 +1,5 @@
 import { TopLevelImage } from "./common/image";
+import { APIResponse } from "@/types/common/meta";
 
 export interface TestimonyItem {
     documentId: string;
@@ -16,7 +17,4 @@ export interface Testimony {
     testimonies: TestimonyItem[];
 }
 
-export type TestimonyResponse = {
-    data: Testimony;
-    meta: Record<string, unknown>;
-}
+export type TestimonyResponse = APIResponse<Testimony>;

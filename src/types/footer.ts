@@ -1,39 +1,52 @@
 import { TopLevelImage } from "./common/image";
 import { MenuLink } from "./common/menulink";
+import { APIResponse, Meta } from "./common/meta";
 
-export interface AppStore {
-    id: number;
-    title: string;
-    images: TopLevelImage[];
+// Base interface for timestamps
+interface TimeStamps {
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
 }
 
-export interface SocialLink {
-    id: number;
-    title: string;
-    logos: TopLevelImage[];
+// App store interface
+export interface AppStore extends TimeStamps {
+  id: number;
+  documentId: string;
+  title: string;
+  images: TopLevelImage[];
 }
 
-export interface MenuList {
-    id: number;
-    Title: string;
-    Type: string;
-    menu_links: MenuLink[];
+// Social media link interface
+export interface SocialLink extends TimeStamps {
+  id: number;
+  documentId: string;
+  title: string;
+  logos: TopLevelImage[];
 }
 
-export interface Footer {
-    id: number;
-    documentId: string;
-    title: string;
-    logo: TopLevelImage;
-    logoDescription: string;
-    copyright: string;
-    footer_links: MenuLink[];
-    app_stores: AppStore[];
-    social_medias: SocialLink[];
-    menu_lists: MenuList[];
+// Menu list interface
+export interface MenuList extends TimeStamps {
+  id: number;
+  documentId: string;
+  Title: string;
+  Type: string;
+  menu_links: MenuLink[];
 }
 
-export interface FooterResponse {
-    data: Footer;
-    meta: Record<string, unknown>;
+// Main footer interface
+export interface Footer extends TimeStamps {
+  id: number;
+  documentId: string;
+  title: string;
+  logo: TopLevelImage;
+  logoDescription: string;
+  copyright: string;
+  footer_links: MenuLink[];
+  app_stores: AppStore[];
+  social_medias: SocialLink[];
+  menu_lists: MenuList[];
 }
+
+// API response wrapper
+export type FooterResponse = APIResponse<Footer>;

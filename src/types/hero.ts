@@ -1,3 +1,5 @@
+import { APIResponse } from '@/types/common/meta';
+
 export interface HeroImage {
   id: number;
   documentId: string;
@@ -23,7 +25,4 @@ export interface Hero {
   main_image: HeroImage;
 }
 
-export interface HeroResponse {
-  data: Hero;
-  meta: Record<string, unknown>;
-} 
+export type HeroResponse = APIResponse<Hero>; 

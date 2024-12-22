@@ -1,3 +1,5 @@
+import { APIResponse } from "@/types/common/meta";
+
 export interface ToolVideoSrc {
     id: string;
     name: string;
@@ -20,7 +22,4 @@ export interface Tool {
     tabs: ToolTab[];
 }
 
-export interface ToolResponse {
-    data: Tool;
-    meta: Record<string, unknown>;
-} 
+export type ToolResponse = APIResponse<Tool>; 

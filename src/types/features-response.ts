@@ -1,3 +1,5 @@
+import { APIResponse } from '@/types/common/meta';
+
 export interface Link {
     documentId: string;
     id: number;
@@ -35,7 +37,4 @@ export interface Features {
     brands: Brand[];
 }
 
-export interface FeaturesResponse {
-    data: Features;
-    meta: Record<string, unknown>;
-} 
+export type FeaturesResponse = APIResponse<Features>; 

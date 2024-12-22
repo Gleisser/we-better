@@ -1,11 +1,7 @@
-import { MenuBlogPost } from "../MegaMenu/types";
-import { MenuLink } from "../MegaMenu/types";
+import { MegaMenu } from "@/types/menu";
 
 export interface SolutionsMegaMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  menuData?: {
-    menu_links?: MenuLink[];
-    menu_blog_post?: MenuBlogPost;
-  };
+  menuData?: MegaMenu;
 } 
