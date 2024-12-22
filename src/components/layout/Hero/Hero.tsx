@@ -137,10 +137,15 @@ export const Hero = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className={styles.title} id="hero-title">
+        <h1 
+          className={styles.title}
+          id="hero-title"
+        >
           <span>{heroData?.title}</span>
         </h1>
-        <p className={styles.subtitle}>{heroData?.subtitle}</p>
+        <p className={styles.subtitle}>
+          {heroData?.subtitle}
+        </p>
         <div 
           className={styles.ctaContainer}
           role="group" 

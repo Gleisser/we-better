@@ -1,7 +1,15 @@
 import { API_CONFIG } from '@/lib/api-config';
 import { Brand } from '@/types/features-response';
 
-const Featured = ({ brands, title, ...props }: { brands: Brand[], title: string | undefined }) => {
+interface FeaturedProps extends React.HTMLAttributes<HTMLDivElement> {
+  brands: Brand[];
+  title: string | undefined;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const Featured = ({ brands, title, headingLevel = 'h2', ...props }: FeaturedProps) => {
+  const HeadingTag = headingLevel;
+  
   const fallbackBrands = [
     {
       name: 'Fortune',
@@ -62,12 +70,12 @@ const Featured = ({ brands, title, ...props }: { brands: Brand[], title: string 
       {...props}
     >
       <div className="max-w-7xl mx-auto">
-        <h4 
-          className="text-center text-white/50 text-lg tracking-wider mb-8"
+        <HeadingTag 
+          className="text-center text-white/50 text-lg tracking-wider mb-8 font-plus-jakarta"
           id="featured-brands"
         >
           {title ? title : 'As Featured in'}
-        </h4>
+        </HeadingTag>
         <div 
           className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center"
           role="list"

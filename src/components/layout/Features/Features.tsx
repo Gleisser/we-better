@@ -41,16 +41,19 @@ const Features = () => {
       aria-labelledby="features-title"
     >
       <div role="main">
-        <div 
-          className={styles.featuresCard}
-          role="list"
-          aria-label="Feature cards"
+        <h2 
+          className={styles.sectionTitle}
+          id="features-title"
         >
+          {/* Main section title */}
+        </h2>
+        
+        <div className={styles.featuresCard}>
           {cards.map((card, index) => (
-            <div 
-              key={card.id || index}
-              role="listitem"
-            >
+            <div key={card.id || index}>
+              <h3 className={styles.cardTitle}>
+                {card.title}
+              </h3>
               <FeaturesCard 
                 card={card} 
                 index={index} 
@@ -58,10 +61,11 @@ const Features = () => {
             </div>
           ))}
         </div>
+
         <Featured 
           brands={brands} 
           title={title}
-          aria-label="Featured brands"
+          headingLevel="h3"
         />
       </div>
     </section>

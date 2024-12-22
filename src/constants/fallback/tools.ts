@@ -1,18 +1,7 @@
-export type Tool = {
-  id: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  videoSrc: {
-    id: string;
-    url: string;
-    video: {
-      url: string;
-    }[]
-  };
-};
+import { ToolTab } from "@/types/tool";
 
-export const TOOLS_FALLBACK: Tool[] = [
+
+export const TOOLS_FALLBACK: ToolTab[] = [
   {
     id: "image-generation",
     title: "Image Generation",
@@ -20,7 +9,7 @@ export const TOOLS_FALLBACK: Tool[] = [
     description: "Take creativity a step further with the transformative power of our Image Generation tool. It’s not just about bringing your concepts to life — redefine the impossible. From beginners to professionals, we offer a spectrum of settings that can be intuitively tailored to your needs. Discover an unprecedented fusion of simplicity and power, designed to cater to creative minds at all levels.",
     videoSrc: {
       id: "image-generation",
-      url: "/assets/videos/Image-Generation.webm",
+      name: "Image Generation",
       video: [{
         url: "/assets/videos/Image-Generation.webm"
       }]
@@ -33,7 +22,7 @@ export const TOOLS_FALLBACK: Tool[] = [
     description: "Our AI Canvas blends robust editing functions with the immersive creative process, providing you complete control. Erase distractions, adjust dimensions and finesse every detail of your designs — all under one roof.With Canvas, you’re not just using a tool; you are the true alchemist of your creation.",
     videoSrc: {
       id: "ai-canvas",
-      url: "/assets/videos/AI-Canvas.webm",
+      name: "AI Canvas",
       video: [{
         url: "/assets/videos/AI-Canvas.webm"
       }]
@@ -46,7 +35,7 @@ export const TOOLS_FALLBACK: Tool[] = [
     description: "Breathe life into 3D assets like never before. Just upload your OBJ file, generate textures with contextual intelligence and download the enriched files tailor-made for diverse applications. Supercharge the design process with our avant-garde tool, and take your projects to new heights.",
     videoSrc: {
       id: "3d-texture-generation",
-      url: "/assets/videos/3D-Texture-Generation.webm",
+      name: "3D Texture Generation",
       video: [{
         url: "/assets/videos/3D-Texture-Generation.webm"
       }]
