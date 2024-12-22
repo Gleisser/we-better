@@ -10,7 +10,6 @@ import ToolsSkeleton from './ToolsSkeleton';
 const Tools = () => {
   const { data, isLoading } = useTool();
   const tabs = data?.data?.tabs || TOOLS_FALLBACK;
-  console.log(tabs);
   
   // Initialize activeTab after data is loaded
   const [activeTab, setActiveTab] = useState<ToolTab>(() => {

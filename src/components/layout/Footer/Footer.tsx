@@ -29,12 +29,12 @@ const Footer = () => {
                 role="region"
                 aria-labelledby={`footer-menu-${menu.Title}`}
               >
-                <h3 
-                  className={styles.categoryTitle}
+                <div 
+                  className={`${styles.categoryTitle}`}
                   id={`footer-menu-${menu.Title}`}
                 >
                   {menu.Title}
-                </h3>
+                </div>
                 <ul className={styles.linkList}>
                   {menu.menu_links.map((link) => (
                     <li key={link.id + link.title}>
@@ -59,23 +59,23 @@ const Footer = () => {
               role="region"
               aria-labelledby="app-downloads"
             >
-              <h3 
+              <div 
                 className={styles.categoryTitle}
                 id="app-downloads"
               >
                 Get the App
-              </h3>
+              </div>
               <div className={styles.storeButtons}>
                 {footer.app_stores.map((appStore : AppStore) => (
                   <a 
                     key={appStore.id} 
                     href="#" 
                     className={styles.storeLink}
-                    aria-label={`Download from ${appStore.images[0].name}`}
+                    aria-label={`Download Leonardo AI app from ${appStore.images[0].name} - Get access to AI tools on your mobile device`}
                   >
                     <img 
                       src={isAPI ? API_CONFIG.imageBaseURL + appStore.images[0].url : appStore.images[0].src} 
-                      alt={appStore.images[0].name}
+                      alt={`${appStore.images[0].name} download button`}
                       loading="lazy"
                       decoding="async"
                     />
@@ -89,24 +89,23 @@ const Footer = () => {
               role="region"
               aria-labelledby="social-media"
             >
-              <h3 
+              <div 
                 className={styles.categoryTitle}
                 id="social-media"
               >
                 Stay Tuned
-              </h3>
+              </div>
               <div className={styles.socialIcons}>
                 {footer.social_medias[0].logos.map((social : TopLevelImage) => (
                   <a 
                     key={social.id}
                     href="#"
                     className={styles.socialLink}
-                    aria-label={`Follow us on ${social.name}`}
+                    aria-label={`Follow Leonardo AI on ${social.name} for latest updates and community content`}
                   >
                     <img 
                       src={isAPI ? API_CONFIG.imageBaseURL + social.url : social.src} 
-                      alt=""
-                      aria-hidden="true"
+                      alt={`${social.name} social media icon`}
                       loading="lazy"
                       decoding="async"
                     />

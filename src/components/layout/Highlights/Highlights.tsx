@@ -128,7 +128,7 @@ const Highlights = () => {
                     : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
                   }
                   data-src={imageSrc}
-                  alt={highlight.title}
+                  alt={`${highlight.title} - Example of AI-generated artwork showcasing ${highlight.title.toLowerCase()} capabilities`}
                   className={styles.slideImage}
                   loading={index === 0 ? "eager" : "lazy"}
                   decoding="async"

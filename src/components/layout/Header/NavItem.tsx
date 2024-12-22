@@ -9,6 +9,8 @@ interface NavItemProps {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   MegaMenuComponent?: ReactNode;
+  'aria-expanded'?: boolean;
+  'aria-haspopup'?: boolean | 'true' | 'dialog' | 'menu' | 'listbox' | 'tree' | 'grid';
 }
 
 const NavItem = ({
@@ -16,7 +18,9 @@ const NavItem = ({
   title,
   onMouseEnter,
   onMouseLeave,
-  MegaMenuComponent
+  MegaMenuComponent,
+  'aria-expanded': ariaExpanded,
+  'aria-haspopup': ariaHaspopup
 }: NavItemProps) => {
   return (
     <div
@@ -24,9 +28,15 @@ const NavItem = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <a href={href} className={styles.headerNavItem}>
+      <a 
+        href={href} 
+        className={styles.headerNavItem}
+        aria-expanded={ariaExpanded}
+        aria-haspopup={ariaHaspopup}
+        role={MegaMenuComponent ? 'button' : undefined}
+      >
         {title}
-        {MegaMenuComponent && <ArrowDown />}
+        {MegaMenuComponent && <ArrowDown aria-hidden="true" />}
       </a>
       {MegaMenuComponent}
     </div>

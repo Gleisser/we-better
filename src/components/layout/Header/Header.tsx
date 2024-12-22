@@ -67,8 +67,6 @@ const Header = () => {
   return (
     <>
       <motion.header
-        role="banner"
-        aria-label="Main navigation"
         className={styles.headerContainer}
         animate={{
           backgroundColor: hasScrolled ? 'rgba(0, 0, 0, 0.5)' : 'transparent',
@@ -104,11 +102,11 @@ const Header = () => {
               className={styles.headerNav}
               aria-label="Main menu"
             >
-              <ul className={styles.navList} role="menubar">
+              <ul className={styles.navList}>
                 {megamenus.map((item) => {
                   const menuState = getMegaMenuState(item.type);
                   return (
-                    <li key={item.id} role="none">
+                    <li key={item.id}>
                       <NavItem
                         href='#'
                         title={item.title}
@@ -117,7 +115,6 @@ const Header = () => {
                         onMouseLeave={() => menuState?.setIsOpen(false)}
                         aria-expanded={menuState?.isOpen}
                         aria-haspopup="true"
-                        role="menuitem"
                         MegaMenuComponent={
                           menuState && (
                             <menuState.Component
@@ -132,35 +129,31 @@ const Header = () => {
                   );
                 })}
                 {data?.data.links.map((link) => (
-                  <li key={link.id} role="none">
+                  <li key={link.id}>
                     <NavItem 
                       href={link.href} 
                       title={link.title}
-                      role="menuitem"
                     />
                   </li>
                 ))}
                 {!data && (
                   <>
-                    <li role="none">
+                    <li>
                       <NavItem 
                         href="#teams" 
                         title={HEADER_CONSTANTS.Teams.title}
-                        role="menuitem"
                       />
                     </li>
-                    <li role="none">
+                    <li>
                       <NavItem 
                         href="#developers" 
                         title={HEADER_CONSTANTS.Developers.title}
-                        role="menuitem"
                       />
                     </li>
-                    <li role="none">
+                    <li>
                       <NavItem 
                         href="#creators" 
                         title={HEADER_CONSTANTS.Creators.title}
-                        role="menuitem"
                       />
                     </li>
                   </>
@@ -170,13 +163,11 @@ const Header = () => {
 
             <div 
               className={styles.mobileControls}
-              role="group"
-              aria-label="Mobile navigation"
+              aria-label="Mobile navigation controls"
             >
               <Link 
                 to="/app" 
                 className={styles.headerCta}
-                role="button"
               >
                 {HEADER_CONSTANTS.Cta.title}
               </Link>
@@ -193,7 +184,6 @@ const Header = () => {
       </motion.header>
 
       <MobileMenu 
-        id="mobile-menu"
         isOpen={isMobileMenuOpen} 
         aria-hidden={!isMobileMenuOpen}
       />

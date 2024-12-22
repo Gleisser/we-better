@@ -16,6 +16,8 @@ const SolutionsMegaMenu = ({ isOpen, onClose, menuData }: SolutionsMegaMenuProps
           transition={{ duration: 0.2 }}
           className="absolute left-0 top-[calc(100%+8px)] bg-black border border-white/10 rounded-xl w-[561px] shadow-xl"
           onMouseLeave={onClose}
+          role="navigation"
+          aria-label="Solutions menu navigation"
         >
           <div className="p-6">
             <div className="grid grid-cols-2 gap-6">
@@ -27,12 +29,16 @@ const SolutionsMegaMenu = ({ isOpen, onClose, menuData }: SolutionsMegaMenuProps
                 >
                   <div className="flex items-start space-x-3">
                     <div className="pt-1">
-                      <img src={menuData && API_CONFIG.imageBaseURL + item.image.url || item.image.url} alt={item.title} className="w-6 h-6" />
+                      <img 
+                        src={menuData && API_CONFIG.imageBaseURL + item.image.url || item.image.url} 
+                        alt={`${item.title} solution - ${item.description}`} 
+                        className="w-6 h-6" 
+                      />
                     </div>
                     <div>
-                      <h3 className="text-white text-sm font-semibold transition-colors font-plus-jakarta [&:not(:hover)]:text-white">
+                      <div className="text-white text-sm font-semibold transition-colors font-plus-jakarta [&:not(:hover)]:text-white">
                         {item.title}
-                      </h3>
+                      </div>
                       <p className="text-white/60 mt-0.5 text-xs leading-relaxed font-plus-jakarta">
                         {item.description}
                       </p>

@@ -11,6 +11,14 @@ export interface MenuBlogPost {
     post_date: string;
     url: string;
     description: string;
+    cover: {
+        url: string;
+        formats: {
+            medium: {
+                url: string;
+            }
+        }
+    }
 }
 
 export interface MegaMenu {

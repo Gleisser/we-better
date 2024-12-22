@@ -3,4 +3,12 @@ export interface MenuLink {
     title: string;
     href: string;
     description: string;
+    image: {
+        url: string;
+        formats: {
+            medium: {
+                url: string;
+            }
+        }
+    }
 }

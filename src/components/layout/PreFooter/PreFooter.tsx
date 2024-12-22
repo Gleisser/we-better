@@ -58,7 +58,7 @@ const PreFooter = () => {
           <div className={styles.imageContainer}>
             <img
               src={isAPI ? API_CONFIG.imageBaseURL + prefooter?.image.url : prefooter?.image.url}
-              alt="Leonardo AI Platform Preview"
+              alt="Interactive preview of Leonardo AI platform showcasing creative tools and workspace"
               className={styles.image}
               loading="lazy"
               decoding="async"
