@@ -30,7 +30,7 @@ const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps) => {
                   <a 
                     key={item.id || item.href}
                     href={item.href}
-                    className="block group text-white hover:text-white visited:text-white active:text-white focus:text-white"
+                    className="block group text-white hover:text-white visited:text-white active:text-white focus:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-lg"
                   >
                     <div className="flex items-start space-x-3">
                       <div className="flex-1">

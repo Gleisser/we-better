@@ -8,6 +8,8 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
 
   const latestPost = menuData?.menu_blog_post;
 
+  console.log(latestPost);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -31,7 +33,7 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
                 <div className="space-y-3">
                   <div className="aspect-[16/10] rounded-lg overflow-hidden">
                     <img
-                      src={latestPost && API_CONFIG.imageBaseURL + latestPost?.cover?.formats?.medium?.url || "/assets/images/hero/app_hero_img.webp"}
+                      src={latestPost && API_CONFIG.imageBaseURL + latestPost?.cover?.url || "/assets/images/hero/app_hero_img.webp"}
                       alt={latestPost?.title 
                         ? `Latest blog post: ${latestPost.title} - Stay updated with Leonardo AI` 
                         : "Latest blog post: AI Statistics and Marketing Insights for 2024"}

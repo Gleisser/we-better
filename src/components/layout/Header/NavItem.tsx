@@ -30,7 +30,7 @@ const NavItem = ({
     >
       <a 
         href={href} 
-        className={styles.headerNavItem}
+        className={`${styles.headerNavItem} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
         aria-expanded={ariaExpanded}
         aria-haspopup={ariaHaspopup}
         role={MegaMenuComponent ? 'button' : undefined}

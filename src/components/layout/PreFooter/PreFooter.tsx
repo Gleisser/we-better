@@ -40,7 +40,7 @@ const PreFooter = () => {
               href="https://leonardo.ai" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className={styles.button}
+              className={`${styles.button} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
               aria-label="Get started with Leonardo AI"
             >
               {prefooter?.buttonText}

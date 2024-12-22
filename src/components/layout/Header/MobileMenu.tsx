@@ -106,7 +106,7 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
           {/* Solutions with submenu */}
           <div className={styles.menuItemWrapper}>
             <button 
-              className={styles.menuItem}
+              className={`${styles.menuItem} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
               onClick={() => setIsSolutionsOpen(!isSolutionsOpen)}
               aria-expanded={isSolutionsOpen}
               aria-controls="solutions-submenu"
@@ -149,7 +149,7 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
           {/* Resources with submenu */}
           <div className={styles.menuItemWrapper}>
             <button 
-              className={styles.menuItem}
+              className={`${styles.menuItem} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
               onClick={() => setIsResourcesOpen(!isResourcesOpen)}
               aria-expanded={isResourcesOpen}
               aria-controls="resources-submenu"
@@ -236,25 +236,34 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
             role="group"
             aria-label="Social media links"
           >
-            <a href="#">
+            <a 
+              href="#"
+              className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md"
+            >
               <img 
                 src="/assets/images/header/mobile/discord-icon.svg" 
                 alt="Join our Discord community for AI discussions and support" 
               />
             </a>
-            <a href="#">
+            <a href="#"
+              className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md"
+            >
               <img 
                 src="/assets/images/header/mobile/facebook-icon.svg" 
                 alt="Follow us on Facebook for latest AI technology updates" 
               />
             </a>
-            <a href="#">
+            <a href="#"
+            className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md"
+            >
               <img 
                 src="/assets/images/header/mobile/instagram-icon.svg" 
                 alt="Follow our Instagram for AI-generated art and inspiration" 
               />
             </a>
-            <a href="#">
+            <a href="#"
+              className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md"
+            >
               <img 
                 src="/assets/images/header/mobile/fanbook-icon.svg" 
                 alt="Join our Fanbook community for exclusive AI content" 

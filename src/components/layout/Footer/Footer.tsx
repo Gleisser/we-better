@@ -40,7 +40,7 @@ const Footer = () => {
                     <li key={link.id + link.title}>
                       <a 
                         href={link.href} 
-                        className={styles.link}
+                        className={`${styles.link} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
                         aria-label={link.title}
                       >
                         {link.title}
@@ -100,7 +100,7 @@ const Footer = () => {
                   <a 
                     key={social.id}
                     href="#"
-                    className={styles.socialLink}
+                    className={`${styles.socialLink} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
                     aria-label={`Follow Leonardo AI on ${social.name} for latest updates and community content`}
                   >
                     <img 
