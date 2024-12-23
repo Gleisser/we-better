@@ -1,8 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import styles from './Community.module.css';
 import { useCommunity } from '@/hooks/useCommunity';
 import { renderHighlightedText } from '@/utils/textFormatting';
 import { DiscordIcon } from '@/components/common/icons';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
 
 const INITIAL_PROFILES = [
   {
@@ -39,7 +42,16 @@ const INITIAL_PROFILES = [
 
 const Community = () => {
   const profilesRef = useRef<HTMLDivElement>(null);
-  const { data: community } = useCommunity();
+  
+  // Initialize hooks
+  const { data, isLoading: isDataLoading } = useCommunity();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load community content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
 
   const defaultTitle = (
     <>
@@ -52,6 +64,27 @@ const Community = () => {
     </>
   );
 
+  // Collect profile image URLs
+  const getProfileUrls = useCallback(() => {
+    return INITIAL_PROFILES.map(profile => profile.src);
+  }, []);
+
+  // Handle image preloading
+  const loadImages = useCallback(async () => {
+    const profileUrls = getProfileUrls();
+    if (profileUrls.length === 0 || isLoading) return;
+
+    try {
+      startLoading();
+      await preloadImages(profileUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading();
+    }
+  }, [getProfileUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+
+  // Handle scroll animation
   useEffect(() => {
     const handleScroll = () => {
       if (!profilesRef.current) return;
@@ -85,6 +118,43 @@ const Community = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Handle image preloading
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
+
+  // Show loading state only during initial data fetch
+  if (isDataLoading) {
+    return (
+      <section className={styles.communityContainer}>
+        <div className={styles.communityContent}>
+          <div className={styles.loadingState} aria-busy="true">
+            Loading community content...
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <section className={styles.communityContainer}>
+        <div className={styles.communityContent}>
+          <div className={styles.errorState} role="alert">
+            <p>{error?.message}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section 
       className={styles.communityContainer}
@@ -96,7 +166,7 @@ const Community = () => {
             className={styles.discordLabel}
             aria-label="Discord server ranking"
           >
-            {community?.data?.label || '#3 Discord Server in the World'}
+            {data?.data?.label || '#3 Discord Server in the World'}
           </div>
           
           <h2 
@@ -104,7 +174,7 @@ const Community = () => {
             id="community-title"
           >
             {renderHighlightedText({
-              text: community?.data?.title,
+              text: data?.data?.title,
               highlightClassName: styles.highlight,
               fallback: defaultTitle
             })}
@@ -121,7 +191,7 @@ const Community = () => {
             aria-label="Join our Discord community"
           >
             <DiscordIcon className={styles.discordIcon} aria-hidden="true" />
-            {community?.data?.buttonText || 'Join Discord Server'}
+            {data?.data?.buttonText || 'Join Discord Server'}
           </a>
         </div>
 

@@ -4,12 +4,86 @@ import { TESTIMONY_FALLBACK } from '@/constants/fallback';
 import { API_CONFIG } from '@/lib/api-config';
 import { TestimonyItem } from '@/types/testimony';
 import { renderHighlightedText } from '@/utils/textFormatting';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useCallback, useEffect } from 'react';
 
 const Testimonies = () => {
-  const { data } = useTestimony();
-  const isAPI = data?.data;
+  // Initialize hooks
+  const { data, isLoading: isDataLoading } = useTestimony();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load testimonials'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
+
+  // Determine content source
   const testimony = data?.data || TESTIMONY_FALLBACK;
+  const isAPI = data !== undefined;
   const defaultTitle = <>A community of over <span className={styles.highlight}>4 million</span> is waiting for you</>;
+
+  // Collect all profile picture URLs
+  const getProfilePicUrls = useCallback(() => {
+    if (!testimony?.testimonies) return [];
+    
+    return testimony.testimonies.map(item => 
+      isAPI ? API_CONFIG.imageBaseURL + item.profilePic.url : item.profilePic.url
+    );
+  }, [testimony, isAPI]);
+
+  // Handle image preloading
+  const loadImages = useCallback(async () => {
+    const profileUrls = getProfilePicUrls();
+    if (profileUrls.length === 0 || isLoading) return;
+
+    try {
+      startLoading();
+      await preloadImages(profileUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading();
+    }
+  }, [getProfilePicUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
+
+  // Show loading state only during initial data fetch
+  if (isDataLoading) {
+    return (
+      <section className={styles.testimoniesContainer}>
+        <div className={styles.testimoniesContent}>
+          <div className={styles.loadingState} aria-busy="true">
+            Loading testimonials...
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <section className={styles.testimoniesContainer}>
+        <div className={styles.testimoniesContent}>
+          <div className={styles.errorState} role="alert">
+            <p>{error?.message}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section 

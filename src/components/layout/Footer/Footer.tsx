@@ -4,12 +4,104 @@ import { API_CONFIG } from '@/lib/api-config';
 import { FOOTER_FALLBACK } from '@/constants/fallback';
 import { AppStore, MenuList } from '@/types/footer';
 import { TopLevelImage } from '@/types/common/image';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useEffect, useCallback } from 'react';
 
 const Footer = () => {
-  const { data } = useFooter();
+  // Initialize hooks
+  const { data, isLoading: isDataLoading } = useFooter();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load footer content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
+
+  // Determine content source
   const footer = data?.data || FOOTER_FALLBACK;
   const isAPI = data !== undefined;
-  
+
+  // Collect all images that need to be preloaded
+  const getImageUrls = useCallback(() => {
+    if (!footer) return [];
+
+    const urls: string[] = [];
+    
+    // Logo
+    if (footer.logo) {
+      urls.push(isAPI ? API_CONFIG.imageBaseURL + footer.logo.url : footer.logo.src);
+    }
+
+    // App store images
+    footer.app_stores.forEach(store => {
+      store.images.forEach(image => {
+        urls.push(isAPI ? API_CONFIG.imageBaseURL + image.url : image.src);
+      });
+    });
+
+    // Social media logos
+    footer.social_medias[0].logos.forEach(social => {
+      urls.push(isAPI ? API_CONFIG.imageBaseURL + social.url : social.src);
+    });
+
+    return urls;
+  }, [footer, isAPI]);
+
+  // Memoize the image loading function
+  const loadImages = useCallback(async () => {
+    const imageUrls = getImageUrls();
+    if (imageUrls.length === 0 || isLoading) return;
+
+    try {
+      startLoading();
+      await preloadImages(imageUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading();
+    }
+  }, [getImageUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+
+  // Handle image preloading
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
+
+  // Show loading state only during initial data fetch
+  if (isDataLoading) {
+    return (
+      <footer className={styles.footer}>
+        <div className={styles.footerContent}>
+          <div className={styles.loadingState} aria-busy="true">
+            Loading footer content...
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <footer className={styles.footer}>
+        <div className={styles.footerContent}>
+          <div className={styles.errorState} role="alert">
+            <p>{error?.message}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer 
       className={styles.footer}

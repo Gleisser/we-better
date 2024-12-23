@@ -3,6 +3,11 @@ import styles from './Partners.module.css';
 import { API_CONFIG } from '@/lib/api-config';
 import { renderHighlightedText } from '@/utils/textFormatting';
 import { PARTNERS_FALLBACK } from '@/constants/fallback';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useCallback, useEffect } from 'react';
+
 const defaultTitle = (
   <>
     Our <span className={styles.highlight}>Partners</span>
@@ -10,10 +15,80 @@ const defaultTitle = (
 );
 
 const Partners = () => {
-  const { data } = usePartner();
+  // Initialize hooks
+  const { data, isLoading: isDataLoading } = usePartner();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load partners content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
+
+  // Determine content source
   const partners = data?.data || PARTNERS_FALLBACK;
   const isAPI = data !== undefined;
-  
+
+  // Collect all brand logo URLs
+  const getLogoUrls = useCallback(() => {
+    if (!partners?.brands) return [];
+    
+    return partners.brands.map(brand => 
+      isAPI ? API_CONFIG.imageBaseURL + brand.logo.img.url : brand.logo.img.url
+    );
+  }, [partners, isAPI]);
+
+  // Handle image preloading
+  const loadImages = useCallback(async () => {
+    const logoUrls = getLogoUrls();
+    if (logoUrls.length === 0 || isLoading) return;
+
+    try {
+      startLoading();
+      await preloadImages(logoUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading();
+    }
+  }, [getLogoUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
+
+  // Show loading state only during initial data fetch
+  if (isDataLoading) {
+    return (
+      <section className={styles.partnersContainer}>
+        <div className={styles.partnersContent}>
+          <div className={styles.loadingState} aria-busy="true">
+            Loading partners...
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <section className={styles.partnersContainer}>
+        <div className={styles.partnersContent}>
+          <div className={styles.errorState} role="alert">
+            <p>{error?.message}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section 
       className={styles.partnersContainer}

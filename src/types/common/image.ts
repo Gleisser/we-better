@@ -39,6 +39,8 @@ interface BaseImage extends TimeStamps {
   width: number;
   height: number;
   url: string;
+  alt: string;
+  src: string;
 }
 
 // Standard image with all formats

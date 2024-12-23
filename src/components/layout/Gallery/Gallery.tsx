@@ -1,8 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Gallery.module.css';
 import { useGallery } from '@/hooks/useGallery';
 import { API_CONFIG } from '@/lib/api-config';
 import { GalleryIcon, MobileNavIcon, MobileNavNextIcon } from '@/components/common/icons';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
+
 const INITIAL_LOAD = 12;
 const LOAD_MORE_COUNT = 8;
 
@@ -167,44 +171,75 @@ const GALLERY_IMAGES = [
 ] as const;
 
 const Gallery = () => {
+  // State management
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD);
   const [currentMobileIndex, setCurrentMobileIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const { data: gallery } = useGallery();
+  
+  // Refs
   const observerRef = useRef<IntersectionObserver | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
 
-  const images = gallery?.data?.images.map((image) => {
-    return {
-      id: image.id,
-      src: `${API_CONFIG.imageBaseURL}${image.url}`,
-      alt: image.alternativeText,
-      size: image.height > 400 ? 'large' : 'small'
-    }
+  // Initialize hooks
+  const { data, isLoading: isDataLoading } = useGallery();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load gallery content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
   });
 
-  const orderImages = (images: { id: number; src: string; alt: string; size: string; }[] | undefined) => {
+  // Process images data
+  const images = data?.data?.images.map((image) => ({
+    id: image.id,
+    src: `${API_CONFIG.imageBaseURL}${image.url}`,
+    alt: image.alternativeText,
+    size: image.height > 400 ? 'large' : 'small'
+  }));
+
+  // Image ordering logic
+  const orderImages = useCallback((images: typeof GALLERY_IMAGES | undefined) => {
+    if (!images) return [];
+    
     const orderedImages = [];
+    const smallImages = images.filter((image) => image.size === 'small');
+    const largeImages = images.filter((image) => image.size === 'large');
 
-    const smallImages = images?.filter((image) => image.size === 'small');
-    const largeImages = images?.filter((image) => image.size === 'large');
-
-    if (largeImages && smallImages) {
-      while (smallImages?.length > 0 && largeImages?.length > 0) {
-        orderedImages.push(largeImages.shift());
-        orderedImages.push(smallImages.shift());
-      }
+    while (smallImages?.length > 0 && largeImages?.length > 0) {
+      orderedImages.push(largeImages.shift());
+      orderedImages.push(smallImages.shift());
     }
 
     return orderedImages;
-  }
+  }, []);
 
   const orderedImages = orderImages(images);
   const galleryImages = orderedImages?.length > 0 ? orderedImages : GALLERY_IMAGES;
   const visibleImages = galleryImages.slice(0, visibleCount);
-  
+
+  // Collect visible image URLs for preloading
+  const getVisibleImageUrls = useCallback(() => {
+    return visibleImages.map(image => image.src);
+  }, [visibleImages]);
+
+  // Handle image preloading
+  const loadImages = useCallback(async () => {
+    const imageUrls = getVisibleImageUrls();
+    if (imageUrls.length === 0 || isLoading) return;
+
+    try {
+      startLoading();
+      await preloadImages(imageUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading();
+    }
+  }, [getVisibleImageUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+
+  // Intersection Observer setup
   useEffect(() => {
-    // Intersection Observer setup
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -224,7 +259,6 @@ const Gallery = () => {
       }
     );
 
-    // Observe all images
     imageRefs.current.forEach((imageRef) => {
       if (imageRef) {
         observerRef.current?.observe(imageRef);
@@ -236,6 +270,7 @@ const Gallery = () => {
     };
   }, [visibleImages]);
 
+  // Mobile detection
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -246,8 +281,13 @@ const Gallery = () => {
     
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
-  
-  
+
+  // Image preloading effect
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
+
+  // Navigation handlers
   const hasMore = visibleCount < galleryImages.length;
 
   const handleLoadMore = () => {
@@ -266,7 +306,37 @@ const Gallery = () => {
     );
   };
 
-  
+  // Show loading state only during initial data fetch
+  if (isDataLoading) {
+    return (
+      <section className={styles.galleryContainer}>
+        <div className={styles.galleryContent}>
+          <div className={styles.loadingState} aria-busy="true">
+            Loading gallery...
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <section className={styles.galleryContainer}>
+        <div className={styles.galleryContent}>
+          <div className={styles.errorState} role="alert">
+            <p>{error?.message}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section 

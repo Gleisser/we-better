@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import styles from './Showcase.module.css';
 import { SHOWCASE_FALLBACK } from '@/constants/fallback';
@@ -6,58 +6,102 @@ import { useShowcase } from '@/hooks/useShowcase';
 import { API_CONFIG } from '@/lib/api-config';
 import { ShowcaseArrowIcon, ShowcaseArrowRightIcon, ShowcaseMobileArrowIcon, ShowcaseMobileArrowRightIcon } from '@/components/common/icons';
 import ShowcaseSkeleton from './ShowcaseSkeleton';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
 
 const Showcase = () => {
-  const { data: showcase, isLoading, showFallback } = useShowcase();
+  // State management
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
   const [imageIndex, setImageIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  
+  // Refs
   const observerRef = useRef<IntersectionObserver | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
 
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
-    
-    return () => window.removeEventListener('resize', checkIfMobile);
-  }, []);
+  // Initialize hooks
+  const { data: showcase, isLoading: isDataLoading } = useShowcase();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load showcase content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
 
+  // Memoize belts and derived values
   const belts = showcase?.data.belts || SHOWCASE_FALLBACK.belts;
-
-  const totalPages = isMobile ? belts.length : Math.ceil(belts.length / 4);
-  const itemsPerPage = isMobile ? 1 : 4;
-  const currentItems = belts.slice(
-    currentPage * itemsPerPage, 
-    (currentPage + 1) * itemsPerPage
+  const totalPages = useMemo(() => 
+    isMobile ? belts.length : Math.ceil(belts.length / 4),
+    [isMobile, belts.length]
+  );
+  const itemsPerPage = useMemo(() => isMobile ? 1 : 4, [isMobile]);
+  const currentItems = useMemo(() => 
+    belts.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage),
+    [belts, currentPage, itemsPerPage]
   );
 
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0
-    })
-  };
+  // Memoize current page URLs calculation
+  const getCurrentPageUrls = useCallback(() => {
+    if (!currentItems.length) return [];
+    
+    return currentItems.reduce((urls: string[], item) => {
+      const itemUrls = item.images.map(image => 
+        showcase 
+          ? API_CONFIG.imageBaseURL + image.img.formats.thumbnail.url
+          : image.src
+      );
+      return [...urls, ...itemUrls];
+    }, []);
+  }, [currentItems, showcase]);
 
+  // Memoize load images function
+  const loadImages = useCallback(async () => {
+    const imageUrls = getCurrentPageUrls();
+    if (imageUrls.length === 0 || isLoading) return;
+
+    try {
+      startLoading();
+      await preloadImages(imageUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      if (isLoading) {
+        stopLoading();
+      }
+    }
+  }, [getCurrentPageUrls, preloadImages, handleError, startLoading, stopLoading, isLoading]);
+
+  // Initialize image refs
   useEffect(() => {
-    if (hoveredItem) {
-      const interval = setInterval(() => {
-        setImageIndex((prev) => {
+    imageRefs.current = new Array(itemsPerPage).fill(null);
+  }, [itemsPerPage]);
+
+  // Memoize image reset function
+  const resetImages = useCallback(() => {
+    if (!currentItems.length) return;
+    
+    imageRefs.current.forEach((ref, index) => {
+      if (ref && currentItems[index]) {
+        const item = currentItems[index];
+        const initialSrc = showcase 
+          ? API_CONFIG.imageBaseURL + item.images[0].img.formats.thumbnail.url
+          : item.images[0].src;
+        ref.src = initialSrc;
+      }
+    });
+  }, [currentItems, showcase]);
+
+  // Handle image rotation
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined;
+    
+    if (hoveredItem && currentItems.length) {
+      interval = setInterval(() => {
+        setImageIndex(prev => {
           const nextIndex = (prev + 1) % 3;
           const currentItemRef = imageRefs.current.find((_, i) => 
             currentItems[i]?.id === hoveredItem
@@ -69,7 +113,6 @@ const Showcase = () => {
               const newSrc = showcase 
                 ? API_CONFIG.imageBaseURL + item.images[nextIndex].img.formats.thumbnail.url
                 : item.images[nextIndex].src;
-              
               currentItemRef.src = newSrc;
             }
           }
@@ -77,23 +120,43 @@ const Showcase = () => {
           return nextIndex;
         });
       }, 1000);
-
-      return () => clearInterval(interval);
     } else {
       setImageIndex(0);
-      imageRefs.current.forEach((ref, index) => {
-        if (ref && currentItems[index]) {
-          const item = currentItems[index];
-          const initialSrc = showcase 
-            ? API_CONFIG.imageBaseURL + item.images[0].img.formats.thumbnail.url
-            : item.images[0].src;
-          
-          ref.src = initialSrc;
-        }
-      });
+      resetImages();
     }
-  }, [hoveredItem, showcase, currentItems]);
 
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [hoveredItem, currentItems, showcase, resetImages]);
+
+  // Handle mobile detection
+  const checkIfMobile = useCallback(() => {
+    requestAnimationFrame(() => {
+      setIsMobile(window.innerWidth <= 768);
+    });
+  }, []);
+
+  useEffect(() => {
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, [checkIfMobile]);
+
+  // Load images on page change
+  useEffect(() => {
+    let mounted = true;
+
+    if (!isDataLoading && currentItems.length > 0 && mounted) {
+      loadImages();
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [loadImages, currentPage, isDataLoading, currentItems.length]);
+
+  // Navigation handlers
   const nextPage = () => {
     setDirection(1);
     setCurrentPage((prev) => (prev + 1) % totalPages);
@@ -104,6 +167,7 @@ const Showcase = () => {
     setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
   };
 
+  // Swipe handlers
   const swipePower = (offset: number, velocity: number) => {
     return Math.abs(offset) * velocity;
   };
@@ -122,51 +186,49 @@ const Showcase = () => {
     }
   };
 
-  useEffect(() => {
-    imageRefs.current = new Array(itemsPerPage).fill(null);
-  }, [currentPage, itemsPerPage]);
+  // Animation variants
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
+  };
 
-  useEffect(() => {
-    observerRef.current?.disconnect();
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const img = entry.target as HTMLImageElement;
-            if (img.dataset.src) {
-              setTimeout(() => {
-                img.src = img.dataset.src;
-                img.removeAttribute('data-src');
-                observerRef.current?.unobserve(img);
-              }, 100);
-            }
-          }
-        });
-      },
-      {
-        rootMargin: '50px 0px',
-        threshold: 0.1
-      }
-    );
-
-    setTimeout(() => {
-      imageRefs.current.forEach((imageRef) => {
-        if (imageRef) {
-          observerRef.current?.observe(imageRef);
-        }
-      });
-    }, 100);
-
-    return () => {
-      observerRef.current?.disconnect();
-    };
-  }, [currentPage]);
-
-  if (isLoading && !showFallback) {
+  // Show loading state
+  if (isDataLoading) {
     return <ShowcaseSkeleton />;
   }
 
+  // Show error state
+  if (isError) {
+    return (
+      <section className={styles.showcaseContainer}>
+        <div className={styles.showcaseContent}>
+          <div className={styles.errorState} role="alert">
+            <p>{error?.message}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Rest of the component remains the same...
   return (
     <section 
       className={styles.showcaseContainer}
@@ -240,21 +302,8 @@ const Showcase = () => {
               >
                 <div className={styles.imageContainer}>
                   <img
-                    ref={el => {
-                      imageRefs.current[index] = el;
-                      if (el) {
-                        observerRef.current?.observe(el);
-                        const initialSrc = showcase 
-                          ? API_CONFIG.imageBaseURL + item.images[0].img.formats.thumbnail.url
-                          : item.images[0].src;
-                        
-                        if (el.src === "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7") {
-                          el.src = initialSrc;
-                        }
-                      }
-                    }}
-                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-                    data-src={showcase 
+                    ref={el => imageRefs.current[index] = el}
+                    src={showcase 
                       ? API_CONFIG.imageBaseURL + item.images[0].img.formats.thumbnail.url
                       : item.images[0].src
                     }
