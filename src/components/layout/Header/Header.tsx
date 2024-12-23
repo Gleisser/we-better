@@ -30,7 +30,7 @@ const Header = () => {
     }
   }, [isMobileMenuOpen]);
 
-  scrollY.onChange((latest) => {
+  scrollY.on("change",(latest) => {
     setHasScrolled(latest > 10);
   });
 

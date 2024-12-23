@@ -6,20 +6,35 @@ import { ToolTab } from '@/types/tool';
 import { API_CONFIG } from '@/lib/api-config';
 import { ToolIcon } from '@/components/common/icons';
 import ToolsSkeleton from './ToolsSkeleton';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
 
 const Tools = () => {
-  const { data, isLoading } = useTool();
+  // Initialize hooks
+  const { data, isLoading: isDataLoading } = useTool();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load tools content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
+
   const tabs = data?.data?.tabs || TOOLS_FALLBACK;
   
-  // Initialize activeTab after data is loaded
+  // State and refs
   const [activeTab, setActiveTab] = useState<ToolTab>(() => {
-    // If we have API data, use the first tab from API data
-    if (data?.data?.tabs?.length) {
-      return data.data.tabs[0];
-    }
-    // Otherwise use fallback
-    return TOOLS_FALLBACK[0];
+    return data?.data?.tabs?.[0] || TOOLS_FALLBACK[0];
   });
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
+
+  // Content preparation
+  const gradientText = data?.data?.title.split(' ')[0];
+  const toolName = data?.data?.title.split(' ')[1];
 
   // Update activeTab when data changes
   useEffect(() => {
@@ -28,15 +43,27 @@ const Tools = () => {
     }
   }, [data?.data?.tabs]);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isInView, setIsInView] = useState(false);
+  // Collect poster images for preloading
+  const getPosterUrls = useCallback(() => {
+    return tabs.map(tab => `/assets/images/tools/${tab.id}-poster.webp`);
+  }, [tabs]);
 
-  const gradientText = data?.data?.title.split(' ')[0];
-  const toolName = data?.data?.title.split(' ')[1];
+  // Handle image preloading
+  const loadImages = useCallback(async () => {
+    const posterUrls = getPosterUrls();
+    if (posterUrls.length === 0 || isLoading) return;
 
-  // Single source of truth for video handling
+    try {
+      startLoading();
+      await preloadImages(posterUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading();
+    }
+  }, [getPosterUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+
+  // Video playback handling
   const handleVideoPlayback = useCallback((video: HTMLVideoElement, shouldPlay: boolean) => {
     if (shouldPlay) {
       video.play().catch(() => {
@@ -47,7 +74,7 @@ const Tools = () => {
     }
   }, []);
 
-  // Setup video source and load
+  // Video setup
   const setupVideo = useCallback((video: HTMLVideoElement, tab: ToolTab) => {
     const videoUrl = data?.data 
       ? API_CONFIG.imageBaseURL + tab.videoSrc.video[0].url 
@@ -108,9 +135,33 @@ const Tools = () => {
     };
   }, [activeTab, tabs, setupVideo]);
 
-  // Show skeleton only while loading and before fallback
-  if (isLoading && !tabs.length) {
+  // Load poster images
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
+
+  // Show loading state
+  if (isDataLoading) {
     return <ToolsSkeleton />;
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <section className={styles.toolsContainer}>
+        <div className={styles.toolsContent}>
+          <div className={styles.errorState} role="alert">
+            <p>{error?.message}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (

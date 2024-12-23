@@ -1,22 +1,66 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import styles from './Highlights.module.css';
 import { HIGHLIGHTS_FALLBACK } from '@/constants/fallback';
 import { useHighlight } from '@/hooks/useHighlight';
 import { API_CONFIG } from '@/lib/api-config';
 import HighlightsSkeleton from './HighlightsSkeleton';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
 
 const Highlights = () => {
-  const { data, isLoading, error } = useHighlight();
+  // Initialize hooks
+  const { data, isLoading: isDataLoading } = useHighlight();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load highlights content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
+
+  // State management
   const [activeIndex, setActiveIndex] = useState(0);
   const [showFallback, setShowFallback] = useState(false);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
+  
+  // Refs
+  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // Determine data source with priority for fallback
+  const highlights = error || showFallback || !data?.data?.slides 
+    ? HIGHLIGHTS_FALLBACK 
+    : data.data.slides;
+
+  // Collect image URLs for preloading
+  const getImageUrls = useCallback(() => {
+    return highlights.map(highlight => {
+      return data?.data?.slides
+        ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url
+        : highlight?.image?.img?.formats?.large?.url;
+    });
+  }, [highlights, data?.data?.slides]);
+
+  // Handle image preloading
+  const loadImages = useCallback(async () => {
+    const imageUrls = getImageUrls();
+    if (imageUrls.length === 0 || isLoading) return;
+
+    try {
+      startLoading();
+      await preloadImages(imageUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading();
+    }
+  }, [getImageUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
 
   // Faster fallback strategy
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (isLoading || error) {
+      if (isDataLoading || error) {
         setShowFallback(true);
       }
     }, 1000);
@@ -26,12 +70,7 @@ const Highlights = () => {
     }
 
     return () => clearTimeout(timer);
-  }, [isLoading, error, data]);
-
-  // Determine data source with priority for fallback
-  const highlights = error || showFallback || !data?.data?.slides 
-    ? HIGHLIGHTS_FALLBACK 
-    : data.data.slides;
+  }, [isDataLoading, error, data]);
 
   // Setup Intersection Observer
   useEffect(() => {
@@ -72,6 +111,7 @@ const Highlights = () => {
     }
   }, [activeIndex, highlights.length, loadedImages]);
 
+  // Handle slider rotation
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((current) => (current + 1) % highlights.length);
@@ -80,9 +120,33 @@ const Highlights = () => {
     return () => clearInterval(interval);
   }, [highlights.length]);
 
-  // Don't show loading state if we're going to show fallback
-  if (isLoading && !showFallback) {
+  // Load initial images
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
+
+  // Show loading state
+  if (isDataLoading && !showFallback) {
     return <HighlightsSkeleton />;
+  }
+
+  // Show error state
+  if (isError && !showFallback) {
+    return (
+      <section className={styles.highlightsContainer}>
+        <div className={styles.highlightsContent}>
+          <div className={styles.errorState} role="alert">
+            <p>{error?.message}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (

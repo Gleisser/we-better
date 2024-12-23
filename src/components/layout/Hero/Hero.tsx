@@ -6,9 +6,12 @@ import HeroBackground from './HeroBackground';
 import CtaButton from "./Buttons/CtaButton";
 import SecondaryCtaButton from "./Buttons/SecondaryCtaButton";
 import { motion } from "framer-motion";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useHero } from '@/hooks/useHero';
 import HeroSkeleton from './HeroSkeleton';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
 
 const preloadImage = (src: string) => {
   return new Promise((resolve, reject) => {
@@ -20,7 +23,14 @@ const preloadImage = (src: string) => {
 };
 
 export const Hero = () => {
-  const { data, error, isFetching } = useHero();
+  const { data, isFetching: isDataLoading } = useHero();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load hero content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
   const [isMobile, setIsMobile] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
@@ -55,7 +65,7 @@ export const Hero = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (isFetching || error) {
+      if (isDataLoading || isError) {
         setShowFallback(true);
       }
     }, 1000);
@@ -65,7 +75,7 @@ export const Hero = () => {
     }
 
     return () => clearTimeout(timer);
-  }, [isFetching, error, data]);
+  }, [isDataLoading, isError, data]);
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -78,51 +88,76 @@ export const Hero = () => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  const heroData = error || showFallback || !data?.data 
+  const heroData = isError || showFallback || !data?.data 
     ? HERO_FALLBACK 
     : data.data;
 
+  const getMainImageUrl = useCallback(() => {
+    if (data?.data) {
+      return isMobile ? data.data.main_image_mobile?.src : data.data.main_image?.src;
+    }
+    return isMobile ? HERO_FALLBACK.main_image_mobile.src : HERO_FALLBACK.main_image.src;
+  }, [data?.data, isMobile]);
+
+  const getFloatingImageUrls = useCallback(() => {
+    if (data?.data) {
+      return data.data.images.map(img => img.src);
+    }
+    return HERO_FALLBACK.images.map(img => img.src);
+  }, [data?.data]);
+
   useEffect(() => {
-    const preloadFallbackImages = async () => {
-      const fallbackImagesToPreload = [
-        HERO_FALLBACK.main_image.src,
-        HERO_FALLBACK.main_image_mobile.src,
-        ...HERO_FALLBACK.images.slice(0, 2).map(img => img.src)
-      ];
+    const loadMainImage = async () => {
+      const mainImageUrl = getMainImageUrl();
+      if (!mainImageUrl) return;
 
       try {
-        await Promise.all(fallbackImagesToPreload.map(src => preloadImage(src)));
-      } catch (error) {
-        console.warn('Failed to preload fallback images:', error);
+        startLoading();
+        await preloadImages([mainImageUrl]);
+      } catch (err) {
+        console.warn('Failed to preload main image:', err);
+      } finally {
+        stopLoading();
       }
     };
 
-    preloadFallbackImages();
-  }, []);
+    loadMainImage();
+  }, [getMainImageUrl, preloadImages, startLoading, stopLoading]);
 
   useEffect(() => {
-    if (data?.data) {
-      const preloadCriticalImages = async () => {
-        const imagesToPreload = [
-          data.data.main_image?.src,
-          data.data.main_image_mobile?.src,
-          ...data.data.images.slice(0, 2).map(img => img.src)
-        ].filter(Boolean) as string[];
+    const loadFloatingImages = async () => {
+      const imageUrls = getFloatingImageUrls();
+      if (imageUrls.length === 0) return;
 
-        try {
-          await Promise.all(imagesToPreload.map(src => preloadImage(src)));
-        } catch (error) {
-          console.warn('Failed to preload some hero images:', error);
-        }
-      };
+      try {
+        await preloadImages(imageUrls);
+      } catch (err) {
+        console.warn('Failed to preload floating images:', err);
+      }
+    };
 
-      preloadCriticalImages();
-    }
-  }, [data]);
+    const timer = setTimeout(loadFloatingImages, 100);
+    return () => clearTimeout(timer);
+  }, [getFloatingImageUrls, preloadImages]);
 
-  // Show skeleton while loading
-  if (isFetching && !showFallback) {
+  if (isDataLoading && !showFallback) {
     return <HeroSkeleton />;
+  }
+
+  if (isError && !showFallback) {
+    return (
+      <section className={styles.heroContainer}>
+        <div className={styles.errorState} role="alert">
+          <p>{error?.message}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className={styles.retryButton}
+          >
+            Try Again
+          </button>
+        </div>
+      </section>
+    );
   }
 
   return (

@@ -3,16 +3,57 @@ import styles from './Features.module.css';
 import FeaturesCard from './Card/FeaturesCard';
 import { useFeature } from '@/hooks/useFeature';
 import { FEATURES_CONSTANTS } from '@/constants/fallback';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import FeaturesSkeleton from './FeaturesSkeleton';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
 
 const Features = () => {
-  const { data, isLoading, error } = useFeature();
+  // Initialize hooks
+  const { data, isLoading: isDataLoading } = useFeature();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load features content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
+
   const [showFallback, setShowFallback] = useState(false);
 
+  // Determine content
+  const cards = error || showFallback || !data?.data?.cards 
+    ? FEATURES_CONSTANTS 
+    : data.data.cards;
+
+  const brands = data?.data?.brands || [];
+  const title = data?.data?.subtext;
+
+  // Collect brand logo URLs for preloading
+  const getBrandUrls = useCallback(() => {
+    return brands.map(brand => brand.logo?.img?.url || '').filter(Boolean);
+  }, [brands]);
+
+  // Handle image preloading
+  const loadImages = useCallback(async () => {
+    const brandUrls = getBrandUrls();
+    if (brandUrls.length === 0 || isLoading) return;
+
+    try {
+      startLoading();
+      await preloadImages(brandUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading();
+    }
+  }, [getBrandUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+
+  // Fallback strategy
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (isLoading || error) {
+      if (isDataLoading || error) {
         setShowFallback(true);
       }
     }, 1000);
@@ -22,18 +63,34 @@ const Features = () => {
     }
 
     return () => clearTimeout(timer);
-  }, [isLoading, error, data]);
+  }, [isDataLoading, error, data]);
 
-  if (isLoading && !showFallback) {
+  // Load brand images
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
+
+  // Show loading state
+  if (isDataLoading && !showFallback) {
     return <FeaturesSkeleton />;
   }
 
-  const cards = error || showFallback || !data?.data?.cards 
-    ? FEATURES_CONSTANTS 
-    : data.data.cards;
-
-  const brands = data?.data?.brands || [];
-  const title = data?.data?.subtext;
+  // Show error state
+  if (isError && !showFallback) {
+    return (
+      <section className={styles.featuresContainer}>
+        <div className={styles.errorState} role="alert">
+          <p>{error?.message}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className={styles.retryButton}
+          >
+            Try Again
+          </button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section 
@@ -66,6 +123,7 @@ const Features = () => {
           brands={brands} 
           title={title}
           headingLevel="h3"
+          isLoading={isLoading}
         />
       </div>
     </section>

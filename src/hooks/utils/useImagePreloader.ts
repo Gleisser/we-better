@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 interface UseImagePreloaderOptions {
   initialUrls?: string[];
@@ -18,40 +18,34 @@ export function useImagePreloader({
   const [isLoading, setIsLoading] = useState(false);
   const [failedUrls, setFailedUrls] = useState<string[]>([]);
 
-  const preloadImage = async (url: string): Promise<void> => {
+  const preloadImage = useCallback((url: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
-      img.src = url;
       img.onload = () => resolve();
       img.onerror = () => reject(url);
+      img.src = url;
     });
-  };
+  }, []);
 
-  const preloadImages = async (urls: string[]): Promise<void> => {
+  const preloadImages = useCallback(async (urls: string[]): Promise<void> => {
+    if (urls.length === 0 || isLoading) return;
+    
     setIsLoading(true);
     setFailedUrls([]);
 
     try {
-      await Promise.all(
-        urls.map(async (url) => {
-          try {
-            await preloadImage(url);
-          } catch (error) {
-            setFailedUrls((prev) => [...prev, url]);
-            onError?.(error);
-          }
-        })
-      );
+      await Promise.all(urls.map(async (url) => {
+        try {
+          await preloadImage(url);
+        } catch (error) {
+          setFailedUrls(prev => [...prev, url]);
+          onError?.(error);
+        }
+      }));
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    if (initialUrls.length > 0) {
-      preloadImages(initialUrls);
-    }
-  }, []); // Only run on mount for initial URLs
+  }, [isLoading, preloadImage, onError]);
 
   return {
     preloadImages,

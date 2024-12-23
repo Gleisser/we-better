@@ -8,7 +8,7 @@ interface Props {
 }
 
 const DashboardPreview = forwardRef<HTMLImageElement, Props>(({ src, alt, observerRef }, ref) => {
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <div 
@@ -29,21 +29,24 @@ const DashboardPreview = forwardRef<HTMLImageElement, Props>(({ src, alt, observ
           transition={{ duration: 0.2 }}
         />
         
+        <div 
+          className={`absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 animate-pulse transition-opacity duration-500 ${
+            isLoaded ? 'opacity-0' : 'opacity-100'
+          }`} 
+        />
+        
         <motion.img
           ref={ref}
           src={src}
           alt={alt}
-          className="relative w-full h-full object-cover opacity-90 transition-opacity duration-500"
-          style={{ opacity: isImageLoaded ? 0.9 : 0 }}
+          className={`relative w-full h-full object-cover ${
+            isLoaded ? 'opacity-90' : 'opacity-0'
+          } transition-opacity duration-500`}
           loading="eager"
           decoding="async"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2 }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isImageLoaded ? 0.9 : 0 }}
-          onLoad={() => {
-            setIsImageLoaded(true);
-          }}
+          onLoad={() => setIsLoaded(true)}
         />
         
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />

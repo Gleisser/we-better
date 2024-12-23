@@ -5,9 +5,16 @@ interface FeaturedProps extends React.HTMLAttributes<HTMLDivElement> {
   brands: Brand[];
   title: string | undefined;
   headingLevel?: 'h2' | 'h3';
+  isLoading?: boolean;
 }
 
-const Featured = ({ brands, title, headingLevel = 'h2', ...props }: FeaturedProps) => {
+const Featured = ({ 
+  brands, 
+  title, 
+  headingLevel = 'h2', 
+  isLoading = false,
+  ...props 
+}: FeaturedProps) => {
   const HeadingTag = headingLevel;
   
   const fallbackBrands = [
@@ -92,7 +99,9 @@ const Featured = ({ brands, title, headingLevel = 'h2', ...props }: FeaturedProp
                 alt={`${item.name} logo`}
                 width={120}
                 height={40}
-                className="opacity-50 hover:opacity-70 transition-opacity duration-300"
+                className={`opacity-50 hover:opacity-70 transition-opacity duration-300 ${
+                  isLoading ? 'animate-pulse' : ''
+                }`}
                 loading="lazy"
                 decoding="async"
               />

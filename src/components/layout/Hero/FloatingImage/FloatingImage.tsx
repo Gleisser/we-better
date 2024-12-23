@@ -1,8 +1,9 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 import { FloatingImageProps } from './types';
 
 const FloatingImage = forwardRef<HTMLImageElement, FloatingImageProps>(({ src, alt, className = '', observerRef }, ref) => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const { scrollY } = useScroll();
   
   // Extract position information from className
@@ -36,28 +37,10 @@ const FloatingImage = forwardRef<HTMLImageElement, FloatingImageProps>(({ src, a
   return (
     <motion.div 
       className={`absolute ${className} z-10`}
-      style={{ 
-        x: translateX,
-        y: translateY,
-        rotate,
-      }}
-      initial={{ 
-        opacity: 0, 
-        x: x[0], 
-        y: y[0],
-        scale: 0.8
-      }}
-      animate={{ 
-        opacity: 1, 
-        x: x[0],
-        y: y[0],
-        scale: 1
-      }}
-      transition={{ 
-        duration: 1.2, 
-        ease: "easeOut",
-        delay: 0.2
-      }}
+      style={{ x: translateX, y: translateY, rotate }}
+      initial={{ opacity: 0, x: x[0], y: y[0], scale: 0.8 }}
+      animate={{ opacity: 1, x: x[0], y: y[0], scale: 1 }}
+      transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
       role="presentation"
       aria-hidden="true"
     >
@@ -77,20 +60,16 @@ const FloatingImage = forwardRef<HTMLImageElement, FloatingImageProps>(({ src, a
           
           <motion.img
             ref={ref}
-            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-            data-src={src}
+            src={src}
             alt={alt}
-            className="relative w-full h-full object-cover rounded-3xl shadow-2xl"
+            className={`relative w-full h-full object-cover rounded-3xl shadow-2xl ${
+              isLoaded ? 'opacity-100' : 'opacity-0'
+            } transition-opacity duration-300`}
             loading="lazy"
             decoding="async"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
-            onLoad={(e) => {
-              const img = e.target as HTMLImageElement;
-              if (img.dataset.src) {
-                img.src = img.dataset.src;
-              }
-            }}
+            onLoad={() => setIsLoaded(true)}
           />
         </div>
       </div>
