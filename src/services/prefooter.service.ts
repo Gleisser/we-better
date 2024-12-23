@@ -1,10 +1,15 @@
 import { apiClient } from '@/lib/api-client';
 import { PrefooterResponse } from '@/types/prefooter';
+import { handleServiceError } from '@/utils/service-utils';
 
 export const prefooterService = {
   async getPrefooter(): Promise<PrefooterResponse> {
-    const populateQuery = 'populate=image';
-    const { data } = await apiClient.get<PrefooterResponse>(`/pre-footer?${populateQuery}`);
-    return data;
+    try {
+      const populateQuery = 'populate=image';
+      const { data } = await apiClient.get<PrefooterResponse>(`/pre-footer?${populateQuery}`);
+      return data;
+    } catch (error) {
+      return handleServiceError(error, 'Prefooter');
+    }
   },
 }; 

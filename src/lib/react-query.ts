@@ -1,33 +1,29 @@
 import { QueryClient } from '@tanstack/react-query';
-
-// Define a type for our API errors
-interface ApiError {
-  message: string;
-  status?: number;
-}
+import { isRateLimitError, shouldRetry, getRetryDelay } from '@/utils/error-handling';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes - data considered fresh
-      gcTime: 1000 * 60 * 30, // 30 minutes - keep in cache
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 30, // 30 minutes
       refetchOnWindowFocus: false,
-      refetchOnMount: true, // Check for updates when component mounts
-      retry: (failureCount, error: ApiError) => {
+      refetchOnMount: true,
+      retry: (failureCount, error) => {
         // Always retry rate limit errors
-        if (error?.message === 'Rate limit exceeded') {
+        if (isRateLimitError(error)) {
           return true;
         }
-        // Otherwise retry up to 2 times
-        return failureCount < 2;
+        // Retry other errors based on shouldRetry utility
+        return shouldRetry(error) && failureCount < 3;
       },
-      retryDelay: (attemptIndex) => {
-        // For rate limit errors, wait longer
-        if (attemptIndex > 0) {
-          return Math.min(1000 * (1.5 ** attemptIndex), 30000);
-        }
-        return 1000;
+      retryDelay: (attemptIndex, error) => getRetryDelay(error, attemptIndex),
+    },
+    mutations: {
+      retry: (failureCount, error) => {
+        // Don't retry mutations unless it's a rate limit error
+        return isRateLimitError(error) && failureCount < 3;
       },
+      retryDelay: (attemptIndex, error) => getRetryDelay(error, attemptIndex),
     },
   },
 }); 

@@ -1,23 +1,13 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { RateLimiter } from './rate-limiter';
 import { ENV_CONFIG } from '@/config/env.config';
-
-// Strapi's response structure
-interface StrapiResponse<T> {
-  data: T;
-}
+import { shouldRetry, getRetryDelay, getErrorMessage } from '@/utils/error-handling';
+import { APIError, Meta } from '@/types/common/meta';
 
 // Wrapper to maintain backward compatibility
 interface ApiResponse<T> {
-  data: StrapiResponse<T>;
-  meta?: {
-    pagination?: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
+  data: T;
+  meta?: Meta;
 }
 
 class ApiClient {
@@ -51,14 +41,46 @@ class ApiClient {
 
       return config;
     });
+
+    this.client.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
+
+        if (originalRequest._retry || !shouldRetry(error)) {
+          throw error;
+        }
+
+        originalRequest._retry = true;
+
+        const retryDelay = getRetryDelay(error, originalRequest._retryCount || 0);
+        originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
+
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+
+        return this.client(originalRequest);
+      }
+    );
   }
 
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const response = await this.client.get<StrapiResponse<T>>(url, config);
-    // Wrap the response to maintain backward compatibility
-    return {
-      data: response.data,
-    };
+    try {
+      const response = await this.client.get<StrapiResponse<T>>(url, config);
+      return {
+        data: response.data,
+      };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const apiError: APIError = {
+          status: error.response?.status || 0,
+          name: error.name,
+          message: error.response?.data?.error?.message || getErrorMessage(error),
+          details: error.response?.data?.error?.details,
+        };
+        throw apiError;
+      }
+      throw error;
+    }
   }
 }
 

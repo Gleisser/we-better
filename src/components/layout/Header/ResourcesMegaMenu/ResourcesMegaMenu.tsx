@@ -7,9 +7,7 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
   const menuItems = menuData?.menu_links || RESOURCES_MEGA_MENU_FALLBACK
 
   const latestPost = menuData?.menu_blog_post;
-
-  console.log(latestPost);
-
+  
   return (
     <AnimatePresence>
       {isOpen && (
