@@ -3,7 +3,7 @@ import styles from './Hero.module.css';
 
 const HeroSkeleton = () => {
   return (
-    <div className={styles.heroContainer}>
+    <div className={styles.heroContainer} data-testid="hero-skeleton">
       {/* Keep the background blur effect */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-black/50" />

@@ -12,23 +12,16 @@ import HeroSkeleton from './HeroSkeleton';
 import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/hooks/utils/useLoadingState';
+  
 
-const preloadImage = (src: string) => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = resolve;
-    img.onerror = reject;
-    img.src = src;
-  });
-};
 
 export const Hero = () => {
   const { data, isFetching: isDataLoading } = useHero();
   const { preloadImages } = useImagePreloader();
-  const { handleError, isError, error } = useErrorHandler({
+  const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load hero content'
   });
-  const { isLoading, startLoading, stopLoading } = useLoadingState({
+  const { startLoading, stopLoading } = useLoadingState({
     minimumLoadingTime: 500
   });
   const [isMobile, setIsMobile] = useState(false);

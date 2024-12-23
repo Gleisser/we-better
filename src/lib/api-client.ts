@@ -65,7 +65,7 @@ class ApiClient {
 
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
-      const response = await this.client.get<StrapiResponse<T>>(url, config);
+      const response = await this.client.get<T>(url, config);
       return {
         data: response.data,
       };

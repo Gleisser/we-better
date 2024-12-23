@@ -16,13 +16,24 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 1,
         documentId: "1",
-        title: "Leonardo Anime XL",
+        name: "Leonardo Anime XL",
+        alternativeText: "Leonardo Anime XL",
+        caption: "Leonardo Anime XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Anime_XL_1.webp",
         src: "/assets/images/showcase/belt/Anime_XL_1.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Anime XL",
+
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Anime_XL_1.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -30,13 +41,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 2,
         documentId: "2",
-        title: "Leonardo Anime XL",
+        name: "Leonardo Anime XL",
+        alternativeText: "Leonardo Anime XL",
+        caption: "Leonardo Anime XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Anime_XL_2.webp",
         src: "/assets/images/showcase/belt/Anime_XL_2.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Anime XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Anime_XL_2.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -44,13 +65,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 3,
         documentId: "3",
-        title: "Leonardo Anime XL",
+        name: "Leonardo Anime XL",
+        alternativeText: "Leonardo Anime XL",
+        caption: "Leonardo Anime XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Anime_XL_3.webp",
         src: "/assets/images/showcase/belt/Anime_XL_3.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Anime XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Anime_XL_3.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -65,13 +96,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 1,
         documentId: "1",
-        title: "Leonardo Lighting XL",
+        name: "Leonardo Lighting XL",
+        alternativeText: "Leonardo Lighting XL",
+        caption: "Leonardo Lighting XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Lightning_XL_1.webp",
         src: "/assets/images/showcase/belt/Lightning_XL_1.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Lighting XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Lightning_XL_1.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -79,13 +120,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 2,
         documentId: "2",
-        title: "Leonardo Lighting XL",
+        name: "Leonardo Lighting XL",
+        alternativeText: "Leonardo Lighting XL",
+        caption: "Leonardo Lighting XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Lightning_XL_2.webp",
         src: "/assets/images/showcase/belt/Lightning_XL_2.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Lighting XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Lightning_XL_2.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -93,13 +144,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 3,
         documentId: "3",
-        title: "Leonardo Lighting XL",
+        name: "Leonardo Lighting XL",
+        alternativeText: "Leonardo Lighting XL",
+        caption: "Leonardo Lighting XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Lightning_XL_3.webp",
         src: "/assets/images/showcase/belt/Lightning_XL_3.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Lighting XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Lightning_XL_3.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -114,13 +175,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 1,
         documentId: "1",
-        title: "Leonardo Kino XL",
+        name: "Leonardo Kino XL",
+        alternativeText: "Leonardo Kino XL",
+        caption: "Leonardo Kino XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Kino_XL_1.webp",
         src: "/assets/images/showcase/belt/Kino_XL_1.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Kino XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Kino_XL_1.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -128,13 +199,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 2,
         documentId: "2",
-        title: "Leonardo Kino XL",
+        name: "Leonardo Kino XL",
+        alternativeText: "Leonardo Kino XL",
+        caption: "Leonardo Kino XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Kino_XL_2.webp",
         src: "/assets/images/showcase/belt/Kino_XL_2.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Kino XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Kino_XL_2.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -142,13 +223,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 3,
         documentId: "3",
-        title: "Leonardo Kino XL",
+        name: "Leonardo Kino XL",
+        alternativeText: "Leonardo Kino XL",
+        caption: "Leonardo Kino XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Kino_XL_3.webp",
         src: "/assets/images/showcase/belt/Kino_XL_3.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Kino XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Kino_XL_3.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -163,13 +254,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 1,
         documentId: "1",
-        title: "Leonardo Diffusion XL",
+        name: "Leonardo Diffusion XL",
+        alternativeText: "Leonardo Diffusion XL",
+        caption: "Leonardo Diffusion XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Diffusion_XL_1.webp",
         src: "/assets/images/showcase/belt/Diffusion_XL_1.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Diffusion XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Diffusion_XL_1.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -177,13 +278,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 2,
         documentId: "2",
-        title: "Leonardo Diffusion XL",
+        name: "Leonardo Diffusion XL",
+        alternativeText: "Leonardo Diffusion XL",
+        caption: "Leonardo Diffusion XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Diffusion_XL_2.webp",
         src: "/assets/images/showcase/belt/Diffusion_XL_2.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Diffusion XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Diffusion_XL_2.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -191,13 +302,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 3,
         documentId: "3",
-        title: "Leonardo Diffusion XL",
+        name: "Leonardo Diffusion XL",
+        alternativeText: "Leonardo Diffusion XL",
+        caption: "Leonardo Diffusion XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Diffusion_XL_3.webp",
         src: "/assets/images/showcase/belt/Diffusion_XL_3.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Diffusion XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Diffusion_XL_3.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -212,13 +333,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 1,
         documentId: "1",
-        title: "Leonardo Vision XL",
+        name: "Leonardo Vision XL",
+        alternativeText: "Leonardo Vision XL",
+        caption: "Leonardo Vision XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Vision_XL_1.webp",
         src: "/assets/images/showcase/belt/Vision_XL_1.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Vision XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Vision_XL_1.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -226,13 +357,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 2,
         documentId: "2",
-        title: "Leonardo Vision XL",
+        name: "Leonardo Vision XL",
+        alternativeText: "Leonardo Vision XL",
+        caption: "Leonardo Vision XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Vision_XL_2.webp",
         src: "/assets/images/showcase/belt/Vision_XL_2.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Vision XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Vision_XL_2.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -240,13 +381,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 3,
         documentId: "3",
-        title: "Leonardo Vision XL",
+        name: "Leonardo Vision XL",
+        alternativeText: "Leonardo Vision XL",
+        caption: "Leonardo Vision XL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Vision_XL_3.webp",
         src: "/assets/images/showcase/belt/Vision_XL_3.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "Leonardo Vision XL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Vision_XL_3.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -261,13 +412,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 1,
         documentId: "1",
-        title: "AlbedoBaseXL",
+        name: "AlbedoBaseXL",
+        alternativeText: "AlbedoBaseXL",
+        caption: "AlbedoBaseXL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Albedo_XL_1.webp",
         src: "/assets/images/showcase/belt/Albedo_XL_1.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "AlbedoBaseXL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Albedo_XL_1.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -275,13 +436,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 2,
         documentId: "2",
-        title: "AlbedoBaseXL",
+        name: "AlbedoBaseXL",
+        alternativeText: "AlbedoBaseXL",
+        caption: "AlbedoBaseXL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Albedo_XL_2.webp",
         src: "/assets/images/showcase/belt/Albedo_XL_2.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "AlbedoBaseXL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Albedo_XL_2.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -289,13 +460,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 3,
         documentId: "3",
-        title: "AlbedoBaseXL",
+        name: "AlbedoBaseXL",
+        alternativeText: "AlbedoBaseXL",
+        caption: "AlbedoBaseXL",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Albedo_XL_3.webp",
         src: "/assets/images/showcase/belt/Albedo_XL_3.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "AlbedoBaseXL",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Albedo_XL_3.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -310,13 +491,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 1,
         documentId: "1",
-        title: "PhotoReal",
+        name: "PhotoReal",
+        alternativeText: "PhotoReal",
+        caption: "PhotoReal",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Photo_Real_1.webp",
         src: "/assets/images/showcase/belt/Photo_Real_1.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "PhotoReal",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Photo_Real_1.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -324,13 +515,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 2,
         documentId: "2",
-        title: "PhotoReal",
+        name: "PhotoReal",
+        alternativeText: "PhotoReal",
+        caption: "PhotoReal",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Photo_Real_2.webp",
         src: "/assets/images/showcase/belt/Photo_Real_2.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "PhotoReal",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Photo_Real_2.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -338,13 +539,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 3,
         documentId: "3",
-        title: "PhotoReal",
+        name: "PhotoReal",
+        alternativeText: "PhotoReal",
+        caption: "PhotoReal",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/Photo_Real_3.webp",
         src: "/assets/images/showcase/belt/Photo_Real_3.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "PhotoReal",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/Photo_Real_3.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -359,13 +570,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 1,
         documentId: "1",
-        title: "RPG v5",
+        name: "RPG v5",
+        alternativeText: "RPG v5",
+        caption: "RPG v5",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/RPG_1.webp",
         src: "/assets/images/showcase/belt/RPG_1.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "RPG v5",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/RPG_1.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -373,13 +594,23 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 2,
         documentId: "2",
-        title: "RPG v5",
+        name: "RPG v5",
+        alternativeText: "RPG v5",
+        caption: "RPG v5",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/RPG_2.webp",
         src: "/assets/images/showcase/belt/RPG_2.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         alt: "RPG v5",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/RPG_2.webp",
+              width: 100,
+              height: 100,
             },
           },
         },
@@ -387,14 +618,24 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
       {
         id: 3,
         documentId: "3",
-        title: "RPG v5",
+        name: "RPG v5",
+        alternativeText: "RPG v5",
+        caption: "RPG v5",
+        width: 100,
+        height: 100,
+        url: "/assets/images/showcase/belt/RPG_3.webp",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
         src: "/assets/images/showcase/belt/RPG_3.webp",
         alt: "RPG v5",
         img: {
           formats: {
             thumbnail: {
               url: "/assets/images/showcase/belt/RPG_3.webp",
-            },
+              width: 100,
+              height: 100,
+              },
           },
         },
       }
