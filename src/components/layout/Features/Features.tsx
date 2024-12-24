@@ -105,7 +105,10 @@ const Features = () => {
           {/* Main section title */}
         </h2>
         
-        <div className={styles.featuresCard}>
+        <div 
+          className={styles.featuresCard}
+          data-testid="features-cards"
+        >
           {cards.map((card, index) => (
             <div key={card.id || index}>
               <h3 className={styles.cardTitle}>

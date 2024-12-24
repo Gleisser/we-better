@@ -2,7 +2,7 @@ import styles from './Features.module.css';
 
 const FeaturesSkeleton = () => {
   return (
-    <section className={styles.featuresContainer}>
+    <section className={styles.featuresContainer} data-testid="features-skeleton">
       <div>
         {/* Features Cards Skeleton */}
         <div className={styles.featuresCard}>
