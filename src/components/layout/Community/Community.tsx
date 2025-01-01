@@ -10,32 +10,32 @@ import { useLoadingState } from '@/hooks/utils/useLoadingState';
 const INITIAL_PROFILES = [
   {
     id: 1,
-    src: '/assets/images/community/list-1.webp',
+    src: '/assets/images/community/community_1.webp',
     alt: 'Community member profile 1'
   },
   {
     id: 2,
-    src: '/assets/images/community/list-2.webp',
+    src: '/assets/images/community/community_2.webp',
     alt: 'Community member profile 2'
   },
   {
     id: 3,
-    src: '/assets/images/community/list-3.webp',
+    src: '/assets/images/community/community_3.webp',
     alt: 'Community member profile 3'
   },
   {
     id: 4,
-    src: '/assets/images/community/list-4.webp',
+    src: '/assets/images/community/community_4.webp',
     alt: 'Community member profile 4'
   },
   {
     id: 5,
-    src: '/assets/images/community/list-5.webp',
+    src: '/assets/images/community/community_5.webp',
     alt: 'Community member profile 5'
   },
   {
     id: 6,
-    src: '/assets/images/community/list-6.webp',
+    src: '/assets/images/community/community_6.webp',
     alt: 'Community member profile 6'
   }
 ] as const;

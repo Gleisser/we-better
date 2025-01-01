@@ -3,7 +3,7 @@ import { TopLevelImage } from '@/types/common/image';
 export interface Gallery {
     documentId: string;
     id: number;
-    title: string;
+    Title: string;
     highlightedTitle: string;
     images: TopLevelImage[];
 }

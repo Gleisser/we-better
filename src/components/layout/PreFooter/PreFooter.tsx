@@ -132,7 +132,7 @@ const PreFooter = () => {
           className={styles.rightColumn}
           role="presentation"
         >
-          <div className={styles.imageContainer}>
+          {/* <div className={styles.imageContainer}> */}
             <img
               src={imageUrl}
               alt="Interactive preview of Leonardo AI platform showcasing creative tools and workspace"
@@ -140,7 +140,7 @@ const PreFooter = () => {
               loading="lazy"
               decoding="async"
             />
-          </div>
+          {/* </div> */}
         </div>
       </div>
     </section>

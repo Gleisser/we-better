@@ -349,7 +349,7 @@ const Gallery = () => {
             className={styles.title}
             id="gallery-title"
           >
-            <span className={styles.gradientText}>Platform</span> Gallery
+            <span className={styles.gradientText}>{data?.data?.Title}</span> {data?.data?.highlightedTitle}
             <GalleryIcon className={styles.paintIcon} aria-hidden="true" />
           </h2>
         </div>

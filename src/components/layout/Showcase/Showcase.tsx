@@ -240,8 +240,8 @@ const Showcase = () => {
             className={styles.title}
             id="showcase-title"
           >
-            <span>Unveil New Creative Horizons</span>
-            <span>with <span className={styles.gradientText}>Fine-tuned Models</span></span>
+            <span>{showcase?.data.title}</span>
+            <span className={styles.gradientText}>{showcase?.data.subtitle}</span>
           </h2>
           {!isMobile && (
             <div 

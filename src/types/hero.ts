@@ -1,4 +1,5 @@
 import { APIResponse } from '@/types/common/meta';
+import { TopLevelImage } from './common/image';
 
 export interface HeroImage {
   id: number;
@@ -8,6 +9,7 @@ export interface HeroImage {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
+  img: TopLevelImage;
 }
 
 export interface Hero {
