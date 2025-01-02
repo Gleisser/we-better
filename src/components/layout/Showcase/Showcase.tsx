@@ -51,7 +51,7 @@ const Showcase = () => {
     return currentItems.reduce((urls: string[], item) => {
       const itemUrls = item.images.map(image => 
         showcase 
-          ? API_CONFIG.imageBaseURL + image.img.formats.thumbnail.url
+          ? image.src
           : image.src
       );
       return [...urls, ...itemUrls];
@@ -88,7 +88,7 @@ const Showcase = () => {
       if (ref && currentItems[index]) {
         const item = currentItems[index];
         const initialSrc = showcase 
-          ? API_CONFIG.imageBaseURL + item.images[0].img.formats.thumbnail.url
+          ? item.images[0].src
           : item.images[0].src;
         ref.src = initialSrc;
       }
@@ -100,26 +100,26 @@ const Showcase = () => {
     let interval: NodeJS.Timeout | undefined;
     
     if (hoveredItem && currentItems.length) {
-      interval = setInterval(() => {
-        setImageIndex(prev => {
-          const nextIndex = (prev + 1) % 3;
-          const currentItemRef = imageRefs.current.find((_, i) => 
-            currentItems[i]?.id === hoveredItem
-          );
-          
-          if (currentItemRef) {
-            const item = currentItems.find(item => item.id === hoveredItem);
-            if (item) {
-              const newSrc = showcase 
-                ? API_CONFIG.imageBaseURL + item.images[nextIndex].img.formats.thumbnail.url
-                : item.images[nextIndex].src;
-              currentItemRef.src = newSrc;
+      const hoveredBelt = currentItems.find(item => item.id === hoveredItem);
+      // Only set up interval if there are multiple images
+      if (hoveredBelt && hoveredBelt.images.length > 1) {
+        interval = setInterval(() => {
+          setImageIndex(prev => {
+            const currentItemRef = imageRefs.current.find((_, i) => 
+              currentItems[i]?.id === hoveredItem
+            );
+            
+            if (currentItemRef && hoveredBelt) {
+              // Use modulo with actual number of images
+              const nextIndex = (prev + 1) % hoveredBelt.images.length;
+              currentItemRef.src = hoveredBelt.images[nextIndex].src;
+              return nextIndex;
             }
-          }
-          
-          return nextIndex;
-        });
-      }, 1000);
+            
+            return prev;
+          });
+        }, 1000);
+      }
     } else {
       setImageIndex(0);
       resetImages();
@@ -128,7 +128,7 @@ const Showcase = () => {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [hoveredItem, currentItems, showcase, resetImages]);
+  }, [hoveredItem, currentItems, resetImages]);
 
   // Handle mobile detection
   const checkIfMobile = useCallback(() => {
@@ -304,13 +304,16 @@ const Showcase = () => {
                   <img
                     ref={el => imageRefs.current[index] = el}
                     src={showcase 
-                      ? API_CONFIG.imageBaseURL + item.images[0].img.formats.thumbnail.url
+                      ? item.images[0].src
                       : item.images[0].src
                     }
                     alt={item.images[hoveredItem === item.id ? imageIndex : 0].alt}
                     className={styles.image}
                     loading={index === 0 ? "eager" : "lazy"}
                     decoding="async"
+                    width="600"
+                    height="450"
+                    sizes="(max-width: 768px) 100vw, 25vw"
                   />
                 </div>
                 <h3 className={styles.itemTitle}>{item.title}</h3>

@@ -8,6 +8,7 @@ import { MEGA_MENU_FALLBACK } from '@/constants/fallback';
 const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps) => {
   const menuItems = menuData?.menu_links || MEGA_MENU_FALLBACK;
   const blogPost = menuData?.menu_blog_post;
+  console.log(menuData);
 
   return (
     <AnimatePresence>

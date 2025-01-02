@@ -22,6 +22,8 @@ const Header = () => {
 
   const megamenus = data?.data.megamenus || MEGA_MENU_CONFIG;
 
+  console.log(data);
+
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -83,7 +85,7 @@ const Header = () => {
               aria-label="We Better Home"
             >
               <img 
-                src="/assets/images/logo/we-better-logo-v3.svg" 
+                src="/assets/images/logo/logo.svg" 
                 alt="We Better" 
                 className={`${styles.logo} ${styles.desktopLogo}`}
                 width="120"
