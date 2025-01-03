@@ -22,8 +22,6 @@ const Header = () => {
 
   const megamenus = data?.data.megamenus || MEGA_MENU_CONFIG;
 
-  console.log(data);
-
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -142,20 +140,20 @@ const Header = () => {
                   <>
                     <li>
                       <NavItem 
-                        href="#teams" 
-                        title={HEADER_CONSTANTS.Teams.title}
+                        href="#business" 
+                        title={HEADER_CONSTANTS.Business.title}
                       />
                     </li>
                     <li>
                       <NavItem 
-                        href="#developers" 
-                        title={HEADER_CONSTANTS.Developers.title}
+                        href="#mentors" 
+                        title={HEADER_CONSTANTS.Mentors.title}
                       />
                     </li>
                     <li>
                       <NavItem 
-                        href="#creators" 
-                        title={HEADER_CONSTANTS.Creators.title}
+                        href="#coaches" 
+                        title={HEADER_CONSTANTS.Coaches.title}
                       />
                     </li>
                   </>

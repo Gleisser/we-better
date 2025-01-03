@@ -1,7 +1,7 @@
 export const PREFOOTER_FALLBACK = {
-    title: 'Create your next artwork, with the power of Leonardo Ai',
-    buttonText: 'Start using Leonardo',
-    buttonDescription: 'Join the Leonardo community',
+    title: 'Take the next step toward your best self with the power of We Better.',
+    buttonText: 'Start using We Better',
+    buttonDescription: 'Join the We Better community',
     image: {
         url: '/assets/images/prefooter/prefooter.webp',
     },

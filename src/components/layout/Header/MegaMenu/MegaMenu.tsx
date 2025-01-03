@@ -1,14 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { MegaMenuProps } from './types';
 import { API_CONFIG } from '@/lib/api-config';
-import { MEGA_MENU_FALLBACK } from '@/constants/fallback';
+import { SOLUTIONS_MEGA_MENU_FALLBACK } from '@/constants/fallback/megamenu';
 
 
 
 const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps) => {
-  const menuItems = menuData?.menu_links || MEGA_MENU_FALLBACK;
+  const menuItems = menuData?.menu_links || SOLUTIONS_MEGA_MENU_FALLBACK;
   const blogPost = menuData?.menu_blog_post;
-  console.log(menuData);
 
   return (
     <AnimatePresence>
@@ -54,10 +53,10 @@ const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps) => {
               <div className="space-y-3">
                 <div className="aspect-[4/3] rounded-lg overflow-hidden bg-black/20">
                   <img
-                    src={blogPost && API_CONFIG.imageBaseURL + blogPost?.cover?.formats?.medium?.url || "/assets/images/hero/app_hero_img.webp"}
+                    src={blogPost && API_CONFIG.imageBaseURL + blogPost?.cover?.formats?.medium?.url || "/assets/images/hero/blog_post.webp"}
                     alt={blogPost?.title 
-                      ? `Featured blog post: ${blogPost.title} - Latest AI platform insights and updates` 
-                      : "Featured blog post: Discover Phoenix by Leonardo.Ai - Our latest AI image generation model"}
+                      ? `Featured blog post: ${blogPost.title} - 15 Principles to be Successful in Business` 
+                      : "Featured blog post: 15 Principles to be Successful in Business"}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -67,10 +66,10 @@ const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps) => {
                     <span className="text-[#6366F1] text-xs font-semibold">NEW</span>
                   </div>
                   <div className="text-white text-sm font-semibold font-plus-jakarta">
-                    {blogPost?.title || "Discover Phoenix by Leonardo.Ai"}
+                    {blogPost?.title || "15 Principles to be Successful in Business"}
                   </div>
                   <p className="text-white/60 text-xs leading-relaxed">
-                    {blogPost?.description || "Our first foundational model is here, changing everything you know about AI image generation."}
+                    {blogPost?.description || "Everyone can do it, and achieve financial freedom"}
                   </p>
                 </div>
               </div>

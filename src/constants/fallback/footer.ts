@@ -2,25 +2,16 @@ import { Footer } from "@/types/footer";
 
 const FOOTER_LINKS = {
     Solutions: [
-      'AI Art Generator',
-      'AI Video Generator',
-      'Transparent PNG Generator',
-      'AI Marketing Tools',
-      'AI Graphic Design',
-      'AI Print on Demand',
-      'AI Photography',
-      'AI Interior Design',
-      'AI Architecture'
+      'Courses',
+      'Articles',
+      'Newsletter',
+      'Videos'
     ],
     About: [
-      'API',
       'FAQ',
       'Blog',
       'Support',
-      'Contact us',
-      'Careers',
-      'Affiliate Program',
-      'Leonardo Creator Program'
+      'Contact us'
     ]
   };
   
@@ -40,21 +31,21 @@ const FOOTER_LINKS = {
       width: 0,
       height: 0,
       caption: '',
-      src: '/assets/images/footer/logo-leonardo-ai.svg',
-      alt: 'Leonardo AI',
+      src: '/assets/images/footer/logo.svg',
+      alt: 'We Better',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       publishedAt: new Date().toISOString(),
       formats: {
         thumbnail: {
-          url: '/assets/images/footer/logo-leonardo-ai.svg',
+          url: '/assets/images/footer/logo.svg',
           width: 100,
           height: 100
         }
       }
     },
-    logoDescription: 'Leonardo Interactive Pty Ltd',
-    copyright: '© 2024 All Rights Reserved. Leonardo Interactive Pty Ltd®',
+    logoDescription: 'We Better Ltd',
+    copyright: '© 2024 All Rights Reserved. We Better Ltd®',
     footer_links: [
       {
         id: 0,

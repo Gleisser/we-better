@@ -1,27 +1,23 @@
 export const HEADER_CONSTANTS = {
-    Features: {
-        id: 'Highlight',
-        title: 'Features',
+    Resources: {
+        id: 'resources',
+        title: 'Resources',
     },
     Solutions: {
         id: 'SVG',
         title: 'Solutions',
     },
-    Resources: {
-        id: 'resources',
-        title: 'Resources',
+    Business: {
+        id: 'business',
+        title: 'For Business',
     },
-    Teams: {
-        id: 'teams',
-        title: 'For Teams',
+    Mentors: {
+        id: 'mentors',
+        title: 'For Mentors',
     },
-    Developers: {
-        id: 'developers',
-        title: 'For Developers',
-    },
-    Creators: {
-        id: 'creators',
-        title: 'For Creators',
+    Coaches: {
+        id: 'coaches',
+        title: 'For Coaches',
     },
     Cta: {
         id: 'cta',
@@ -38,22 +34,16 @@ export enum MenuType {
 export const MEGA_MENU_CONFIG = [
     {
         id: 1,
-        href: '#features',
-        title: HEADER_CONSTANTS.Features.title,
-        type: MenuType.Highlight
+        href: '#resources',
+        title: HEADER_CONSTANTS.Resources.title,
+        type: MenuType.Blog
     },
     {
         id: 2,
         href: '#solutions',
         title: HEADER_CONSTANTS.Solutions.title,
-        type: MenuType.SVG
+        type: MenuType.Highlight
     },
-    {
-        id: 3,
-        href: '#resources',
-        title: HEADER_CONSTANTS.Resources.title,
-        type: MenuType.Blog
-    }
 ] as const;
 
 export default HEADER_CONSTANTS;

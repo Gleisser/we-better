@@ -159,7 +159,7 @@ const Highlights = () => {
           className={styles.highlightsTitle}
           id="highlights-title"
         >
-          <span>{data?.data?.title || 'Use Leonardo today for'}</span>
+          <span>{data?.data?.title || 'Use We Better today for'}</span>
           <span className={styles.gradientText}>{highlights[activeIndex]?.title}</span>
         </h2>
         <div 

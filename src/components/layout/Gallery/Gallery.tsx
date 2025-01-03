@@ -13,160 +13,76 @@ const LOAD_MORE_COUNT = 8;
 const GALLERY_IMAGES = [
   {
     id: 1,
-    src: '/assets/images/gallery/gallery_1_large.webp',
-    alt: 'Character in yellow raincoat',
+    src: '/assets/images/gallery/body.gif',
+    alt: 'Woman running',
     size: 'large'
   },
   {
     id: 2,
-    src: '/assets/images/gallery/gallery_2_small.webp',
-    alt: 'Cyberpunk character portrait',
-    size: 'small'
-  },
-  {
-    id: 3,
-    src: '/assets/images/gallery/gallery_3_large.webp',
-    alt: 'Crystal flower in glass',
+    src: '/assets/images/gallery/mind.webp',
+    alt: 'Woman thinking',
     size: 'large'
   },
   {
-    id: 4,
+    id: 3,
     src: '/assets/images/gallery/gallery_4_small.webp',
-    alt: 'Motorcycle in neon lights',
+    alt: 'Men reading a book',
     size: 'small'
   },
   {
+    id: 4,
+    src: '/assets/images/gallery/family.webp',
+    alt: 'A family of 3',
+    size: 'large'
+  },
+  {
     id: 5,
-    src: '/assets/images/gallery/gallery_5_large.webp',
-    alt: 'Motorcycle in neon lights',
+    src: '/assets/images/gallery/care.webp',
+    alt: 'A woman taking care of her self',
     size: 'large'
   },
   {
     id: 6,
-    src: '/assets/images/gallery/gallery_6_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
+    src: '/assets/images/gallery/career.webp',
+    alt: 'a man in a suit',
+    size: 'large'
   },
   {
     id: 7,
-    src: '/assets/images/gallery/gallery_7_large.webp',
-    alt: 'Motorcycle in neon lights',
+    src: '/assets/images/gallery/spirit.webp',
+    alt: 'A woman meditating',
     size: 'large'
   },
   {
     id: 8,
-    src: '/assets/images/gallery/gallery_8_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
+    src: '/assets/images/gallery/gallery_1_small.webp',
+    alt: 'A man hearing headphones',
+    size: 'small'
   },
   {
     id: 9,
-    src: '/assets/images/gallery/gallery_9_small.webp',
-    alt: 'Motorcycle in neon lights',
+    src: '/assets/images/gallery/gallery_2_small.webp',
+    alt: 'A woman working on her laptop',
     size: 'small'
   },
   {
     id: 10,
-    src: '/assets/images/gallery/gallery_10_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
+    src: '/assets/images/gallery/gallery_3_small.webp',
+    alt: 'A woman watching videos',
+    size: 'small'
   },
   {
     id: 11,
-    src: '/assets/images/gallery/gallery_11_small.webp',
-    alt: 'Motorcycle in neon lights',
+    src: '/assets/images/gallery/gallery_5_small.webp',
+    alt: 'A woman holding books',
     size: 'small'
   },
   {
     id: 12,
-    src: '/assets/images/gallery/gallery_12_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
-  },
-  {
-    id: 13,
-    src: '/assets/images/gallery/gallery_13_small.webp',
-    alt: 'Motorcycle in neon lights',
+    src: '/assets/images/gallery/gallery_6_small.webp',
+    alt: 'Men talking to a woman',
     size: 'small'
-  },
-  {
-    id: 14,
-    src: '/assets/images/gallery/gallery_14_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 15,
-    src: '/assets/images/gallery/gallery_15_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
-  },
-  {
-    id: 16,
-    src: '/assets/images/gallery/gallery_16_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 17,
-    src: '/assets/images/gallery/gallery_17_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
-  },
-  {
-    id: 18,
-    src: '/assets/images/gallery/gallery_18_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
-  },
-  {
-    id: 19,
-    src: '/assets/images/gallery/gallery_19_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 20,
-    src: '/assets/images/gallery/gallery_20_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 21,
-    src: '/assets/images/gallery/gallery_21_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 22,
-    src: '/assets/images/gallery/gallery_22_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 23,
-    src: '/assets/images/gallery/gallery_23_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 24,
-    src: '/assets/images/gallery/gallery_24_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 25,
-    src: '/assets/images/gallery/gallery_25_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 26,
-    src: '/assets/images/gallery/gallery_26_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
+  }
   // Add all your images here with their correct paths and sizes
 ] as const;
 
@@ -349,7 +265,7 @@ const Gallery = () => {
             className={styles.title}
             id="gallery-title"
           >
-            <span className={styles.gradientText}>{data?.data?.Title}</span> {data?.data?.highlightedTitle}
+            <span className={styles.gradientText}>{data?.data?.Title || 'Curated Content'}</span> {data?.data?.highlightedTitle}
             <GalleryIcon className={styles.paintIcon} aria-hidden="true" />
           </h2>
         </div>

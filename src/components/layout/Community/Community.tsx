@@ -55,9 +55,9 @@ const Community = () => {
 
   const defaultTitle = (
     <>
-      Be part of a{' '}
-      <span className={styles.highlight}>creative</span>{' '}
-      community!{' '}
+      
+      <span className={styles.highlight}>Community of achievers</span>{' '}
+      worldwide!{' '}
       <span role="img" aria-label="Earth">
         🌎
       </span>
@@ -166,7 +166,7 @@ const Community = () => {
             className={styles.discordLabel}
             aria-label="Discord server ranking"
           >
-            {data?.data?.label || '#3 Discord Server in the World'}
+            {data?.data?.label || '#1 Self Improvement Community'}
           </div>
           
           <h2 
@@ -178,9 +178,11 @@ const Community = () => {
               highlightClassName: styles.highlight,
               fallback: defaultTitle
             })}
-            <span role="img" aria-label="Earth">
-              🌎
-            </span>
+            {data?.data?.title && (
+              <span role="img" aria-label="Earth">
+                🌎
+              </span>
+            )}
           </h2>
           
           <a 
@@ -188,10 +190,10 @@ const Community = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             className={styles.discordButton}
-            aria-label="Join our Discord community"
+            aria-label="Join our community"
           >
             <DiscordIcon className={styles.discordIcon} aria-hidden="true" />
-            {data?.data?.buttonText || 'Join Discord Server'}
+            {data?.data?.buttonText || 'Join Now'}
           </a>
         </div>
 

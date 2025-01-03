@@ -1,13 +1,13 @@
 export const HIGHLIGHTS_FALLBACK = [
   {
     id: 1,
-    title: "Concept Art",
+    title: "Goals",
     image: {
-      url: "/assets/images/highlights/Concept-Art.webp",
+      url: "/assets/images/highlights/goals.webp",
       img:{
         formats: {
           large: {
-            url: "/assets/images/highlights/Concept-Art.webp"
+            url: "/assets/images/highlights/goals.webp"
           }
         }
       }
@@ -15,13 +15,13 @@ export const HIGHLIGHTS_FALLBACK = [
   },
   {
     id: 2,
-    title: "Marketing",
+    title: "Relationships",
     image: {
-      url: "/assets/images/highlights/Marketing.webp",
+      url: "/assets/images/highlights/relationship.webp",
       img: {
         formats: {
           large: {
-            url: "/assets/images/highlights/Marketing.webp"
+            url: "/assets/images/highlights/relationship.webp"
           }
         }
       }
@@ -29,13 +29,13 @@ export const HIGHLIGHTS_FALLBACK = [
   },
   {
     id: 3,
-    title: "Advertising",
+    title: "Resilience",
     image: {
-      url: "/assets/images/highlights/Advertising.webp",
+      url: "/assets/images/highlights/resilience.webp",
       img: {
         formats: {
         large: {
-          url: "/assets/images/highlights/Advertising.webp"
+          url: "/assets/images/highlights/resilience.webp"
         }
         }
       }
@@ -43,13 +43,13 @@ export const HIGHLIGHTS_FALLBACK = [
   },
   {
     id: 4,
-    title: "Game Assets",
+    title: "Career",
     image: {
-      url: "/assets/images/highlights/Game-Assets.webp",
+      url: "/assets/images/highlights/career.webp",
       img: {
         formats: {
           large: {
-            url: "/assets/images/highlights/Game-Assets.webp"
+            url: "/assets/images/highlights/career.webp"
           }
         }
       }
@@ -57,102 +57,18 @@ export const HIGHLIGHTS_FALLBACK = [
   },
   {
     id: 5,
-    title: "Inspiration",
+    title: "Finances",
     image: {
-      url: "/assets/images/highlights/Inspiration.webp",
+      url: "/assets/images/highlights/finances.webp",
       img: {
         formats: {
           large: {
-            url: "/assets/images/highlights/Inspiration.webp"
+            url: "/assets/images/highlights/finances.webp"
           }
         }
       }
     }
   },
-  {
-    id: 6,
-    title: "Character Design",
-    image: {
-      url: "/assets/images/highlights/Character-Design.webp",
-      img: {
-        formats: {
-          large: {
-            url: "/assets/images/highlights/Character-Design.webp"
-          }
-        }
-      }
-    }
-  },
-  {
-    id: 7,
-    title: "Product Photography",
-    image: {
-      url: "/assets/images/highlights/Product-Photography.webp",
-      img: {
-        formats: {
-          large: {
-            url: "/assets/images/highlights/Product-Photography.webp"
-          }
-        }
-      }
-    }
-  },
-  {
-    id: 8,
-    title: "Architecture",
-    image: {
-      url: "/assets/images/highlights/Architecture.webp",
-      img: {
-        formats: {
-          large: {
-            url: "/assets/images/highlights/Architecture.webp"
-          }
-        }
-      }
-    }
-  },
-  {
-    id: 9,
-    title: "Fashion",
-    image: {
-      url: "/assets/images/highlights/Fashion.webp",
-      img: {
-        formats: {
-          large: {
-            url: "/assets/images/highlights/Fashion.webp"
-          }
-        }
-      }
-    }
-  },
-  {
-    id: 10,
-    title: "Interior Design",
-    image: {
-      url: "/assets/images/highlights/Interior-Design.webp",
-      img: {
-        formats: {
-          large: {
-            url: "/assets/images/highlights/Interior-Design.webp"
-          }
-        }
-      }
-    }
-  },
-  {
-    id: 11,
-    title: "and much more",
-    image: {
-      url: "/assets/images/highlights/Much-More.webp",
-      img: {
-        formats: {
-          large: {
-            url: "/assets/images/highlights/Much-More.webp"
-          }
-        }
-      }
-    }
-  }
 ];
 
 export default HIGHLIGHTS_FALLBACK;

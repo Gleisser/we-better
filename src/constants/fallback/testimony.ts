@@ -2,31 +2,31 @@ import { TestimonyItem } from "@/types/testimony";
 
 export const TESTIMONY_FALLBACK = {
     id: 1,
-    title: "A community of over [highlight]4 million[/highlight] is waiting for you",
-    subtitle: "Leonardo's power extends beyond our revolutionary tools — we are anchored in one of the largest and most supportive AI communities worldwide, and we're deeply committed to it.",
+    title: "Connect with [highlight]like-minded individuals[/highlight] and share your progress.",
+    subtitle: "We Better goes beyond personalized tools—our platform is built on a thriving community of like-minded individuals, all driven to achieve their goals and support each other on the journey to self-improvement.",
     testimonies: [
         {
             id: 1,
-            testimony: "Leonardo gave me a way of expressing myself in a completely new and different way. Without AI I was only a consumer. Now I can create.",
-            username: "Malakai030",
+            testimony: "We Better has been my go-to platform for self-improvement. It’s not just about achieving goals—it’s about understanding my weaknesses and turning them into strengths. I can’t imagine my growth journey without it.",
+            username: "Ayesha K., 27, Student",
             profilePic: {
-                url: "/assets/images/testimonies/profile_1.webp"
+                url: "/assets/images/testimonies/testimony_1.webp"
             }
         },
         {
             id: 2,
-            testimony: "Leo is suitable for those who are just starting their way in the world of AI images, as well as for professionals, who are offered a wide range of tools to work with.",
-            username: "Raini Studios",
+            testimony: "What makes We Better special isn’t just the personalized tools—it’s the supportive community. Knowing others are on similar journeys makes the process so much more rewarding. I love sharing my wins and learning from others!",
+            username: "Chris T., 31, Software Developer",
             profilePic: {
-        url: "/assets/images/testimonies/profile_2.webp"
+                url: "/assets/images/testimonies/testimony_2.webp"
             }
         },
         {
             id: 3,
-            testimony: "With its powerful fined tuned models Leonardo makes A.I art a breeze. The community is also the best I've found to date!",
-            username: "Dee Does A.I",
+            testimony: "We Better has completely transformed the way I approach my goals. I used to feel overwhelmed and scattered, but now I have a clear path and personalized resources to guide me. The progress tracker keeps me motivated every day!",
+            username: "Emily S., 29, Marketing Professional",
             profilePic: {
-                url: "/assets/images/testimonies/profile_3.webp"
+                url: "/assets/images/testimonies/testimony_3.webp"
             }
         }
     ] as TestimonyItem[]

@@ -1,23 +1,23 @@
-const MEGA_MENU_FALLBACK = [
-  {
-    id: 1,
-    title: 'AI Art Generator',
-    description: 'Generate art, illustrations and more with prompts.',
-    href: '#',
-  },
-  {
-    id: 2,
-    title: 'AI Video Generator',
-    description: 'Turn your images into stunning animations and explore a new dimension of video storytelling.',
-    href: '#',
-  },
-  {
-    id: 3,
-    title: 'Transparent PNG Generator',
-    description: 'Instantly generate true background-free visual elements.',
-    href: '#',
-  },
-];
+// const MEGA_MENU_FALLBACK = [
+//   {
+//     id: 1,
+//     title: 'AI Art Generator',
+//     description: 'Generate art, illustrations and more with prompts.',
+//     href: '#',
+//   },
+//   {
+//     id: 2,
+//     title: 'AI Video Generator',
+//     description: 'Turn your images into stunning animations and explore a new dimension of video storytelling.',
+//     href: '#',
+//   },
+//   {
+//     id: 3,
+//     title: 'Transparent PNG Generator',
+//     description: 'Instantly generate true background-free visual elements.',
+//     href: '#',
+//   },
+// ];
 
 export const RESOURCES_MEGA_MENU_FALLBACK = [
     {
@@ -40,45 +40,46 @@ export const RESOURCES_MEGA_MENU_FALLBACK = [
       image: {
         url: "/assets/images/header/svg/faq.svg"
       }
-    },
-    {
-      title: "Wiki",
-      description: "Guides from our community.",
-      image: {
-        url: "/assets/images/header/svg/wiki.svg"
-      }
-    },
+    }
   ];
 
   export const SOLUTIONS_MEGA_MENU_FALLBACK = [
     {
-      title: "AI Marketing Tools",
-      description: "Instantly upgrade your marketing campaigns.",
+      id: 1,
+      title: "Articles",
+      description: "Articles from our community.",
       image: {
         url: "/assets/images/header/svg/marketing.svg"
-      }
+      },
+      href: "#articles"
     },
     {
-      title: "AI Graphic Design",
-      description: "Instantly upgrade your design workflow.",
+      id: 2,
+      title: "Courses",
+      description: "Courses from our community.",
       image: {
         url: "/assets/images/header/svg/design.svg"
-      }
+      },
+      href: "#courses"
     },
     {
-      title: "AI Print on Demand",
-      description: "Transform your digital art into print-ready masterpieces.",
+      id: 3,
+      title: "Videos",
+      description: "Videos from our community.",
       image: {
         url: "/assets/images/header/svg/print.svg"
-      }
+      },
+      href: "#videos"
     },
     {
-      title: "AI Photography",
-      description: "Uplift your portfolio with our flexible suite of creative AI tools.",
+      id: 4,
+      title: "Newsletter",
+      description: "Newsletter from our community.",
       image: {
         url: "/assets/images/header/svg/photo.svg"
-      }
+      },
+      href: "#newsletter"
     },
   ];
-export default MEGA_MENU_FALLBACK;
 
+export default SOLUTIONS_MEGA_MENU_FALLBACK;

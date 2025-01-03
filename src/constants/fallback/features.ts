@@ -1,17 +1,17 @@
 export const FEATURES_CONSTANTS = [
     {
-        title: "For Creators",
-        description: "Create production-quality visual assets for your projects with unprecedented quality, speed, and style consistency.",
-        buttonText: "For Creators",
-      },
-      {
-        title: "For Teams",
-        description: "Bring your team's best ideas to life at scale, with our intuitive AI-first creative suite designed for collaboration and built for business.",
+        title: "For Goal-Setters",
+        description: "Define your aspirations, and let We Better guide your journey.",
         buttonText: "Learn more",
       },
       {
-        title: "For Developers",
-        description: "Experience content creation excellence with Leonardo.AI's API. With unmatched scalability, effortlessly tailor outputs to your brand guideline.",
+        title: "For Self-Learners",
+        description: "Personalized content to help you grow in the areas that matter most.",
+        buttonText: "Learn more",
+      },
+      {
+        title: "Progress Trackers",
+        description: "Monitor your achievements and celebrate every milestone.",
         buttonText: "Learn more",
     }
 ]
