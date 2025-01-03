@@ -116,7 +116,7 @@ describe('Highlights', () => {
     (useHighlight as any).mockReturnValue({
       data: {
         data: {
-          title: 'Use Leonardo today for',
+          title: 'Use We Better today for',
           slides: HIGHLIGHTS_FALLBACK
         }
       },
@@ -134,7 +134,7 @@ describe('Highlights', () => {
     // Check title
     const title = screen.getByRole('heading', { level: 2 });
     expect(title).toBeInTheDocument();
-    expect(title).toHaveTextContent(/Use Leonardo today for/i);
+    expect(title).toHaveTextContent(/Use We Better today for/i);
 
     // Check slider region
     const slider = screen.getByRole('region', { name: /Highlights slider/i });

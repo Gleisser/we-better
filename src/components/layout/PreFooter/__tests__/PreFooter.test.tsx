@@ -116,14 +116,14 @@ describe('PreFooter', () => {
     expect(screen.getByRole('heading', { level: 2 })).toBeInTheDocument();
     
     // Check CTA button and description
-    const ctaButton = screen.getByRole('link', { name: /get started with leonardo ai/i });
+    const ctaButton = screen.getByRole('link', { name: /get started with we better/i });
     expect(ctaButton).toBeInTheDocument();
-    expect(ctaButton).toHaveAttribute('href', 'https://leonardo.ai');
+    expect(ctaButton).toHaveAttribute('href', 'https://webetter.com');
     expect(ctaButton).toHaveAttribute('target', '_blank');
     expect(ctaButton).toHaveAttribute('rel', 'noopener noreferrer');
 
     // Check image
-    const image = screen.getByAltText(/Interactive preview of Leonardo AI platform/i);
+    const image = screen.getByAltText(/Interactive preview of We Better platform/i);
     expect(image).toBeInTheDocument();
     expect(image).toHaveAttribute('loading', 'lazy');
   });

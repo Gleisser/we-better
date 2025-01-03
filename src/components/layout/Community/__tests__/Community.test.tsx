@@ -183,7 +183,7 @@ describe('Community', () => {
     // Check Discord button
     const discordButton = screen.getByRole('link', { name: /join our discord/i });
     expect(discordButton).toBeInTheDocument();
-    expect(discordButton).toHaveAttribute('href', 'https://discord.gg/leonardo');
+    expect(discordButton).toHaveAttribute('href', 'https://discord.gg/webetter');
     expect(discordButton).toHaveAttribute('target', '_blank');
     expect(discordButton).toHaveAttribute('rel', 'noopener noreferrer');
 

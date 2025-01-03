@@ -33,7 +33,7 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
                     <img
                       src={latestPost && API_CONFIG.imageBaseURL + latestPost?.cover?.url || "/assets/images/hero/Newslatter.png"}
                       alt={latestPost?.title 
-                        ? `Latest blog post: ${latestPost.title} - Stay updated with Leonardo AI` 
+                        ? `Latest blog post: ${latestPost.title} - Stay updated with We Better` 
                         : "Latest blog post: AI Statistics and Marketing Insights for 2024"}
                       className="w-full h-full object-cover"
                     />

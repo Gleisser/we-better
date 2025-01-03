@@ -124,7 +124,7 @@ describe('Hero', () => {
       ...HERO_FALLBACK,
       main_image_mobile: {
         src: '/mobile-hero-image.webp',
-        alt: 'Leonardo.AI Mobile App Interface'
+        alt: 'We Better Mobile App Interface'
       }
     };
     
@@ -138,7 +138,7 @@ describe('Hero', () => {
     render(<Hero />);
 
     // Should render mobile image instead of desktop dashboard preview
-    const mobileImage = screen.getByAltText('Leonardo.AI Mobile App Interface');
+    const mobileImage = screen.getByAltText('We Better Mobile App Interface');
     expect(mobileImage).toBeInTheDocument();
     expect(mobileImage).toHaveAttribute('class');
     expect(mobileImage.className).toMatch(/mobilePreviewImage/);
@@ -156,7 +156,7 @@ describe('Hero', () => {
     const mockApiData: HeroType = {
       id: 1,
       documentId: 'hero-1',
-      title: "Welcome to Leonardo.Ai",
+      title: "Welcome to We Better",
       subtitle: "Create stunning visuals",
       cta_text: "Get Started",
       secondary_cta_text: "Learn More",
@@ -164,7 +164,7 @@ describe('Hero', () => {
         id: 1,
         documentId: 'img-1',
         src: "/api-image.webp",
-        alt: "Leonardo.AI Dashboard",
+        alt: "We Better Dashboard",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         publishedAt: new Date().toISOString()
@@ -173,7 +173,7 @@ describe('Hero', () => {
         id: 2,
         documentId: 'img-2',
         src: "/api-image-mobile.webp",
-        alt: "Leonardo.AI Mobile Dashboard",
+        alt: "We Better Mobile Dashboard",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         publishedAt: new Date().toISOString()

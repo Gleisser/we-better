@@ -52,7 +52,7 @@ const PreFooter = () => {
 
   // Prepare title with fallback
   const defaultTitle = (
-    <>Create your next <span className={styles.highlight}>artwork</span>, with the power of Leonardo Ai</>
+    <>Create your <span className={styles.highlight}>future</span>, with the power of We Better</>
   );
   
   const title = renderHighlightedText({
@@ -114,11 +114,11 @@ const PreFooter = () => {
             aria-label="Call to action"
           >
             <a 
-              href="https://leonardo.ai" 
+              href="https://webetter.com" 
               target="_blank" 
               rel="noopener noreferrer" 
               className={`${styles.button} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
-              aria-label="Get started with Leonardo AI"
+              aria-label="Get started with We Better"
             >
               {prefooter?.buttonText}
               <ButtonArrowIcon className={styles.arrow} aria-hidden="true" />
@@ -135,7 +135,7 @@ const PreFooter = () => {
           {/* <div className={styles.imageContainer}> */}
             <img
               src={imageUrl}
-              alt="Interactive preview of Leonardo AI platform showcasing creative tools and workspace"
+              alt="Interactive preview of We Better platform showcasing creative tools and workspace"
               className={styles.image}
               loading="lazy"
               decoding="async"

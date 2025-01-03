@@ -206,7 +206,7 @@ describe('Footer', () => {
     
     // Check app store buttons
     const downloadButtons = screen.getAllByRole('link', { 
-      name: /download leonardo ai app from .* - get access to ai tools on your mobile device/i
+      name: /download we better app from .* - get access to ai tools on your mobile device/i
     });
     expect(downloadButtons.length).toBeGreaterThan(0);
   });

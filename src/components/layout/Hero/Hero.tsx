@@ -203,7 +203,7 @@ export const Hero = () => {
               }}
               src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
               data-src={heroData?.main_image_mobile?.src}
-              alt="Leonardo.AI Mobile App Interface"
+              alt="We Better Mobile App Interface"
               className={styles.mobilePreviewImage}
               loading="lazy"
               initial={{ opacity: 0 }}
@@ -213,7 +213,7 @@ export const Hero = () => {
           ) : (
             <DashboardPreview 
               src={heroData?.main_image?.src} 
-              alt={heroData?.main_image?.alt || "Leonardo.AI Dashboard Interface"}
+              alt={heroData?.main_image?.alt || "We Better Dashboard Interface"}
               ref={mainImageRef}
               observerRef={observerRef}
             />

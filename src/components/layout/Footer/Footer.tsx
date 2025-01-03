@@ -163,7 +163,7 @@ const Footer = () => {
                     key={appStore.id} 
                     href="#" 
                     className={styles.storeLink}
-                    aria-label={`Download Leonardo AI app from ${appStore.images[0].name} - Get access to AI tools on your mobile device`}
+                    aria-label={`Download WeBetter app from ${appStore.images[0].name} - Get access to AI tools on your mobile device`}
                   >
                     <img 
                       src={isAPI ? API_CONFIG.imageBaseURL + appStore.images[0].url : appStore.images[0].src} 
@@ -193,7 +193,7 @@ const Footer = () => {
                     key={social.id}
                     href="#"
                     className={`${styles.socialLink} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
-                    aria-label={`Follow Leonardo AI on ${social.name} for latest updates and community content`}
+                    aria-label={`Follow We Better on ${social.name} for latest updates and community content`}
                   >
                     <img 
                       src={isAPI ? API_CONFIG.imageBaseURL + social.url : social.src} 

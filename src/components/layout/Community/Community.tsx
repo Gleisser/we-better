@@ -186,7 +186,7 @@ const Community = () => {
           </h2>
           
           <a 
-            href="https://discord.gg/leonardo" 
+            href="https://discord.gg/webetter" 
             target="_blank" 
             rel="noopener noreferrer" 
             className={styles.discordButton}
