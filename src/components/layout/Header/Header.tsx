@@ -4,20 +4,23 @@ import MegaMenu from './MegaMenu';
 import SolutionsMegaMenu from './SolutionsMegaMenu';
 import ResourcesMegaMenu from './ResourcesMegaMenu';
 import styles from './Header.module.css';
-import { HEADER_CONSTANTS, MEGA_MENU_CONFIG } from '@/constants/header';
+import { HEADER_CONSTANTS, MEGA_MENU_CONFIG, MenuType } from '@/constants/fallback/header';
 import NavItem from './NavItem';
 import HamburgerButton from './HamburgerButton';
 import MobileMenu from './MobileMenu';
-import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+import { useMenu } from '@/hooks/useMenu';
 
 const Header = () => {
+  const { data } = useMenu();
   const [isFeaturesOpen, setIsFeaturesOpen] = useState(false);
   const [isSolutionsOpen, setIsSolutionsOpen] = useState(false);
   const [isResourcesOpen, setResourcesOpen] = useState(false);
   const { scrollY } = useScroll();
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const megamenus = data?.data.megamenus || MEGA_MENU_CONFIG;
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -27,29 +30,34 @@ const Header = () => {
     }
   }, [isMobileMenuOpen]);
 
-  scrollY.onChange((latest) => {
+  scrollY.on("change",(latest) => {
     setHasScrolled(latest > 10);
   });
 
-  const getMegaMenuState = (menuType: string) => {
+
+
+  const getMegaMenuState = (menuType: MenuType) => {
     switch (menuType) {
-      case HEADER_CONSTANTS.Features.id:
+      case MenuType.Highlight:
         return {
           isOpen: isFeaturesOpen,
           setIsOpen: setIsFeaturesOpen,
-          Component: MegaMenu
+          Component: MegaMenu,
+          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.Highlight)
         };
-      case HEADER_CONSTANTS.Solutions.id:
+      case MenuType.SVG:
         return {
           isOpen: isSolutionsOpen,
           setIsOpen: setIsSolutionsOpen,
-          Component: SolutionsMegaMenu
+          Component: SolutionsMegaMenu,
+          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.SVG)
         };
-      case HEADER_CONSTANTS.Resources.id:
+      case MenuType.Blog:
         return {
           isOpen: isResourcesOpen,
           setIsOpen: setResourcesOpen,
-          Component: ResourcesMegaMenu
+          Component: ResourcesMegaMenu,
+          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.Blog)
         };
       default:
         return null;
@@ -69,66 +77,123 @@ const Header = () => {
       >
         <div className={styles.headerContent}>
           <div className={styles.headerItems}>
-            <Link to="/" className={styles.logoWrapper}>
+            <Link 
+              to="/" 
+              className={styles.logoWrapper}
+              aria-label="We Better Home"
+            >
               <img 
-                src="/assets/images/logo/we-better-logo-v3.svg" 
+                src="/assets/images/logo/logo.svg" 
                 alt="We Better" 
                 className={`${styles.logo} ${styles.desktopLogo}`}
+                width="120"
+                height="32"
               />
               <img 
                 src="/assets/images/logo/we-better-logo-v3-mobile.svg" 
                 alt="We Better" 
                 className={`${styles.logo} ${styles.mobileLogo}`}
+                width="32"
+                height="32"
               />
             </Link>
             
-            <nav className={styles.headerNav}>
-              {MEGA_MENU_CONFIG.map((item) => {
-                const menuState = getMegaMenuState(item.menuType);
-                return (
-                  <NavItem
-                    key={item.href}
-                    href={item.href}
-                    title={item.title}
-                    isOpen={menuState?.isOpen}
-                    onMouseEnter={() => menuState?.setIsOpen(true)}
-                    onMouseLeave={() => menuState?.setIsOpen(false)}
-                    MegaMenuComponent={
-                      menuState && (
-                        <menuState.Component
-                          isOpen={menuState.isOpen}
-                          onClose={() => menuState.setIsOpen(false)}
-                        />
-                      )
-                    }
-                  />
-                );
-              })}
-
-              <NavItem href="#teams" title={HEADER_CONSTANTS.Teams.title} />
-              <NavItem href="#developers" title={HEADER_CONSTANTS.Developers.title} />
-              <NavItem href="#creators" title={HEADER_CONSTANTS.Creators.title} />
+            <nav 
+              className={styles.headerNav}
+              aria-label="Main menu"
+            >
+              <ul className={styles.navList}>
+                {megamenus.map((item) => {
+                  const menuState = getMegaMenuState(item.type);
+                  return (
+                    <li key={item.id}>
+                      <NavItem
+                        href='#'
+                        title={item.title}
+                        isOpen={menuState?.isOpen}
+                        onMouseEnter={() => menuState?.setIsOpen(true)}
+                        onMouseLeave={() => menuState?.setIsOpen(false)}
+                        aria-expanded={menuState?.isOpen}
+                        aria-haspopup="true"
+                        MegaMenuComponent={
+                          menuState && (
+                            <menuState.Component
+                              isOpen={menuState.isOpen}
+                              onClose={() => menuState.setIsOpen(false)}
+                              menuData={menuState.menuData}
+                            />
+                          )
+                        }
+                      />
+                    </li>
+                  );
+                })}
+                {data?.data.links.map((link) => (
+                  <li key={link.id}>
+                    <NavItem 
+                      href={link.href} 
+                      title={link.title}
+                    />
+                  </li>
+                ))}
+                {!data && (
+                  <>
+                    <li>
+                      <NavItem 
+                        href="#business" 
+                        title={HEADER_CONSTANTS.Business.title}
+                      />
+                    </li>
+                    <li>
+                      <NavItem 
+                        href="#mentors" 
+                        title={HEADER_CONSTANTS.Mentors.title}
+                      />
+                    </li>
+                    <li>
+                      <NavItem 
+                        href="#coaches" 
+                        title={HEADER_CONSTANTS.Coaches.title}
+                      />
+                    </li>
+                  </>
+                )}
+              </ul>
             </nav>
 
-            <div className={styles.mobileControls}>
-              <Link to="/app" className={styles.headerCta}>
+            <div 
+              className={styles.mobileControls}
+              aria-label="Mobile navigation controls"
+            >
+              <Link 
+                to="/app" 
+                className={styles.headerCta}
+              >
                 {HEADER_CONSTANTS.Cta.title}
               </Link>
               <HamburgerButton 
                 isOpen={isMobileMenuOpen} 
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-menu"
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               />
             </div>
           </div>
         </div>
       </motion.header>
-      <MobileMenu isOpen={isMobileMenuOpen} />
-      {createPortal(
-        <>
-          {isSolutionsOpen && <SolutionsMegaMenu />}
-          {isResourcesOpen && <ResourcesMegaMenu />}
-        </>,
-        document.body
+
+      <MobileMenu 
+        isOpen={isMobileMenuOpen} 
+        aria-hidden={!isMobileMenuOpen}
+      />
+
+      {isResourcesOpen && (
+        <ResourcesMegaMenu 
+          isOpen={isResourcesOpen} 
+          onClose={() => setResourcesOpen(false)}
+          aria-hidden={!isResourcesOpen}
+        />
       )}
     </>
   );

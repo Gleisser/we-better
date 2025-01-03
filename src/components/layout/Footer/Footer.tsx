@@ -1,86 +1,206 @@
+import { useFooter } from '@/hooks/useFooter';
 import styles from './Footer.module.css';
-
-const FOOTER_LINKS = {
-  Solutions: [
-    'AI Art Generator',
-    'AI Video Generator',
-    'Transparent PNG Generator',
-    'AI Marketing Tools',
-    'AI Graphic Design',
-    'AI Print on Demand',
-    'AI Photography',
-    'AI Interior Design',
-    'AI Architecture'
-  ],
-  About: [
-    'API',
-    'FAQ',
-    'Blog',
-    'Support',
-    'Contact us',
-    'Careers',
-    'Affiliate Program',
-    'Leonardo Creator Program'
-  ]
-};
-
-const SOCIAL_LINKS = [
-  { name: 'Facebook', icon: '/assets/images/footer/facebook-icon.svg' },
-  { name: 'Instagram', icon: '/assets/images/footer/instagram-icon.svg' },
-  { name: 'Discord', icon: '/assets/images/footer/discord-icon.svg' },
-  { name: 'X', icon: '/assets/images/footer/x-icon.svg' },
-  { name: 'YouTube', icon: '/assets/images/footer/youtube-icon.svg' },
-  { name: 'Fanbook', icon: '/assets/images/footer/fanbook-icon.svg' }
-];
+import { API_CONFIG } from '@/lib/api-config';
+import { FOOTER_FALLBACK } from '@/constants/fallback';
+import { AppStore, MenuList } from '@/types/footer';
+import { TopLevelImage } from '@/types/common/image';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useEffect, useCallback } from 'react';
 
 const Footer = () => {
+  // Initialize hooks
+  const { data, isLoading: isDataLoading } = useFooter();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load footer content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
+
+  // Determine content source
+  const footer = data?.data || FOOTER_FALLBACK;
+  const isAPI = data !== undefined;
+
+  // Collect all images that need to be preloaded
+  const getImageUrls = useCallback(() => {
+    if (!footer) return [];
+
+    const urls: string[] = [];
+    
+    // Logo
+    if (footer.logo) {
+      urls.push(isAPI ? API_CONFIG.imageBaseURL + footer.logo.url : footer.logo.src);
+    }
+
+    // App store images
+    footer.app_stores.forEach(store => {
+      store.images.forEach(image => {
+        urls.push(isAPI ? API_CONFIG.imageBaseURL + image.url : image.src);
+      });
+    });
+
+    // Social media logos
+    footer.social_medias[0].logos.forEach(social => {
+      urls.push(isAPI ? API_CONFIG.imageBaseURL + social.url : social.src);
+    });
+
+    return urls;
+  }, [footer, isAPI]);
+
+  // Memoize the image loading function
+  const loadImages = useCallback(async () => {
+    const imageUrls = getImageUrls();
+    if (imageUrls.length === 0 || isLoading) return;
+
+    try {
+      startLoading();
+      await preloadImages(imageUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading();
+    }
+  }, [getImageUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+
+  // Handle image preloading
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
+
+  // Show loading state only during initial data fetch
+  if (isDataLoading) {
+    return (
+      <footer className={styles.footer}>
+        <div className={styles.footerContent}>
+          <div className={styles.loadingState} aria-busy="true">
+            Loading footer content...
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <footer className={styles.footer}>
+        <div className={styles.footerContent}>
+          <div className={styles.errorState} role="alert">
+            <p>{error?.message}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
   return (
-    <footer className={styles.footer}>
+    <footer 
+      className={styles.footer}
+      role="contentinfo"
+    >
       <div className={styles.footerContent}>
         <div className={styles.topSection}>
           {/* Menu Links */}
-          <div className={styles.menuLinks}>
-            {Object.entries(FOOTER_LINKS).map(([category, links]) => (
-              <div key={category} className={styles.linkColumn}>
-                <h3 className={styles.categoryTitle}>{category}</h3>
+          <nav 
+            className={styles.menuLinks}
+            aria-label="Footer navigation"
+          >
+            {footer.menu_lists.map((menu : MenuList) => (
+              <div 
+                key={menu.Title} 
+                className={styles.linkColumn}
+                role="region"
+                aria-labelledby={`footer-menu-${menu.Title}`}
+              >
+                <div 
+                  className={`${styles.categoryTitle}`}
+                  id={`footer-menu-${menu.Title}`}
+                >
+                  {menu.Title}
+                </div>
                 <ul className={styles.linkList}>
-                  {links.map((link) => (
-                    <li key={link}>
-                      <a href="#" className={styles.link}>
-                        {link}
+                  {menu.menu_links.map((link) => (
+                    <li key={link.id + link.title}>
+                      <a 
+                        href={link.href} 
+                        className={`${styles.link} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
+                        aria-label={link.title}
+                      >
+                        {link.title}
                       </a>
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
-          </div>
+          </nav>
 
           {/* App Downloads & Social */}
           <div className={styles.rightSection}>
-            <div className={styles.getApp}>
-              <h3 className={styles.categoryTitle}>Get the App</h3>
+            <div 
+              className={styles.getApp}
+              role="region"
+              aria-labelledby="app-downloads"
+            >
+              <div 
+                className={styles.categoryTitle}
+                id="app-downloads"
+              >
+                Get the App
+              </div>
               <div className={styles.storeButtons}>
-                <a href="#" className={styles.storeLink}>
-                  <img src="/assets/images/footer/appstore.svg" alt="App Store" />
-                </a>
-                <a href="#" className={styles.storeLink}>
-                  <img src="/assets/images/footer/play.svg" alt="Google Play" />
-                </a>
+                {footer.app_stores.map((appStore : AppStore) => (
+                  <a 
+                    key={appStore.id} 
+                    href="#" 
+                    className={styles.storeLink}
+                    aria-label={`Download WeBetter app from ${appStore.images[0].name} - Get access to AI tools on your mobile device`}
+                  >
+                    <img 
+                      src={isAPI ? API_CONFIG.imageBaseURL + appStore.images[0].url : appStore.images[0].src} 
+                      alt={`${appStore.images[0].name} download button`}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </a>
+                ))}
               </div>
             </div>
 
-            <div className={styles.social}>
-              <h3 className={styles.categoryTitle}>Stay Tuned</h3>
+            <div 
+              className={styles.social}
+              role="region"
+              aria-labelledby="social-media"
+            >
+              <div 
+                className={styles.categoryTitle}
+                id="social-media"
+              >
+                Stay Tuned
+              </div>
               <div className={styles.socialIcons}>
-                {SOCIAL_LINKS.map((social) => (
+                {footer.social_medias[0].logos.map((social : TopLevelImage) => (
                   <a 
-                    key={social.name}
+                    key={social.id}
                     href="#"
-                    className={styles.socialLink}
-                    aria-label={social.name}
+                    className={`${styles.socialLink} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
+                    aria-label={`Follow We Better on ${social.name} for latest updates and community content`}
                   >
-                    <img src={social.icon} alt={social.name} />
+                    <img 
+                      src={isAPI ? API_CONFIG.imageBaseURL + social.url : social.src} 
+                      alt={`${social.name} social media icon`}
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </a>
                 ))}
               </div>
@@ -89,28 +209,41 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className={styles.bottomSection}>
+        <div 
+          className={styles.bottomSection}
+          role="contentinfo"
+        >
           <div className={styles.companyInfo}>
             <img 
-              src="/assets/images/footer/logo-leonardo-ai.svg" 
-              alt="Leonardo.AI" 
+              src={isAPI ? API_CONFIG.imageBaseURL + footer.logo.url : footer.logo.src} 
+              alt={footer.logo.alt} 
               className={styles.logo}
+              loading="lazy"
+              decoding="async"
             />
             <p className={styles.companyDetails}>
-              Leonardo Interactive Pty Ltd<br />
-              ABN: 56 662 209 485
+              {footer.logoDescription}
             </p>
           </div>
 
-          <div className={styles.legalLinks}>
-            <a href="#" className={styles.legalLink}>Legal Notice</a>
-            <a href="#" className={styles.legalLink}>DMCA</a>
-            <a href="#" className={styles.legalLink}>Terms of Service</a>
-            <a href="#" className={styles.legalLink}>Cookie Policy</a>
-          </div>
+          <nav 
+            className={styles.legalLinks}
+            aria-label="Legal links"
+          >
+            {footer.footer_links.map((link) => (
+              <a 
+                key={link.id} 
+                href={link.href} 
+                className={styles.legalLink}
+                aria-label={link.title}
+              >
+                {link.title}
+              </a>
+            ))}
+          </nav>
 
           <p className={styles.copyright}>
-            © 2024 All Rights Reserved. Leonardo Interactive Pty Ltd®
+            {footer.copyright}
           </p>
         </div>
       </div>

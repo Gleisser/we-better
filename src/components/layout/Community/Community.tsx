@@ -1,42 +1,90 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import styles from './Community.module.css';
+import { useCommunity } from '@/hooks/useCommunity';
+import { renderHighlightedText } from '@/utils/textFormatting';
+import { DiscordIcon } from '@/components/common/icons';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
 
 const INITIAL_PROFILES = [
   {
     id: 1,
-    src: '/assets/images/community/list-1.webp',
+    src: '/assets/images/community/community_1.webp',
     alt: 'Community member profile 1'
   },
   {
     id: 2,
-    src: '/assets/images/community/list-2.webp',
+    src: '/assets/images/community/community_2.webp',
     alt: 'Community member profile 2'
   },
   {
     id: 3,
-    src: '/assets/images/community/list-3.webp',
+    src: '/assets/images/community/community_3.webp',
     alt: 'Community member profile 3'
   },
   {
     id: 4,
-    src: '/assets/images/community/list-4.webp',
+    src: '/assets/images/community/community_4.webp',
     alt: 'Community member profile 4'
   },
   {
     id: 5,
-    src: '/assets/images/community/list-5.webp',
+    src: '/assets/images/community/community_5.webp',
     alt: 'Community member profile 5'
   },
   {
     id: 6,
-    src: '/assets/images/community/list-6.webp',
+    src: '/assets/images/community/community_6.webp',
     alt: 'Community member profile 6'
   }
 ] as const;
 
 const Community = () => {
   const profilesRef = useRef<HTMLDivElement>(null);
+  
+  // Initialize hooks
+  const { data, isLoading: isDataLoading } = useCommunity();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load community content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
 
+  const defaultTitle = (
+    <>
+      
+      <span className={styles.highlight}>Community of achievers</span>{' '}
+      worldwide!{' '}
+      <span role="img" aria-label="Earth">
+        🌎
+      </span>
+    </>
+  );
+
+  // Collect profile image URLs
+  const getProfileUrls = useCallback(() => {
+    return INITIAL_PROFILES.map(profile => profile.src);
+  }, []);
+
+  // Handle image preloading
+  const loadImages = useCallback(async () => {
+    const profileUrls = getProfileUrls();
+    if (profileUrls.length === 0 || isLoading) return;
+
+    try {
+      startLoading();
+      await preloadImages(profileUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading();
+    }
+  }, [getProfileUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+
+  // Handle scroll animation
   useEffect(() => {
     const handleScroll = () => {
       if (!profilesRef.current) return;
@@ -70,54 +118,102 @@ const Community = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Handle image preloading
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
+
+  // Show loading state only during initial data fetch
+  if (isDataLoading) {
+    return (
+      <section className={styles.communityContainer}>
+        <div className={styles.communityContent}>
+          <div className={styles.loadingState} aria-busy="true">
+            Loading community content...
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <section className={styles.communityContainer}>
+        <div className={styles.communityContent}>
+          <div className={styles.errorState} role="alert">
+            <p>{error?.message}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className={styles.communityContainer}>
+    <section 
+      className={styles.communityContainer}
+      aria-labelledby="community-title"
+    >
       <div className={styles.communityContent}>
-        {/* Left Column */}
         <div className={styles.leftColumn}>
-          <div className={styles.discordLabel}>
-            #3 Discord Server in the World
+          <div 
+            className={styles.discordLabel}
+            aria-label="Discord server ranking"
+          >
+            {data?.data?.label || '#1 Self Improvement Community'}
           </div>
           
-          <h2 className={styles.title}>
-            Be part of a{' '}
-            <span className={styles.highlight}>creative</span>{' '}
-            community!{' '}
-            <span role="img" aria-label="Earth">
-              🌎
-            </span>
+          <h2 
+            className={styles.title}
+            id="community-title"
+          >
+            {renderHighlightedText({
+              text: data?.data?.title,
+              highlightClassName: styles.highlight,
+              fallback: defaultTitle
+            })}
+            {data?.data?.title && (
+              <span role="img" aria-label="Earth">
+                🌎
+              </span>
+            )}
           </h2>
           
           <a 
-            href="https://discord.gg/leonardo" 
+            href="https://discord.gg/webetter" 
             target="_blank" 
             rel="noopener noreferrer" 
             className={styles.discordButton}
+            aria-label="Join our community"
           >
-            <svg 
-              className={styles.discordIcon} 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                fill="currentColor" 
-                d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09c-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33c-.01 0-.02.01-.03.02c-2.72 4.07-3.47 8.03-3.1 11.95c0 .02.01.04.03.05c1.8 1.32 3.53 2.12 5.24 2.65c.03.01.06 0 .07-.02c.4-.55.76-1.13 1.07-1.74c.02-.04 0-.08-.04-.09c-.57-.22-1.11-.48-1.64-.78c-.04-.02-.04-.08-.01-.11c.11-.08.22-.17.33-.25c.02-.02.05-.02.07-.01c3.44 1.57 7.15 1.57 10.55 0c.02-.01.05-.01.07.01c.11.09.22.17.33.26c.04.03.04.09-.01.11c-.52.31-1.07.56-1.64.78c-.04.01-.05.06-.04.09c.32.61.68 1.19 1.07 1.74c.03.01.06.02.09.01c1.72-.53 3.45-1.33 5.25-2.65c.02-.01.03-.03.03-.05c.44-4.53-.73-8.46-3.1-11.95c-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.83 2.12-1.89 2.12z"
-              />
-            </svg>
-            Join Discord Server
+            <DiscordIcon className={styles.discordIcon} aria-hidden="true" />
+            {data?.data?.buttonText || 'Join Now'}
           </a>
         </div>
 
-        {/* Right Column - Profile Images */}
-        <div className={styles.rightColumn}>
-          <div className={styles.profileColumns} ref={profilesRef}>
+        <div 
+          className={styles.rightColumn}
+          role="presentation"
+        >
+          <div 
+            className={styles.profileColumns} 
+            ref={profilesRef}
+            aria-hidden="true"
+          >
             {INITIAL_PROFILES.map((profile) => (
               <div key={profile.id} className={styles.profileColumn}>
                 <img 
                   src={profile.src}
                   alt={profile.alt}
                   className={styles.profileImage}
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             ))}

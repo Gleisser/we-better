@@ -42,3 +42,16 @@
 .logoContainer:hover .logo {
   @apply opacity-100;
 }
+
+.loadingState {
+  @apply flex items-center justify-center min-h-[200px] text-white/70;
+}
+
+.errorState {
+  @apply flex flex-col items-center justify-center min-h-[200px] text-white/70;
+}
+
+.retryButton {
+  @apply mt-4 px-6 py-2 bg-primary-purple text-white rounded-full 
+         hover:bg-primary-purple/80 transition-all duration-200;
+}

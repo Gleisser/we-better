@@ -59,11 +59,20 @@
 .floatingImage {
   @apply absolute w-auto h-auto max-w-[300px] sm:max-w-[400px];
   z-index: 4 !important;
+  position: absolute;
+
+  /* First floating image (left side) */
   &:first-child {
-    top: 8rem;
+    left: -10%;
+    top: -120px; /* Adjust this value to move it up */
+    transform: translateY(0);
   }
+
+  /* Last floating image (right side) */
   &:last-child {
+    right: -10%;
     top: 8rem;
+    transform: translateY(0);
   }
 }
 
@@ -101,7 +110,8 @@
     margin-bottom: 4rem;
   }
 
-  .primaryCta, .secondaryCta {
+  .primaryCta,
+  .secondaryCta {
     padding: 0.625rem 1.25rem;
     font-size: 0.875rem;
   }
@@ -124,4 +134,15 @@
     max-height: 60vh;
     object-fit: contain;
   }
+}
+
+/* Add these new styles */
+
+.errorState {
+  @apply flex flex-col items-center justify-center min-h-[400px] text-white/70;
+}
+
+.retryButton {
+  @apply mt-4 px-6 py-2 bg-primary-purple text-white rounded-full 
+         hover:bg-primary-purple/80 transition-all duration-200;
 }

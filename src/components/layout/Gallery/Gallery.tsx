@@ -1,5 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Gallery.module.css';
+import { useGallery } from '@/hooks/useGallery';
+import { API_CONFIG } from '@/lib/api-config';
+import { GalleryIcon, MobileNavIcon, MobileNavNextIcon } from '@/components/common/icons';
+import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/hooks/utils/useLoadingState';
 
 const INITIAL_LOAD = 12;
 const LOAD_MORE_COUNT = 8;
@@ -7,168 +13,180 @@ const LOAD_MORE_COUNT = 8;
 const GALLERY_IMAGES = [
   {
     id: 1,
-    src: '/assets/images/gallery/gallery_1_large.webp',
-    alt: 'Character in yellow raincoat',
+    src: '/assets/images/gallery/body.gif',
+    alt: 'Woman running',
     size: 'large'
   },
   {
     id: 2,
-    src: '/assets/images/gallery/gallery_2_small.webp',
-    alt: 'Cyberpunk character portrait',
-    size: 'small'
-  },
-  {
-    id: 3,
-    src: '/assets/images/gallery/gallery_3_large.webp',
-    alt: 'Crystal flower in glass',
+    src: '/assets/images/gallery/mind.webp',
+    alt: 'Woman thinking',
     size: 'large'
   },
   {
-    id: 4,
+    id: 3,
     src: '/assets/images/gallery/gallery_4_small.webp',
-    alt: 'Motorcycle in neon lights',
+    alt: 'Men reading a book',
     size: 'small'
   },
   {
+    id: 4,
+    src: '/assets/images/gallery/family.webp',
+    alt: 'A family of 3',
+    size: 'large'
+  },
+  {
     id: 5,
-    src: '/assets/images/gallery/gallery_5_large.webp',
-    alt: 'Motorcycle in neon lights',
+    src: '/assets/images/gallery/care.webp',
+    alt: 'A woman taking care of her self',
     size: 'large'
   },
   {
     id: 6,
-    src: '/assets/images/gallery/gallery_6_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
+    src: '/assets/images/gallery/career.webp',
+    alt: 'a man in a suit',
+    size: 'large'
   },
   {
     id: 7,
-    src: '/assets/images/gallery/gallery_7_large.webp',
-    alt: 'Motorcycle in neon lights',
+    src: '/assets/images/gallery/spirit.webp',
+    alt: 'A woman meditating',
     size: 'large'
   },
   {
     id: 8,
-    src: '/assets/images/gallery/gallery_8_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
+    src: '/assets/images/gallery/gallery_1_small.webp',
+    alt: 'A man hearing headphones',
+    size: 'small'
   },
   {
     id: 9,
-    src: '/assets/images/gallery/gallery_9_small.webp',
-    alt: 'Motorcycle in neon lights',
+    src: '/assets/images/gallery/gallery_2_small.webp',
+    alt: 'A woman working on her laptop',
     size: 'small'
   },
   {
     id: 10,
-    src: '/assets/images/gallery/gallery_10_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
+    src: '/assets/images/gallery/gallery_3_small.webp',
+    alt: 'A woman watching videos',
+    size: 'small'
   },
   {
     id: 11,
-    src: '/assets/images/gallery/gallery_11_small.webp',
-    alt: 'Motorcycle in neon lights',
+    src: '/assets/images/gallery/gallery_5_small.webp',
+    alt: 'A woman holding books',
     size: 'small'
   },
   {
     id: 12,
-    src: '/assets/images/gallery/gallery_12_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
-  },
-  {
-    id: 13,
-    src: '/assets/images/gallery/gallery_13_small.webp',
-    alt: 'Motorcycle in neon lights',
+    src: '/assets/images/gallery/gallery_6_small.webp',
+    alt: 'Men talking to a woman',
     size: 'small'
-  },
-  {
-    id: 14,
-    src: '/assets/images/gallery/gallery_14_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 15,
-    src: '/assets/images/gallery/gallery_15_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
-  },
-  {
-    id: 16,
-    src: '/assets/images/gallery/gallery_16_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 17,
-    src: '/assets/images/gallery/gallery_17_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
-  },
-  {
-    id: 18,
-    src: '/assets/images/gallery/gallery_18_large.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'large'
-  },
-  {
-    id: 19,
-    src: '/assets/images/gallery/gallery_19_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 20,
-    src: '/assets/images/gallery/gallery_20_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 21,
-    src: '/assets/images/gallery/gallery_21_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 22,
-    src: '/assets/images/gallery/gallery_22_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 23,
-    src: '/assets/images/gallery/gallery_23_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 24,
-    src: '/assets/images/gallery/gallery_24_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 25,
-    src: '/assets/images/gallery/gallery_25_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
-  {
-    id: 26,
-    src: '/assets/images/gallery/gallery_26_small.webp',
-    alt: 'Motorcycle in neon lights',
-    size: 'small'
-  },
+  }
   // Add all your images here with their correct paths and sizes
 ] as const;
 
 const Gallery = () => {
+  // State management
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD);
   const [currentMobileIndex, setCurrentMobileIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  
+  // Refs
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
 
+  // Initialize hooks
+  const { data, isLoading: isDataLoading } = useGallery();
+  const { preloadImages } = useImagePreloader();
+  const { handleError, isError, error } = useErrorHandler({
+    fallbackMessage: 'Failed to load gallery content'
+  });
+  const { isLoading, startLoading, stopLoading } = useLoadingState({
+    minimumLoadingTime: 500
+  });
+
+  // Process images data
+  const images = data?.data?.images.map((image) => ({
+    id: image.id,
+    src: `${API_CONFIG.imageBaseURL}${image.url}`,
+    alt: image.alternativeText,
+    size: image.height > 400 ? 'large' : 'small'
+  }));
+
+  // Image ordering logic
+  const orderImages = useCallback((images: typeof GALLERY_IMAGES | undefined) => {
+    if (!images) return [];
+    
+    const orderedImages = [];
+    const smallImages = images.filter((image) => image.size === 'small');
+    const largeImages = images.filter((image) => image.size === 'large');
+
+    while (smallImages?.length > 0 && largeImages?.length > 0) {
+      orderedImages.push(largeImages.shift());
+      orderedImages.push(smallImages.shift());
+    }
+
+    return orderedImages;
+  }, []);
+
+  const orderedImages = orderImages(images);
+  const galleryImages = orderedImages?.length > 0 ? orderedImages : GALLERY_IMAGES;
+  const visibleImages = galleryImages.slice(0, visibleCount);
+
+  // Collect visible image URLs for preloading
+  const getVisibleImageUrls = useCallback(() => {
+    return visibleImages.map(image => image.src);
+  }, [visibleImages]);
+
+  // Handle image preloading
+  const loadImages = useCallback(async () => {
+    const imageUrls = getVisibleImageUrls();
+    if (imageUrls.length === 0 || isLoading) return;
+
+    try {
+      startLoading();
+      await preloadImages(imageUrls);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      stopLoading();
+    }
+  }, [getVisibleImageUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+
+  // Intersection Observer setup
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const img = entry.target as HTMLImageElement;
+            if (img.dataset.src) {
+              img.src = img.dataset.src;
+              img.removeAttribute('data-src');
+              observerRef.current?.unobserve(img);
+            }
+          }
+        });
+      },
+      {
+        rootMargin: '50px 0px',
+        threshold: 0.1
+      }
+    );
+
+    imageRefs.current.forEach((imageRef) => {
+      if (imageRef) {
+        observerRef.current?.observe(imageRef);
+      }
+    });
+
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, [visibleImages]);
+
+  // Mobile detection
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -179,108 +197,139 @@ const Gallery = () => {
     
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
-  
-  const visibleImages = GALLERY_IMAGES.slice(0, visibleCount);
-  const hasMore = visibleCount < GALLERY_IMAGES.length;
+
+  // Image preloading effect
+  useEffect(() => {
+    loadImages();
+  }, [loadImages]);
+
+  // Navigation handlers
+  const hasMore = visibleCount < galleryImages.length;
 
   const handleLoadMore = () => {
-    setVisibleCount(prev => Math.min(prev + LOAD_MORE_COUNT, GALLERY_IMAGES.length));
+    setVisibleCount(prev => Math.min(prev + LOAD_MORE_COUNT, galleryImages.length));
   };
 
   const nextImage = () => {
     setCurrentMobileIndex((prev) => 
-      prev === GALLERY_IMAGES.length - 1 ? 0 : prev + 1
+      prev === galleryImages.length - 1 ? 0 : prev + 1
     );
   };
 
   const prevImage = () => {
     setCurrentMobileIndex((prev) => 
-      prev === 0 ? GALLERY_IMAGES.length - 1 : prev - 1
+      prev === 0 ? galleryImages.length - 1 : prev - 1
     );
   };
 
+  // Show loading state only during initial data fetch
+  if (isDataLoading) {
+    return (
+      <section className={styles.galleryContainer}>
+        <div className={styles.galleryContent}>
+          <div className={styles.loadingState} aria-busy="true">
+            Loading gallery...
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <section className={styles.galleryContainer}>
+        <div className={styles.galleryContent}>
+          <div className={styles.errorState} role="alert">
+            <p>{error?.message}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className={styles.galleryContainer}>
+    <section 
+      className={styles.galleryContainer}
+      aria-labelledby="gallery-title"
+    >
       <div className={styles.galleryContent}>
         <div className={styles.header}>
-          <h2 className={styles.title}>
-            <span className={styles.gradientText}>Platform</span> Gallery
-            <svg 
-              className={styles.paintIcon} 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none"
-            >
-              <path 
-                d="M2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2"
-                stroke="url(#paint-gradient)"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path 
-                d="M12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12"
-                stroke="url(#paint-gradient)"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <defs>
-                <linearGradient
-                  id="paint-gradient"
-                  x1="2"
-                  y1="2"
-                  x2="22"
-                  y2="22"
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop stopColor="#8B5CF6" />
-                  <stop offset="1" stopColor="#D946EF" />
-                </linearGradient>
-              </defs>
-            </svg>
+          <h2 
+            className={styles.title}
+            id="gallery-title"
+          >
+            <span className={styles.gradientText}>{data?.data?.Title || 'Curated Content'}</span> {data?.data?.highlightedTitle}
+            <GalleryIcon className={styles.paintIcon} aria-hidden="true" />
           </h2>
         </div>
 
         {isMobile ? (
-          <div className={styles.mobileGallery}>
+          <div 
+            className={styles.mobileGallery}
+            role="region"
+            aria-label="Mobile gallery navigation"
+          >
             <button 
               onClick={prevImage} 
               className={`${styles.mobileNavButton} ${styles.prevButton}`}
+              aria-label="Previous image"
             >
-              <svg viewBox="0 0 24 24" className={styles.navIcon} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 19l-7-7 7-7" />
-              </svg>
+              <MobileNavIcon className={styles.navIcon} aria-hidden="true" />
             </button>
             
             <div className={styles.mobileImageContainer}>
               <img
-                src={GALLERY_IMAGES[currentMobileIndex].src}
-                alt={GALLERY_IMAGES[currentMobileIndex].alt}
+                ref={el => imageRefs.current[currentMobileIndex] = el}
+                src={galleryImages[currentMobileIndex]?.src}
+                data-src={galleryImages[currentMobileIndex]?.src}
+                alt={galleryImages[currentMobileIndex]?.alt}
                 className={styles.mobileImage}
+                loading="lazy"
+                decoding="async"
               />
             </div>
 
             <button 
               onClick={nextImage} 
               className={`${styles.mobileNavButton} ${styles.nextButton}`}
+              aria-label="Next image"
             >
-              <svg viewBox="0 0 24 24" className={styles.navIcon} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 5l7 7-7 7" />
-              </svg>
+              <MobileNavNextIcon className={styles.navIcon} aria-hidden="true" />
             </button>
           </div>
         ) : (
           <>
-            <div className={styles.masonryGrid}>
-              {visibleImages.map((image) => (
+            <div 
+              className={styles.masonryGrid}
+              role="region"
+              aria-label="Gallery grid"
+            >
+              {visibleImages.map((image, index) => (
                 <div 
-                  key={image.id} 
-                  className={`${styles.masonryItem} ${styles[image.size]}`}
+                  key={image?.id} 
+                  className={`${styles.masonryItem} ${styles[image?.size || 'large']}`}
+                  role="img"
+                  aria-label={image?.alt}
                 >
                   <img
-                    src={image.src}
-                    alt={image.alt}
+                    ref={el => imageRefs.current[index] = el}
+                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                    data-src={image?.src}
+                    alt={image?.alt}
                     className={styles.image}
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = image?.src || '';
+                    }}
                   />
                 </div>
               ))}
@@ -291,6 +340,7 @@ const Gallery = () => {
                 <button 
                   onClick={handleLoadMore}
                   className={styles.loadMoreButton}
+                  aria-label="Load more images"
                 >
                   Load More
                 </button>

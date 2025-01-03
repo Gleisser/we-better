@@ -1,0 +1,25 @@
+.container {
+  @apply relative w-full max-w-4xl mx-auto group;
+}
+
+.wrapper {
+  @apply absolute -inset-4 bg-gradient-to-r from-white/5 to-white/10 rounded-[2rem] backdrop-blur-[2px] border border-white/20;
+}
+
+.imageWrapper {
+  @apply relative aspect-[16/9] rounded-2xl overflow-hidden backdrop-blur-sm bg-black/30;
+}
+
+.imageWrapper::before {
+  content: "";
+  @apply absolute inset-0 bg-gradient-to-r from-primary-blue/20 to-primary-purple/20 rounded-3xl backdrop-blur-sm border border-white/20;
+}
+
+.imageWrapper::after {
+  content: "";
+  @apply absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent;
+}
+
+.image {
+  @apply relative w-full h-full object-cover opacity-90 transition-opacity duration-500;
+}

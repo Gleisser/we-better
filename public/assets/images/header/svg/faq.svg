@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="12" r="10" stroke="url(#faq-gradient)" stroke-width="2"/>
+  <path d="M9 9C9 7.89543 9.89543 7 11 7H13C14.1046 7 15 7.89543 15 9C15 10.1046 14.1046 11 13 11H12V13" stroke="url(#faq-gradient)" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="12" cy="16" r="1" fill="url(#faq-gradient)"/>
+  <defs>
+    <linearGradient id="faq-gradient" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6f42c1"/>
+      <stop offset="1" stop-color="#e83e8c"/>
+    </linearGradient>
+  </defs>
+</svg> 
