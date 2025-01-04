@@ -30,4 +30,5 @@ export default defineConfig({
       'Content-Security-Policy': generateCSP(),
     },
   },
+  assetsInclude: ['**/*.json'],
 });
