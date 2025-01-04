@@ -1,76 +1,64 @@
 import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import styles from './Sidebar.module.css';
 import { 
-  HomeIcon, 
-  VideoIcon, 
-  ArticleIcon, 
-  CourseIcon, 
-  PodcastIcon, 
-  SettingsIcon, 
-  LogoutIcon,
-  CollapseIcon
+  HomeIcon, VideoIcon, ArticleIcon, 
+  CourseIcon, PodcastIcon, SettingsIcon, 
+  LogoutIcon, CollapseIcon 
 } from '@/components/common/icons';
-
-interface SidebarItem {
-  id: string;
-  icon: React.ReactNode;
-  label: string;
-  path: string;
-}
+import styles from './Sidebar.module.css';
 
 const menuItems = [
   {
-    path: '/dashboard',
+    path: '/app/dashboard',
     label: 'Dashboard',
     icon: <HomeIcon className={styles.icon} />
   },
   {
-    path: '/videos',
+    path: '/app/videos',
     label: 'Videos',
     icon: <VideoIcon className={styles.icon} />
   },
   {
-    path: '/articles',
+    path: '/app/articles',
     label: 'Articles',
     icon: <ArticleIcon className={styles.icon} />
   },
   {
-    path: '/courses',
+    path: '/app/courses',
     label: 'Courses',
     icon: <CourseIcon className={styles.icon} />
   },
   {
-    path: '/podcasts',
+    path: '/app/podcasts',
     label: 'Podcasts',
     icon: <PodcastIcon className={styles.icon} />
   }
 ];
 
-const bottomItems: SidebarItem[] = [
-  { id: 'settings', icon: <SettingsIcon />, label: 'Settings', path: '/app/settings' },
-  { id: 'logout', icon: <LogoutIcon />, label: 'Logout', path: '/logout' },
-];
-
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const location = useLocation();
+
+  const isActiveRoute = (path: string) => {
+    // Check if we're at /app or /app/ and the path is dashboard
+    if ((location.pathname === '/app' || location.pathname === '/app/') && path === '/app/dashboard') {
+      return true;
+    }
+    // Otherwise check exact path match
+    return location.pathname === path;
+  };
 
   return (
-    <motion.aside 
-      className={styles.sidebar}
-      animate={{ width: isCollapsed ? '72px' : '240px' }}
-      transition={{ duration: 0.3 }}
-    >
+    <aside className={`${styles.sidebar} ${isCollapsed ? 'w-[72px]' : 'w-[240px]'}`}>
       <div className={styles.sidebarContent}>
-        {/* Top Section */}
+        {/* Collapse Button */}
         <div className={styles.topSection}>
           <button 
             className={styles.collapseButton}
             onClick={() => setIsCollapsed(!isCollapsed)}
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            <CollapseIcon className={isCollapsed ? styles.rotated : ''} />
+            <CollapseIcon className={`w-4 h-4 ${isCollapsed ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
@@ -81,7 +69,7 @@ const Sidebar = () => {
               key={item.path}
               to={item.path}
               className={styles.navItem}
-              title={isCollapsed ? item.label : undefined}
+              data-active={isActiveRoute(item.path)}
             >
               <span className={styles.icon}>{item.icon}</span>
               {!isCollapsed && (
@@ -100,29 +88,17 @@ const Sidebar = () => {
 
         {/* Bottom Navigation */}
         <nav className={styles.bottomNav}>
-          {bottomItems.map((item) => (
-            <Link
-              key={item.id}
-              to={item.path}
-              className={styles.navItem}
-              title={isCollapsed ? item.label : undefined}
-            >
-              <span className={styles.icon}>{item.icon}</span>
-              {!isCollapsed && (
-                <motion.span 
-                  className={styles.label}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  {item.label}
-                </motion.span>
-              )}
-            </Link>
-          ))}
+          <Link to="/settings" className={styles.navItem}>
+            <SettingsIcon className={styles.icon} />
+            {!isCollapsed && <span className={styles.label}>Settings</span>}
+          </Link>
+          <button className={styles.navItem}>
+            <LogoutIcon className={styles.icon} />
+            {!isCollapsed && <span className={styles.label}>Logout</span>}
+          </button>
         </nav>
       </div>
-    </motion.aside>
+    </aside>
   );
 };
 

@@ -35,9 +35,10 @@
 }
 
 .navItem {
-  @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-white/70
-         hover:text-white hover:bg-white/5 transition-all duration-200
-         font-plus-jakarta;
+  @apply flex items-center gap-4 px-4 py-3
+         text-gray-400 hover:text-white
+         transition-all duration-300
+         relative;
 }
 
 .icon {
@@ -55,4 +56,45 @@
 
 .navItem[aria-current="page"] .icon {
   @apply text-white;
+}
+
+/* Active state with glow effect */
+.navItem[data-active="true"] {
+  @apply text-white;
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.navItem[data-active="true"]::before {
+  content: "";
+  @apply absolute left-0 top-0 bottom-0 w-1
+         bg-gradient-to-b from-purple-500 to-pink-500;
+  box-shadow: 0 0 10px theme("colors.purple.500"),
+    0 0 20px theme("colors.purple.500");
+  animation: glowPulse 2s infinite;
+}
+
+.navItem[data-active="true"] .icon {
+  @apply text-purple-500;
+  filter: drop-shadow(0 0 8px theme("colors.purple.500"));
+  animation: iconGlow 2s infinite;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes iconGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px theme("colors.purple.500"));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px theme("colors.purple.500"));
+  }
 }
