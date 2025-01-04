@@ -1,14 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SettingsIcon, LogoutIcon } from '@/components/common/icons';
 import NotificationsPopup from '../NotificationsPopup/NotificationsPopup';
+import { useHeader } from '@/contexts/HeaderContext';
 import styles from './HeaderActions.module.css';
 
 const HeaderActions = () => {
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [notificationCount] = useState(10);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [notificationCount] = useState(10);
+  const { activePopup, setActivePopup } = useHeader();
+
+  // Close popups when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest(`.${styles.actionsContainer}`)) {
+        setActivePopup(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [setActivePopup]);
 
   return (
     <div className={styles.actionsContainer}>
@@ -54,7 +67,7 @@ const HeaderActions = () => {
         <button 
           className={styles.notificationButton} 
           aria-label="Notifications"
-          onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+          onClick={() => setActivePopup(activePopup === 'notifications' ? null : 'notifications')}
         >
           <svg 
             viewBox="0 0 24 24" 
@@ -82,8 +95,8 @@ const HeaderActions = () => {
         </button>
 
         <AnimatePresence>
-          {isNotificationsOpen && (
-            <NotificationsPopup onClose={() => setIsNotificationsOpen(false)} />
+          {activePopup === 'notifications' && (
+            <NotificationsPopup onClose={() => setActivePopup(null)} />
           )}
         </AnimatePresence>
       </div>
@@ -92,8 +105,8 @@ const HeaderActions = () => {
       <div className={styles.profileContainer}>
         <button 
           className={styles.profileButton}
-          onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-          aria-expanded={isProfileMenuOpen}
+          onClick={() => setActivePopup(activePopup === 'profile' ? null : 'profile')}
+          aria-expanded={activePopup === 'profile'}
           aria-haspopup="true"
         >
           <div className={styles.profileFallback}>
@@ -103,7 +116,7 @@ const HeaderActions = () => {
         </button>
 
         <AnimatePresence>
-          {isProfileMenuOpen && (
+          {activePopup === 'profile' && (
             <motion.div 
               className={styles.profileMenu}
               initial={{ opacity: 0, y: 10 }}

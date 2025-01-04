@@ -762,3 +762,23 @@ export const ChevronDownIcon = ({ className }: IconProps) => (
     />
   </svg>
 );
+
+export const StarIcon = ({ className }: IconProps) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="currentColor" 
+    className={className}
+  >
+    <path d="M12 2L9.09 8.37L2 9.27L7 14.14L5.82 21L12 17.77L18.18 21L17 14.14L22 9.27L14.91 8.37L12 2Z" />
+  </svg>
+);
+
+export const SparkleIcon = ({ className }: IconProps) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="currentColor" 
+    className={className}
+  >
+    <path d="M9.813 15.904L9 18.75l-.813-2.846L5.25 15l2.937-.813L9 11.25l.813 2.937L12.75 15l-2.937.904zM18.259 8.715L18 9.75l-.259-1.035-1.035-.259 1.035-.259.259-1.035.259 1.035 1.035.259-1.035.259z" />
+  </svg>
+);

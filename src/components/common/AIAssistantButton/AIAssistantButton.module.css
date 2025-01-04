@@ -1,0 +1,80 @@
+.container {
+  @apply fixed bottom-6 right-8 z-50;
+}
+
+.button {
+  @apply relative px-6 h-12 rounded-[24px]
+         bg-[#6D28D9] backdrop-blur-xl
+         border border-white/10
+         flex items-center justify-center
+         transition-all duration-300
+         hover:border-transparent
+         shadow-lg shadow-purple-500/20;
+}
+
+.content {
+  @apply relative z-10 flex items-center gap-3 transition-all duration-300;
+}
+
+.icon {
+  @apply w-6 h-6 text-white/90 transition-all duration-300 
+         drop-shadow-[0_0_3px_rgba(255,255,255,0.5)];
+}
+
+.text {
+  @apply text-white font-medium text-[15px];
+}
+
+.hovered .icon {
+  @apply text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.7)];
+}
+
+.hovered .text {
+  @apply text-white;
+}
+
+.borderAnimation {
+  @apply absolute inset-0 w-full h-full;
+}
+
+.particlesContainer {
+  @apply absolute inset-0;
+}
+
+.particle {
+  @apply absolute w-1.5 h-1.5 rounded-full
+         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]
+         top-1/2 left-1/2
+         -translate-x-1/2 -translate-y-1/2;
+  filter: blur(0.5px);
+}
+
+/* Add glow effect */
+.button::after {
+  content: "";
+  @apply absolute inset-0 rounded-[24px] opacity-0 transition-opacity duration-300;
+  background: radial-gradient(
+    circle at center,
+    rgba(139, 92, 246, 0.3) 0%,
+    transparent 70%
+  );
+}
+
+.button:hover::after {
+  @apply opacity-100;
+}
+
+/* Add pulse effect */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.button:hover {
+  animation: pulse 2s infinite;
+}
