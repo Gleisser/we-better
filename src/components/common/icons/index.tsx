@@ -782,3 +782,13 @@ export const SparkleIcon = ({ className }: IconProps) => (
     <path d="M9.813 15.904L9 18.75l-.813-2.846L5.25 15l2.937-.813L9 11.25l.813 2.937L12.75 15l-2.937.904zM18.259 8.715L18 9.75l-.259-1.035-1.035-.259 1.035-.259.259-1.035.259 1.035 1.035.259-1.035.259z" />
   </svg>
 );
+
+export const PlayIcon = ({ className }: IconProps) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="currentColor" 
+    className={className}
+  >
+    <path d="M8 5v14l11-7z" />
+  </svg>
+);

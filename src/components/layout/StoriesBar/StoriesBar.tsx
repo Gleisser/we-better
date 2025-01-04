@@ -1,4 +1,7 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import LifeStories from '../Stories/LifeStories';
+import { XIcon, PlayIcon } from '@/components/common/icons';
 import styles from './StoriesBar.module.css';
 
 const MOCK_CATEGORIES = [
@@ -93,32 +96,52 @@ const MOCK_CATEGORIES = [
 ];
 
 const StoriesBar = () => {
+  const [isExpanded, setIsExpanded] = useState(true);
   const handleCategorySelect = (category: any) => {
     console.log('Selected category:', category);
   };
 
   return (
     <div className={styles.container}>
-      <div className={styles.curvedBackground}>
-        <svg 
-          className={styles.curveSvg} 
-          preserveAspectRatio="none"
-          viewBox="0 0 1440 200"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 0H1440V80C1380 80 1350 120 1320 120C1290 120 1260 80 1230 80C1200 80 1170 120 1140 120C1110 120 1080 80 1050 80C1020 80 990 120 960 120C930 120 900 80 870 80C840 80 810 120 780 120C750 120 720 80 690 80C660 80 630 120 600 120C570 120 540 80 510 80C480 80 450 120 420 120C390 120 360 80 330 80C300 80 270 120 240 120C210 120 180 80 150 80C120 80 90 120 60 120C30 120 0 80 0 80V0Z"
-            className={styles.curvePath}
-          />
-        </svg>
-      </div>
-      <div className={styles.storiesContainer}>
-        <LifeStories 
-          categories={MOCK_CATEGORIES} 
-          onCategorySelect={handleCategorySelect}
-        />
-      </div>
+      <AnimatePresence mode="wait">
+        {isExpanded ? (
+          <motion.div 
+            className={styles.storiesContainer}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.3 }}
+          >
+            <button 
+              className={styles.collapseButton}
+              onClick={() => setIsExpanded(false)}
+              aria-label="Collapse stories"
+            >
+              <XIcon className={styles.collapseIcon} />
+            </button>
+            <LifeStories 
+              categories={MOCK_CATEGORIES} 
+              onCategorySelect={handleCategorySelect}
+            />
+          </motion.div>
+        ) : (
+          <motion.button
+            className={styles.collapsedButton}
+            onClick={() => setIsExpanded(true)}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <div className={styles.collapsedIcon}>
+              <PlayIcon className={styles.playIcon} />
+            </div>
+            <span className={styles.collapsedText}>Quick Inspiration</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
