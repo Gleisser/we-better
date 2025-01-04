@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { motion, useAnimation } from 'framer-motion';
+import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import { SparkleIcon } from '@/components/common/icons';
+import AIChatBox from './AIChatBox';
 import styles from './AIAssistantButton.module.css';
 
 const AIAssistantButton = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const controls = useAnimation();
 
   // Particle configuration
@@ -15,6 +17,12 @@ const AIAssistantButton = () => {
 
   return (
     <div className={styles.container}>
+      <AnimatePresence>
+        {isChatOpen && (
+          <AIChatBox onClose={() => setIsChatOpen(false)} />
+        )}
+      </AnimatePresence>
+
       {/* Particles */}
       {isHovered && (
         <div className={styles.particlesContainer}>
@@ -43,6 +51,7 @@ const AIAssistantButton = () => {
       {/* Button */}
       <motion.button
         className={styles.button}
+        onClick={() => setIsChatOpen(true)}
         onHoverStart={() => {
           setIsHovered(true);
           controls.start({ pathLength: 1 });
