@@ -20,12 +20,32 @@ interface SidebarItem {
   path: string;
 }
 
-const sidebarItems: SidebarItem[] = [
-  { id: 'home', icon: <HomeIcon />, label: 'Dashboard', path: '/app' },
-  { id: 'videos', icon: <VideoIcon />, label: 'Videos', path: '/app/videos' },
-  { id: 'articles', icon: <ArticleIcon />, label: 'Articles', path: '/app/articles' },
-  { id: 'courses', icon: <CourseIcon />, label: 'Courses', path: '/app/courses' },
-  { id: 'podcasts', icon: <PodcastIcon />, label: 'Podcasts', path: '/app/podcasts' },
+const menuItems = [
+  {
+    path: '/dashboard',
+    label: 'Dashboard',
+    icon: <HomeIcon className={styles.icon} />
+  },
+  {
+    path: '/videos',
+    label: 'Videos',
+    icon: <VideoIcon className={styles.icon} />
+  },
+  {
+    path: '/articles',
+    label: 'Articles',
+    icon: <ArticleIcon className={styles.icon} />
+  },
+  {
+    path: '/courses',
+    label: 'Courses',
+    icon: <CourseIcon className={styles.icon} />
+  },
+  {
+    path: '/podcasts',
+    label: 'Podcasts',
+    icon: <PodcastIcon className={styles.icon} />
+  }
 ];
 
 const bottomItems: SidebarItem[] = [
@@ -56,17 +76,9 @@ const Sidebar = () => {
 
         {/* Main Navigation */}
         <nav className={styles.mainNav}>
-          <NavLink 
-            to="/"
-            className={styles.navItem}
-            end
-          >
-            <HomeIcon className={styles.icon} />
-            <span className={styles.label}>Dashboard</span>
-          </NavLink>
-          {sidebarItems.map((item) => (
+          {menuItems.map((item) => (
             <Link
-              key={item.id}
+              key={item.path}
               to={item.path}
               className={styles.navItem}
               title={isCollapsed ? item.label : undefined}
