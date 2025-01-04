@@ -3,6 +3,7 @@ import Sidebar from '@/components/layout/Sidebar/Sidebar';
 import HeaderActions from '@/components/layout/Header/HeaderActions';
 import SearchBar from '@/components/layout/SearchBar/SearchBar';
 import styles from './WeBetterApp.module.css';
+import Dashboard from '../Dashboard';
 
 const WeBetterApp = () => {
   return (
@@ -28,7 +29,7 @@ const WeBetterApp = () => {
 
         {/* Content Area */}
         <div className={styles.contentArea}>
-          <Outlet />
+          <Dashboard />
         </div>
       </main>
     </div>

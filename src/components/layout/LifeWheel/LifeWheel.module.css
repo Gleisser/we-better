@@ -1,0 +1,91 @@
+.wrapper {
+  @apply w-full flex items-center justify-center;
+}
+
+.container {
+  @apply relative h-[240px] w-[240px]
+         flex items-center justify-center;
+}
+
+.centerPiece {
+  @apply absolute w-20 h-20
+         rounded-full bg-black/40 backdrop-blur-xl
+         border border-white/10
+         flex items-center justify-center
+         cursor-pointer
+         transition-all duration-300
+         z-50;
+  position: absolute;
+  left: calc(50% - 40px);
+  top: calc(50% - 40px);
+  transform: none;
+}
+
+.scoreRing {
+  @apply w-[72px] h-[72px] rounded-full
+         bg-gradient-to-br from-[#8B5CF6] to-[#D946EF]
+         flex items-center justify-center;
+}
+
+.initials {
+  @apply text-2xl font-bold text-white;
+}
+
+.scoreValue {
+  @apply text-2xl font-bold text-white;
+}
+
+.scoreLabel {
+  @apply text-[10px] text-white/70
+         font-medium tracking-wider uppercase;
+}
+
+.categoryBubble {
+  @apply absolute w-12 h-12
+         rounded-full bg-black/40 backdrop-blur-xl
+         border border-white/10
+         flex items-center justify-center
+         cursor-pointer
+         transition-all duration-300;
+  margin-left: -24px;
+  margin-top: -24px;
+  transform: none;
+}
+
+.categoryIcon {
+  @apply text-base;
+}
+
+.categoryLabel {
+  @apply absolute top-full mt-2
+         px-3 py-1.5 rounded-lg
+         bg-black/80 backdrop-blur-sm
+         border border-white/10
+         flex items-center gap-2
+         whitespace-nowrap;
+}
+
+.categoryName {
+  @apply text-sm text-white font-medium;
+}
+
+.categoryScore {
+  @apply text-xs text-white/70;
+}
+
+.updateDot {
+  @apply w-1.5 h-1.5 rounded-full
+         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]
+         animate-pulse;
+}
+
+/* Hover effects */
+.categoryBubble:hover {
+  @apply border-white/20 bg-white/10;
+  transform: scale(1.1);
+}
+
+.centerPiece:hover {
+  @apply border-white/20;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}

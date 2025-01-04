@@ -1,0 +1,45 @@
+.container {
+  @apply w-full overflow-hidden;
+}
+
+.storiesWrapper {
+  @apply flex items-center justify-center
+         gap-4 px-8 py-4
+         overflow-x-auto;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.storyItem {
+  @apply flex flex-col items-center gap-2
+         cursor-pointer;
+}
+
+.storyRing {
+  @apply w-16 h-16 rounded-full p-[3px]
+         bg-gradient-to-br from-gray-500 to-gray-700;
+}
+
+.hasUpdate {
+  @apply animate-pulse;
+}
+
+.storyContent {
+  @apply w-full h-full rounded-full
+         bg-black/40 backdrop-blur-xl
+         flex items-center justify-center
+         border border-white/10;
+}
+
+.storyIcon {
+  @apply text-2xl;
+}
+
+.storyLabel {
+  @apply text-xs text-white/70 font-medium;
+}
+
+/* Hide scrollbar but keep functionality */
+.storiesWrapper::-webkit-scrollbar {
+  display: none;
+}

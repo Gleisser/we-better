@@ -1,0 +1,29 @@
+.container {
+  @apply fixed bottom-6 left-1/2 
+         w-full max-w-[800px] /* Reduced max-width for better floating look */
+         z-50;
+  transform: translateX(-50%); /* Center horizontally */
+  perspective: 1000px;
+}
+
+.storiesContainer {
+  @apply mx-auto px-8 py-4
+         bg-black/40 backdrop-blur-xl
+         rounded-2xl border border-white/10
+         transition-all duration-500;
+  transform: rotateX(-1deg) translateY(0);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+.storiesContainer:hover {
+  transform: rotateX(0deg) translateY(-4px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(139, 92, 246, 0.2);
+}
+
+.storiesWrapper {
+  @apply flex items-center justify-center gap-6;
+}
+
+/* Remove unused styles */

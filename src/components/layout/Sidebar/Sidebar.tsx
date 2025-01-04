@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import styles from './Sidebar.module.css';
 import { 
@@ -56,6 +56,14 @@ const Sidebar = () => {
 
         {/* Main Navigation */}
         <nav className={styles.mainNav}>
+          <NavLink 
+            to="/"
+            className={styles.navItem}
+            end
+          >
+            <HomeIcon className={styles.icon} />
+            <span className={styles.label}>Dashboard</span>
+          </NavLink>
           {sidebarItems.map((item) => (
             <Link
               key={item.id}
