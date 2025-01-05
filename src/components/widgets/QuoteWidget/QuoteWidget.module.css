@@ -1,0 +1,227 @@
+.container {
+  @apply relative w-full h-full
+         rounded-[32px] overflow-hidden
+         bg-[#0A0A0A]/90 backdrop-blur-xl
+         border border-white/10
+         shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)];
+  pointer-events: auto;
+}
+
+/* Background gradient effect */
+.backgroundGradient {
+  @apply absolute inset-0 opacity-40;
+  background: radial-gradient(
+      circle at top right,
+      rgba(139, 92, 246, 0.2),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(217, 70, 239, 0.2),
+      transparent 60%
+    );
+}
+
+.content {
+  @apply relative z-10 w-full h-full
+         flex flex-col
+         p-5;
+}
+
+/* Header styles */
+.header {
+  @apply flex items-center gap-3 mb-5
+         pb-4 border-b border-white/[0.08]
+         justify-between;
+}
+
+.headerLeft {
+  @apply flex items-center gap-3;
+}
+
+.iconWrapper {
+  @apply w-10 h-10 rounded-xl
+         bg-black/80
+         flex items-center justify-center
+         border border-white/[0.08]
+         shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
+}
+
+.headerIcon {
+  @apply w-5 h-5 text-white;
+}
+
+.headerText {
+  @apply text-sm text-white/80 font-medium;
+}
+
+/* Quote content styles */
+.quoteContent {
+  @apply flex-1 flex flex-col justify-center
+         bg-[#0A0A0A]/80
+         rounded-2xl p-6
+         border border-white/[0.08]
+         shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
+}
+
+.quoteText {
+  @apply text-lg md:text-xl text-white
+         font-plus-jakarta text-center
+         flex flex-wrap justify-center
+         leading-relaxed mb-6;
+}
+
+.word {
+  @apply mx-[4px] my-[2px]
+         relative text-white
+         hover:text-transparent hover:bg-clip-text
+         hover:bg-gradient-to-r hover:from-[#8B5CF6] hover:to-[#D946EF]
+         transition-all duration-300;
+}
+
+.author {
+  @apply text-sm font-medium
+         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]
+         bg-clip-text text-transparent
+         text-right w-full;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .content {
+    @apply p-4;
+  }
+
+  .quoteText {
+    @apply text-base;
+  }
+
+  .author {
+    @apply text-xs;
+  }
+}
+
+/* Update bookmark styles */
+.bookmarkWrapper {
+  @apply relative inline-flex;
+  pointer-events: auto;
+}
+
+.bookmarkButton {
+  @apply w-8 h-8 rounded-lg
+         inline-flex items-center justify-center
+         border border-white/[0.08]
+         bg-black/40
+         transition-colors duration-200
+         hover:border-white/20
+         hover:bg-black/60
+         active:scale-95;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.bookmarkIcon {
+  @apply w-4 h-4 text-white/70
+         transition-colors duration-200;
+}
+
+.bookmarkButton:hover .bookmarkIcon {
+  @apply text-white;
+}
+
+/* Active/Bookmarked state */
+.bookmarked {
+  @apply bg-[#8B5CF6]/20 border-[#8B5CF6]/30;
+}
+
+.bookmarked .bookmarkIcon {
+  @apply text-[#8B5CF6];
+}
+
+.bookmarkButton:hover.bookmarked {
+  @apply bg-[#8B5CF6]/30 border-[#8B5CF6]/50;
+}
+
+.bookmarkButton:hover.bookmarked .bookmarkIcon {
+  @apply text-[#8B5CF6];
+}
+
+/* Tooltip and Success message styles */
+.tooltip,
+.successMessage {
+  @apply absolute -bottom-8 right-0
+         px-2 py-1 rounded-md
+         text-xs whitespace-nowrap
+         z-20;
+}
+
+.tooltip {
+  @apply bg-black/90 backdrop-blur-sm
+         text-white/90
+         border border-white/[0.08]
+         shadow-lg;
+}
+
+.successMessage {
+  @apply bg-[#8B5CF6]/20 backdrop-blur-sm
+         text-[#8B5CF6]
+         border border-[#8B5CF6]/20
+         font-medium;
+}
+
+/* Add these new styles */
+.actions {
+  @apply flex items-center gap-2;
+}
+
+.actionButton {
+  @apply w-8 h-8 rounded-lg
+         inline-flex items-center justify-center
+         border border-white/[0.08]
+         bg-black/40
+         transition-colors duration-200
+         hover:border-white/20
+         hover:bg-black/60
+         active:scale-95;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.actionIcon {
+  @apply w-4 h-4 text-white/70
+         transition-colors duration-200;
+}
+
+.actionButton:hover .actionIcon {
+  @apply text-white;
+}
+
+.shareWrapper {
+  @apply relative inline-flex;
+  pointer-events: auto;
+}
+
+.shareMenu {
+  @apply absolute -bottom-[130px] right-0
+         w-[160px] py-1
+         bg-black/90 backdrop-blur-sm
+         border border-white/[0.08]
+         rounded-lg shadow-lg
+         z-30;
+}
+
+.shareOption {
+  @apply w-full px-3 py-2
+         flex items-center gap-2
+         text-sm text-white/70
+         hover:bg-white/5
+         transition-colors duration-200;
+}
+
+.socialIcon {
+  @apply w-4 h-4;
+}
+
+.shareOption:hover {
+  @apply text-white;
+}

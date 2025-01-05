@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import QuoteWidget from '@/components/widgets/QuoteWidget/QuoteWidget';
 import styles from './DashboardGrid.module.css';
 
 type WidgetSize = 'small' | 'medium' | 'large' | 'vertical' | 'horizontal';
@@ -70,15 +71,29 @@ const DashboardGrid = () => {
           <motion.div
             key={widget.id}
             className={`${styles.widget} ${styles[widget.size]}`}
-            style={{ gridArea: widget.gridArea }}
+            style={{ 
+              gridArea: widget.gridArea,
+              position: 'relative'
+            }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className={styles.placeholder}>
-              <h3 className={styles.widgetTitle}>{widget.title}</h3>
-              <p className={styles.comingSoon}>Widget coming soon...</p>
-            </div>
+            {widget.id === 'quote' ? (
+              <div style={{ 
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                zIndex: 1
+              }}>
+                <QuoteWidget />
+              </div>
+            ) : (
+              <div className={styles.placeholder}>
+                <h3 className={styles.widgetTitle}>{widget.title}</h3>
+                <p className={styles.comingSoon}>Widget coming soon...</p>
+              </div>
+            )}
           </motion.div>
         ))}
       </div>

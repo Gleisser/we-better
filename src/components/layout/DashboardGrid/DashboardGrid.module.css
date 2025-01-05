@@ -11,6 +11,7 @@
     "quote affirmation habits goals"
     "videos videos videos goals"
     "podcast article course course";
+  pointer-events: none;
 }
 
 .widget {
@@ -19,6 +20,7 @@
          hover:-translate-y-1
          bg-black/40 backdrop-blur-xl
          border border-white/10;
+  pointer-events: auto;
 }
 
 /* Add glow effect similar to AIAssistantButton */
