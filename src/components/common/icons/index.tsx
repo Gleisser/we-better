@@ -825,3 +825,35 @@ export const MoreVerticalIcon = ({ className }: IconProps) => (
     />
   </svg>
 );
+
+export const ChevronLeftIcon = ({ className }: IconProps) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor"
+    className={className}
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M15 19l-7-7 7-7" 
+    />
+  </svg>
+);
+
+export const ChevronRightIcon = ({ className }: IconProps) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor"
+    className={className}
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M9 5l7 7-7 7" 
+    />
+  </svg>
+);
