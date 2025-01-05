@@ -68,6 +68,26 @@ const InstagramIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const CopyIcon = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    className={className}
+    fill="none"
+    stroke="currentColor"
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+    />
+  </svg>
+);
+
+type Reaction = '❤️' | '👏' | '💡' | '💪' | '🙏';
+
+const REACTIONS: Reaction[] = ['❤️', '👏', '💡', '💪', '🙏'];
+
 const QuoteWidget = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -81,6 +101,15 @@ const QuoteWidget = () => {
     type: 'bookmark'
   });
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [showReactions, setShowReactions] = useState(false);
+  const [reactions, setReactions] = useState<Record<Reaction, number>>({
+    '❤️': 0,
+    '👏': 0,
+    '💡': 0,
+    '💪': 0,
+    '🙏': 0
+  });
+  const [userReaction, setUserReaction] = useState<Reaction | null>(null);
   
   const shareMenuRef = useRef<HTMLDivElement>(null);
   const shareButtonRef = useRef<HTMLButtonElement>(null);
@@ -138,6 +167,40 @@ const QuoteWidget = () => {
     }
     
     setShowShareMenu(false);
+  };
+
+  const handleCopyQuote = () => {
+    const quote = `"${QUOTE.text}" - ${QUOTE.author}`;
+    navigator.clipboard.writeText(quote);
+    setShowSuccess({
+      show: true,
+      message: 'Quote copied to clipboard!',
+      type: 'share'
+    });
+    setTimeout(() => setShowSuccess(prev => ({ ...prev, show: false })), 2000);
+  };
+
+  const handleReaction = (reaction: Reaction) => {
+    if (userReaction === reaction) {
+      setReactions(prev => ({
+        ...prev,
+        [reaction]: prev[reaction] - 1
+      }));
+      setUserReaction(null);
+    } else {
+      if (userReaction) {
+        setReactions(prev => ({
+          ...prev,
+          [userReaction]: prev[userReaction] - 1
+        }));
+      }
+      setReactions(prev => ({
+        ...prev,
+        [reaction]: prev[reaction] + 1
+      }));
+      setUserReaction(reaction);
+    }
+    setShowReactions(false);
   };
 
   return (
@@ -253,7 +316,6 @@ const QuoteWidget = () => {
           </div>
         </div>
 
-        {/* Quote Content */}
         <motion.div 
           className={styles.quoteContent}
           initial={{ opacity: 0, y: 20 }}
@@ -287,14 +349,66 @@ const QuoteWidget = () => {
             ))}
           </motion.div>
 
-          <motion.div 
-            className={styles.author}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.5 }}
-          >
-            - {QUOTE.author}
-          </motion.div>
+          <div className={styles.quoteFooter}>
+            <motion.div 
+              className={styles.author}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.5 }}
+            >
+              - {QUOTE.author}
+            </motion.div>
+
+            <div className={styles.bottomActions}>
+              <div className={styles.reactionsWrapper}>
+                <button
+                  type="button"
+                  className={`${styles.actionButton} ${userReaction ? styles.hasReaction : ''}`}
+                  onClick={() => setShowReactions(!showReactions)}
+                  aria-label="React to quote"
+                >
+                  <span className={styles.reactionIcon}>
+                    {userReaction || '🤍'}
+                  </span>
+                </button>
+
+                <AnimatePresence>
+                  {showReactions && (
+                    <motion.div
+                      className={styles.reactionsMenu}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                    >
+                      {REACTIONS.map((reaction) => (
+                        <button
+                          key={reaction}
+                          onClick={() => handleReaction(reaction)}
+                          className={`${styles.reactionOption} ${
+                            userReaction === reaction ? styles.selectedReaction : ''
+                          }`}
+                        >
+                          <span className={styles.reactionEmoji}>{reaction}</span>
+                          <span className={styles.reactionCount}>
+                            {reactions[reaction]}
+                          </span>
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <button
+                type="button"
+                className={styles.actionButton}
+                onClick={handleCopyQuote}
+                aria-label="Copy quote"
+              >
+                <CopyIcon className={styles.actionIcon} />
+              </button>
+            </div>
+          </div>
         </motion.div>
       </div>
     </div>
