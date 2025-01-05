@@ -2,9 +2,56 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import styles from './QuoteWidget.module.css';
 
+type QuoteTheme = 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom';
+
 const QUOTE = {
   text: "The only way to do great work is to love what you do.",
-  author: "Steve Jobs"
+  author: "Steve Jobs",
+  theme: 'success' as QuoteTheme
+};
+
+const THEME_CONFIG: Record<QuoteTheme, { 
+  color: string; 
+  icon: string;
+  bgClass: string;
+  borderClass: string;
+  hoverClass: string;
+}> = {
+  success: { 
+    color: '#10B981', 
+    icon: '🎯',
+    bgClass: 'bg-emerald-500/10',
+    borderClass: 'border-emerald-500/30',
+    hoverClass: 'text-emerald-500'
+  },
+  motivation: { 
+    color: '#8B5CF6', 
+    icon: '🔥',
+    bgClass: 'bg-purple-500/10',
+    borderClass: 'border-purple-500/30',
+    hoverClass: 'text-purple-500'
+  },
+  leadership: { 
+    color: '#3B82F6', 
+    icon: '👑',
+    bgClass: 'bg-blue-500/10',
+    borderClass: 'border-blue-500/30',
+    hoverClass: 'text-blue-500'
+  },
+  growth: { 
+    color: '#F59E0B', 
+    icon: '🌱',
+    bgClass: 'bg-amber-500/10',
+    borderClass: 'border-amber-500/30',
+    hoverClass: 'text-amber-500'
+  },
+  wisdom: { 
+    color: '#EC4899', 
+    icon: '✨',
+    bgClass: 'bg-pink-500/10',
+    borderClass: 'border-pink-500/30',
+    hoverClass: 'text-pink-500'
+  }
 };
 
 const QuoteIcon = ({ className }: { className?: string }) => (
@@ -322,6 +369,20 @@ const QuoteWidget = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
+          <motion.div
+            className={`${styles.themeTag} hover:${THEME_CONFIG[QUOTE.theme].bgClass} hover:${THEME_CONFIG[QUOTE.theme].borderClass}`}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <span className={styles.themeIcon}>
+              {THEME_CONFIG[QUOTE.theme].icon}
+            </span>
+            <span className={`${styles.themeText} hover:${THEME_CONFIG[QUOTE.theme].hoverClass}`}>
+              {QUOTE.theme.charAt(0).toUpperCase() + QUOTE.theme.slice(1)}
+            </span>
+          </motion.div>
+
           <motion.div 
             className={styles.quoteText}
             initial="hidden"
