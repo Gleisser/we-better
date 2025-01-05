@@ -1,0 +1,106 @@
+.container {
+  @apply w-full max-w-[1400px] mx-auto p-8;
+}
+
+.bentoGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, minmax(180px, auto));
+  grid-template-areas:
+    "quote affirmation habits goals"
+    "videos videos videos goals"
+    "podcast article course course";
+}
+
+.widget {
+  @apply relative rounded-[32px] overflow-hidden
+         transition-transform duration-300
+         hover:-translate-y-1
+         bg-black/40 backdrop-blur-xl
+         border border-white/10;
+}
+
+/* Add glow effect similar to AIAssistantButton */
+.widget::after {
+  content: "";
+  @apply absolute inset-0 rounded-[32px] opacity-0 transition-opacity duration-300;
+  background: radial-gradient(
+    circle at center,
+    rgba(139, 92, 246, 0.15) 0%,
+    transparent 70%
+  );
+}
+
+.widget:hover::after {
+  @apply opacity-100;
+}
+
+/* Widget sizes */
+.widget.small {
+  @apply col-span-1 row-span-1;
+}
+
+.widget.medium {
+  @apply col-span-1 row-span-1;
+}
+
+.widget.large {
+  grid-area: videos;
+  @apply bg-gradient-to-br from-black/40 to-black/20;
+}
+
+.widget.vertical {
+  grid-area: goals;
+  @apply bg-gradient-to-br from-black/40 to-black/20;
+}
+
+.widget.horizontal {
+  grid-area: course;
+  @apply bg-gradient-to-br from-black/40 to-black/20;
+}
+
+.placeholder {
+  @apply w-full h-full p-6
+         flex flex-col items-center justify-center
+         transition-all duration-300;
+}
+
+.widgetTitle {
+  @apply text-xl text-white font-plus-jakarta mb-2
+         bg-clip-text text-transparent 
+         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
+}
+
+.comingSoon {
+  @apply text-white/50 text-sm;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .bentoGrid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas:
+      "quote affirmation"
+      "habits goals"
+      "videos videos"
+      "podcast article"
+      "course course";
+  }
+}
+
+@media (max-width: 640px) {
+  .bentoGrid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "quote"
+      "affirmation"
+      "habits"
+      "goals"
+      "videos"
+      "podcast"
+      "article"
+      "course";
+  }
+}

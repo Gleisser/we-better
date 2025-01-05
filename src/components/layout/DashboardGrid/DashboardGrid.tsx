@@ -1,0 +1,89 @@
+import { motion } from 'framer-motion';
+import styles from './DashboardGrid.module.css';
+
+type WidgetSize = 'small' | 'medium' | 'large' | 'vertical' | 'horizontal';
+
+interface WidgetConfig {
+  id: string;
+  size: WidgetSize;
+  title: string;
+  gridArea?: string;
+}
+
+// Bento-style widget configuration
+const WIDGETS: WidgetConfig[] = [
+  { 
+    id: 'quote', 
+    size: 'medium', 
+    title: 'Quote of the Day',
+    gridArea: 'quote'
+  },
+  { 
+    id: 'affirmation', 
+    size: 'small', 
+    title: 'Daily Affirmation',
+    gridArea: 'affirmation'
+  },
+  { 
+    id: 'habits', 
+    size: 'small', 
+    title: 'Habits Tracking',
+    gridArea: 'habits'
+  },
+  { 
+    id: 'goals', 
+    size: 'vertical', 
+    title: 'Goals Tracking',
+    gridArea: 'goals'
+  },
+  { 
+    id: 'videos', 
+    size: 'large', 
+    title: 'Recommended Videos',
+    gridArea: 'videos'
+  },
+  { 
+    id: 'podcast', 
+    size: 'medium', 
+    title: 'Podcast of the Day',
+    gridArea: 'podcast'
+  },
+  { 
+    id: 'article', 
+    size: 'small', 
+    title: 'Article of the Day',
+    gridArea: 'article'
+  },
+  { 
+    id: 'course', 
+    size: 'horizontal', 
+    title: 'Recommended Course',
+    gridArea: 'course'
+  }
+];
+
+const DashboardGrid = () => {
+  return (
+    <div className={styles.container}>
+      <div className={styles.bentoGrid}>
+        {WIDGETS.map((widget) => (
+          <motion.div
+            key={widget.id}
+            className={`${styles.widget} ${styles[widget.size]}`}
+            style={{ gridArea: widget.gridArea }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className={styles.placeholder}>
+              <h3 className={styles.widgetTitle}>{widget.title}</h3>
+              <p className={styles.comingSoon}>Widget coming soon...</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default DashboardGrid; 
