@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import styles from './QuoteWidget.module.css';
+import { MoreVerticalIcon } from '../../common/icons';
 
 type QuoteTheme = 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom';
 
@@ -157,9 +158,12 @@ const QuoteWidget = () => {
     '🙏': 0
   });
   const [userReaction, setUserReaction] = useState<Reaction | null>(null);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
   
   const shareMenuRef = useRef<HTMLDivElement>(null);
   const shareButtonRef = useRef<HTMLButtonElement>(null);
+  const moreOptionsRef = useRef<HTMLDivElement>(null);
+  const moreButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -169,6 +173,21 @@ const QuoteWidget = () => {
         !shareButtonRef.current?.contains(event.target as Node)
       ) {
         setShowShareMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        moreOptionsRef.current && 
+        !moreOptionsRef.current.contains(event.target as Node) &&
+        !moreButtonRef.current?.contains(event.target as Node)
+      ) {
+        setShowMoreOptions(false);
       }
     };
 
@@ -248,6 +267,26 @@ const QuoteWidget = () => {
       setUserReaction(reaction);
     }
     setShowReactions(false);
+  };
+
+  const handleLearnMore = () => {
+    console.log('Learn more about:', QUOTE.text);
+    setShowMoreOptions(false);
+  };
+
+  const handleBookRecommendations = () => {
+    console.log('Show book recommendations related to:', QUOTE.text);
+    setShowMoreOptions(false);
+  };
+
+  const handleTakeaways = () => {
+    console.log('Show actionable takeaways for:', QUOTE.text);
+    setShowMoreOptions(false);
+  };
+
+  const handleSubmitQuote = () => {
+    console.log('Open submit quote form');
+    setShowMoreOptions(false);
   };
 
   return (
@@ -356,6 +395,64 @@ const QuoteWidget = () => {
                     exit={{ opacity: 0 }}
                   >
                     {showSuccess.message}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div className={styles.moreOptionsWrapper}>
+              <button
+                ref={moreButtonRef}
+                type="button"
+                className={styles.actionButton}
+                onClick={() => setShowMoreOptions(!showMoreOptions)}
+                aria-label="More options"
+              >
+                <MoreVerticalIcon className={styles.actionIcon} />
+              </button>
+
+              <AnimatePresence>
+                {showMoreOptions && (
+                  <motion.div
+                    ref={moreOptionsRef}
+                    className={styles.moreOptionsMenu}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                  >
+                    <button
+                      onClick={handleLearnMore}
+                      className={styles.moreOption}
+                    >
+                      <span className={styles.moreOptionIcon}>✨</span>
+                      <span>Learn more</span>
+                    </button>
+
+                    <button
+                      onClick={handleBookRecommendations}
+                      className={styles.moreOption}
+                    >
+                      <span className={styles.moreOptionIcon}>📚</span>
+                      <span>Book recommendations</span>
+                    </button>
+
+                    <button
+                      onClick={handleTakeaways}
+                      className={styles.moreOption}
+                    >
+                      <span className={styles.moreOptionIcon}>💡</span>
+                      <span>Quick takeaways</span>
+                    </button>
+
+                    <div className={styles.menuDivider} />
+
+                    <button
+                      onClick={handleSubmitQuote}
+                      className={styles.moreOption}
+                    >
+                      <span className={styles.moreOptionIcon}>✍️</span>
+                      <span>Submit a quote</span>
+                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>

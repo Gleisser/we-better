@@ -1,0 +1,43 @@
+.profileMenu {
+  @apply absolute right-0 top-full mt-2
+         w-64 py-2
+         bg-black/90 backdrop-blur-sm
+         border border-white/[0.08]
+         rounded-xl shadow-lg
+         z-50;
+}
+
+.menuHeader {
+  @apply px-4 py-2;
+}
+
+.userName {
+  @apply text-white font-medium;
+}
+
+.userEmail {
+  @apply text-white/50 text-sm;
+}
+
+.menuDivider {
+  @apply my-2 border-t border-white/[0.08];
+}
+
+.menuItem {
+  @apply w-full px-4 py-2
+         flex items-center gap-3
+         text-white/70 text-sm
+         hover:bg-white/5
+         transition-colors duration-200;
+}
+
+.menuItemIcon {
+  @apply w-4 h-4;
+}
+
+.bookmarkCount {
+  @apply ml-auto px-2 py-0.5
+         bg-[#8B5CF6]/20
+         text-[#8B5CF6] text-xs
+         rounded-full;
+}

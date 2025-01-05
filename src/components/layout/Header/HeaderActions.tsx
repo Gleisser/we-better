@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SettingsIcon, LogoutIcon } from '@/components/common/icons';
 import NotificationsPopup from '../NotificationsPopup/NotificationsPopup';
+import ProfileMenu from './ProfileMenu/ProfileMenu';
 import { useHeader } from '@/contexts/HeaderContext';
 import styles from './HeaderActions.module.css';
 
@@ -117,28 +118,7 @@ const HeaderActions = () => {
 
         <AnimatePresence>
           {activePopup === 'profile' && (
-            <motion.div 
-              className={styles.profileMenu}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className={styles.menuHeader}>
-                <p className={styles.userName}>Gleisser</p>
-                <p className={styles.userEmail}>gleisser@example.com</p>
-              </div>
-              <div className={styles.menuDivider} />
-              <button className={styles.menuItem}>
-                <SettingsIcon className={styles.menuItemIcon} />
-                Settings
-              </button>
-              <div className={styles.menuDivider} />
-              <button className={styles.menuItem}>
-                <LogoutIcon className={styles.menuItemIcon} />
-                Sign out
-              </button>
-            </motion.div>
+            <ProfileMenu onClose={() => setActivePopup(null)} />
           )}
         </AnimatePresence>
       </div>
