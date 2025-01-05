@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './QuoteWidget.module.css';
 
 const QUOTE = {
@@ -50,11 +50,55 @@ const ShareIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const FacebookIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 011-1h3v-4h-3a5 5 0 00-5 5v2.01h-2l-.396 3.98h2.396v8.01z" />
+  </svg>
+);
+
+const TwitterIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
+
+const InstagramIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465.66.254 1.216.598 1.772 1.153a4.908 4.908 0 011.153 1.772c.247.637.415 1.363.465 2.428.047 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.883 4.883 0 01-1.153 1.772 4.915 4.915 0 01-1.772 1.153c-.637.247-1.363.415-2.428.465-1.066.047-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.89 4.89 0 01-1.772-1.153 4.904 4.904 0 01-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.066.217-1.79.465-2.428a4.88 4.88 0 011.153-1.772A4.897 4.897 0 015.45 2.525c.638-.248 1.362-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 5a5 5 0 100 10 5 5 0 000-10zm6.5-.25a1.25 1.25 0 10-2.5 0 1.25 1.25 0 002.5 0zM12 9a3 3 0 110 6 3 3 0 010-6z" />
+  </svg>
+);
+
 const QuoteWidget = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [showSuccess, setShowSuccess] = useState<{
+    show: boolean;
+    message: string;
+    type: 'bookmark' | 'share';
+  }>({
+    show: false,
+    message: '',
+    type: 'bookmark'
+  });
   const [showShareMenu, setShowShareMenu] = useState(false);
+  
+  const shareMenuRef = useRef<HTMLDivElement>(null);
+  const shareButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        shareMenuRef.current && 
+        !shareMenuRef.current.contains(event.target as Node) &&
+        !shareButtonRef.current?.contains(event.target as Node)
+      ) {
+        setShowShareMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleBookmark = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -62,8 +106,12 @@ const QuoteWidget = () => {
     setIsBookmarked((prev) => !prev);
     
     if (!isBookmarked) {
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 2000);
+      setShowSuccess({
+        show: true,
+        message: 'Quote bookmarked!',
+        type: 'bookmark'
+      });
+      setTimeout(() => setShowSuccess(prev => ({ ...prev, show: false })), 2000);
     }
   };
 
@@ -74,16 +122,22 @@ const QuoteWidget = () => {
     const urls = {
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&quote=${encodedQuote}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodedQuote}`,
-      instagram: `https://instagram.com/` // Instagram doesn't support direct sharing, we could copy to clipboard instead
+      instagram: `https://instagram.com/`
     };
 
     if (platform === 'instagram') {
       navigator.clipboard.writeText(quote);
-      // Show success message
-      return;
+      setShowSuccess({
+        show: true,
+        message: 'Quote copied to clipboard!',
+        type: 'share'
+      });
+      setTimeout(() => setShowSuccess(prev => ({ ...prev, show: false })), 2000);
+    } else {
+      window.open(urls[platform], '_blank', 'width=600,height=400');
     }
-
-    window.open(urls[platform], '_blank', 'width=600,height=400');
+    
+    setShowShareMenu(false);
   };
 
   return (
@@ -102,11 +156,10 @@ const QuoteWidget = () => {
           <div className={styles.actions}>
             <div className={styles.shareWrapper}>
               <button
+                ref={shareButtonRef}
                 type="button"
                 className={styles.actionButton}
                 onClick={() => setShowShareMenu(!showShareMenu)}
-                onMouseEnter={() => setShowShareMenu(true)}
-                onMouseLeave={() => setShowShareMenu(false)}
                 aria-label="Share quote"
               >
                 <ShareIcon className={styles.actionIcon} />
@@ -115,6 +168,7 @@ const QuoteWidget = () => {
               <AnimatePresence>
                 {showShareMenu && (
                   <motion.div
+                    ref={shareMenuRef}
                     className={styles.shareMenu}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -124,33 +178,21 @@ const QuoteWidget = () => {
                       onClick={() => handleShare('facebook')}
                       className={styles.shareOption}
                     >
-                      <img 
-                        src="/assets/images/social/facebook.svg" 
-                        alt="Share on Facebook"
-                        className={styles.socialIcon}
-                      />
+                      <FacebookIcon className={styles.socialIcon} />
                       <span>Facebook</span>
                     </button>
                     <button
                       onClick={() => handleShare('twitter')}
                       className={styles.shareOption}
                     >
-                      <img 
-                        src="/assets/images/social/x-twitter.svg" 
-                        alt="Share on X"
-                        className={styles.socialIcon}
-                      />
+                      <TwitterIcon className={styles.socialIcon} />
                       <span>X (Twitter)</span>
                     </button>
                     <button
                       onClick={() => handleShare('instagram')}
                       className={styles.shareOption}
                     >
-                      <img 
-                        src="/assets/images/social/instagram.svg" 
-                        alt="Share on Instagram"
-                        className={styles.socialIcon}
-                      />
+                      <InstagramIcon className={styles.socialIcon} />
                       <span>Instagram</span>
                     </button>
                   </motion.div>
@@ -194,14 +236,16 @@ const QuoteWidget = () => {
               </AnimatePresence>
 
               <AnimatePresence>
-                {showSuccess && (
+                {showSuccess.show && (
                   <motion.div
-                    className={styles.successMessage}
+                    className={`${styles.successMessage} ${
+                      showSuccess.type === 'share' ? styles.shareSuccess : styles.bookmarkSuccess
+                    }`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                   >
-                    Quote bookmarked!
+                    {showSuccess.message}
                   </motion.div>
                 )}
               </AnimatePresence>
