@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import styles from './AffirmationWidget.module.css';
-import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, PlayIcon, XIcon, BellIcon, PlusIcon } from '@/components/common/icons';
+import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, PlayIcon, XIcon, BellIcon, PlusIcon, PencilIcon, TrashIcon } from '@/components/common/icons';
 import ParticleEffect from './ParticleEffect';
 import { useAffirmationStreak } from '@/hooks/useAffirmationStreak';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
@@ -12,6 +12,8 @@ import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/hooks/useTiltEffect';
 import { CreateAffirmationModal } from './CreateAffirmationModal';
 import { usePersonalAffirmation } from '@/hooks/usePersonalAffirmation';
+import { ConfirmDialog } from '@/components/common/ConfirmDialog/ConfirmDialog';
+import { Toast } from '@/components/common/Toast/Toast';
 
 type AffirmationCategory = 'personal' | 'confidence' | 'growth' | 'gratitude' | 'abundance' | 'health';
 
@@ -194,7 +196,9 @@ const AffirmationWidget = () => {
   const { theme, timeOfDay } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5); // Lower intensity for subtlety
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const { personalAffirmation, saveAffirmation } = usePersonalAffirmation();
+  const { personalAffirmation, saveAffirmation, deleteAffirmation } = usePersonalAffirmation();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   console.log(audioUrl);
 
@@ -279,6 +283,17 @@ const AffirmationWidget = () => {
     });
   };
 
+  const handleDelete = () => {
+    deleteAffirmation();
+    setShowDeleteConfirm(false);
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+    
+    // Switch to confidence category
+    setSelectedCategory('confidence');
+    setCurrentAffirmation(getRandomAffirmation('confidence'));
+  };
+
   return (
     <div 
       ref={elementRef}
@@ -305,13 +320,17 @@ const AffirmationWidget = () => {
           </div>
 
           <div className={styles.headerActions}>
-            <Tooltip text="Create" position="bottom">
+            <Tooltip text={personalAffirmation ? "Edit" : "Create"} position="bottom">
               <button
                 className={styles.createButton}
                 onClick={() => setShowCreateModal(true)}
-                aria-label="Create custom affirmation"
+                aria-label={personalAffirmation ? "Edit personal affirmation" : "Create custom affirmation"}
               >
-                <PlusIcon className={styles.createIcon} />
+                {personalAffirmation ? (
+                  <PencilIcon className={styles.createIcon} />
+                ) : (
+                  <PlusIcon className={styles.createIcon} />
+                )}
               </button>
             </Tooltip>
           </div>
@@ -399,6 +418,17 @@ const AffirmationWidget = () => {
         <div className={styles.voiceControls}>
           {!audioUrl ? (
             <div className={styles.controlButtons}>
+              {selectedCategory === 'personal' && (
+                <Tooltip text="Delete affirmation" position="top">
+                  <button
+                    className={styles.voiceButton}
+                    onClick={() => setShowDeleteConfirm(true)}
+                    aria-label="Delete personal affirmation"
+                  >
+                    <TrashIcon className={styles.voiceIcon} />
+                  </button>
+                </Tooltip>
+              )}
               <Tooltip text="Record affirmation" position="top">
                 <button
                   className={`${styles.voiceButton} ${isRecording ? styles.recording : ''}`}
@@ -478,6 +508,20 @@ const AffirmationWidget = () => {
         onClose={() => setShowCreateModal(false)}
         onSave={handleSavePersonalAffirmation}
         existingAffirmation={personalAffirmation?.text}
+      />
+
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Delete Personal Affirmation"
+        message="Are you sure you want to delete your personal affirmation? This action cannot be undone."
+      />
+
+      <Toast
+        message="Personal affirmation deleted successfully"
+        isVisible={showSuccessToast}
+        type="success"
       />
     </div>
   );
