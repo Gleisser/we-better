@@ -2,6 +2,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import styles from './AffirmationWidget.module.css';
 import { ChevronLeftIcon, ChevronRightIcon } from '@/components/common/icons';
+import ParticleEffect from './ParticleEffect';
+import { useAffirmationStreak } from '@/hooks/useAffirmationStreak';
 
 type AffirmationCategory = 'confidence' | 'growth' | 'gratitude' | 'abundance' | 'health';
 
@@ -158,6 +160,9 @@ const AffirmationWidget = () => {
     right: false
   });
   const categorySelectorRef = useRef<HTMLDivElement>(null);
+  const [isAffirming, setIsAffirming] = useState(false);
+  const [showParticles, setShowParticles] = useState(false);
+  const { streak, isNewMilestone, incrementStreak, resetMilestone } = useAffirmationStreak();
 
   const getRandomAffirmation = (category: AffirmationCategory) => {
     const affirmations = AFFIRMATIONS[category];
@@ -210,6 +215,20 @@ const AffirmationWidget = () => {
         behavior: 'smooth'
       });
     }
+  };
+
+  const handleAffirm = () => {
+    const didIncrementStreak = incrementStreak();
+    if (didIncrementStreak) {
+      setIsAffirming(true);
+      setShowParticles(true);
+      // Reset the animation state after animation completes
+      setTimeout(() => setIsAffirming(false), 1000);
+    }
+  };
+
+  const handleParticlesComplete = () => {
+    setShowParticles(false);
   };
 
   return (
@@ -265,6 +284,11 @@ const AffirmationWidget = () => {
       </div>
 
       <div className={styles.content}>
+        <ParticleEffect 
+          isTriggered={showParticles}
+          onComplete={handleParticlesComplete}
+        />
+
         <AnimatePresence mode="wait">
           <motion.div
             key={currentAffirmation.id}
@@ -278,6 +302,19 @@ const AffirmationWidget = () => {
           </motion.div>
         </AnimatePresence>
 
+        <motion.button
+          className={`${styles.affirmButton} ${isAffirming ? styles.affirming : ''}`}
+          onClick={handleAffirm}
+          whileTap={{ scale: 0.95 }}
+          animate={isAffirming ? {
+            scale: [1, 1.05, 1],
+            transition: { duration: 0.5 }
+          } : {}}
+        >
+          <span className={styles.affirmIcon}>✨</span>
+          <span className={styles.affirmText}>I Affirm</span>
+        </motion.button>
+
         <div className={styles.categoryTag}>
           <span className={styles.categoryIcon}>
             {CATEGORY_CONFIG[currentAffirmation.category].icon}
@@ -285,6 +322,21 @@ const AffirmationWidget = () => {
           <span className={styles.categoryLabel}>
             {CATEGORY_CONFIG[currentAffirmation.category].label}
           </span>
+        </div>
+
+        <div className={styles.streakContainer}>
+          <motion.div 
+            className={styles.streakBadge}
+            animate={isNewMilestone ? {
+              scale: [1, 1.2, 1],
+              rotate: [0, 10, -10, 0]
+            } : {}}
+            onAnimationComplete={resetMilestone}
+          >
+            <span className={styles.streakIcon}>🔥</span>
+            <span className={styles.streakCount}>{streak}</span>
+            <span className={styles.streakLabel}>day streak</span>
+          </motion.div>
         </div>
       </div>
     </div>
