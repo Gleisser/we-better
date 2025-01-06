@@ -33,8 +33,16 @@
          p-5 pb-0;
 }
 
+.headerTop {
+  @apply flex items-center justify-between;
+}
+
 .headerLeft {
   @apply flex items-center gap-3;
+}
+
+.headerActions {
+  @apply flex items-center gap-2;
 }
 
 .headerIcon {
@@ -339,4 +347,19 @@
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05),
       0 0 50px rgba(var(--accent-rgb), 0.15);
   }
+}
+
+.createButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40 backdrop-blur-sm
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white
+         hover:border-white/20;
+}
+
+.createIcon {
+  @apply w-4 h-4;
 }

@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import styles from './AffirmationWidget.module.css';
-import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, PlayIcon, XIcon, BellIcon } from '@/components/common/icons';
+import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, PlayIcon, XIcon, BellIcon, PlusIcon } from '@/components/common/icons';
 import ParticleEffect from './ParticleEffect';
 import { useAffirmationStreak } from '@/hooks/useAffirmationStreak';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
@@ -275,9 +275,23 @@ const AffirmationWidget = () => {
       } as React.CSSProperties}
     >
       <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <span className={styles.headerIcon}>✨</span>
-          <span className={styles.headerText}>Daily Affirmation</span>
+        <div className={styles.headerTop}>
+          <div className={styles.headerLeft}>
+            <span className={styles.headerIcon}>✨</span>
+            <span className={styles.headerText}>Daily Affirmation</span>
+          </div>
+
+          <div className={styles.headerActions}>
+            <Tooltip text="Create" position="bottom">
+              <button
+                className={styles.createButton}
+                onClick={() => {/* TODO: Open create modal */}}
+                aria-label="Create custom affirmation"
+              >
+                <PlusIcon className={styles.createIcon} />
+              </button>
+            </Tooltip>
+          </div>
         </div>
         
         <div className={styles.categorySelectorWrapper}>
@@ -359,7 +373,7 @@ const AffirmationWidget = () => {
         <div className={styles.voiceControls}>
           {!audioUrl ? (
             <div className={styles.controlButtons}>
-              <Tooltip text={isRecording ? 'Stop recording' : 'Record affirmation'}>
+              <Tooltip text="Record affirmation" position="top">
                 <button
                   className={`${styles.voiceButton} ${isRecording ? styles.recording : ''}`}
                   onClick={isRecording ? stopRecording : startRecording}

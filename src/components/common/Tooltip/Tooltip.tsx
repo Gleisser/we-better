@@ -4,9 +4,10 @@ import styles from './Tooltip.module.css';
 interface TooltipProps {
   text: string;
   children: React.ReactNode;
+  position?: 'top' | 'bottom';
 }
 
-const Tooltip = ({ text, children }: TooltipProps) => {
+const Tooltip = ({ text, children, position = 'bottom' }: TooltipProps) => {
   const [isVisible, setIsVisible] = useState(false);
 
   return (
@@ -17,7 +18,7 @@ const Tooltip = ({ text, children }: TooltipProps) => {
     >
       {children}
       {isVisible && (
-        <div className={styles.tooltip}>
+        <div className={`${styles.tooltip} ${styles[position]}`}>
           {text}
         </div>
       )}

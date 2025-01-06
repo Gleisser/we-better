@@ -3,13 +3,21 @@
 }
 
 .tooltip {
-  @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-2
+  @apply absolute left-1/2 -translate-x-1/2
          px-2 py-1 rounded-md
          bg-black/90 backdrop-blur-sm
          border border-white/[0.08]
          text-xs text-white/70
          whitespace-nowrap
-         animate-fade-in;
+         z-[100];
+}
+
+.tooltip.top {
+  @apply bottom-[calc(100%+8px)];
+}
+
+.tooltip.bottom {
+  @apply top-[calc(100%+8px)];
 }
 
 @keyframes fade-in {
@@ -25,4 +33,8 @@
 
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
+}
+
+.tooltipWrapper:hover .tooltip {
+  @apply block;
 }
