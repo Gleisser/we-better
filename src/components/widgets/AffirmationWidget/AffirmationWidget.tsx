@@ -8,6 +8,7 @@ import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
 import Tooltip from '@/components/common/Tooltip/Tooltip';
 import { useAffirmationReminder } from '@/hooks/useAffirmationReminder';
 import { ReminderSettings } from './ReminderSettings';
+import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 
 type AffirmationCategory = 'confidence' | 'growth' | 'gratitude' | 'abundance' | 'health';
 
@@ -182,6 +183,7 @@ const AffirmationWidget = () => {
     requestPermission,
     updateSettings
   } = useAffirmationReminder();
+  const { theme, timeOfDay } = useTimeBasedTheme();
 
   console.log(audioUrl);
 
@@ -253,7 +255,15 @@ const AffirmationWidget = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div 
+      className={styles.container}
+      style={{
+        '--gradient-start': theme.gradientStart,
+        '--gradient-middle': theme.gradientMiddle,
+        '--gradient-end': theme.gradientEnd,
+        '--accent-rgb': theme.accentRGB
+      } as React.CSSProperties}
+    >
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <span className={styles.headerIcon}>✨</span>

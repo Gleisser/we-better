@@ -1,9 +1,16 @@
 .container {
   @apply relative w-full h-full
          rounded-[32px] overflow-hidden
-         bg-[#0A0A0A]/90 backdrop-blur-xl
          border border-white/10
          shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)];
+  animation: breathe 8s ease-in-out infinite;
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start) 0%,
+    var(--gradient-middle) 50%,
+    var(--gradient-end) 100%
+  );
+  transition: background 2s ease-in-out;
 }
 
 .header {
@@ -94,10 +101,12 @@
 .content {
   @apply flex-1 flex flex-col items-center justify-center
          p-6 mt-2
-         bg-[#0A0A0A]/80
+         bg-[#0A0A0A]/60
          rounded-2xl mx-5 mb-5
          border border-white/[0.08]
-         shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
+         shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]
+         backdrop-blur-sm;
+  animation: contentGlow 8s ease-in-out infinite;
 }
 
 .affirmationText {
@@ -127,20 +136,21 @@
   @apply flex items-center gap-2
          px-6 py-3 mb-6
          rounded-xl
-         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]
          text-white font-medium
          border border-white/20
-         shadow-lg shadow-purple-500/20
          transition-all duration-300
-         hover:shadow-xl hover:shadow-purple-500/30
          hover:border-white/30
          active:scale-95;
-  background-size: 200% 100%;
-  background-position: 0% 0%;
+  background: linear-gradient(
+    to right,
+    rgba(var(--accent-rgb), 0.5),
+    rgba(var(--accent-rgb), 0.7)
+  );
+  box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.2);
 }
 
 .affirmButton:hover {
-  background-position: 100% 0%;
+  box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.3);
 }
 
 .affirming {
@@ -281,4 +291,36 @@
 
 .recordingError {
   @apply text-sm text-red-400;
+}
+
+/* Add breathing animation keyframes */
+@keyframes breathe {
+  0%,
+  100% {
+    background-position: 0% 0%;
+    background-size: 100% 100%;
+  }
+  50% {
+    background-position: 50% 50%;
+    background-size: 120% 120%;
+  }
+}
+
+/* Add a subtle overlay for depth */
+.container::before {
+  @apply content-[''] absolute inset-0
+         bg-gradient-to-b from-transparent via-black/5 to-black/10
+         pointer-events-none;
+}
+
+@keyframes contentGlow {
+  0%,
+  100% {
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05),
+      0 0 30px rgba(var(--accent-rgb), 0.1);
+  }
+  50% {
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05),
+      0 0 50px rgba(var(--accent-rgb), 0.15);
+  }
 }
