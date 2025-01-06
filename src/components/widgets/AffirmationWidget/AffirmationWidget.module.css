@@ -10,7 +10,22 @@
     var(--gradient-middle) 50%,
     var(--gradient-end) 100%
   );
-  transition: background 2s ease-in-out;
+  transition: background 2s ease-in-out, transform 0.1s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Add a subtle shadow that moves with the tilt */
+.container::after {
+  @apply content-[''] absolute inset-0
+         rounded-[32px]
+         pointer-events-none
+         opacity-0 transition-opacity duration-300;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.container:hover::after {
+  @apply opacity-100;
 }
 
 .header {
@@ -107,6 +122,7 @@
          shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]
          backdrop-blur-sm;
   animation: contentGlow 8s ease-in-out infinite;
+  transform-style: preserve-3d;
 }
 
 .affirmationText {

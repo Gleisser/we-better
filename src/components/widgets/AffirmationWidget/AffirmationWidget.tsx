@@ -9,6 +9,7 @@ import Tooltip from '@/components/common/Tooltip/Tooltip';
 import { useAffirmationReminder } from '@/hooks/useAffirmationReminder';
 import { ReminderSettings } from './ReminderSettings';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
+import { useTiltEffect } from '@/hooks/useTiltEffect';
 
 type AffirmationCategory = 'confidence' | 'growth' | 'gratitude' | 'abundance' | 'health';
 
@@ -184,6 +185,7 @@ const AffirmationWidget = () => {
     updateSettings
   } = useAffirmationReminder();
   const { theme, timeOfDay } = useTimeBasedTheme();
+  const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5); // Lower intensity for subtlety
 
   console.log(audioUrl);
 
@@ -256,12 +258,20 @@ const AffirmationWidget = () => {
 
   return (
     <div 
+      ref={elementRef}
       className={styles.container}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       style={{
         '--gradient-start': theme.gradientStart,
         '--gradient-middle': theme.gradientMiddle,
         '--gradient-end': theme.gradientEnd,
-        '--accent-rgb': theme.accentRGB
+        '--accent-rgb': theme.accentRGB,
+        transform: `perspective(1000px) 
+                   rotateX(${tilt.rotateX}deg) 
+                   rotateY(${tilt.rotateY}deg)
+                   scale(${tilt.scale})`,
+        transition: 'transform 0.1s ease-out'
       } as React.CSSProperties}
     >
       <div className={styles.header}>
