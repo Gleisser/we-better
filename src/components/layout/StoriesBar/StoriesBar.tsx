@@ -4,6 +4,18 @@ import LifeStories from '../Stories/LifeStories';
 import { XIcon, PlayIcon } from '@/components/common/icons';
 import styles from './StoriesBar.module.css';
 
+interface StoryCategory {
+  id: string;
+  name: string;
+  color: {
+    from: string;
+    to: string;
+  };
+  icon: string;
+  score: number;
+  hasUpdate: boolean;
+}
+
 const MOCK_CATEGORIES = [
   {
     id: 'social',
@@ -96,8 +108,8 @@ const MOCK_CATEGORIES = [
 ];
 
 const StoriesBar = () => {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const handleCategorySelect = (category: any) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const handleCategorySelect = (category: StoryCategory) => {
     console.log('Selected category:', category);
   };
 

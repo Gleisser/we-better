@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import styles from './AffirmationWidget.module.css';
-import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, PlayIcon, XIcon, BellIcon, PlusIcon, PencilIcon, TrashIcon } from '@/components/common/icons';
+import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, PlayIcon, XIcon, BellIcon, PlusIcon, PencilIcon, TrashIcon, BookmarkIcon } from '@/components/common/icons';
 import ParticleEffect from './ParticleEffect';
 import { useAffirmationStreak } from '@/hooks/useAffirmationStreak';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
@@ -14,6 +14,7 @@ import { CreateAffirmationModal } from './CreateAffirmationModal';
 import { usePersonalAffirmation } from '@/hooks/usePersonalAffirmation';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog/ConfirmDialog';
 import { Toast } from '@/components/common/Toast/Toast';
+import { useBookmarkedAffirmations } from '@/hooks/useBookmarkedAffirmations';
 
 type AffirmationCategory = 'personal' | 'confidence' | 'growth' | 'gratitude' | 'abundance' | 'health';
 
@@ -199,6 +200,7 @@ const AffirmationWidget = () => {
   const { personalAffirmation, saveAffirmation, deleteAffirmation } = usePersonalAffirmation();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations();
 
   console.log(audioUrl);
 
@@ -465,6 +467,30 @@ const AffirmationWidget = () => {
                   <span className={styles.streakIcon}>🔥</span>
                   <span className={styles.streakCount}>{streak}</span>
                 </motion.div>
+              </Tooltip>
+
+              <Tooltip text={isBookmarked(currentAffirmation.id) ? "Remove bookmark" : "Bookmark"} position="top">
+                <button
+                  className={`${styles.voiceButton} ${isBookmarked(currentAffirmation.id) ? styles.bookmarked : ''}`}
+                  onClick={() => {
+                    if (isBookmarked(currentAffirmation.id)) {
+                      removeBookmark(currentAffirmation.id);
+                    } else {
+                      addBookmark({
+                        id: currentAffirmation.id,
+                        text: currentAffirmation.text,
+                        category: currentAffirmation.category,
+                        timestamp: Date.now()
+                      });
+                    }
+                  }}
+                  aria-label={isBookmarked(currentAffirmation.id) ? "Remove bookmark" : "Bookmark affirmation"}
+                >
+                  <BookmarkIcon 
+                    className={styles.voiceIcon} 
+                    filled={isBookmarked(currentAffirmation.id)}
+                  />
+                </button>
               </Tooltip>
             </div>
           ) : (

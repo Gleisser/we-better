@@ -21,30 +21,30 @@ const ProfileMenu = ({ onClose }: ProfileMenuProps) => {
       </div>
 
       <div className={styles.menuDivider} />
-      
-      {/* Add Bookmarks Section */}
+
+      {/* Bookmarks Section */}
       <button 
         className={styles.menuItem}
         onClick={() => {
-          // Handle navigation to bookmarks page
+          // TODO: Navigate to bookmarks page
           onClose();
         }}
       >
         <BookmarkIcon className={styles.menuItemIcon} filled={true} />
-        Bookmarked Quotes
+        <span>Bookmarks</span>
         <span className={styles.bookmarkCount}>5</span>
       </button>
 
       <button className={styles.menuItem}>
         <SettingsIcon className={styles.menuItemIcon} />
-        Settings
+        <span>Settings</span>
       </button>
 
       <div className={styles.menuDivider} />
 
       <button className={styles.menuItem}>
         <LogoutIcon className={styles.menuItemIcon} />
-        Sign out
+        <span>Sign out</span>
       </button>
     </motion.div>
   );
