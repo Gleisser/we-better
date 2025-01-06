@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { generateCSP } from './src/middleware/csp';
+import fs from 'fs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -26,8 +27,11 @@ export default defineConfig({
     },
   },
   server: {
+    https: false,
     headers: {
       'Content-Security-Policy': generateCSP(),
+      'Permissions-Policy': 'microphone=self, camera=self',
+      'Feature-Policy': 'microphone self; camera self'
     },
   },
   assetsInclude: ['**/*.json'],

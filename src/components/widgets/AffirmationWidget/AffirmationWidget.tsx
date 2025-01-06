@@ -1,9 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import styles from './AffirmationWidget.module.css';
-import { ChevronLeftIcon, ChevronRightIcon } from '@/components/common/icons';
+import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, PlayIcon, XIcon } from '@/components/common/icons';
 import ParticleEffect from './ParticleEffect';
 import { useAffirmationStreak } from '@/hooks/useAffirmationStreak';
+import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
+import Tooltip from '@/components/common/Tooltip/Tooltip';
 
 type AffirmationCategory = 'confidence' | 'growth' | 'gratitude' | 'abundance' | 'health';
 
@@ -163,6 +165,16 @@ const AffirmationWidget = () => {
   const [isAffirming, setIsAffirming] = useState(false);
   const [showParticles, setShowParticles] = useState(false);
   const { streak, isNewMilestone, incrementStreak, resetMilestone } = useAffirmationStreak();
+  const {
+    isRecording,
+    audioUrl,
+    error: recordingError,
+    startRecording,
+    stopRecording,
+    clearRecording
+  } = useVoiceRecorder();
+
+  console.log(audioUrl);
 
   const getRandomAffirmation = (category: AffirmationCategory) => {
     const affirmations = AFFIRMATIONS[category];
@@ -315,28 +327,61 @@ const AffirmationWidget = () => {
           <span className={styles.affirmText}>I Affirm</span>
         </motion.button>
 
-        <div className={styles.categoryTag}>
-          <span className={styles.categoryIcon}>
-            {CATEGORY_CONFIG[currentAffirmation.category].icon}
-          </span>
-          <span className={styles.categoryLabel}>
-            {CATEGORY_CONFIG[currentAffirmation.category].label}
-          </span>
-        </div>
+        <div className={styles.voiceControls}>
+          {!audioUrl ? (
+            <div className={styles.controlButtons}>
+              <Tooltip text={isRecording ? 'Stop recording' : 'Record affirmation'}>
+                <button
+                  className={`${styles.voiceButton} ${isRecording ? styles.recording : ''}`}
+                  onClick={isRecording ? stopRecording : startRecording}
+                  aria-label={isRecording ? 'Stop recording' : 'Record affirmation'}
+                >
+                  {isRecording ? (
+                    <StopIcon className={styles.voiceIcon} />
+                  ) : (
+                    <MicrophoneIcon className={styles.voiceIcon} />
+                  )}
+                </button>
+              </Tooltip>
 
-        <div className={styles.streakContainer}>
-          <motion.div 
-            className={styles.streakBadge}
-            animate={isNewMilestone ? {
-              scale: [1, 1.2, 1],
-              rotate: [0, 10, -10, 0]
-            } : {}}
-            onAnimationComplete={resetMilestone}
-          >
-            <span className={styles.streakIcon}>🔥</span>
-            <span className={styles.streakCount}>{streak}</span>
-            <span className={styles.streakLabel}>day streak</span>
-          </motion.div>
+              <Tooltip text="Days streaking">
+                <motion.div 
+                  className={styles.streakBadge}
+                  animate={isNewMilestone ? {
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 10, -10, 0]
+                  } : {}}
+                  onAnimationComplete={resetMilestone}
+                >
+                  <span className={styles.streakIcon}>🔥</span>
+                  <span className={styles.streakCount}>{streak}</span>
+                </motion.div>
+              </Tooltip>
+            </div>
+          ) : (
+            <div className={styles.recordingPlayback}>
+              {audioUrl && (
+                <audio
+                  key={audioUrl}
+                  src={audioUrl}
+                  controls
+                  className={styles.audioPlayer}
+                  controlsList="nodownload noplaybackrate"
+                  preload="metadata"
+                />
+              )}
+              <button
+                onClick={clearRecording}
+                className={styles.clearRecording}
+                aria-label="Clear recording"
+              >
+                <XIcon className={styles.clearIcon} />
+              </button>
+            </div>
+          )}
+          {recordingError && (
+            <p className={styles.recordingError}>{recordingError}</p>
+          )}
         </div>
       </div>
     </div>
