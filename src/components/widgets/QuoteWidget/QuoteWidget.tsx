@@ -2,6 +2,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import styles from './QuoteWidget.module.css';
 import { MoreVerticalIcon } from '../../common/icons';
+import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
+import { useTiltEffect } from '@/hooks/useTiltEffect';
 
 type QuoteTheme = 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom';
 
@@ -137,6 +139,8 @@ type Reaction = '❤️' | '👏' | '💡' | '💪' | '🙏';
 const REACTIONS: Reaction[] = ['❤️', '👏', '💡', '💪', '🙏'];
 
 const QuoteWidget = () => {
+  const { theme } = useTimeBasedTheme();
+  const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [showSuccess, setShowSuccess] = useState<{
@@ -290,7 +294,23 @@ const QuoteWidget = () => {
   };
 
   return (
-    <div className={styles.container} style={{ position: 'relative', zIndex: 1 }}>
+    <div
+      ref={elementRef}
+      className={styles.container}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        '--gradient-start': theme.gradientStart,
+        '--gradient-middle': theme.gradientMiddle,
+        '--gradient-end': theme.gradientEnd,
+        '--accent-rgb': theme.accentRGB,
+        transform: `perspective(1000px) 
+                   rotateX(${tilt.rotateX}deg) 
+                   rotateY(${tilt.rotateY}deg)
+                   scale(${tilt.scale})`,
+        transition: 'transform 0.1s ease-out'
+      } as React.CSSProperties}
+    >
       <div className={styles.backgroundGradient} />
       
       <div className={styles.content}>

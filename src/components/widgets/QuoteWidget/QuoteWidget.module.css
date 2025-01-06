@@ -1,10 +1,81 @@
 .container {
   @apply relative w-full h-full
          rounded-[32px] overflow-hidden
-         bg-[#0A0A0A]/90 backdrop-blur-xl
          border border-white/10
          shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)];
-  pointer-events: auto;
+  animation: breathe 8s ease-in-out infinite;
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start) 0%,
+    var(--gradient-middle) 50%,
+    var(--gradient-end) 100%
+  );
+  transition: background 2s ease-in-out, transform 0.1s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Add a subtle shadow that moves with the tilt */
+.container::after {
+  @apply content-[''] absolute inset-0
+         rounded-[32px]
+         pointer-events-none
+         opacity-0 transition-opacity duration-300;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.container:hover::after {
+  @apply opacity-100;
+}
+
+.content {
+  @apply flex-1 flex flex-col items-center justify-center
+         p-6 mt-2
+         bg-[#0A0A0A]/60
+         rounded-2xl mx-5 mb-5
+         border border-white/[0.08]
+         shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]
+         backdrop-blur-sm;
+  animation: contentGlow 8s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+/* Add breathing animation keyframes */
+@keyframes breathe {
+  0%, 100% {
+    background-position: 0% 0%;
+    background-size: 100% 100%;
+  }
+  50% {
+    background-position: 50% 50%;
+    background-size: 120% 120%;
+  }
+}
+
+@keyframes contentGlow {
+  0%, 100% {
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05),
+      0 0 30px rgba(var(--accent-rgb), 0.1);
+  }
+  50% {
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05),
+      0 0 50px rgba(var(--accent-rgb), 0.15);
+  }
+}
+
+/* Update any buttons or interactive elements to use the accent color */
+.actionButton {
+  @apply transition-all duration-300;
+  background: linear-gradient(
+    to right,
+    rgba(var(--accent-rgb), 0.5),
+    rgba(var(--accent-rgb), 0.7)
+  );
+  box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.2);
+}
+
+.actionButton:hover {
+  box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.3);
 }
 
 /* Background gradient effect */
@@ -22,13 +93,6 @@
     );
 }
 
-.content {
-  @apply relative z-10 w-full h-full
-         flex flex-col
-         p-5;
-}
-
-/* Header styles */
 .header {
   @apply flex items-center gap-3 mb-5
          pb-4 border-b border-white/[0.08]
