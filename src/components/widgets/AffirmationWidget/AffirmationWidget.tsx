@@ -10,8 +10,10 @@ import { useAffirmationReminder } from '@/hooks/useAffirmationReminder';
 import { ReminderSettings } from './ReminderSettings';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/hooks/useTiltEffect';
+import { CreateAffirmationModal } from './CreateAffirmationModal';
+import { usePersonalAffirmation } from '@/hooks/usePersonalAffirmation';
 
-type AffirmationCategory = 'confidence' | 'growth' | 'gratitude' | 'abundance' | 'health';
+type AffirmationCategory = 'personal' | 'confidence' | 'growth' | 'gratitude' | 'abundance' | 'health';
 
 interface Affirmation {
   id: string;
@@ -129,6 +131,11 @@ const CATEGORY_CONFIG: Record<AffirmationCategory, {
   label: string;
   colorRGB: string;
 }> = {
+  personal: {
+    icon: '💫',
+    label: 'Personal',
+    colorRGB: '236, 72, 153' // Pink RGB values
+  },
   confidence: {
     icon: '⚡️',
     label: 'Confidence',
@@ -186,10 +193,15 @@ const AffirmationWidget = () => {
   } = useAffirmationReminder();
   const { theme, timeOfDay } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5); // Lower intensity for subtlety
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const { personalAffirmation, saveAffirmation } = usePersonalAffirmation();
 
   console.log(audioUrl);
 
   const getRandomAffirmation = (category: AffirmationCategory) => {
+    if (category === 'personal') {
+      return personalAffirmation;
+    }
     const affirmations = AFFIRMATIONS[category];
     const randomIndex = Math.floor(Math.random() * affirmations.length);
     return affirmations[randomIndex];
@@ -256,6 +268,17 @@ const AffirmationWidget = () => {
     setShowParticles(false);
   };
 
+  const handleSavePersonalAffirmation = (text: string) => {
+    saveAffirmation(text);
+    setSelectedCategory('personal');
+    setCurrentAffirmation({
+      id: 'personal_1',
+      text,
+      category: 'personal',
+      intensity: 2
+    });
+  };
+
   return (
     <div 
       ref={elementRef}
@@ -285,7 +308,7 @@ const AffirmationWidget = () => {
             <Tooltip text="Create" position="bottom">
               <button
                 className={styles.createButton}
-                onClick={() => {/* TODO: Open create modal */}}
+                onClick={() => setShowCreateModal(true)}
                 aria-label="Create custom affirmation"
               >
                 <PlusIcon className={styles.createIcon} />
@@ -309,21 +332,24 @@ const AffirmationWidget = () => {
             ref={categorySelectorRef}
             className={styles.categorySelector}
           >
-            {Object.entries(CATEGORY_CONFIG).map(([category, config]) => (
-              <button
-                key={category}
-                className={`${styles.categoryButton} ${
-                  selectedCategory === category ? styles.selected : ''
-                }`}
-                onClick={() => handleCategoryChange(category as AffirmationCategory)}
-                style={{
-                  '--category-color-rgb': config.colorRGB
-                } as React.CSSProperties}
-              >
-                <span className={styles.categoryIcon}>{config.icon}</span>
-                <span className={styles.categoryLabel}>{config.label}</span>
-              </button>
-            ))}
+            {Object.entries(CATEGORY_CONFIG)
+              // Only show personal category if there's a personal affirmation
+              .filter(([category]) => category !== 'personal' || personalAffirmation !== null)
+              .map(([category, config]) => (
+                <button
+                  key={category}
+                  className={`${styles.categoryButton} ${
+                    selectedCategory === category ? styles.selected : ''
+                  }`}
+                  onClick={() => handleCategoryChange(category as AffirmationCategory)}
+                  style={{
+                    '--category-color-rgb': config.colorRGB
+                  } as React.CSSProperties}
+                >
+                  <span className={styles.categoryIcon}>{config.icon}</span>
+                  <span className={styles.categoryLabel}>{config.label}</span>
+                </button>
+              ))}
           </div>
 
           {showScrollButtons.right && (
@@ -445,6 +471,13 @@ const AffirmationWidget = () => {
         onUpdate={updateSettings}
         onRequestPermission={requestPermission}
         permission={permission}
+      />
+
+      <CreateAffirmationModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSave={handleSavePersonalAffirmation}
+        existingAffirmation={personalAffirmation?.text}
       />
     </div>
   );

@@ -1,0 +1,102 @@
+.backdrop {
+  @apply fixed inset-0
+         bg-black/50 backdrop-blur-sm
+         z-40;
+}
+
+.container {
+  @apply fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+         w-[90vw] max-w-[400px]
+         bg-[#0A0A0A]/95 backdrop-blur-xl
+         rounded-2xl
+         border border-white/[0.08]
+         shadow-xl
+         z-50;
+}
+
+.header {
+  @apply flex items-center justify-between
+         px-6 py-4
+         border-b border-white/[0.08];
+}
+
+.title {
+  @apply text-lg text-white font-medium;
+}
+
+.closeButton {
+  @apply p-1 rounded-full
+         hover:bg-white/5
+         transition-colors duration-200;
+}
+
+.closeIcon {
+  @apply w-5 h-5 text-white/70;
+}
+
+.content {
+  @apply p-6 flex flex-col gap-4;
+}
+
+.inputWrapper {
+  @apply relative;
+}
+
+.input {
+  @apply w-full px-4 py-3
+         bg-black/40
+         rounded-xl
+         border border-white/[0.08]
+         text-white
+         placeholder:text-white/40
+         focus:outline-none focus:border-purple-500
+         transition-colors duration-200
+         resize-none;
+}
+
+.charCount {
+  @apply absolute bottom-2 right-3
+         text-xs text-white/40;
+}
+
+.preview {
+  @apply p-4 rounded-xl
+         bg-black/40
+         border border-white/[0.08];
+}
+
+.previewLabel {
+  @apply text-sm text-white/40 mb-2;
+}
+
+.previewText {
+  @apply text-white text-lg text-center font-medium;
+}
+
+.confirmMessage {
+  @apply text-sm text-amber-400/90
+         p-3 rounded-lg
+         bg-amber-400/10
+         border border-amber-400/20;
+}
+
+.actions {
+  @apply flex items-center justify-end gap-3
+         mt-2;
+}
+
+.cancelButton {
+  @apply px-4 py-2 rounded-lg
+         text-sm text-white/70
+         hover:bg-white/5
+         transition-colors duration-200;
+}
+
+.saveButton {
+  @apply px-4 py-2 rounded-lg
+         bg-purple-500
+         text-sm text-white font-medium
+         disabled:opacity-50 disabled:cursor-not-allowed
+         hover:bg-purple-600
+         transition-colors duration-200;
+}
