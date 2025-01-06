@@ -1,11 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import styles from './AffirmationWidget.module.css';
-import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, PlayIcon, XIcon } from '@/components/common/icons';
+import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, PlayIcon, XIcon, BellIcon } from '@/components/common/icons';
 import ParticleEffect from './ParticleEffect';
 import { useAffirmationStreak } from '@/hooks/useAffirmationStreak';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
 import Tooltip from '@/components/common/Tooltip/Tooltip';
+import { useAffirmationReminder } from '@/hooks/useAffirmationReminder';
+import { ReminderSettings } from './ReminderSettings';
 
 type AffirmationCategory = 'confidence' | 'growth' | 'gratitude' | 'abundance' | 'health';
 
@@ -173,6 +175,13 @@ const AffirmationWidget = () => {
     stopRecording,
     clearRecording
   } = useVoiceRecorder();
+  const [showReminderSettings, setShowReminderSettings] = useState(false);
+  const {
+    settings: reminderSettings,
+    permission,
+    requestPermission,
+    updateSettings
+  } = useAffirmationReminder();
 
   console.log(audioUrl);
 
@@ -344,6 +353,16 @@ const AffirmationWidget = () => {
                 </button>
               </Tooltip>
 
+              <Tooltip text="Set reminder">
+                <button
+                  className={styles.voiceButton}
+                  onClick={() => setShowReminderSettings(true)}
+                  aria-label="Set reminder"
+                >
+                  <BellIcon className={styles.voiceIcon} />
+                </button>
+              </Tooltip>
+
               <Tooltip text="Days streaking">
                 <motion.div 
                   className={styles.streakBadge}
@@ -384,6 +403,15 @@ const AffirmationWidget = () => {
           )}
         </div>
       </div>
+
+      <ReminderSettings
+        isOpen={showReminderSettings}
+        onClose={() => setShowReminderSettings(false)}
+        settings={reminderSettings}
+        onUpdate={updateSettings}
+        onRequestPermission={requestPermission}
+        permission={permission}
+      />
     </div>
   );
 };

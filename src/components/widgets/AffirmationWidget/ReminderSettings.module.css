@@ -1,0 +1,124 @@
+.container {
+  @apply fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+         w-[360px] py-4
+         bg-black/90 backdrop-blur-sm
+         border border-white/[0.08]
+         rounded-xl shadow-lg
+         z-50;
+}
+
+.header {
+  @apply flex items-center justify-between
+         px-4 pb-4
+         border-b border-white/[0.08];
+}
+
+.title {
+  @apply flex items-center gap-2
+         text-white font-medium;
+}
+
+.bellIcon {
+  @apply w-4 h-4 text-white/70;
+}
+
+.closeButton {
+  @apply p-1 rounded-full
+         hover:bg-white/5
+         transition-colors duration-200;
+}
+
+.closeIcon {
+  @apply w-4 h-4 text-white/70;
+}
+
+.content {
+  @apply px-4 pt-4
+         flex flex-col gap-4;
+}
+
+.enableSwitch {
+  @apply flex items-center gap-3
+         text-sm text-white/70;
+}
+
+.switch {
+  @apply relative inline-block w-10 h-6;
+}
+
+.switch input {
+  @apply opacity-0 w-0 h-0;
+}
+
+.slider {
+  @apply absolute cursor-pointer
+         inset-0
+         bg-white/10
+         rounded-full
+         transition-all duration-200
+         before:content-['']
+         before:absolute
+         before:h-4 before:w-4
+         before:left-1 before:bottom-1
+         before:bg-white
+         before:rounded-full
+         before:transition-all before:duration-200;
+}
+
+.switch input:checked + .slider {
+  @apply bg-purple-500;
+}
+
+.switch input:checked + .slider:before {
+  @apply translate-x-4;
+}
+
+.timeSection {
+  @apply flex flex-col gap-2;
+}
+
+.timeSection label {
+  @apply text-sm text-white/70;
+}
+
+.timeInput {
+  @apply px-3 py-2 rounded-lg
+         bg-white/5
+         border border-white/[0.08]
+         text-white
+         focus:outline-none focus:border-purple-500;
+}
+
+.daysSection {
+  @apply flex flex-col gap-2;
+}
+
+.daysSection label {
+  @apply text-sm text-white/70;
+}
+
+.dayButtons {
+  @apply flex justify-between
+         px-1;
+}
+
+.dayButton {
+  @apply px-2 py-1 rounded-md
+         min-w-[40px]
+         text-center
+         text-xs text-white/70
+         bg-white/5 border border-white/[0.08]
+         hover:bg-white/10
+         transition-colors duration-200;
+}
+
+.dayButton.selected {
+  @apply bg-purple-500/20 border-purple-500/30
+         text-purple-400;
+}
+
+.backdrop {
+  @apply fixed inset-0
+         bg-black/50 backdrop-blur-sm
+         z-40;
+}
