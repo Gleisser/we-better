@@ -120,16 +120,57 @@ const GoalsWidget = () => {
                 animate={{ opacity: 1, y: 0 }}
               >
                 <div className={styles.goalInfo}>
-                  <span className={styles.goalIcon}>
-                    {CATEGORY_CONFIG[goal.category].icon}
-                  </span>
-                  <div className={styles.goalDetails}>
-                    <h3 className={styles.goalTitle}>{goal.title}</h3>
-                    <div className={styles.progressBar}>
-                      <div 
-                        className={styles.progressFill}
-                        style={{ width: `${goal.progress}%` }}
+                  <div className={styles.progressCircle}>
+                    <svg className={styles.progressSvg} viewBox="0 0 36 36">
+                      <path
+                        d="M18 2.0845
+                          a 15.9155 15.9155 0 0 1 0 31.831
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="rgba(255, 255, 255, 0.1)"
+                        strokeWidth="3"
                       />
+                      <path
+                        d="M18 2.0845
+                          a 15.9155 15.9155 0 0 1 0 31.831
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="url(#gradient)"
+                        strokeWidth="3"
+                        strokeDasharray={`${goal.progress}, 100`}
+                      />
+                      <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#8B5CF6" />
+                          <stop offset="100%" stopColor="#D946EF" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    <div className={styles.progressText}>
+                      {goal.progress}%
+                    </div>
+                  </div>
+
+                  <div className={styles.goalContent}>
+                    <div className={styles.goalHeader}>
+                      <span className={styles.goalIcon}>
+                        {CATEGORY_CONFIG[goal.category].icon}
+                      </span>
+                      <h3 className={styles.goalTitle}>{goal.title}</h3>
+                    </div>
+                    <div className={styles.goalActions}>
+                      <button 
+                        className={styles.actionButton}
+                        aria-label="Update progress"
+                      >
+                        <PlusIcon className={styles.actionIcon} />
+                      </button>
+                      <button 
+                        className={styles.actionButton}
+                        aria-label="View details"
+                      >
+                        <ChevronDownIcon className={styles.actionIcon} />
+                      </button>
                     </div>
                   </div>
                 </div>

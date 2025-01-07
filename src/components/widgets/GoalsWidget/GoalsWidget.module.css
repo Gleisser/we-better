@@ -112,11 +112,35 @@
   @apply p-4 rounded-xl
          bg-black/40 backdrop-blur-[2px]
          border border-white/[0.08]
-         transition-all duration-300;
+         transition-all duration-300
+         hover:bg-black/50;
 }
 
 .goalInfo {
   @apply flex items-center gap-4;
+}
+
+.progressCircle {
+  @apply relative w-12 h-12
+         flex items-center justify-center;
+}
+
+.progressSvg {
+  @apply w-full h-full -rotate-90;
+}
+
+.progressText {
+  @apply absolute inset-0
+         flex items-center justify-center
+         text-xs text-white font-medium;
+}
+
+.goalContent {
+  @apply flex-1 flex items-center justify-between;
+}
+
+.goalHeader {
+  @apply flex items-center gap-3;
 }
 
 .goalIcon {
@@ -127,22 +151,30 @@
          border border-white/[0.08];
 }
 
-.goalDetails {
-  @apply flex-1;
-}
-
 .goalTitle {
-  @apply text-sm text-white font-medium mb-2;
+  @apply text-sm text-white font-medium;
 }
 
-.progressBar {
-  @apply w-full h-1.5 rounded-full
+.goalActions {
+  @apply flex items-center gap-2;
+}
+
+.actionButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
          bg-black/40
-         overflow-hidden;
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
 }
 
+.actionIcon {
+  @apply w-4 h-4;
+}
+
+/* Remove the old progress bar styles */
+.progressBar,
 .progressFill {
-  @apply h-full rounded-full
-         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]
-         transition-all duration-300;
+  display: none;
 }
