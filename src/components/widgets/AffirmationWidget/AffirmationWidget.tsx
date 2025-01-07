@@ -202,8 +202,6 @@ const AffirmationWidget = () => {
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations();
 
-  console.log(audioUrl);
-
   const getRandomAffirmation = (category: AffirmationCategory) => {
     if (category === 'personal') {
       return personalAffirmation;

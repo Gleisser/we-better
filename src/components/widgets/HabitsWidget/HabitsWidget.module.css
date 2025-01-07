@@ -150,11 +150,24 @@
 }
 
 .dayColumn {
-  @apply flex flex-col items-center gap-2;
+  @apply flex flex-col items-center gap-2
+         relative;
 }
 
-.dayLabel {
-  @apply text-xs text-white/50 font-medium;
+.dayColumn::after {
+  @apply content-[attr(data-tooltip)]
+         absolute -bottom-6
+         px-2 py-1 rounded-md
+         bg-black/90
+         text-xs text-white/70
+         opacity-0
+         transition-opacity duration-200
+         whitespace-nowrap
+         pointer-events-none;
+}
+
+.dayColumn:hover::after {
+  @apply opacity-100;
 }
 
 .dayCheck {
@@ -162,13 +175,104 @@
          flex items-center justify-center
          border-2 border-white/20
          text-sm text-white/50
-         transition-all duration-300;
+         transition-all duration-300
+         cursor-pointer
+         hover:border-white/40
+         hover:scale-110
+         active:scale-95
+         relative;
+  animation: subtle-pulse 2s ease-in-out infinite;
 }
 
-.dayCheck.completed {
+@keyframes subtle-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+  }
+}
+
+.dayCheck.hasStatus {
   @apply bg-emerald-500
          border-emerald-500
          text-white;
+}
+
+.statusIcon {
+  @apply text-base;
+}
+
+/* Status-specific styles */
+.dayCheck[data-status="completed"] {
+  @apply bg-[#4CAF50]
+         border-[#4CAF50]
+         text-white
+         flex items-center justify-center
+         relative;
+}
+
+.dayCheck[data-status="completed"] .statusIcon {
+  @apply hidden;
+}
+
+.dayCheck[data-status="completed"]::after {
+  content: "";
+  @apply absolute
+         inset-0
+         flex items-center justify-center;
+}
+
+.checkmarkIcon {
+  @apply w-4 h-4
+         text-white
+         absolute
+         left-1/2 top-1/2
+         -translate-x-1/2 -translate-y-1/2;
+}
+
+/* Remove the hover scale effect for completed status */
+.dayCheck[data-status="completed"]:hover {
+  @apply scale-100
+         brightness-95;
+}
+
+/* Other statuses keep their emojis */
+.dayCheck[data-status]:not([data-status="completed"]) .statusIcon {
+  @apply text-base;
+}
+
+/* Status-specific background colors */
+.dayCheck[data-status="sick"] {
+  @apply bg-orange-500/20 border-orange-500
+         text-orange-400;
+}
+
+.dayCheck[data-status="weather"] {
+  @apply bg-blue-500/20 border-blue-500
+         text-blue-400;
+}
+
+.dayCheck[data-status="travel"] {
+  @apply bg-purple-500/20 border-purple-500
+         text-purple-400;
+}
+
+/* ... add other status styles as needed ... */
+
+.dayCheck[data-status] {
+  @apply relative;
+}
+
+.dayCheck[data-status]::after {
+  @apply content-[attr(data-status-icon)]
+         absolute -top-1 -right-1
+         w-4 h-4
+         flex items-center justify-center
+         text-xs;
 }
 
 .checkmark {
@@ -204,4 +308,45 @@
 
 .actionIcon {
   @apply w-4 h-4;
+}
+
+.dayLabel {
+  @apply text-xs text-white font-medium;
+}
+
+/* Update partial status styles */
+.dayCheck[data-status="partial"],
+.dayCheck[data-status="rescheduled"],
+.dayCheck[data-status="half"] {
+  @apply bg-transparent
+         text-white
+         border-2 border-white/20
+         relative;
+}
+
+/* Create the half green border */
+.dayCheck[data-status="partial"]::before,
+.dayCheck[data-status="rescheduled"]::before,
+.dayCheck[data-status="half"]::before {
+  content: "";
+  @apply absolute
+         inset-[-2px]
+         rounded-full
+         border-2 border-[#4caf50]
+         pointer-events-none;
+  clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+}
+
+/* Remove the previous after pseudo-element that was showing the day number */
+.dayCheck[data-status="partial"]::after,
+.dayCheck[data-status="rescheduled"]::after,
+.dayCheck[data-status="half"]::after {
+  content: none;
+}
+
+/* Remove emoji icon for partial statuses */
+.dayCheck[data-status="partial"] .statusIcon,
+.dayCheck[data-status="rescheduled"] .statusIcon,
+.dayCheck[data-status="half"] .statusIcon {
+  @apply hidden;
 }

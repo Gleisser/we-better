@@ -73,7 +73,59 @@
          text-sm text-white/50
          border-2 border-white/20
          transition-all duration-200
-         cursor-default;
+         relative;
+}
+
+.day.hasStatus {
+  @apply text-white;
+}
+
+.day[data-status="completed"] {
+  @apply bg-[#4CAF50]
+         border-[#4CAF50];
+}
+
+.day[data-status="completed"] .statusIcon {
+  @apply w-4 h-4
+         text-white;
+}
+
+.day[data-status="partial"],
+.day[data-status="rescheduled"],
+.day[data-status="half"] {
+  @apply bg-transparent
+         border-2 border-white/20;
+}
+
+.day[data-status="partial"]::before,
+.day[data-status="rescheduled"]::before,
+.day[data-status="half"]::before {
+  content: "";
+  @apply absolute
+         inset-[-2px]
+         rounded-full
+         border-2 border-[#4caf50]
+         pointer-events-none;
+  clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+}
+
+.day[data-status="sick"] {
+  @apply bg-orange-500/20 border-orange-500
+         text-orange-400;
+}
+
+.day[data-status="weather"] {
+  @apply bg-blue-500/20 border-blue-500
+         text-blue-400;
+}
+
+.day[data-status="travel"] {
+  @apply bg-purple-500/20 border-purple-500
+         text-purple-400;
+}
+
+.day.otherMonth {
+  @apply opacity-30;
 }
 
 .day.today {
@@ -81,15 +133,17 @@
          text-purple-400;
 }
 
-.day.completed {
-  @apply bg-emerald-500
-         border-emerald-500
-         text-white;
+.statusIcon {
+  @apply text-base;
 }
 
-.day.otherMonth {
-  @apply opacity-30
-         pointer-events-none;
+.dayContent {
+  @apply flex items-center justify-center
+         w-full h-full;
+}
+
+.dayNumber {
+  @apply text-sm font-medium;
 }
 
 .footer {

@@ -1,0 +1,41 @@
+.backdrop {
+  @apply fixed inset-0 z-50;
+}
+
+.menu {
+  @apply fixed z-50
+         w-64 p-2
+         bg-black/90 backdrop-blur-xl
+         rounded-xl
+         border border-white/[0.08]
+         shadow-xl;
+}
+
+.section {
+  @apply mb-2 last:mb-0;
+}
+
+.sectionTitle {
+  @apply text-xs text-white/50 font-medium
+         px-2 mb-1;
+}
+
+.options {
+  @apply grid grid-cols-2 gap-1;
+}
+
+.option {
+  @apply flex items-center gap-2
+         px-2 py-1.5 rounded-lg
+         text-sm text-white/70
+         hover:bg-white/5
+         transition-colors duration-200;
+}
+
+.icon {
+  @apply text-base;
+}
+
+.label {
+  @apply text-xs;
+}

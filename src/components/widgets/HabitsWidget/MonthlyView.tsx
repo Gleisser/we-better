@@ -14,7 +14,8 @@ import {
   isSameDay,
   isToday
 } from 'date-fns';
-import { XIcon, ChevronLeftIcon, ChevronRightIcon } from '@/components/common/icons';
+import { XIcon, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon } from '@/components/common/icons';
+import { HabitStatus, STATUS_CONFIG } from './types';
 import styles from './MonthlyView.module.css';
 
 interface MonthlyViewProps {
@@ -23,7 +24,10 @@ interface MonthlyViewProps {
   habit: {
     name: string;
     category: string;
-    completedDays: string[];
+    completedDays: {
+      date: string;
+      status: HabitStatus;
+    }[];
     streak: number;
   };
 }
@@ -92,17 +96,36 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps) => {
                 ))}
               </div>
               <div className={styles.days}>
-                {getDaysInMonth().map(date => (
-                  <div
-                    key={date.toString()}
-                    className={`${styles.day} 
-                      ${!isSameMonth(date, currentDate) ? styles.otherMonth : ''} 
-                      ${isDateCompleted(date) ? styles.completed : ''}
-                      ${isToday(date) ? styles.today : ''}`}
-                  >
-                    {format(date, 'd')}
-                  </div>
-                ))}
+                {getDaysInMonth().map(date => {
+                  const status = habit.completedDays.find(
+                    day => day.date === format(date, 'yyyy-MM-dd')
+                  )?.status;
+
+                  return (
+                    <div
+                      key={date.toString()}
+                      className={`${styles.day} 
+                        ${!isSameMonth(date, currentDate) ? styles.otherMonth : ''} 
+                        ${status ? styles.hasStatus : ''}
+                        ${isToday(date) ? styles.today : ''}`}
+                      data-status={status}
+                    >
+                      {status === 'completed' ? (
+                        <CheckmarkIcon className={styles.statusIcon} />
+                      ) : status && ['partial', 'rescheduled', 'half'].includes(status) ? (
+                        <div className={styles.dayContent}>
+                          <span className={styles.dayNumber}>{format(date, 'd')}</span>
+                        </div>
+                      ) : status ? (
+                        <span className={styles.statusIcon}>
+                          {STATUS_CONFIG[status].icon}
+                        </span>
+                      ) : (
+                        format(date, 'd')
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
