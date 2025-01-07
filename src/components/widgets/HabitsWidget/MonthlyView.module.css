@@ -1,0 +1,139 @@
+.backdrop {
+  @apply fixed inset-0
+         bg-black/50 backdrop-blur-sm
+         z-40;
+}
+
+.container {
+  @apply fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+         w-[90vw] max-w-[400px]
+         bg-[#0A0A0A]/95 backdrop-blur-xl
+         rounded-2xl
+         border border-white/[0.08]
+         shadow-xl
+         p-6
+         z-50;
+}
+
+.header {
+  @apply flex items-center justify-between
+         mb-6;
+}
+
+.habitInfo {
+  @apply flex items-center gap-3;
+}
+
+.habitName {
+  @apply text-lg text-white font-medium;
+}
+
+.streakBadge {
+  @apply px-2 py-1 rounded-lg
+         bg-black/40
+         text-xs text-white/70
+         border border-white/[0.08];
+}
+
+.closeButton {
+  @apply p-1 rounded-full
+         hover:bg-white/5
+         transition-colors duration-200;
+}
+
+.closeIcon {
+  @apply w-5 h-5 text-white/70;
+}
+
+.calendar {
+  @apply bg-black/40
+         rounded-xl
+         border border-white/[0.08]
+         p-4;
+}
+
+.weekDays {
+  @apply grid grid-cols-7 gap-1
+         mb-2;
+}
+
+.weekDay {
+  @apply text-center text-xs text-white/50
+         font-medium;
+}
+
+.days {
+  @apply grid grid-cols-7 gap-1;
+}
+
+.day {
+  @apply aspect-square
+         flex items-center justify-center
+         rounded-full
+         text-sm text-white/50
+         border-2 border-white/20
+         transition-all duration-200
+         cursor-default;
+}
+
+.day.today {
+  @apply border-purple-500
+         text-purple-400;
+}
+
+.day.completed {
+  @apply bg-emerald-500
+         border-emerald-500
+         text-white;
+}
+
+.day.otherMonth {
+  @apply opacity-30
+         pointer-events-none;
+}
+
+.footer {
+  @apply mt-4;
+}
+
+.legend {
+  @apply flex items-center justify-center gap-4;
+}
+
+.legendItem {
+  @apply flex items-center gap-2
+         text-sm text-white/70;
+}
+
+.legendDot {
+  @apply w-3 h-3 rounded-full
+         border-2 border-white/20;
+}
+
+.legendDot.completed {
+  @apply bg-emerald-500
+         border-emerald-500;
+}
+
+.monthNavigation {
+  @apply flex items-center justify-between
+         mb-4;
+}
+
+.monthTitle {
+  @apply text-lg text-white font-medium;
+}
+
+.navButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white;
+}
+
+.navIcon {
+  @apply w-4 h-4;
+}

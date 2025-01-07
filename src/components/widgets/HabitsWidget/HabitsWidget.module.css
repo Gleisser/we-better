@@ -1,0 +1,207 @@
+.container {
+  @apply relative w-full h-full
+         rounded-[32px] overflow-hidden
+         border border-white/10
+         shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)];
+  animation: breathe 8s ease-in-out infinite;
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start) 0%,
+    var(--gradient-middle) 50%,
+    var(--gradient-end) 100%
+  );
+  transition: background 2s ease-in-out;
+}
+
+.header {
+  @apply flex flex-col gap-4
+         p-5 pb-0;
+}
+
+.headerLeft {
+  @apply flex items-center gap-3;
+}
+
+.headerIcon {
+  @apply w-10 h-10 rounded-xl
+         bg-black/80
+         flex items-center justify-center
+         text-xl
+         border border-white/[0.08]
+         shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
+}
+
+.headerText {
+  @apply text-sm text-white/80 font-medium;
+}
+
+.categorySelector {
+  @apply flex gap-2 overflow-x-auto
+         pb-4
+         scroll-smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.categorySelector::-webkit-scrollbar {
+  display: none;
+}
+
+.categoryButton {
+  @apply flex items-center gap-2
+         px-3 py-1.5 rounded-full
+         bg-black/40 backdrop-blur-[2px]
+         border border-white/[0.08]
+         text-sm text-white/70
+         whitespace-nowrap
+         transition-all duration-300;
+}
+
+.categoryButton:hover {
+  @apply text-white;
+  border-color: rgba(var(--category-color-rgb), 0.3);
+  background-color: rgba(var(--category-color-rgb), 0.1);
+}
+
+.categoryButton.selected {
+  @apply text-white;
+  border-color: rgba(var(--category-color-rgb), 0.3);
+  background-color: rgba(var(--category-color-rgb), 0.2);
+}
+
+.categoryIcon {
+  @apply text-base;
+}
+
+.content {
+  @apply flex-1 flex flex-col
+         p-5 mt-2;
+}
+
+.habitsList {
+  @apply flex flex-col gap-3;
+}
+
+.habitCard {
+  @apply flex items-center gap-4
+         p-4 rounded-xl
+         bg-black/40 backdrop-blur-[2px]
+         border border-white/[0.08]
+         transition-all duration-300;
+}
+
+.habitInfo {
+  @apply flex items-center gap-3;
+}
+
+.habitIcon {
+  @apply w-8 h-8 rounded-lg
+         bg-black/40
+         flex items-center justify-center
+         text-base
+         border border-white/[0.08];
+}
+
+.habitName {
+  @apply text-sm text-white font-medium;
+}
+
+.habitStats {
+  @apply flex items-center gap-3;
+}
+
+.streakBadge {
+  @apply px-2 py-1 rounded-lg
+         bg-black/40
+         text-xs text-white/70
+         border border-white/[0.08];
+}
+
+.checkButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         text-white/70 text-lg
+         border border-white/[0.08]
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white;
+}
+
+.checkButton.completed {
+  @apply bg-emerald-500/20 border-emerald-500/30
+         text-emerald-400;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    background-position: 0% 0%;
+    background-size: 100% 100%;
+  }
+  50% {
+    background-position: 50% 50%;
+    background-size: 120% 120%;
+  }
+}
+
+.weekProgress {
+  @apply flex items-center gap-6 flex-1
+         justify-center;
+}
+
+.dayColumn {
+  @apply flex flex-col items-center gap-2;
+}
+
+.dayLabel {
+  @apply text-xs text-white/50 font-medium;
+}
+
+.dayCheck {
+  @apply w-8 h-8 rounded-full
+         flex items-center justify-center
+         border-2 border-white/20
+         text-sm text-white/50
+         transition-all duration-300;
+}
+
+.dayCheck.completed {
+  @apply bg-emerald-500
+         border-emerald-500
+         text-white;
+}
+
+.checkmark {
+  @apply opacity-0 transition-opacity duration-200;
+}
+
+.dayCheck.completed .checkmark {
+  @apply opacity-100;
+}
+
+.checkInButton {
+  @apply px-4 py-2 rounded-lg
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white/70
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white;
+}
+
+.habitActions {
+  @apply flex items-center gap-2;
+}
+
+.monthlyViewButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white;
+}
+
+.actionIcon {
+  @apply w-4 h-4;
+}

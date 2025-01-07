@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import QuoteWidget from '@/components/widgets/QuoteWidget/QuoteWidget';
 import { AffirmationWidget } from '@/components/widgets/AffirmationWidget';
+import HabitsWidget from '@/components/widgets/HabitsWidget/HabitsWidget';
 import styles from './DashboardGrid.module.css';
 
 type WidgetSize = 'small' | 'medium' | 'large' | 'vertical' | 'horizontal';
@@ -28,9 +29,9 @@ const WIDGETS: WidgetConfig[] = [
   },
   { 
     id: 'habits', 
-    size: 'small', 
+    size: 'large',
     title: 'Habits Tracking',
-    gridArea: 'habits'
+    gridArea: 'videos'
   },
   { 
     id: 'goals', 
@@ -40,9 +41,9 @@ const WIDGETS: WidgetConfig[] = [
   },
   { 
     id: 'videos', 
-    size: 'large', 
+    size: 'horizontal',
     title: 'Recommended Videos',
-    gridArea: 'videos'
+    gridArea: 'habits'
   },
   { 
     id: 'podcast', 
@@ -97,6 +98,15 @@ const DashboardGrid = () => {
                 zIndex: 1
               }}>
                 <AffirmationWidget />
+              </div>
+            ) : widget.id === 'habits' ? (
+              <div style={{ 
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                zIndex: 1
+              }}>
+                <HabitsWidget />
               </div>
             ) : (
               <div className={styles.placeholder}>
