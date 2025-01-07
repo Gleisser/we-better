@@ -2,20 +2,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { XIcon } from '@/components/common/icons';
-import { HabitCategory, CATEGORY_CONFIG } from './types';
+import { Habit } from './types';
+import { CATEGORY_CONFIG, HabitCategory } from './config';
 import styles from './HabitForm.module.css';
 
 interface HabitFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (habit: {
-    name: string;
-    category: HabitCategory;
-  }) => void;
-  initialValues?: {
-    name: string;
-    category: HabitCategory;
-  };
+  onSubmit: (habit: Omit<Habit, 'id' | 'streak' | 'completedDays'>) => void;
+  initialValues?: Habit;
   mode: 'create' | 'edit';
 }
 

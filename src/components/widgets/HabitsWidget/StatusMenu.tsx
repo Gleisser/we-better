@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { HabitStatus, STATUS_CONFIG } from './types';
+import { HabitStatus } from './types';
+import { STATUS_CONFIG } from './config';
 import styles from './StatusMenu.module.css';
 import { createPortal } from 'react-dom';
 

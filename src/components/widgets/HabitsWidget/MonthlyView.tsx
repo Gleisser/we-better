@@ -15,7 +15,8 @@ import {
   isToday
 } from 'date-fns';
 import { XIcon, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon } from '@/components/common/icons';
-import { HabitStatus, STATUS_CONFIG } from './types';
+import { HabitStatus } from './types';
+import { STATUS_CONFIG } from './config';
 import styles from './MonthlyView.module.css';
 
 interface MonthlyViewProps {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import styles from './HabitsWidget.module.css';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
@@ -6,7 +6,9 @@ import { format, startOfWeek, addDays } from 'date-fns';
 import { MonthlyView } from './MonthlyView';
 import { ChartIcon, CheckmarkIcon, PlusIcon, DotsHorizontalIcon } from '@/components/common/icons';
 import { StatusMenu } from './StatusMenu';
-import { HabitStatus, STATUS_CONFIG, HabitCategory, CATEGORY_CONFIG } from './types';
+import { HabitStatus, Habit, HabitDay } from './types';
+import { STATUS_CONFIG, CATEGORY_CONFIG, HabitCategory } from './config';
+import { updateHabitStreak, cleanupOldData } from './utils';
 import { HabitForm } from './HabitForm';
 import { HabitActionsMenu } from './HabitActionsMenu';
 
@@ -40,6 +42,8 @@ const MOCK_HABITS: Habit[] = [
   }
 ];
 
+const STORAGE_KEY = 'habits-data';
+
 // Add this interface for the div element's data attributes
 interface DayColumnProps extends React.HTMLAttributes<HTMLDivElement> {
   'data-tooltip'?: string;
@@ -47,7 +51,10 @@ interface DayColumnProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const HabitsWidget = () => {
   const [selectedCategory, setSelectedCategory] = useState<HabitCategory | 'all'>('all');
-  const [habits, setHabits] = useState<Habit[]>(MOCK_HABITS);
+  const [habits, setHabits] = useState<Habit[]>(() => {
+    const savedHabits = localStorage.getItem(STORAGE_KEY);
+    return savedHabits ? JSON.parse(savedHabits) : MOCK_HABITS;
+  });
   const { theme } = useTimeBasedTheme();
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [showMonthlyView, setShowMonthlyView] = useState(false);
@@ -58,6 +65,10 @@ const HabitsWidget = () => {
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [actionMenuPosition, setActionMenuPosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
+  }, [habits]);
 
   const filteredHabits = selectedCategory === 'all' 
     ? habits 
@@ -90,28 +101,29 @@ const HabitsWidget = () => {
   const handleStatusSelect = (status: HabitStatus) => {
     if (selectedDate && selectedHabit) {
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
-      setHabits(prevHabits => 
-        prevHabits.map(habit => {
+      setHabits(prevHabits => {
+        const updatedHabits = prevHabits.map(habit => {
           if (habit.id === selectedHabit.id) {
             const existingIndex = habit.completedDays.findIndex(day => day.date === dateStr);
             const updatedDays = [...habit.completedDays];
             
             if (existingIndex >= 0) {
-              // Update existing status
               updatedDays[existingIndex] = { date: dateStr, status };
             } else {
-              // Add new status
               updatedDays.push({ date: dateStr, status });
             }
             
-            return {
+            return updateHabitStreak({
               ...habit,
-              completedDays: updatedDays
-            };
+              completedDays: updatedDays,
+              updatedAt: new Date().toISOString()
+            });
           }
           return habit;
-        })
-      );
+        });
+        
+        return updatedHabits;
+      });
     }
   };
 
@@ -120,7 +132,9 @@ const HabitsWidget = () => {
       id: `habit_${Date.now()}`,
       ...habitData,
       streak: 0,
-      completedDays: []
+      completedDays: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
     setHabits(prev => [...prev, newHabit]);
   };
@@ -139,6 +153,20 @@ const HabitsWidget = () => {
   const handleDeleteHabit = (habitId: string) => {
     setHabits(prev => prev.filter(habit => habit.id !== habitId));
   };
+
+  useEffect(() => {
+    const cleanup = () => {
+      setHabits(prevHabits => cleanupOldData(prevHabits));
+    };
+    
+    // Run cleanup once a day
+    const interval = setInterval(cleanup, 24 * 60 * 60 * 1000);
+    
+    // Run cleanup on mount
+    cleanup();
+    
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div 
