@@ -1,121 +1,66 @@
-import { motion } from 'framer-motion';
 import QuoteWidget from '@/components/widgets/QuoteWidget/QuoteWidget';
 import { AffirmationWidget } from '@/components/widgets/AffirmationWidget';
 import HabitsWidget from '@/components/widgets/HabitsWidget/HabitsWidget';
 import styles from './DashboardGrid.module.css';
 
-type WidgetSize = 'small' | 'medium' | 'large' | 'vertical' | 'horizontal';
-
-interface WidgetConfig {
-  id: string;
-  size: WidgetSize;
-  title: string;
-  gridArea?: string;
-}
-
-// Bento-style widget configuration
-const WIDGETS: WidgetConfig[] = [
-  { 
-    id: 'quote', 
-    size: 'medium', 
-    title: 'Quote of the Day',
-    gridArea: 'quote'
-  },
-  { 
-    id: 'affirmation', 
-    size: 'small', 
-    title: 'Daily Affirmation',
-    gridArea: 'affirmation'
-  },
-  { 
-    id: 'habits', 
-    size: 'large',
-    title: 'Habits Tracking',
-    gridArea: 'videos'
-  },
-  { 
-    id: 'goals', 
-    size: 'vertical', 
-    title: 'Goals Tracking',
-    gridArea: 'goals'
-  },
-  { 
-    id: 'videos', 
-    size: 'horizontal',
-    title: 'Recommended Videos',
-    gridArea: 'habits'
-  },
-  { 
-    id: 'podcast', 
-    size: 'medium', 
-    title: 'Podcast of the Day',
-    gridArea: 'podcast'
-  },
-  { 
-    id: 'article', 
-    size: 'small', 
-    title: 'Article of the Day',
-    gridArea: 'article'
-  },
-  { 
-    id: 'course', 
-    size: 'horizontal', 
-    title: 'Recommended Course',
-    gridArea: 'course'
-  }
-];
-
 const DashboardGrid = () => {
   return (
     <div className={styles.container}>
       <div className={styles.bentoGrid}>
-        {WIDGETS.map((widget) => (
-          <motion.div
-            key={widget.id}
-            className={`${styles.widget} ${styles[widget.size]}`}
-            style={{ 
-              gridArea: widget.gridArea,
-              position: 'relative'
-            }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {widget.id === 'quote' ? (
-              <div style={{ 
-                position: 'relative',
-                width: '100%',
-                height: '100%',
-                zIndex: 1
-              }}>
-                <QuoteWidget />
-              </div>
-            ) : widget.id === 'affirmation' ? (
-              <div style={{ 
-                position: 'relative',
-                width: '100%',
-                height: '100%',
-                zIndex: 1
-              }}>
-                <AffirmationWidget />
-              </div>
-            ) : widget.id === 'habits' ? (
-              <div style={{ 
-                position: 'relative',
-                width: '100%',
-                height: '100%',
-                zIndex: 1
-              }}>
-                <HabitsWidget />
-              </div>
-            ) : (
-              <div className={styles.placeholder}>
-                <h3 className={styles.widgetTitle}>{widget.title}</h3>
-                <p className={styles.comingSoon}>Widget coming soon...</p>
-              </div>
-            )}
-          </motion.div>
-        ))}
+        {/* Quote Widget */}
+        <div className={`${styles.widget} ${styles.quote}`}>
+          <QuoteWidget />
+        </div>
+
+        {/* Affirmation Widget */}
+        <div className={`${styles.widget} ${styles.affirmation}`}>
+          <AffirmationWidget />
+        </div>
+
+        {/* Videos Widget */}
+        <div className={`${styles.widget} ${styles.videos}`}>
+          <div className={styles.placeholder}>
+            <h3 className={styles.widgetTitle}>Recommended Videos</h3>
+            <p className={styles.comingSoon}>Widget coming soon...</p>
+          </div>
+        </div>
+
+        {/* Habits Widget */}
+        <div className={`${styles.widget} ${styles.habits}`}>
+          <HabitsWidget />
+        </div>
+
+        {/* Goals Widget */}
+        <div className={`${styles.widget} ${styles.goals}`}>
+          <div className={styles.placeholder}>
+            <h3 className={styles.widgetTitle}>Goals Tracking</h3>
+            <p className={styles.comingSoon}>Widget coming soon...</p>
+          </div>
+        </div>
+
+        {/* Podcast Widget */}
+        <div className={`${styles.widget} ${styles.podcast}`}>
+          <div className={styles.placeholder}>
+            <h3 className={styles.widgetTitle}>Podcast of the Day</h3>
+            <p className={styles.comingSoon}>Widget coming soon...</p>
+          </div>
+        </div>
+
+        {/* Article Widget */}
+        <div className={`${styles.widget} ${styles.article}`}>
+          <div className={styles.placeholder}>
+            <h3 className={styles.widgetTitle}>Article of the Day</h3>
+            <p className={styles.comingSoon}>Widget coming soon...</p>
+          </div>
+        </div>
+
+        {/* Course Widget */}
+        <div className={`${styles.widget} ${styles.course}`}>
+          <div className={styles.placeholder}>
+            <h3 className={styles.widgetTitle}>Recommended Course</h3>
+            <p className={styles.comingSoon}>Widget coming soon...</p>
+          </div>
+        </div>
       </div>
     </div>
   );
