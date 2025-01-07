@@ -1,6 +1,7 @@
 import QuoteWidget from '@/components/widgets/QuoteWidget/QuoteWidget';
 import { AffirmationWidget } from '@/components/widgets/AffirmationWidget';
 import HabitsWidget from '@/components/widgets/HabitsWidget/HabitsWidget';
+import GoalsWidget from '@/components/widgets/GoalsWidget/GoalsWidget';
 import styles from './DashboardGrid.module.css';
 
 const DashboardGrid = () => {
@@ -32,10 +33,7 @@ const DashboardGrid = () => {
 
         {/* Goals Widget */}
         <div className={`${styles.widget} ${styles.goals}`}>
-          <div className={styles.placeholder}>
-            <h3 className={styles.widgetTitle}>Goals Tracking</h3>
-            <p className={styles.comingSoon}>Widget coming soon...</p>
-          </div>
+          <GoalsWidget />
         </div>
 
         {/* Podcast Widget */}
