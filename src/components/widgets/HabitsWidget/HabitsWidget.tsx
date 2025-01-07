@@ -6,48 +6,9 @@ import { format, startOfWeek, addDays } from 'date-fns';
 import { MonthlyView } from './MonthlyView';
 import { ChartIcon, CheckmarkIcon, PlusIcon, DotsHorizontalIcon } from '@/components/common/icons';
 import { StatusMenu } from './StatusMenu';
-import { HabitStatus, STATUS_CONFIG } from './types';
+import { HabitStatus, STATUS_CONFIG, HabitCategory, CATEGORY_CONFIG } from './types';
 import { HabitForm } from './HabitForm';
-
-type HabitCategory = 'health' | 'growth' | 'lifestyle' | 'custom';
-
-interface Habit {
-  id: string;
-  name: string;
-  category: HabitCategory;
-  streak: number;
-  completedDays: {
-    date: string;
-    status: HabitStatus;
-  }[];
-}
-
-const CATEGORY_CONFIG: Record<HabitCategory, {
-  icon: string;
-  label: string;
-  colorRGB: string;
-}> = {
-  health: {
-    icon: '💪',
-    label: 'Health',
-    colorRGB: '59, 130, 246' // Blue
-  },
-  growth: {
-    icon: '🌱',
-    label: 'Growth',
-    colorRGB: '16, 185, 129' // Emerald
-  },
-  lifestyle: {
-    icon: '⭐️',
-    label: 'Lifestyle',
-    colorRGB: '139, 92, 246' // Purple
-  },
-  custom: {
-    icon: '✨',
-    label: 'Custom',
-    colorRGB: '236, 72, 153' // Pink
-  }
-};
+import { HabitActionsMenu } from './HabitActionsMenu';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -95,6 +56,8 @@ const HabitsWidget = () => {
   const [showStatusMenu, setShowStatusMenu] = useState(false);
   const [showHabitForm, setShowHabitForm] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
+  const [actionMenuPosition, setActionMenuPosition] = useState({ x: 0, y: 0 });
 
   const filteredHabits = selectedCategory === 'all' 
     ? habits 
@@ -291,9 +254,14 @@ const HabitsWidget = () => {
               <div className={styles.habitActions}>
                 <button 
                   className={styles.actionButton}
-                  onClick={() => {
-                    setEditingHabit(habit);
-                    setShowHabitForm(true);
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setActionMenuPosition({
+                      x: Math.min(rect.left, window.innerWidth - 144), // 144px = menu width
+                      y: rect.bottom
+                    });
+                    setSelectedHabit(habit);
+                    setShowActionsMenu(true);
                   }}
                 >
                   <DotsHorizontalIcon className={styles.actionIcon} />
@@ -340,6 +308,19 @@ const HabitsWidget = () => {
           onSubmit={editingHabit ? handleEditHabit : handleCreateHabit}
           initialValues={editingHabit ?? undefined}
           mode={editingHabit ? 'edit' : 'create'}
+        />
+      )}
+
+      {showActionsMenu && selectedHabit && (
+        <HabitActionsMenu
+          isOpen={showActionsMenu}
+          onClose={() => setShowActionsMenu(false)}
+          onEdit={() => {
+            setEditingHabit(selectedHabit);
+            setShowHabitForm(true);
+          }}
+          onDelete={() => handleDeleteHabit(selectedHabit.id)}
+          position={actionMenuPosition}
         />
       )}
     </div>

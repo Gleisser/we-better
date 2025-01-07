@@ -293,7 +293,8 @@
 }
 
 .habitActions {
-  @apply flex items-center gap-2;
+  @apply flex items-center gap-2
+         ml-auto;
 }
 
 .monthlyViewButton {
@@ -349,4 +350,28 @@
 .dayCheck[data-status="rescheduled"] .statusIcon,
 .dayCheck[data-status="half"] .statusIcon {
   @apply hidden;
+}
+
+/* Add styles for the action buttons */
+.actionButton,
+.monthlyViewButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white;
+}
+
+/* Add styles for the add button in the header */
+.addButton {
+  @apply w-7 h-7 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white
+         ml-2;
 }

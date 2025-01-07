@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { XIcon } from '@/components/common/icons';
-import { HabitCategory } from './types';
+import { HabitCategory, CATEGORY_CONFIG } from './types';
 import styles from './HabitForm.module.css';
 
 interface HabitFormProps {
