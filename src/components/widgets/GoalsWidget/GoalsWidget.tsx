@@ -8,6 +8,7 @@ import { CATEGORY_CONFIG } from './config';
 import { format, differenceInDays } from 'date-fns';
 import { ReviewSettingsModal } from './ReviewSettings';
 import { GoalFormModal } from './GoalFormModal';
+import { toast } from 'react-hot-toast';
 
 const MOCK_GOALS: Goal[] = [
   {
@@ -252,6 +253,23 @@ const GoalsWidget = () => {
                 id: `goal-${Date.now()}` 
               }
             ]);
+            
+            toast.success('New goal created successfully!', {
+              duration: 4000,
+              position: 'top-center',
+              style: {
+                background: '#1A1A1A',
+                color: '#fff',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+                borderRadius: '12px',
+                padding: '16px 24px',
+                fontSize: '14px',
+                maxWidth: '400px',
+                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+              },
+              icon: '🎯',
+            });
+            
             // TODO: Save to backend
           }}
         />
