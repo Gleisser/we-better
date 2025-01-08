@@ -7,26 +7,30 @@ interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-const UserAvatar = ({ name, image, isOnline, size = 'md' }: UserAvatarProps) => {
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(part => part[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
+const getInitials = (name: string) => {
+  return name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+};
 
+const UserAvatar = ({ name, image, isOnline = false, size = 'md' }: UserAvatarProps) => {
   return (
     <div className={`${styles.container} ${styles[size]}`}>
       {image ? (
-        <img src={image} alt={name} className={styles.image} />
+        <img 
+          src={image} 
+          alt={name}
+          className={styles.image}
+        />
       ) : (
         <div className={styles.fallback}>
-          <span>{getInitials(name)}</span>
+          <span className={styles.initials}>{getInitials(name)}</span>
         </div>
       )}
-      {isOnline && <div className={styles.status} />}
+      {isOnline && <div className={styles.onlineStatus} />}
     </div>
   );
 };

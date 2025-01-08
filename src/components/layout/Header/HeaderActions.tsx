@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SettingsIcon, LogoutIcon } from '@/components/common/icons';
+import { SettingsIcon, LogoutIcon, BellIcon } from '@/components/common/icons';
 import NotificationsPopup from '../NotificationsPopup/NotificationsPopup';
+import { MobileNotifications } from '../NotificationsPanel/MobileNotifications';
 import ProfileMenu from './ProfileMenu/ProfileMenu';
 import { useHeader } from '@/contexts/HeaderContext';
 import styles from './HeaderActions.module.css';
@@ -10,6 +11,61 @@ const HeaderActions = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [notificationCount] = useState(10);
   const { activePopup, setActivePopup } = useHeader();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Mock notifications data with undefined images to trigger initials fallback
+  const notifications = [
+    {
+      id: '1',
+      type: 'reply',
+      user: {
+        name: 'Tommy Lee',
+        image: undefined,
+        isOnline: true
+      },
+      content: 'replied to you in',
+      target: 'Generic File',
+      timestamp: '7 November 2023 • 12:35 AM',
+      isRead: false
+    },
+    {
+      id: '2',
+      type: 'follow',
+      user: {
+        name: 'Jennifer Lee',
+        image: undefined,
+        isOnline: true
+      },
+      content: 'followed you',
+      timestamp: '6 November 2023 • 9:12 PM',
+      isRead: false
+    },
+    {
+      id: '3',
+      type: 'task',
+      user: {
+        name: 'Eve Monroe',
+        image: undefined,
+        isOnline: false
+      },
+      content: 'assigned a task to you',
+      target: '#JP-2137',
+      timestamp: '6 November 2023 • 8:56 PM',
+      isRead: false
+    }
+  ];
+
+  // Check if mobile
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
 
   // Close popups when clicking outside
   useEffect(() => {
@@ -27,7 +83,7 @@ const HeaderActions = () => {
   return (
     <div className={styles.actionsContainer}>
       {/* Theme Toggle */}
-      <button 
+      <button
         className={styles.themeToggle}
         onClick={() => setIsDarkMode(!isDarkMode)}
         aria-label="Toggle theme"
@@ -70,19 +126,7 @@ const HeaderActions = () => {
           aria-label="Notifications"
           onClick={() => setActivePopup(activePopup === 'notifications' ? null : 'notifications')}
         >
-          <svg 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            className={styles.notificationIcon}
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" 
-            />
-          </svg>
+          <BellIcon className={styles.notificationIcon} />
           {notificationCount > 0 && (
             <motion.span 
               className={styles.notificationBadge}
@@ -95,12 +139,20 @@ const HeaderActions = () => {
           )}
         </button>
 
-        <AnimatePresence>
-          {activePopup === 'notifications' && (
-            <NotificationsPopup onClose={() => setActivePopup(null)} />
-          )}
-        </AnimatePresence>
+        {/* Desktop Notifications */}
+        {!isMobile && activePopup === 'notifications' && (
+          <NotificationsPopup onClose={() => setActivePopup(null)} />
+        )}
       </div>
+
+      {/* Mobile Notifications - Render outside the notification container */}
+      {isMobile && activePopup === 'notifications' && (
+        <MobileNotifications
+          isOpen={true}
+          onClose={() => setActivePopup(null)}
+          notifications={notifications}
+        />
+      )}
 
       {/* Profile */}
       <div className={styles.profileContainer}>
