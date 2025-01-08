@@ -64,6 +64,7 @@ const GoalsWidget = () => {
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
 
   const filteredGoals = selectedCategory === 'all' 
     ? goals 
@@ -88,6 +89,30 @@ const GoalsWidget = () => {
         maxWidth: '400px',
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
       },
+    });
+  };
+
+  const handleEditGoal = (updatedGoal: Omit<Goal, 'id'>) => {
+    setGoals(prev => prev.map(goal => 
+      goal.id === editingGoal?.id 
+        ? { ...updatedGoal, id: goal.id }
+        : goal
+    ));
+    
+    toast.success('Goal updated successfully!', {
+      duration: 4000,
+      position: 'top-right',
+      style: {
+        background: '#1A1A1A',
+        color: '#fff',
+        border: '1px solid rgba(139, 92, 246, 0.3)',
+        borderRadius: '12px',
+        padding: '16px 24px',
+        fontSize: '14px',
+        maxWidth: '400px',
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+      },
+      icon: '✏️',
     });
   };
 
@@ -279,34 +304,42 @@ const GoalsWidget = () => {
       {showGoalForm && (
         <GoalFormModal
           isOpen={showGoalForm}
-          onClose={() => setShowGoalForm(false)}
-          onSave={(newGoal) => {
-            setGoals(prev => [
-              ...prev,
-              { 
-                ...newGoal, 
-                id: `goal-${Date.now()}` 
-              }
-            ]);
-            
-            toast.success('New goal created successfully!', {
-              duration: 4000,
-              position: 'top-center',
-              style: {
-                background: '#1A1A1A',
-                color: '#fff',
-                border: '1px solid rgba(139, 92, 246, 0.3)',
-                borderRadius: '12px',
-                padding: '16px 24px',
-                fontSize: '14px',
-                maxWidth: '400px',
-                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
-              },
-              icon: '🎯',
-            });
-            
-            // TODO: Save to backend
+          onClose={() => {
+            setShowGoalForm(false);
+            setEditingGoal(null);
           }}
+          onSave={(goalData) => {
+            if (editingGoal) {
+              handleEditGoal(goalData);
+            } else {
+              setGoals(prev => [
+                ...prev,
+                { 
+                  ...goalData, 
+                  id: `goal-${Date.now()}` 
+                }
+              ]);
+              
+              toast.success('New goal created successfully!', {
+                duration: 4000,
+                position: 'top-right',
+                style: {
+                  background: '#1A1A1A',
+                  color: '#fff',
+                  border: '1px solid rgba(139, 92, 246, 0.3)',
+                  borderRadius: '12px',
+                  padding: '16px 24px',
+                  fontSize: '14px',
+                  maxWidth: '400px',
+                  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+                },
+                icon: '🎯',
+              });
+            }
+            setShowGoalForm(false);
+            setEditingGoal(null);
+          }}
+          initialGoal={editingGoal}
         />
       )}
 
@@ -315,7 +348,8 @@ const GoalsWidget = () => {
           isOpen={showActionsMenu}
           onClose={() => setShowActionsMenu(false)}
           onEdit={() => {
-            // TODO: Implement edit functionality
+            setEditingGoal(selectedGoal);
+            setShowGoalForm(true);
             setShowActionsMenu(false);
           }}
           onDelete={() => {

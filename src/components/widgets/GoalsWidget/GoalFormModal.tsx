@@ -193,7 +193,7 @@ export const GoalFormModal = ({
                 type="submit" 
                 className={styles.saveButton}
               >
-                {initialGoal ? 'Update Goal' : 'Create Goal'}
+                {initialGoal ? 'Save Changes' : 'Create Goal'}
               </button>
             </div>
           </form>
