@@ -11,6 +11,7 @@ import { GoalFormModal } from './GoalFormModal';
 import { toast } from 'react-hot-toast';
 import { GoalActionsMenu } from './GoalActionsMenu';
 import { ConfirmationModal } from './ConfirmationModal';
+import { ReviewTimer } from './ReviewTimer';
 
 const MOCK_GOALS: Goal[] = [
   {
@@ -148,22 +149,7 @@ const GoalsWidget = () => {
               <SettingsIcon className={styles.actionIcon} />
             </button>
 
-            <div className={`${styles.reviewTimer} ${isToday(nextReviewDate) ? styles.active : ''}`}>
-              <div className={styles.timerIcon}>⏰</div>
-              <div className={styles.timerInfo}>
-                <span className={styles.timerLabel}>Next Goals Review</span>
-                <span className={styles.timerValue}>
-                  {daysUntilReview > 0 ? (
-                    <>in {daysUntilReview} days</>
-                  ) : (
-                    <>Today</>
-                  )}
-                </span>
-                <span className={styles.timerDate}>
-                  {format(nextReviewDate, 'MMM d, yyyy')}
-                </span>
-              </div>
-            </div>
+            <ReviewTimer nextReviewDate={nextReviewDate} />
 
             <button
               className={`${styles.collapseButton} ${isCollapsed ? styles.collapsed : ''}`}
