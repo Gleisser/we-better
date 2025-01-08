@@ -65,7 +65,7 @@ const HabitsWidget = () => {
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [actionMenuPosition, setActionMenuPosition] = useState({ x: 0, y: 0 });
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));

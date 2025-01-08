@@ -1,0 +1,70 @@
+.backdrop {
+  @apply fixed inset-0 
+         bg-black/80
+         flex items-center justify-center
+         z-[9999];
+}
+
+.container {
+  @apply fixed top-1/2 left-1/2
+         w-full max-w-sm
+         bg-[#1A1A1A] rounded-2xl
+         border border-white/10
+         shadow-xl
+         z-[10000];
+  transform: translate(-50%, -50%);
+}
+
+.header {
+  @apply flex items-center justify-between
+         p-6 border-b border-white/10;
+}
+
+.title {
+  @apply text-lg text-white font-medium;
+}
+
+.closeButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+}
+
+.closeIcon {
+  @apply w-4 h-4;
+}
+
+.content {
+  @apply p-6;
+}
+
+.message {
+  @apply text-sm text-white/70 leading-relaxed;
+}
+
+.footer {
+  @apply flex items-center justify-end gap-3
+         p-6 border-t border-white/10;
+}
+
+.cancelButton {
+  @apply px-4 py-2 rounded-xl
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+}
+
+.confirmButton {
+  @apply px-4 py-2 rounded-xl
+         bg-red-500/20
+         border border-red-500/30
+         text-sm text-red-400
+         transition-all duration-200
+         hover:bg-red-500/30;
+}

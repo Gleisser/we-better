@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { PlusIcon, ChevronDownIcon, SettingsIcon } from '@/components/common/icons';
+import { PlusIcon, ChevronDownIcon, SettingsIcon, DotsHorizontalIcon } from '@/components/common/icons';
 import styles from './GoalsWidget.module.css';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import { Goal, GoalCategory, ReviewSettings } from './types';
@@ -9,6 +9,8 @@ import { format, differenceInDays } from 'date-fns';
 import { ReviewSettingsModal } from './ReviewSettings';
 import { GoalFormModal } from './GoalFormModal';
 import { toast } from 'react-hot-toast';
+import { GoalActionsMenu } from './GoalActionsMenu';
+import { ConfirmationModal } from './ConfirmationModal';
 
 const MOCK_GOALS: Goal[] = [
   {
@@ -45,7 +47,7 @@ const isToday = (date: Date) => {
 };
 
 const GoalsWidget = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<GoalCategory | 'all'>('all');
   const [goals, setGoals] = useState<Goal[]>(MOCK_GOALS);
   const { theme } = useTimeBasedTheme();
@@ -57,6 +59,11 @@ const GoalsWidget = () => {
     reminderDays: 3
   });
   const [showGoalForm, setShowGoalForm] = useState(false);
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
+  const [actionMenuPosition, setActionMenuPosition] = useState({ x: 0, y: 0 });
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
 
   const filteredGoals = selectedCategory === 'all' 
     ? goals 
@@ -64,6 +71,25 @@ const GoalsWidget = () => {
 
   const nextReviewDate = new Date('2025-01-08'); // This would come from your settings/backend
   const daysUntilReview = differenceInDays(nextReviewDate, new Date());
+
+  const handleDeleteGoal = (goalId: string) => {
+    setGoals(prev => prev.filter(goal => goal.id !== goalId));
+    toast.success('Goal deleted successfully', {
+      icon: '🗑️',
+      duration: 4000,
+      position: 'top-right',
+      style: {
+        background: '#1A1A1A',
+        color: '#fff',
+        border: '1px solid rgba(139, 92, 246, 0.3)',
+        borderRadius: '12px',
+        padding: '16px 24px',
+        fontSize: '14px',
+        maxWidth: '400px',
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+      },
+    });
+  };
 
   return (
     <div 
@@ -216,9 +242,18 @@ const GoalsWidget = () => {
                       </button>
                       <button 
                         className={styles.actionButton}
-                        aria-label="View details"
+                        onClick={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setActionMenuPosition({
+                            x: Math.min(rect.left, window.innerWidth - 144), // 144px = menu width
+                            y: rect.bottom + 8
+                          });
+                          setSelectedGoal(goal);
+                          setShowActionsMenu(true);
+                        }}
+                        aria-label="More actions"
                       >
-                        <ChevronDownIcon className={styles.actionIcon} />
+                        <DotsHorizontalIcon className={styles.actionIcon} />
                       </button>
                     </div>
                   </div>
@@ -272,6 +307,40 @@ const GoalsWidget = () => {
             
             // TODO: Save to backend
           }}
+        />
+      )}
+
+      {showActionsMenu && selectedGoal && (
+        <GoalActionsMenu
+          isOpen={showActionsMenu}
+          onClose={() => setShowActionsMenu(false)}
+          onEdit={() => {
+            // TODO: Implement edit functionality
+            setShowActionsMenu(false);
+          }}
+          onDelete={() => {
+            setGoalToDelete(selectedGoal);
+            setShowDeleteConfirmation(true);
+            setShowActionsMenu(false);
+          }}
+          position={actionMenuPosition}
+        />
+      )}
+
+      {showDeleteConfirmation && goalToDelete && (
+        <ConfirmationModal
+          isOpen={showDeleteConfirmation}
+          onClose={() => {
+            setShowDeleteConfirmation(false);
+            setGoalToDelete(null);
+          }}
+          onConfirm={() => {
+            handleDeleteGoal(goalToDelete.id);
+            setShowDeleteConfirmation(false);
+            setGoalToDelete(null);
+          }}
+          title="Delete Goal"
+          message={`Are you sure you want to delete "${goalToDelete.title}"? This action cannot be undone.`}
         />
       )}
     </div>

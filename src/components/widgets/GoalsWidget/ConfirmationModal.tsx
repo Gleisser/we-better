@@ -1,0 +1,76 @@
+import { motion, AnimatePresence } from 'framer-motion';
+import { XIcon } from '@/components/common/icons';
+import styles from './ConfirmationModal.module.css';
+import { createPortal } from 'react-dom';
+
+interface ConfirmationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  message: string;
+}
+
+export const ConfirmationModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message
+}: ConfirmationModalProps) => {
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div
+            className={styles.backdrop}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+          <motion.div
+            className={styles.container}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+          >
+            <div className={styles.header}>
+              <h2 className={styles.title}>{title}</h2>
+              <button
+                className={styles.closeButton}
+                onClick={onClose}
+                aria-label="Close modal"
+              >
+                <XIcon className={styles.closeIcon} />
+              </button>
+            </div>
+
+            <div className={styles.content}>
+              <p className={styles.message}>{message}</p>
+            </div>
+
+            <div className={styles.footer}>
+              <button 
+                className={styles.cancelButton} 
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button 
+                className={styles.confirmButton}
+                onClick={() => {
+                  onConfirm();
+                  onClose();
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
+}; 
