@@ -66,6 +66,7 @@ const HabitsWidget = () => {
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [actionMenuPosition, setActionMenuPosition] = useState({ x: 0, y: 0 });
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [collapsedHabits, setCollapsedHabits] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
@@ -169,6 +170,18 @@ const HabitsWidget = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const toggleHabit = (habitId: string) => {
+    setCollapsedHabits(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(habitId)) {
+        newSet.delete(habitId);
+      } else {
+        newSet.add(habitId);
+      }
+      return newSet;
+    });
+  };
+
   return (
     <div 
       className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}
@@ -245,21 +258,30 @@ const HabitsWidget = () => {
             {filteredHabits.map(habit => (
               <motion.div
                 key={habit.id}
-                className={styles.habitCard}
+                className={`${styles.habitCard} ${collapsedHabits.has(habit.id) ? styles.collapsed : ''}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={{
                   '--category-color-rgb': CATEGORY_CONFIG[habit.category as keyof typeof CATEGORY_CONFIG].colorRGB
                 } as React.CSSProperties}
               >
-                <div className={styles.habitInfo}>
-                  <span className={styles.habitIcon}>
-                    {CATEGORY_CONFIG[habit.category as keyof typeof CATEGORY_CONFIG].icon}
-                  </span>
-                  <span className={styles.habitName}>{habit.name}</span>
-                  <span className={styles.streakBadge}>
-                    🔥 {habit.streak}
-                  </span>
+                <div className={styles.habitHeader}>
+                  <div className={styles.habitMainInfo}>
+                    <span className={styles.habitIcon}>
+                      {CATEGORY_CONFIG[habit.category].icon}
+                    </span>
+                    <span className={styles.habitName}>{habit.name}</span>
+                    <span className={styles.streakBadge}>
+                      🔥 {habit.streak}
+                    </span>
+                  </div>
+                  <button
+                    className={styles.toggleButton}
+                    onClick={() => toggleHabit(habit.id)}
+                    aria-label={collapsedHabits.has(habit.id) ? "Expand habit" : "Collapse habit"}
+                  >
+                    <ChevronDownIcon className={styles.toggleIcon} />
+                  </button>
                 </div>
 
                 <div className={styles.weekProgress}>

@@ -414,3 +414,115 @@
 .collapsibleContent {
   @apply flex flex-col overflow-hidden;
 }
+
+/* Add mobile-specific styles at the end of the file */
+@media (max-width: 768px) {
+  .habitCard {
+    @apply flex flex-col gap-2;
+  }
+
+  .habitHeader {
+    @apply flex items-center justify-between
+           w-full p-3;
+  }
+
+  .habitMainInfo {
+    @apply flex items-center gap-2
+           flex-1;
+  }
+
+  .weekProgress {
+    @apply flex overflow-x-auto
+           py-3 px-2
+           -mx-2;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .weekProgress::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dayColumn {
+    @apply flex-shrink-0
+           px-1;
+  }
+
+  .dayCheck {
+    @apply w-10 h-10
+           flex items-center justify-center
+           relative;
+  }
+
+  /* Update the status icon positioning */
+  .statusIcon {
+    @apply absolute left-1/2 top-1/2
+           -translate-x-1/2 -translate-y-1/2;
+  }
+
+  /* Position the day number alongside the icon */
+  .dayCheck[data-status] {
+    @apply relative;
+  }
+
+  .dayCheck[data-status]::after {
+    @apply absolute -top-1 -right-1
+           w-4 h-4
+           flex items-center justify-center
+           text-xs
+           bg-black/40
+           rounded-full;
+  }
+
+  /* Adjust checkmark icon position */
+  .checkmarkIcon {
+    @apply absolute left-1/2 top-1/2
+           -translate-x-1/2 -translate-y-1/2;
+  }
+
+  /* Make sure the day number is visible when there's no status */
+  .dayCheck:not([data-status]) {
+    @apply text-white/70;
+  }
+
+  /* Collapsed state styles */
+  .habitCard.collapsed .weekProgress,
+  .habitCard.collapsed .habitActions {
+    @apply hidden;
+  }
+
+  .habitCard.collapsed {
+    @apply py-2; /* Reduced padding when collapsed */
+  }
+
+  /* Expand/collapse toggle */
+  .toggleButton {
+    @apply w-8 h-8
+           flex items-center justify-center
+           rounded-lg
+           bg-black/40
+           text-white/70;
+  }
+
+  .toggleIcon {
+    @apply w-4 h-4 transition-transform;
+  }
+
+  .collapsed .toggleIcon {
+    @apply rotate-180;
+  }
+
+  .streakBadge {
+    @apply flex items-center gap-1
+           px-2 py-1 rounded-lg
+           bg-black/40
+           text-xs text-white/70
+           border border-white/[0.08]
+           ml-2;
+  }
+
+  .habitName {
+    @apply flex-1;
+  }
+}
