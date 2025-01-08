@@ -368,3 +368,11 @@
   @apply bg-purple-500/20 border-purple-500/30
          text-purple-400;
 }
+
+/* Add only this media query at the end of the file */
+@media (max-width: 768px) {
+  .scrollLeft,
+  .scrollRight {
+    @apply hidden;
+  }
+}
