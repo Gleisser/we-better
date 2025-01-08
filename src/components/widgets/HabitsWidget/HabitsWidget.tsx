@@ -65,8 +65,18 @@ const HabitsWidget = () => {
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [actionMenuPosition, setActionMenuPosition] = useState({ x: 0, y: 0 });
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    return window.innerWidth <= 768;
+  });
   const [collapsedHabits, setCollapsedHabits] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+      setCollapsedHabits(new Set(habits.map(habit => habit.id)));
+      setIsCollapsed(true);
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));

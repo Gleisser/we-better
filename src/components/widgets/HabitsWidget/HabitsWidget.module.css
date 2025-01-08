@@ -461,7 +461,8 @@
     @apply w-9 h-9
            rounded-full
            flex items-center justify-center
-           border border-white/[0.08];
+           border border-white/[0.08]
+           relative;
   }
 
   /* Remove the background and border we added before */
@@ -473,7 +474,8 @@
   /* Update the status icon positioning */
   .statusIcon {
     @apply absolute left-1/2 top-1/2
-           -translate-x-1/2 -translate-y-1/2;
+           -translate-x-1/2 -translate-y-1/2
+           text-base;
   }
 
   /* Position the day number alongside the icon */
@@ -493,7 +495,8 @@
   /* Adjust checkmark icon position */
   .checkmarkIcon {
     @apply absolute left-1/2 top-1/2
-           -translate-x-1/2 -translate-y-1/2;
+           -translate-x-1/2 -translate-y-1/2
+           text-white;
   }
 
   /* Make sure the day number is visible when there's no status */
@@ -539,5 +542,32 @@
 
   .habitName {
     @apply flex-1;
+  }
+
+  /* Override the status styles specifically for mobile habit widget */
+  .habitCard .dayCheck[data-status]::after {
+    content: none; /* Remove the floating ball */
+  }
+
+  .habitCard .dayCheck {
+    @apply w-9 h-9
+           rounded-full
+           flex items-center justify-center
+           border border-white/[0.08]
+           relative; /* Ensure proper stacking */
+  }
+
+  /* Ensure status icons are properly centered without the floating ball */
+  .habitCard .statusIcon {
+    @apply absolute left-1/2 top-1/2
+           -translate-x-1/2 -translate-y-1/2
+           text-base; /* Adjust icon size if needed */
+  }
+
+  /* Keep the checkmark styling clean */
+  .habitCard .checkmarkIcon {
+    @apply absolute left-1/2 top-1/2
+           -translate-x-1/2 -translate-y-1/2
+           text-white;
   }
 }
