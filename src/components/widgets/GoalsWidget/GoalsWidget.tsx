@@ -7,6 +7,7 @@ import { Goal, GoalCategory, ReviewSettings } from './types';
 import { CATEGORY_CONFIG } from './config';
 import { format, differenceInDays } from 'date-fns';
 import { ReviewSettingsModal } from './ReviewSettings';
+import { GoalFormModal } from './GoalFormModal';
 
 const MOCK_GOALS: Goal[] = [
   {
@@ -54,6 +55,7 @@ const GoalsWidget = () => {
     nextReviewDate: '2024-03-24',
     reminderDays: 3
   });
+  const [showGoalForm, setShowGoalForm] = useState(false);
 
   const filteredGoals = selectedCategory === 'all' 
     ? goals 
@@ -78,7 +80,7 @@ const GoalsWidget = () => {
             <span className={styles.headerText}>Goals Tracking</span>
             <button 
               className={styles.addButton}
-              onClick={() => {/* TODO: Add goal handler */}}
+              onClick={() => setShowGoalForm(true)}
               aria-label="Add new goal"
             >
               <PlusIcon className={styles.actionIcon} />
@@ -233,6 +235,23 @@ const GoalsWidget = () => {
           settings={reviewSettings}
           onSave={(newSettings) => {
             setReviewSettings(newSettings);
+            // TODO: Save to backend
+          }}
+        />
+      )}
+
+      {showGoalForm && (
+        <GoalFormModal
+          isOpen={showGoalForm}
+          onClose={() => setShowGoalForm(false)}
+          onSave={(newGoal) => {
+            setGoals(prev => [
+              ...prev,
+              { 
+                ...newGoal, 
+                id: `goal-${Date.now()}` 
+              }
+            ]);
             // TODO: Save to backend
           }}
         />
