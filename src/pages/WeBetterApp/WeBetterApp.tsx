@@ -4,6 +4,7 @@ import Sidebar from '@/components/layout/Sidebar/Sidebar';
 import HeaderActions from '@/components/layout/Header/HeaderActions';
 import SearchBar from '@/components/layout/SearchBar/SearchBar';
 import { HeaderProvider } from '@/contexts/HeaderContext';
+import { MobileNav } from '@/components/navigation/MobileNav/MobileNav';
 import styles from './WeBetterApp.module.css';
 
 const WeBetterApp = () => {
@@ -57,6 +58,9 @@ const WeBetterApp = () => {
             },
           }}
         />
+
+        {/* Mobile Navigation */}
+        <MobileNav />
       </div>
     </HeaderProvider>
   );

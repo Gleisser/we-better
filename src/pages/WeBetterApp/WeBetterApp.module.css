@@ -26,17 +26,6 @@
   @apply bg-clip-text text-transparent bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] font-bold;
 }
 
-.searchContainer {
-  @apply relative w-full max-w-md;
-}
-
-.searchInput {
-  @apply w-full h-10 px-4 rounded-xl bg-white/5 border border-white/10
-         text-white placeholder:text-white/50 outline-none
-         focus:border-primary-purple/50 transition-all duration-200
-         font-plus-jakarta text-sm;
-}
-
 .contentArea {
   @apply p-8;
 }
@@ -44,4 +33,23 @@
 /* When sidebar is collapsed */
 :global(.sidebar-collapsed) .mainContent {
   @apply ml-[72px];
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .mainContent {
+    @apply ml-0;
+  }
+
+  .header {
+    @apply relative;
+  }
+
+  .headerContent {
+    @apply px-4 py-4;
+  }
+
+  .contentArea {
+    @apply p-4 pb-20; /* Added padding for mobile nav */
+  }
 }
