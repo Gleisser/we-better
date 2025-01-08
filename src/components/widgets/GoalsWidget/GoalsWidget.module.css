@@ -178,3 +178,151 @@
 .progressFill {
   display: none;
 }
+
+.headerRight {
+  @apply flex items-center gap-3;
+}
+
+.reviewTimer {
+  @apply flex items-center gap-2 
+         px-3 py-1.5 rounded-xl
+         bg-black/40 backdrop-blur-sm
+         border border-white/10
+         shadow-lg shadow-purple-500/5;
+}
+
+.timerIcon {
+  @apply w-6 h-6 rounded-lg
+         bg-black/40
+         flex items-center justify-center
+         text-sm
+         border border-white/[0.08];
+}
+
+.timerInfo {
+  @apply flex flex-col;
+}
+
+.timerLabel {
+  @apply text-[10px] text-white/50;
+}
+
+.timerValue {
+  @apply text-xs font-medium text-white;
+}
+
+.timerDate {
+  @apply text-[8px] text-white/30;
+}
+
+/* Update hover effect */
+.reviewTimer:hover {
+  @apply bg-black/50 border-white/20;
+}
+
+/* Add these new animations */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.6);
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px 0 rgba(139, 92, 246, 0.8);
+    background-color: rgba(139, 92, 246, 0.15);
+  }
+}
+
+@keyframes subtle-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+}
+
+/* Add a new class for the active state */
+.reviewTimer.active {
+  @apply border-transparent bg-black/60 relative;
+  animation: subtle-bounce 3s ease-in-out infinite;
+}
+
+/* Add the animated border effect */
+.reviewTimer.active::after {
+  content: "";
+  @apply absolute inset-[-2px] rounded-xl;
+  background: linear-gradient(90deg, #8b5cf6, #d946ef, #ec4899, #8b5cf6);
+  background-size: 300% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: border-flow 4s linear infinite;
+  z-index: 0;
+}
+
+/* Update the container to show through the border */
+.reviewTimer.active {
+  @apply border-0;
+  padding: calc(0.375rem + 2px) calc(0.75rem + 2px);
+}
+
+/* Make the content appear above the animated border */
+.reviewTimer.active .timerIcon,
+.reviewTimer.active .timerInfo {
+  @apply relative z-[1];
+}
+
+/* Enhance the glowing dot */
+.reviewTimer.active::before {
+  content: "";
+  @apply absolute w-2.5 h-2.5 rounded-full;
+  background: linear-gradient(45deg, #8b5cf6, #d946ef);
+  top: -2px;
+  right: -2px;
+  animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.8), 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+/* Make the icon more prominent */
+.reviewTimer.active .timerIcon {
+  @apply bg-primary-purple/20 border-primary-purple;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
+
+/* Make the text more prominent */
+.reviewTimer.active .timerValue {
+  @apply text-white font-bold;
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5),
+    0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.reviewTimer.active .timerLabel {
+  @apply text-primary-purple font-medium;
+}
+
+/* Add this new animation for the moving border */
+@keyframes border-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

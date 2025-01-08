@@ -5,6 +5,7 @@ import styles from './GoalsWidget.module.css';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import { Goal, GoalCategory } from './types';
 import { CATEGORY_CONFIG } from './config';
+import { format, differenceInDays } from 'date-fns';
 
 const MOCK_GOALS: Goal[] = [
   {
@@ -33,6 +34,13 @@ const MOCK_GOALS: Goal[] = [
   }
 ];
 
+const isToday = (date: Date) => {
+  const today = new Date();
+  return date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear();
+};
+
 const GoalsWidget = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<GoalCategory | 'all'>('all');
@@ -42,6 +50,9 @@ const GoalsWidget = () => {
   const filteredGoals = selectedCategory === 'all' 
     ? goals 
     : goals.filter(goal => goal.category === selectedCategory);
+
+  const nextReviewDate = new Date('2025-01-08'); // This would come from your settings/backend
+  const daysUntilReview = differenceInDays(nextReviewDate, new Date());
 
   return (
     <div 
@@ -66,13 +77,32 @@ const GoalsWidget = () => {
             </button>
           </div>
 
-          <button
-            className={`${styles.collapseButton} ${isCollapsed ? styles.collapsed : ''}`}
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            aria-label={isCollapsed ? "Expand goals widget" : "Collapse goals widget"}
-          >
-            <ChevronDownIcon className={styles.collapseIcon} />
-          </button>
+          <div className={styles.headerRight}>
+            <div className={`${styles.reviewTimer} ${isToday(nextReviewDate) ? styles.active : ''}`}>
+              <div className={styles.timerIcon}>⏰</div>
+              <div className={styles.timerInfo}>
+                <span className={styles.timerLabel}>Next Goals Review</span>
+                <span className={styles.timerValue}>
+                  {daysUntilReview > 0 ? (
+                    <>in {daysUntilReview} days</>
+                  ) : (
+                    <>Today</>
+                  )}
+                </span>
+                <span className={styles.timerDate}>
+                  {format(nextReviewDate, 'MMM d, yyyy')}
+                </span>
+              </div>
+            </div>
+
+            <button
+              className={`${styles.collapseButton} ${isCollapsed ? styles.collapsed : ''}`}
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              aria-label={isCollapsed ? "Expand goals widget" : "Collapse goals widget"}
+            >
+              <ChevronDownIcon className={styles.collapseIcon} />
+            </button>
+          </div>
         </div>
       </div>
 
