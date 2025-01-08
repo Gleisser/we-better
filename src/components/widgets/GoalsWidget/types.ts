@@ -13,4 +13,14 @@ export interface Goal {
   progress: number;
   targetDate: string;
   milestones: Milestone[];
+}
+
+export type NotificationMethod = 'email' | 'sms' | 'push' | 'none';
+export type ReviewFrequency = 'weekly' | 'biweekly' | 'monthly' | 'quarterly';
+
+export interface ReviewSettings {
+  frequency: ReviewFrequency;
+  notifications: NotificationMethod[];
+  nextReviewDate: string;
+  reminderDays: number; // days before review to start showing reminders
 } 

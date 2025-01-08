@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { PlusIcon, ChevronDownIcon } from '@/components/common/icons';
+import { PlusIcon, ChevronDownIcon, SettingsIcon } from '@/components/common/icons';
 import styles from './GoalsWidget.module.css';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
-import { Goal, GoalCategory } from './types';
+import { Goal, GoalCategory, ReviewSettings } from './types';
 import { CATEGORY_CONFIG } from './config';
 import { format, differenceInDays } from 'date-fns';
+import { ReviewSettingsModal } from './ReviewSettings';
 
 const MOCK_GOALS: Goal[] = [
   {
@@ -46,6 +47,13 @@ const GoalsWidget = () => {
   const [selectedCategory, setSelectedCategory] = useState<GoalCategory | 'all'>('all');
   const [goals, setGoals] = useState<Goal[]>(MOCK_GOALS);
   const { theme } = useTimeBasedTheme();
+  const [showSettings, setShowSettings] = useState(false);
+  const [reviewSettings, setReviewSettings] = useState<ReviewSettings>({
+    frequency: 'weekly',
+    notifications: ['email'],
+    nextReviewDate: '2024-03-24',
+    reminderDays: 3
+  });
 
   const filteredGoals = selectedCategory === 'all' 
     ? goals 
@@ -78,6 +86,14 @@ const GoalsWidget = () => {
           </div>
 
           <div className={styles.headerRight}>
+            <button
+              className={styles.settingsButton}
+              onClick={() => setShowSettings(true)}
+              aria-label="Review settings"
+            >
+              <SettingsIcon className={styles.actionIcon} />
+            </button>
+
             <div className={`${styles.reviewTimer} ${isToday(nextReviewDate) ? styles.active : ''}`}>
               <div className={styles.timerIcon}>⏰</div>
               <div className={styles.timerInfo}>
@@ -209,6 +225,18 @@ const GoalsWidget = () => {
           </div>
         </div>
       </motion.div>
+
+      {showSettings && (
+        <ReviewSettingsModal
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          settings={reviewSettings}
+          onSave={(newSettings) => {
+            setReviewSettings(newSettings);
+            // TODO: Save to backend
+          }}
+        />
+      )}
     </div>
   );
 };

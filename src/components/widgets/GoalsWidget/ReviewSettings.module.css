@@ -1,0 +1,133 @@
+.overlay {
+  @apply fixed inset-0 
+         bg-black/50 backdrop-blur-sm
+         flex items-center justify-center
+         z-50;
+}
+
+.modal {
+  @apply w-full max-w-md mx-4
+         bg-[#1A1A1A] rounded-2xl
+         border border-white/10
+         shadow-xl;
+}
+
+.header {
+  @apply flex items-center justify-between
+         p-6 border-b border-white/10;
+}
+
+.title {
+  @apply text-lg text-white font-medium;
+}
+
+.closeButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+}
+
+.closeIcon {
+  @apply w-4 h-4;
+}
+
+.content {
+  @apply p-6 space-y-6;
+}
+
+.section {
+  @apply space-y-4;
+}
+
+.sectionTitle {
+  @apply text-sm text-white/70 font-medium;
+}
+
+.frequencyOptions {
+  @apply grid grid-cols-2 gap-2;
+}
+
+.frequencyButton {
+  @apply px-4 py-2 rounded-xl
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+}
+
+.frequencyButton.selected {
+  @apply bg-primary-purple/20 
+         border-primary-purple 
+         text-white;
+}
+
+.notificationOptions {
+  @apply flex flex-col gap-2;
+}
+
+.notificationButton {
+  @apply flex items-center gap-3
+         px-4 py-2 rounded-xl
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+}
+
+.notificationButton.selected {
+  @apply bg-primary-purple/20 
+         border-primary-purple 
+         text-white;
+}
+
+.notificationIcon {
+  @apply text-base;
+}
+
+.reminderSettings {
+  @apply space-y-4;
+}
+
+.label {
+  @apply flex items-center gap-3
+         text-sm text-white/70;
+}
+
+.select {
+  @apply px-3 py-1.5 rounded-lg
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white
+         transition-all duration-200
+         hover:bg-black/60
+         focus:outline-none focus:border-primary-purple;
+}
+
+.footer {
+  @apply flex items-center justify-end gap-3
+         p-6 border-t border-white/10;
+}
+
+.cancelButton {
+  @apply px-4 py-2 rounded-xl
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+}
+
+.saveButton {
+  @apply px-4 py-2 rounded-xl
+         bg-primary-purple/20
+         border border-primary-purple
+         text-sm text-white
+         transition-all duration-200
+         hover:bg-primary-purple/30;
+}

@@ -326,3 +326,13 @@
     background-position: 0% 50%;
   }
 }
+
+.settingsButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+}
