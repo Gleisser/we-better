@@ -249,12 +249,12 @@ const HabitsWidget = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={{
-                  '--category-color-rgb': CATEGORY_CONFIG[habit.category].colorRGB
+                  '--category-color-rgb': CATEGORY_CONFIG[habit.category as keyof typeof CATEGORY_CONFIG].colorRGB
                 } as React.CSSProperties}
               >
                 <div className={styles.habitInfo}>
                   <span className={styles.habitIcon}>
-                    {CATEGORY_CONFIG[habit.category].icon}
+                    {CATEGORY_CONFIG[habit.category as keyof typeof CATEGORY_CONFIG].icon}
                   </span>
                   <span className={styles.habitName}>{habit.name}</span>
                   <span className={styles.streakBadge}>

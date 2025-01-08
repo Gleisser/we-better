@@ -4,8 +4,7 @@ import { PlusIcon, ChevronDownIcon, SettingsIcon, DotsHorizontalIcon, ProgressUp
 import styles from './GoalsWidget.module.css';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import { Goal, GoalCategory, ReviewSettings } from './types';
-import { CATEGORY_CONFIG } from './config';
-import { format, differenceInDays } from 'date-fns';
+import { CATEGORY_CONFIG } from './config.js';
 import { ReviewSettingsModal } from './ReviewSettings';
 import { GoalFormModal } from './GoalFormModal';
 import { toast } from 'react-hot-toast';
@@ -40,13 +39,6 @@ const MOCK_GOALS: Goal[] = [
   }
 ];
 
-const isToday = (date: Date) => {
-  const today = new Date();
-  return date.getDate() === today.getDate() &&
-    date.getMonth() === today.getMonth() &&
-    date.getFullYear() === today.getFullYear();
-};
-
 const GoalsWidget = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<GoalCategory | 'all'>('all');
@@ -72,7 +64,6 @@ const GoalsWidget = () => {
     : goals.filter(goal => goal.category === selectedCategory);
 
   const nextReviewDate = new Date('2025-01-08'); // This would come from your settings/backend
-  const daysUntilReview = differenceInDays(nextReviewDate, new Date());
 
   const handleDeleteGoal = (goalId: string) => {
     setGoals(prev => prev.filter(goal => goal.id !== goalId));

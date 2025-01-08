@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { XIcon } from '@/components/common/icons';
 import styles from './ReviewSettings.module.css';
 import { ReviewSettings, ReviewFrequency, NotificationMethod } from './types';
-import { addDays, format } from 'date-fns';
 import { Portal } from '@/components/common/Portal/Portal';
 
 interface ReviewSettingsModalProps {

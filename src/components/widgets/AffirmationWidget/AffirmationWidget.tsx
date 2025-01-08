@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 import styles from './AffirmationWidget.module.css';
-import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, PlayIcon, XIcon, BellIcon, PlusIcon, PencilIcon, TrashIcon, BookmarkIcon } from '@/components/common/icons';
+import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, XIcon, BellIcon, PlusIcon, PencilIcon, TrashIcon, BookmarkIcon } from '@/components/common/icons';
 import ParticleEffect from './ParticleEffect';
 import { useAffirmationStreak } from '@/hooks/useAffirmationStreak';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
@@ -27,6 +27,20 @@ interface Affirmation {
 
 // Sample affirmations data
 const AFFIRMATIONS: Record<AffirmationCategory, Affirmation[]> = {
+  personal: [
+    {
+      id: 'personal_1',
+      text: 'I am capable of achieving anything I set my mind to',
+      category: 'personal',
+      intensity: 3
+    },
+    {
+      id: 'personal_2',
+      text: 'I trust in my abilities and inner wisdom',
+      category: 'personal',
+      intensity: 2
+    }
+  ],
   confidence: [
     {
       id: 'conf_1',
@@ -194,7 +208,7 @@ const AffirmationWidget = () => {
     requestPermission,
     updateSettings
   } = useAffirmationReminder();
-  const { theme, timeOfDay } = useTimeBasedTheme();
+  const { theme } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5); // Lower intensity for subtlety
   const [showCreateModal, setShowCreateModal] = useState(false);
   const { personalAffirmation, saveAffirmation, deleteAffirmation } = usePersonalAffirmation();
@@ -202,9 +216,9 @@ const AffirmationWidget = () => {
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations();
 
-  const getRandomAffirmation = (category: AffirmationCategory) => {
+  const getRandomAffirmation = (category: AffirmationCategory): Affirmation => {
     if (category === 'personal') {
-      return personalAffirmation;
+      return personalAffirmation ?? AFFIRMATIONS.confidence[0]; // Fallback to confidence
     }
     const affirmations = AFFIRMATIONS[category];
     const randomIndex = Math.floor(Math.random() * affirmations.length);
@@ -214,10 +228,6 @@ const AffirmationWidget = () => {
   const handleCategoryChange = (category: AffirmationCategory) => {
     setSelectedCategory(category);
     setCurrentAffirmation(getRandomAffirmation(category));
-  };
-
-  const handleRefresh = () => {
-    setCurrentAffirmation(getRandomAffirmation(selectedCategory));
   };
 
   // Check if scroll buttons should be shown

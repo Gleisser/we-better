@@ -1,10 +1,4 @@
-export type GoalCategory = 'learning' | 'fitness' | 'career' | 'personal' | 'financial';
-
-export interface Milestone {
-  id: string;
-  title: string;
-  completed: boolean;
-}
+export type GoalCategory = 'learning' | 'fitness' | 'career' | 'personal';
 
 export interface Goal {
   id: string;
@@ -12,15 +6,15 @@ export interface Goal {
   category: GoalCategory;
   progress: number;
   targetDate: string;
-  milestones: Milestone[];
+  milestones: { id: string; title: string; completed: boolean; }[];
 }
 
 export type NotificationMethod = 'email' | 'sms' | 'push' | 'none';
-export type ReviewFrequency = 'weekly' | 'biweekly' | 'monthly' | 'quarterly';
+export type ReviewFrequency = 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly';
 
 export interface ReviewSettings {
   frequency: ReviewFrequency;
   notifications: NotificationMethod[];
   nextReviewDate: string;
-  reminderDays: number; // days before review to start showing reminders
+  reminderDays: number;
 } 

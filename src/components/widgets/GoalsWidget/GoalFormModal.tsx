@@ -10,7 +10,7 @@ interface GoalFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (goal: Omit<Goal, 'id'>) => void;
-  initialGoal?: Goal;
+  initialGoal: Goal | null | undefined;
 }
 
 export const GoalFormModal = ({ 
@@ -136,9 +136,8 @@ export const GoalFormModal = ({
                   type="button"
                   className={styles.calendarButton}
                   onClick={() => {
-                    // This will trigger the native date picker
-                    const dateInput = document.querySelector('input[type="date"]');
-                    dateInput?.showPicker();
+                    const dateInput = document.querySelector('input[type="date"]') as HTMLInputElement;
+                    dateInput?.showPicker?.();
                   }}
                 >
                   📅

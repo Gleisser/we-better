@@ -11,7 +11,6 @@ import {
   subMonths,
   startOfWeek,
   endOfWeek,
-  isSameDay,
   isToday
 } from 'date-fns';
 import { XIcon, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon } from '@/components/common/icons';
@@ -40,10 +39,6 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps) => {
     const start = startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 });
     const end = endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 });
     return eachDayOfInterval({ start, end });
-  };
-
-  const isDateCompleted = (date: Date) => {
-    return habit.completedDays.includes(format(date, 'yyyy-MM-dd'));
   };
 
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));

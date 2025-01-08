@@ -4,6 +4,12 @@ import { createPortal } from 'react-dom';
 import { BellIcon, XIcon } from '@/components/common/icons';
 import styles from './ReminderSettings.module.css';
 
+type ReminderSettings = {
+  enabled: boolean;
+  time: string;
+  days: number[];
+};
+
 interface ReminderSettingsProps {
   isOpen: boolean;
   onClose: () => void;
@@ -12,7 +18,7 @@ interface ReminderSettingsProps {
     time: string;
     days: number[];
   };
-  onUpdate: (settings: any) => void;
+  onUpdate: (settings: ReminderSettings) => void;
   onRequestPermission: () => Promise<boolean>;
   permission: NotificationPermission;
 }

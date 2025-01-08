@@ -15,6 +15,8 @@ export type HabitStatus =
   | 'rest'
   | null;
 
+export type HabitCategory = 'health' | 'growth' | 'lifestyle' | 'fitness' | 'learning';
+
 export interface Habit {
   id: string;
   name: string;
