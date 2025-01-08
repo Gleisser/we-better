@@ -1,23 +1,16 @@
 .backdrop {
-  @apply fixed inset-0 z-50;
+  @apply fixed inset-0
+         bg-black/50 backdrop-blur-sm
+         z-[100];
 }
 
 .menu {
-  @apply fixed z-50
+  @apply fixed z-[101]
          w-64 p-2
          bg-black/90 backdrop-blur-xl
          rounded-xl
          border border-white/[0.08]
          shadow-xl;
-}
-
-.section {
-  @apply mb-2 last:mb-0;
-}
-
-.sectionTitle {
-  @apply text-xs text-white/50 font-medium
-         px-2 mb-1;
 }
 
 .options {
@@ -38,4 +31,35 @@
 
 .label {
   @apply text-xs;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .menu {
+    @apply fixed bottom-0 left-0 right-0
+           w-full
+           bg-black/95 backdrop-blur-xl
+           rounded-t-2xl rounded-b-none
+           border-t border-white/10
+           p-4;
+  }
+
+  .options {
+    @apply grid grid-cols-3 gap-3;
+  }
+
+  .option {
+    @apply flex flex-col items-center justify-center
+           p-4 rounded-xl
+           bg-black/40
+           border border-white/10;
+  }
+
+  .icon {
+    @apply text-2xl mb-2;
+  }
+
+  .label {
+    @apply text-sm text-white/70;
+  }
 }

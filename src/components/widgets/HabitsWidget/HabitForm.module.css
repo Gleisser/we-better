@@ -88,3 +88,38 @@
          hover:bg-white/20
          transition-all duration-200;
 }
+
+/* Add mobile-specific styles */
+@media (max-width: 768px) {
+  .container {
+    @apply fixed top-[10%] bottom-0 left-0 right-0
+           w-full max-w-full
+           rounded-t-2xl rounded-b-none
+           p-6;
+    transform: none;
+  }
+
+  .content {
+    @apply h-[calc(100%-70px)] /* Subtract header height */
+           overflow-y-auto
+           flex flex-col;
+  }
+
+  .form {
+    @apply flex-1
+           flex flex-col gap-6;
+  }
+
+  .categories {
+    @apply grid grid-cols-2 gap-3;
+  }
+
+  .footer {
+    @apply mt-auto pt-4
+           flex justify-end gap-3;
+  }
+
+  .input {
+    @apply w-full;
+  }
+}
