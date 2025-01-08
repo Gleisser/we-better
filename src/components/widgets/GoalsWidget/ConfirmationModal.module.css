@@ -21,7 +21,7 @@
 }
 
 .title {
-  @apply text-lg text-white font-medium;
+  @apply text-lg text-white font-plus-jakarta font-medium;
 }
 
 .closeButton {
@@ -43,7 +43,7 @@
 }
 
 .message {
-  @apply text-sm text-white/70 leading-relaxed;
+  @apply text-sm text-white/70 font-plus-jakarta leading-relaxed;
 }
 
 .footer {
@@ -58,6 +58,7 @@
          text-sm text-white/70
          transition-all duration-200
          hover:bg-black/60 hover:text-white;
+  @apply font-plus-jakarta;
 }
 
 .confirmButton {
@@ -67,4 +68,5 @@
          text-sm text-red-400
          transition-all duration-200
          hover:bg-red-500/30;
+  @apply font-plus-jakarta;
 }

@@ -34,7 +34,7 @@
 }
 
 .headerText {
-  @apply text-sm text-white/80 font-medium;
+  @apply text-lg text-white font-plus-jakarta;
 }
 
 .addButton {
@@ -152,7 +152,7 @@
 }
 
 .goalTitle {
-  @apply text-sm text-white font-medium;
+  @apply text-base text-white font-plus-jakarta;
 }
 
 .goalActions {
@@ -335,4 +335,14 @@
          text-white/70
          transition-all duration-200
          hover:bg-black/60 hover:text-white;
+}
+
+.categoryLabel {
+  @apply text-sm font-plus-jakarta;
+}
+
+.timerLabel,
+.timerValue,
+.timerDate {
+  @apply font-plus-jakarta;
 }
