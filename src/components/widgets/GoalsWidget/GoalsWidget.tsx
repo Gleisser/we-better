@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { PlusIcon, ChevronDownIcon, SettingsIcon, DotsHorizontalIcon } from '@/components/common/icons';
+import { PlusIcon, ChevronDownIcon, SettingsIcon, DotsHorizontalIcon, ProgressUpIcon, ProgressDownIcon } from '@/components/common/icons';
 import styles from './GoalsWidget.module.css';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import { Goal, GoalCategory, ReviewSettings } from './types';
@@ -261,16 +261,68 @@ const GoalsWidget = () => {
                     <div className={styles.goalActions}>
                       <button 
                         className={styles.actionButton}
-                        aria-label="Update progress"
+                        onClick={() => {
+                          setGoals(prev => prev.map(g => 
+                            g.id === goal.id 
+                              ? { ...g, progress: Math.min(100, g.progress + 5) }
+                              : g
+                          ));
+                          
+                          toast.success(`Progress increased to ${Math.min(100, goal.progress + 5)}%`, {
+                            duration: 2000,
+                            position: 'top-right',
+                            style: {
+                              background: '#1A1A1A',
+                              color: '#fff',
+                              border: '1px solid rgba(139, 92, 246, 0.3)',
+                              borderRadius: '12px',
+                              padding: '16px 24px',
+                              fontSize: '14px',
+                              maxWidth: '400px',
+                              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+                            },
+                            icon: '📈',
+                          });
+                        }}
+                        aria-label="Increase progress by 5%"
                       >
-                        <PlusIcon className={styles.actionIcon} />
+                        <ProgressUpIcon className={styles.actionIcon} />
+                      </button>
+                      <button 
+                        className={styles.actionButton}
+                        onClick={() => {
+                          setGoals(prev => prev.map(g => 
+                            g.id === goal.id 
+                              ? { ...g, progress: Math.max(0, g.progress - 5) }
+                              : g
+                          ));
+                          
+                          toast.success(`Progress decreased to ${Math.max(0, goal.progress - 5)}%`, {
+                            duration: 2000,
+                            position: 'top-right',
+                            style: {
+                              background: '#1A1A1A',
+                              color: '#fff',
+                              border: '1px solid rgba(139, 92, 246, 0.3)',
+                              borderRadius: '12px',
+                              padding: '16px 24px',
+                              fontSize: '14px',
+                              maxWidth: '400px',
+                              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+                            },
+                            icon: '📉',
+                          });
+                        }}
+                        aria-label="Decrease progress by 5%"
+                      >
+                        <ProgressDownIcon className={styles.actionIcon} />
                       </button>
                       <button 
                         className={styles.actionButton}
                         onClick={(e) => {
                           const rect = e.currentTarget.getBoundingClientRect();
                           setActionMenuPosition({
-                            x: Math.min(rect.left, window.innerWidth - 144), // 144px = menu width
+                            x: Math.min(rect.left, window.innerWidth - 144),
                             y: rect.bottom + 8
                           });
                           setSelectedGoal(goal);

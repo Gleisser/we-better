@@ -965,3 +965,6 @@ export const DotsHorizontalIcon = ({ className }: IconProps) => (
     />
   </svg>
 );
+
+export { ProgressUpIcon } from './ProgressUpIcon';
+export { ProgressDownIcon } from './ProgressDownIcon';
