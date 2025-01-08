@@ -1,6 +1,16 @@
 .sidebar {
-  @apply fixed left-0 top-0 h-full bg-black/40 backdrop-blur-xl border-r border-white/10
-         flex flex-col z-50 overflow-hidden;
+  @apply fixed top-0 left-0 h-full w-[240px]
+         bg-black/40 backdrop-blur-xl
+         border-r border-white/[0.08]
+         transition-all duration-300
+         z-50;
+}
+
+/* Add this media query to hide sidebar on mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    @apply hidden;
+  }
 }
 
 .sidebarContent {

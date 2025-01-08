@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SearchIcon, XIcon, ChevronDownIcon } from '@/components/common/icons';
 import styles from './SearchBar.module.css';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { MobileSearch } from './MobileSearch';
 
 const categories = [
   { id: 'all', label: 'All' },
@@ -14,6 +16,7 @@ const categories = [
 ];
 
 const SearchBar = () => {
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
@@ -25,7 +28,7 @@ const SearchBar = () => {
     if (isCategoryOpen && categoryButtonRef.current) {
       const rect = categoryButtonRef.current.getBoundingClientRect();
       setDropdownPosition({
-        top: rect.bottom + 8, // 8px gap
+        top: rect.bottom + 8,
         left: rect.left,
       });
     }
@@ -36,7 +39,6 @@ const SearchBar = () => {
     setIsCategoryOpen(false);
   };
 
-  // Add click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -50,6 +52,10 @@ const SearchBar = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  if (isMobile) {
+    return <MobileSearch />;
+  }
 
   return (
     <div className={styles.container}>

@@ -1,0 +1,19 @@
+.overlay {
+  @apply fixed inset-0 
+         bg-black/95 backdrop-blur-lg
+         z-[100] flex flex-col;
+}
+
+.header {
+  @apply flex items-center justify-between
+         p-4 border-b border-white/[0.08];
+}
+
+.content {
+  @apply flex-1 overflow-y-auto;
+}
+
+.notificationItem {
+  @apply p-4 border-b border-white/[0.08]
+         hover:bg-white/5 transition-colors;
+}
