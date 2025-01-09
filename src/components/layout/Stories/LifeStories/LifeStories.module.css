@@ -8,6 +8,7 @@
          overflow-x-auto;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+  -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
 }
 
 .storyItem {
@@ -42,4 +43,25 @@
 /* Hide scrollbar but keep functionality */
 .storiesWrapper::-webkit-scrollbar {
   display: none;
+}
+
+@media (max-width: 768px) {
+  .storiesWrapper {
+    @apply px-4 py-6
+           grid grid-cols-4 gap-4
+           w-full
+           justify-items-center;
+  }
+
+  .container {
+    @apply overflow-x-auto;
+  }
+
+  .storyItem {
+    @apply w-full;
+  }
+
+  .storyRing {
+    @apply w-14 h-14;
+  }
 }

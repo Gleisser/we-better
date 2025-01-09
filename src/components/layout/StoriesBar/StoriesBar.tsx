@@ -109,52 +109,67 @@ const MOCK_CATEGORIES = [
 
 const StoriesBar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const isMobile = window.innerWidth <= 768;
+
   const handleCategorySelect = (category: StoryCategory) => {
     console.log('Selected category:', category);
   };
 
   return (
-    <div className={styles.container}>
-      <AnimatePresence mode="wait">
-        {isExpanded ? (
-          <motion.div 
-            className={styles.storiesContainer}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.3 }}
-          >
-            <button 
-              className={styles.collapseButton}
-              onClick={() => setIsExpanded(false)}
-              aria-label="Collapse stories"
+    <>
+      {/* Add backdrop for mobile */}
+      {isMobile && isExpanded && (
+        <motion.div 
+          className={styles.backdrop}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setIsExpanded(false)}
+        />
+      )}
+
+      <div className={styles.container}>
+        <AnimatePresence mode="wait">
+          {isExpanded ? (
+            <motion.div 
+              className={`${styles.storiesContainer} ${styles.open}`}
+              initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.8 }}
+              animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }}
+              exit={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.3 }}
             >
-              <XIcon className={styles.collapseIcon} />
-            </button>
-            <LifeStories 
-              categories={MOCK_CATEGORIES} 
-              onCategorySelect={handleCategorySelect}
-            />
-          </motion.div>
-        ) : (
-          <motion.button
-            className={styles.collapsedButton}
-            onClick={() => setIsExpanded(true)}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.3 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <div className={styles.collapsedIcon}>
-              <PlayIcon className={styles.playIcon} />
-            </div>
-            <span className={styles.collapsedText}>Quick Inspiration</span>
-          </motion.button>
-        )}
-      </AnimatePresence>
-    </div>
+              <button 
+                className={styles.collapseButton}
+                onClick={() => setIsExpanded(false)}
+                aria-label="Collapse stories"
+              >
+                <XIcon className={styles.collapseIcon} />
+              </button>
+              <LifeStories 
+                categories={MOCK_CATEGORIES} 
+                onCategorySelect={handleCategorySelect}
+              />
+            </motion.div>
+          ) : (
+            <motion.button
+              className={styles.collapsedButton}
+              onClick={() => setIsExpanded(true)}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.3 }}
+              whileHover={!isMobile ? { scale: 1.05 } : undefined}
+              whileTap={!isMobile ? { scale: 0.95 } : undefined}
+            >
+              <div className={styles.collapsedIcon}>
+                <PlayIcon className={styles.playIcon} />
+              </div>
+              <span className={styles.collapsedText}>Quick Inspiration</span>
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
   );
 };
 
