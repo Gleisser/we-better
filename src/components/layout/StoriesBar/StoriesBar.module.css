@@ -78,37 +78,45 @@
            rounded-t-2xl rounded-b-none
            border-t border-white/10
            h-[80vh]
-           overflow-y-auto;
+           overflow-y-auto
+           relative;
     box-shadow: none;
     transform: none;
   }
 
   .storiesWrapper {
-    @apply py-14 px-4;
+    @apply pt-14 px-4;
   }
 
   .collapseButton {
-    @apply fixed top-4 right-4
-           z-[103]
+    @apply absolute top-4 right-4
+           z-[1]
            bg-black/40
            rounded-full
            p-3;
+    position: sticky;
+    top: 1rem;
   }
 
   .collapsedButton {
-    @apply fixed right-4 bottom-20
+    @apply fixed left-4 bottom-20
            z-[102]
-           flex-row gap-3
-           px-4 py-3
+           w-10 h-10
+           p-0
+           flex items-center justify-center
            bg-black/90
            backdrop-blur-none
-           rounded-2xl
+           rounded-xl
            border border-white/10
            shadow-lg;
   }
 
   .collapsedIcon {
     @apply w-8 h-8;
+  }
+
+  .collapsedText {
+    @apply hidden;
   }
 
   .playIcon {

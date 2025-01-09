@@ -78,3 +78,30 @@
 .button:hover {
   animation: pulse 2s infinite;
 }
+
+/* Add mobile styles */
+@media (max-width: 768px) {
+  .container {
+    @apply bottom-20 right-4; /* Align with right edge like StoriesBar button aligns with left */
+  }
+
+  .button {
+    @apply w-10 h-10 /* Make it square like StoriesBar button */
+           p-0 /* Remove padding to center icon */
+           rounded-xl
+           flex items-center justify-center
+           shadow-lg;
+  }
+
+  .text {
+    @apply hidden;
+  }
+
+  .icon {
+    @apply w-5 h-5;
+  }
+
+  .content {
+    @apply gap-0; /* Remove gap since we're only showing icon */
+  }
+}

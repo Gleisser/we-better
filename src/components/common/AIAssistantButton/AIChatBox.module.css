@@ -3,12 +3,17 @@
          w-[400px] bg-black/40 backdrop-blur-xl
          rounded-2xl border border-white/10
          flex flex-col overflow-hidden
-         shadow-xl shadow-purple-500/10;
+         shadow-xl shadow-purple-500/10
+         z-[100];
 }
 
 .header {
-  @apply flex items-center justify-end p-4 
+  @apply flex items-center justify-between p-4 
          border-b border-white/10;
+}
+
+.headerTitle {
+  @apply text-white font-medium;
 }
 
 .closeButton {
@@ -48,4 +53,30 @@
          bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]
          text-white font-medium
          hover:opacity-90 transition-opacity;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .backdrop {
+    @apply fixed inset-0 
+           bg-black/50 backdrop-blur-sm
+           z-[98];
+  }
+
+  .container {
+    @apply fixed bottom-0 left-0 right-0
+           w-full max-h-[80vh]
+           rounded-t-2xl rounded-b-none
+           border-t border-white/10
+           z-[99];
+  }
+
+  .content {
+    @apply max-h-[calc(80vh-8rem)]
+           p-4;
+  }
+
+  .inputArea {
+    @apply p-4 pb-6;
+  }
 }
