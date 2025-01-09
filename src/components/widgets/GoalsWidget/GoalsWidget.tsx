@@ -39,6 +39,8 @@ const MOCK_GOALS: Goal[] = [
   }
 ];
 
+const INITIAL_GOALS_TO_SHOW = 3; // Start with 3 goals on mobile
+
 const GoalsWidget = () => {
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return window.innerWidth <= 768;
@@ -72,10 +74,17 @@ const GoalsWidget = () => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+  const [visibleGoals, setVisibleGoals] = useState(INITIAL_GOALS_TO_SHOW);
 
   const filteredGoals = selectedCategory === 'all' 
     ? goals 
     : goals.filter(goal => goal.category === selectedCategory);
+
+  const displayedGoals = filteredGoals.slice(0, visibleGoals);
+
+  const handleLoadMore = () => {
+    setVisibleGoals(prev => prev + 3); // Load 3 more goals
+  };
 
   const nextReviewDate = new Date('2025-01-08'); // This would come from your settings/backend
 
@@ -203,7 +212,7 @@ const GoalsWidget = () => {
 
         <div className={styles.content}>
           <div className={styles.goalsList}>
-            {filteredGoals.map(goal => (
+            {displayedGoals.map(goal => (
               <motion.div
                 key={goal.id}
                 className={styles.goalCard}
@@ -328,6 +337,18 @@ const GoalsWidget = () => {
                 </div>
               </motion.div>
             ))}
+
+            {filteredGoals.length > visibleGoals && (
+              <motion.button
+                className={styles.loadMoreButton}
+                onClick={handleLoadMore}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                Show More Goals ({filteredGoals.length - visibleGoals} remaining)
+              </motion.button>
+            )}
           </div>
         </div>
       </motion.div>
