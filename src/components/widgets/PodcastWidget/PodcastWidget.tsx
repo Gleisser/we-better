@@ -61,6 +61,10 @@ const PodcastWidget = () => {
       <motion.div className={styles.collapsibleContent}>
         <div className={styles.episodeCard}>
           <div className={styles.artwork}>
+            <div className={styles.featuredBadge}>
+              <span className={styles.featuredIcon}>✨</span>
+              <span className={styles.featuredText}>Featured</span>
+            </div>
             <img 
               src={currentEpisode.artwork} 
               alt={currentEpisode.title}
@@ -74,7 +78,14 @@ const PodcastWidget = () => {
 
           <div className={styles.episodeInfo}>
             <h3 className={styles.episodeTitle}>{currentEpisode.title}</h3>
-            <p className={styles.episodeAuthor}>{currentEpisode.author}</p>
+            <div className={styles.episodeMeta}>
+              <span className={styles.episodeAuthor}>{currentEpisode.author}</span>
+              <span className={styles.metaDivider}>•</span>
+              <span className={styles.episodeDuration}>{currentEpisode.duration}</span>
+            </div>
+            <div className={styles.episodeCategory}>
+              <span className={styles.categoryTag}>Self Improvement</span>
+            </div>
           </div>
 
           <div className={styles.playerControls}>

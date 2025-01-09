@@ -31,7 +31,7 @@
 
 /* Larger artwork at the top */
 .artwork {
-  @apply w-full
+  @apply relative w-full
          aspect-square
          rounded-xl
          overflow-hidden
@@ -49,16 +49,43 @@
   @apply w-full
          flex flex-col
          items-center
-         text-center;
+         text-center
+         space-y-2;
 }
 
 .episodeTitle {
-  @apply text-white text-lg font-medium
-         mb-1;
+  @apply text-white text-lg font-semibold
+         leading-snug
+         max-w-[90%];
+}
+
+.episodeMeta {
+  @apply flex items-center gap-2
+         text-sm;
 }
 
 .episodeAuthor {
-  @apply text-white/70 text-sm;
+  @apply text-white/70;
+}
+
+.metaDivider {
+  @apply text-white/30;
+}
+
+.episodeDuration {
+  @apply text-white/70;
+}
+
+.episodeCategory {
+  @apply mt-1;
+}
+
+.categoryTag {
+  @apply px-2.5 py-1
+         rounded-full
+         bg-purple-500/20
+         border border-purple-500/20
+         text-xs text-white/90;
 }
 
 /* Player controls section */
@@ -174,4 +201,23 @@
   50% {
     opacity: 0.6;
   }
+}
+
+/* Add featured badge */
+.featuredBadge {
+  @apply absolute top-3 left-3
+         flex items-center gap-1.5
+         px-2.5 py-1
+         rounded-full
+         bg-black/60 backdrop-blur-sm
+         border border-white/10
+         z-10;
+}
+
+.featuredIcon {
+  @apply text-xs text-yellow-400;
+}
+
+.featuredText {
+  @apply text-xs text-white/90 font-medium;
 }

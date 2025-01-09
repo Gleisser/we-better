@@ -6,8 +6,10 @@ export interface PodcastEpisode {
   releaseDate: string;
   artwork: string;
   description: string;
+  category?: string;
   isPlaying?: boolean;
   progress?: number;
+  isFeatured?: boolean;
 }
 
 export interface PlayerState {
