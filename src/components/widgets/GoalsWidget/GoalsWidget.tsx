@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PlusIcon, ChevronDownIcon, SettingsIcon, DotsHorizontalIcon, ProgressUpIcon, ProgressDownIcon } from '@/components/common/icons';
 import styles from './GoalsWidget.module.css';
@@ -40,7 +40,21 @@ const MOCK_GOALS: Goal[] = [
 ];
 
 const GoalsWidget = () => {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    return window.innerWidth <= 768;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth <= 768;
+      setIsCollapsed(isMobile);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [selectedCategory, setSelectedCategory] = useState<GoalCategory | 'all'>('all');
   const [goals, setGoals] = useState<Goal[]>(MOCK_GOALS);
   const { theme } = useTimeBasedTheme();
