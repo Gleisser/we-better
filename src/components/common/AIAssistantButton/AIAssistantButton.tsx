@@ -3,11 +3,13 @@ import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import { SparkleIcon } from '@/components/common/icons';
 import AIChatBox from './AIChatBox';
 import styles from './AIAssistantButton.module.css';
+import { useBottomSheet } from '@/contexts/BottomSheetContext';
 
 const AIAssistantButton = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const controls = useAnimation();
+  const { setActiveSheet } = useBottomSheet();
 
   // Particle configuration
   const particles = Array.from({ length: 12 }, (_, i) => ({
@@ -15,11 +17,21 @@ const AIAssistantButton = () => {
     angle: (i * 360) / 12
   }));
 
+  const handleOpenChat = () => {
+    setActiveSheet('aiChat');
+    setIsChatOpen(true);
+  };
+
+  const handleCloseChat = () => {
+    setActiveSheet(null);
+    setIsChatOpen(false);
+  };
+
   return (
     <div className={styles.container}>
       <AnimatePresence>
         {isChatOpen && (
-          <AIChatBox onClose={() => setIsChatOpen(false)} />
+          <AIChatBox onClose={handleCloseChat} />
         )}
       </AnimatePresence>
 
@@ -51,7 +63,7 @@ const AIAssistantButton = () => {
       {/* Button */}
       <motion.button
         className={styles.button}
-        onClick={() => setIsChatOpen(true)}
+        onClick={handleOpenChat}
         onHoverStart={() => {
           setIsHovered(true);
           controls.start({ pathLength: 1 });

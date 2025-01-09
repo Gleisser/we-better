@@ -6,6 +6,7 @@ import Videos from '@/pages/Videos';
 import Articles from '@/pages/Articles';
 import Courses from '@/pages/Courses';
 import Podcasts from '@/pages/Podcasts';
+import { BottomSheetProvider } from '@/contexts/BottomSheetContext';
 
 export const router = createBrowserRouter([
   {
@@ -14,7 +15,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/app',
-    element: <WeBetterApp />,
+    element: (
+      <BottomSheetProvider>
+        <WeBetterApp />
+      </BottomSheetProvider>
+    ),
     children: [
       {
         index: true,
@@ -40,6 +45,6 @@ export const router = createBrowserRouter([
         path: 'podcasts',
         element: <Podcasts />
       }
-    ]
-  }
+    ],
+  },
 ]); 

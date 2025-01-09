@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LifeStories from '../Stories/LifeStories';
 import { XIcon, PlayIcon } from '@/components/common/icons';
 import styles from './StoriesBar.module.css';
+import { useBottomSheet } from '@/contexts/BottomSheetContext';
 
 interface StoryCategory {
   id: string;
@@ -110,6 +111,23 @@ const MOCK_CATEGORIES = [
 const StoriesBar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const isMobile = window.innerWidth <= 768;
+  const { activeSheet, setActiveSheet, closeSheet } = useBottomSheet();
+
+  const handleOpen = () => {
+    setActiveSheet('stories');
+    setIsExpanded(true);
+  };
+
+  const handleClose = () => {
+    closeSheet();
+    setIsExpanded(false);
+  };
+
+  useEffect(() => {
+    if (activeSheet && activeSheet !== 'stories') {
+      setIsExpanded(false);
+    }
+  }, [activeSheet]);
 
   const handleCategorySelect = (category: StoryCategory) => {
     console.log('Selected category:', category);
@@ -117,14 +135,13 @@ const StoriesBar = () => {
 
   return (
     <>
-      {/* Add backdrop for mobile */}
-      {isMobile && isExpanded && (
+      {isMobile && isExpanded && activeSheet === 'stories' && (
         <motion.div 
           className={styles.backdrop}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={() => setIsExpanded(false)}
+          onClick={handleClose}
         />
       )}
 
@@ -140,7 +157,7 @@ const StoriesBar = () => {
             >
               <button 
                 className={styles.collapseButton}
-                onClick={() => setIsExpanded(false)}
+                onClick={handleClose}
                 aria-label="Collapse stories"
               >
                 <XIcon className={styles.collapseIcon} />
@@ -153,7 +170,7 @@ const StoriesBar = () => {
           ) : (
             <motion.button
               className={styles.collapsedButton}
-              onClick={() => setIsExpanded(true)}
+              onClick={handleOpen}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}

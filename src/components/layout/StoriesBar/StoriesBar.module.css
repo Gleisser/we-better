@@ -67,7 +67,7 @@
     @apply fixed bottom-0 left-0 
            w-full max-w-full
            transform-none
-           z-[102];
+           z-[90];
     perspective: none;
   }
 
@@ -79,7 +79,8 @@
            border-t border-white/10
            h-[80vh]
            overflow-y-auto
-           relative;
+           relative
+           z-[95];
     box-shadow: none;
     transform: none;
   }
@@ -100,7 +101,7 @@
 
   .collapsedButton {
     @apply fixed left-4 bottom-20
-           z-[102]
+           z-[90]
            w-10 h-10
            p-0
            flex items-center justify-center

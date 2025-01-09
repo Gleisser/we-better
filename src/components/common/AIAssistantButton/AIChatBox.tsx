@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { XIcon } from '@/components/common/icons';
 import styles from './AIChatBox.module.css';
+import { useBottomSheet } from '@/contexts/BottomSheetContext';
 
 interface AIChatBoxProps {
   onClose: () => void;
@@ -8,6 +9,17 @@ interface AIChatBoxProps {
 
 const AIChatBox = ({ onClose }: AIChatBoxProps) => {
   const isMobile = window.innerWidth <= 768;
+  const { activeSheet, setActiveSheet } = useBottomSheet();
+
+  const handleClose = () => {
+    setActiveSheet(null);
+    onClose();
+  };
+
+  // Only render if this is the active sheet
+  if (isMobile && activeSheet !== 'aiChat') {
+    return null;
+  }
 
   return (
     <>
@@ -17,7 +29,7 @@ const AIChatBox = ({ onClose }: AIChatBoxProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={handleClose}
         />
       )}
       <motion.div 
@@ -31,7 +43,7 @@ const AIChatBox = ({ onClose }: AIChatBoxProps) => {
         <div className={styles.header}>
           <div className={styles.headerTitle}>AI Assistant</div>
           <button 
-            onClick={onClose}
+            onClick={handleClose}
             className={styles.closeButton}
             aria-label="Close chat"
           >
