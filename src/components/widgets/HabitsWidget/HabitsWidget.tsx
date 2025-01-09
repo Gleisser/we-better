@@ -102,11 +102,23 @@ const HabitsWidget = () => {
   const handleDayClick = (event: React.MouseEvent, date: Date, habit: Habit) => {
     setSelectedDate(date);
     setSelectedHabit(habit);
+    
     const rect = (event.target as HTMLElement).getBoundingClientRect();
-    setMenuPosition({
-      x: rect.left,
-      y: rect.bottom + 8
-    });
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+      // On mobile, center the menu horizontally and position it below the clicked element
+      setMenuPosition({
+        x: Math.max(10, Math.min(window.innerWidth - 200, window.innerWidth / 2 - 100)), // 200px assumed menu width
+        y: rect.bottom + window.scrollY + 8
+      });
+    } else {
+      // On desktop, keep current behavior
+      setMenuPosition({
+        x: rect.left,
+        y: rect.bottom + 8
+      });
+    }
     setShowStatusMenu(true);
   };
 
