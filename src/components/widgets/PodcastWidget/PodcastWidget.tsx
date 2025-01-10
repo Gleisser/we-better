@@ -33,9 +33,6 @@ const PodcastWidget = () => {
     const expiry = localStorage.getItem('spotify_token_expiry');
     return token && expiry && Date.now() < parseInt(expiry);
   });
-  const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [isSpeedMenuOpen, setIsSpeedMenuOpen] = useState(false);
-  const speedOptions = [0.5, 0.8, 1, 1.2, 1.5, 2];
 
   useEffect(() => {
     if (!isSpotifyConnected) return;
@@ -55,6 +52,30 @@ const PodcastWidget = () => {
           });
         },
         volume: 0.5
+      });
+
+      // Store the player instance
+      setPlayer(player);
+
+      // Ready event must be handled first
+      player.addListener('ready', ({ device_id }) => {
+        console.log('Ready with Device ID', device_id);
+        setDeviceId(device_id);
+        setIsLoading(false);
+      });
+
+      // Handle state changes
+      player.addListener('player_state_changed', state => {
+        if (state) {
+          // Update our state with the current player state
+          setPlayerState(prev => ({
+            ...prev,
+            isPlaying: !state.paused,
+            currentTime: state.position / 1000,
+            duration: state.duration / 1000,
+            spotifyPlayer: player
+          }));
+        }
       });
 
       // Error handling
@@ -78,51 +99,39 @@ const PodcastWidget = () => {
         setError('Playback failed');
       });
 
-      player.addListener('player_state_changed', state => {
-        if (state) {
-          setPlayerState(prev => ({
-            ...prev,
-            isPlaying: !state.paused,
-            currentTime: state.position,
-            duration: state.duration,
-            playbackSpeed: state.playbackRate,
-            spotifyPlayer: player
-          }));
+      // Connect to the player
+      player.connect().then(success => {
+        if (success) {
+          console.log('Successfully connected to Spotify');
         }
       });
 
-      player.addListener('ready', ({ device_id }) => {
-        console.log('Ready with Device ID', device_id);
-        setDeviceId(device_id);
-        setIsLoading(false);
-      });
-
-      player.addListener('not_ready', ({ device_id }) => {
-        console.log('Device ID has gone offline', device_id);
-        setDeviceId(null);
-      });
-
-      player.connect();
-      setPlayer(player);
+      return () => {
+        player.disconnect();
+      };
     };
 
     return () => {
-      if (player) {
-        player.disconnect();
-      }
-      document.body.removeChild(script);
+      script.remove();
     };
   }, [isSpotifyConnected]);
 
-  const handleTimeUpdate = () => {
-    if (playerState.spotifyPlayer) {
-      setPlayerState(prev => ({
-        ...prev,
-        currentTime: playerState.spotifyPlayer.getCurrentState().position,
-        duration: playerState.spotifyPlayer.getCurrentState().duration
-      }));
-    }
-  };
+  useEffect(() => {
+    if (!player) return;
+
+    const stateInterval = setInterval(async () => {
+      const state = await player.getCurrentState();
+      if (state) {
+        setPlayerState(prev => ({
+          ...prev,
+          currentTime: state.position / 1000,
+          duration: state.duration / 1000
+        }));
+      }
+    }, 1000);
+
+    return () => clearInterval(stateInterval);
+  }, [player]);
 
   const handleSkipForward = () => {
     if (playerState.spotifyPlayer) {
@@ -192,14 +201,21 @@ const PodcastWidget = () => {
     }
   };
 
-  const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleProgressBarClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!playerState.spotifyPlayer) return;
+    
     const progressBar = e.currentTarget;
     const clickPosition = e.clientX - progressBar.getBoundingClientRect().left;
     const percentageClicked = clickPosition / progressBar.offsetWidth;
     
-    if (playerState.spotifyPlayer) {
-      const newTime = percentageClicked * playerState.spotifyPlayer.getCurrentState().duration;
-      playerState.spotifyPlayer.seek(newTime);
+    // Use the current duration from playerState instead of getting it from getCurrentState
+    const newPosition = Math.floor(percentageClicked * playerState.duration * 1000); // Convert to ms
+    
+    try {
+      await playerState.spotifyPlayer.seek(newPosition);
+    } catch (err) {
+      console.error('Failed to seek:', err);
+      setError('Failed to update playback position');
     }
   };
 
@@ -207,19 +223,6 @@ const PodcastWidget = () => {
     const token = await getSpotifyAuthToken();
     if (token) {
       setIsSpotifyConnected(true);
-    }
-  };
-
-  const handleSpeedChange = async (speed: number) => {
-    if (!player) return;
-    
-    try {
-      await player.setPlaybackRate(speed);
-      setPlaybackSpeed(speed);
-      setIsSpeedMenuOpen(false);
-    } catch (err) {
-      console.error('Failed to change playback speed:', err);
-      setError('Failed to change playback speed');
     }
   };
 
@@ -305,34 +308,6 @@ const PodcastWidget = () => {
                 </button>
               </div>
 
-              <div className={styles.secondaryControls}>
-                <div className={styles.speedControl}>
-                  <button 
-                    className={styles.speedButton}
-                    onClick={() => setIsSpeedMenuOpen(!isSpeedMenuOpen)}
-                    aria-label="Playback speed"
-                    aria-expanded={isSpeedMenuOpen}
-                  >
-                    <span className={styles.speedValue}>{playbackSpeed}x</span>
-                  </button>
-                  
-                  {isSpeedMenuOpen && (
-                    <div className={styles.speedMenu}>
-                      {speedOptions.map(speed => (
-                        <button 
-                          key={speed}
-                          className={styles.speedOption}
-                          data-active={playbackSpeed === speed}
-                          onClick={() => handleSpeedChange(speed)}
-                        >
-                          {speed}x
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
               <div className={styles.progressSection}>
                 <div 
                   className={styles.progressBar}
@@ -396,8 +371,18 @@ const PodcastWidget = () => {
 };
 
 const formatTime = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60);
+  if (!seconds) return '0:00';
+  
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
   const remainingSeconds = Math.floor(seconds % 60);
+
+  // If duration is more than an hour, show HH:MM:SS
+  if (hours > 0) {
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }
+  
+  // Otherwise show MM:SS
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
