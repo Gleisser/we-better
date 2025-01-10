@@ -1,4 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { useEffect } from 'react';
+import { handleSpotifyCallback } from '@/utils/spotify';
 import App from '@/App';
 import WeBetterApp from '@/pages/WeBetterApp';
 import Dashboard from '@/pages/Dashboard';
@@ -7,6 +9,22 @@ import Articles from '@/pages/Articles';
 import Courses from '@/pages/Courses';
 import Podcasts from '@/pages/Podcasts';
 import { BottomSheetProvider } from '@/contexts/BottomSheetContext';
+
+const SpotifyCallback = () => {
+  useEffect(() => {
+    try {
+      const token = handleSpotifyCallback();
+      if (token) {
+        // Redirect back to the main app
+        window.location.href = '/';
+      }
+    } catch (error) {
+      console.error('Authentication failed:', error);
+    }
+  }, []);
+
+  return <div>Authenticating with Spotify...</div>;
+};
 
 export const router = createBrowserRouter([
   {
@@ -46,5 +64,9 @@ export const router = createBrowserRouter([
         element: <Podcasts />
       }
     ],
+  },
+  {
+    path: '/callback',
+    element: <SpotifyCallback />,
   },
 ]); 

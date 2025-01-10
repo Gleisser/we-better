@@ -10,6 +10,7 @@ export interface PodcastEpisode {
   isPlaying?: boolean;
   progress?: number;
   isFeatured?: boolean;
+  spotifyUri: string;
 }
 
 export interface PlayerState {
@@ -22,4 +23,12 @@ export interface PlayerState {
 export interface PodcastWidgetConfig {
   autoplay: boolean;
   defaultVolume: number;
+}
+
+export interface SpotifyPlayerState {
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+  volume: number;
+  spotifyPlayer?: Spotify.Player;
 } 

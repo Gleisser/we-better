@@ -3,14 +3,15 @@ import { PodcastEpisode, PodcastWidgetConfig } from './types';
 export const MOCK_EPISODES: PodcastEpisode[] = [
   {
     id: 'ep_1',
-    title: 'The Power of Atomic Habits',
-    author: 'James Clear',
-    duration: '45:30',
-    releaseDate: '2024-03-20',
+    title: 'The Exercise & Nutrition Scientist',
+    author: 'The Diary Of A CEO with Steven Bartlett',
+    duration: '2:03:00',
+    releaseDate: '2024-03-25',
     artwork: '/assets/images/podcasts/atomic-habits.webp',
-    description: 'Learn how tiny changes can lead to remarkable results in this insightful episode about habit formation.',
+    description: 'Dr Stacy Sims reveals the science-backed secrets for optimal health and fitness every women needs',
     isPlaying: false,
-    progress: 0
+    progress: 0,
+    spotifyUri: 'spotify:episode:37HUAmld0cYeKak4NOCBVW'
   },
   {
     id: 'ep_2',
@@ -28,4 +29,9 @@ export const MOCK_EPISODES: PodcastEpisode[] = [
 export const DEFAULT_CONFIG: PodcastWidgetConfig = {
   autoplay: false,
   defaultVolume: 0.8
+};
+
+export const SPOTIFY_CONFIG = {
+  clientId: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
+  redirectUri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
 }; 

@@ -56,12 +56,14 @@
 .episodeTitle {
   @apply text-white text-lg font-semibold
          leading-snug
-         max-w-[90%];
+         max-w-[90%]
+         font-plus-jakarta;
 }
 
 .episodeMeta {
   @apply flex items-center gap-2
-         text-sm;
+         text-sm
+         font-plus-jakarta;
 }
 
 .episodeAuthor {
@@ -85,7 +87,8 @@
          rounded-full
          bg-purple-500/20
          border border-purple-500/20
-         text-xs text-white/90;
+         text-xs text-white/90
+         font-plus-jakarta;
 }
 
 /* Player controls section */
@@ -111,12 +114,18 @@
 }
 
 .skipButton {
-  @apply w-10 h-10
+  @apply relative
+         w-10 h-10
          flex items-center justify-center
          rounded-full
          bg-white/10
          text-white
          transition-colors duration-200;
+}
+
+/* Add group class separately */
+.skipButton:global(.group) {
+  @apply cursor-pointer;
 }
 
 .playerIcon {
@@ -136,18 +145,40 @@
   @apply w-full h-1
          bg-white/10
          rounded-full
-         overflow-hidden;
+         overflow-hidden
+         cursor-pointer
+         relative
+         hover:h-1.5
+         transition-all duration-200;
 }
 
 .progress {
   @apply h-full
          bg-white
-         rounded-full;
+         rounded-full
+         relative;
+}
+
+/* Add progress hover effect */
+.progress::after {
+  content: "";
+  @apply absolute right-0 top-1/2
+         w-2.5 h-2.5
+         bg-white
+         rounded-full
+         opacity-0
+         transition-opacity duration-200
+         -translate-y-1/2;
+}
+
+.progressBar:hover .progress::after {
+  @apply opacity-100;
 }
 
 .timeInfo {
   @apply flex justify-between
-         text-xs text-white/50;
+         text-xs text-white/50
+         font-plus-jakarta;
 }
 
 /* Waveform */
@@ -189,7 +220,8 @@
 
 .headerText {
   @apply text-white/90 text-base font-semibold
-         tracking-tight;
+         tracking-tight
+         font-plus-jakarta;
 }
 
 /* Remove pulse animation */
@@ -219,5 +251,19 @@
 }
 
 .featuredText {
-  @apply text-xs text-white/90 font-medium;
+  @apply text-xs text-white/90 font-medium
+         font-plus-jakarta;
+}
+
+/* Update the skip text to use the global group class */
+.skipText {
+  @apply absolute -bottom-4
+         text-[10px] text-white/60
+         opacity-0
+         transition-opacity duration-200
+         font-plus-jakarta;
+}
+
+:global(.group:hover) .skipText {
+  @apply opacity-100;
 }
