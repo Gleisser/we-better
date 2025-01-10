@@ -133,15 +133,34 @@ const PodcastWidget = () => {
     return () => clearInterval(stateInterval);
   }, [player]);
 
-  const handleSkipForward = () => {
-    if (playerState.spotifyPlayer) {
-      playerState.spotifyPlayer.seek(playerState.currentTime + 15000); // 15 seconds in ms
+  const handleSkipForward = async () => {
+    if (!playerState.spotifyPlayer) return;
+
+    try {
+      // Convert current time to milliseconds and add 15 seconds
+      const currentMs = Math.floor(playerState.currentTime * 1000);
+      const durationMs = Math.floor(playerState.duration * 1000);
+      const newPosition = Math.min(currentMs + 15000, durationMs);
+      
+      await playerState.spotifyPlayer.seek(newPosition);
+    } catch (err) {
+      console.error('Failed to skip forward:', err);
+      setError('Failed to skip forward');
     }
   };
 
-  const handleSkipBackward = () => {
-    if (playerState.spotifyPlayer) {
-      playerState.spotifyPlayer.seek(playerState.currentTime - 15000);
+  const handleSkipBackward = async () => {
+    if (!playerState.spotifyPlayer) return;
+
+    try {
+      // Convert current time to milliseconds and subtract 15 seconds
+      const currentMs = Math.floor(playerState.currentTime * 1000);
+      const newPosition = Math.max(currentMs - 15000, 0);
+      
+      await playerState.spotifyPlayer.seek(newPosition);
+    } catch (err) {
+      console.error('Failed to skip backward:', err);
+      setError('Failed to skip backward');
     }
   };
 
