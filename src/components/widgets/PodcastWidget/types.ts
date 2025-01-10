@@ -30,5 +30,6 @@ export interface SpotifyPlayerState {
   currentTime: number;
   duration: number;
   volume: number;
+  playbackSpeed?: number;
   spotifyPlayer?: Spotify.Player;
 } 

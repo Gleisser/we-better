@@ -33,6 +33,9 @@ const PodcastWidget = () => {
     const expiry = localStorage.getItem('spotify_token_expiry');
     return token && expiry && Date.now() < parseInt(expiry);
   });
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [isSpeedMenuOpen, setIsSpeedMenuOpen] = useState(false);
+  const speedOptions = [0.5, 0.8, 1, 1.2, 1.5, 2];
 
   useEffect(() => {
     if (!isSpotifyConnected) return;
@@ -82,6 +85,7 @@ const PodcastWidget = () => {
             isPlaying: !state.paused,
             currentTime: state.position,
             duration: state.duration,
+            playbackSpeed: state.playbackRate,
             spotifyPlayer: player
           }));
         }
@@ -206,6 +210,19 @@ const PodcastWidget = () => {
     }
   };
 
+  const handleSpeedChange = async (speed: number) => {
+    if (!player) return;
+    
+    try {
+      await player.setPlaybackRate(speed);
+      setPlaybackSpeed(speed);
+      setIsSpeedMenuOpen(false);
+    } catch (err) {
+      console.error('Failed to change playback speed:', err);
+      setError('Failed to change playback speed');
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -286,6 +303,34 @@ const PodcastWidget = () => {
                 >
                   <SkipForward15Icon className={styles.skipIcon} />
                 </button>
+              </div>
+
+              <div className={styles.secondaryControls}>
+                <div className={styles.speedControl}>
+                  <button 
+                    className={styles.speedButton}
+                    onClick={() => setIsSpeedMenuOpen(!isSpeedMenuOpen)}
+                    aria-label="Playback speed"
+                    aria-expanded={isSpeedMenuOpen}
+                  >
+                    <span className={styles.speedValue}>{playbackSpeed}x</span>
+                  </button>
+                  
+                  {isSpeedMenuOpen && (
+                    <div className={styles.speedMenu}>
+                      {speedOptions.map(speed => (
+                        <button 
+                          key={speed}
+                          className={styles.speedOption}
+                          data-active={playbackSpeed === speed}
+                          onClick={() => handleSpeedChange(speed)}
+                        >
+                          {speed}x
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className={styles.progressSection}>
