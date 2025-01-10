@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   PlayIcon, 
   PauseIcon, 
   ChevronDownIcon, 
   ChevronLeftIcon, 
-  ChevronRightIcon 
+  ChevronRightIcon,
+  SpotifyIcon 
 } from '@/components/common/icons';
 import { PodcastEpisode, SpotifyPlayerState } from './types';
 import { MOCK_EPISODES, SPOTIFY_CONFIG } from './config';
@@ -27,8 +28,15 @@ const PodcastWidget = () => {
   const [error, setError] = useState<string | null>(null);
   const [player, setPlayer] = useState<Spotify.Player | undefined>(undefined);
   const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [isSpotifyConnected, setIsSpotifyConnected] = useState(() => {
+    const token = localStorage.getItem('spotify_token');
+    const expiry = localStorage.getItem('spotify_token_expiry');
+    return token && expiry && Date.now() < parseInt(expiry);
+  });
 
   useEffect(() => {
+    if (!isSpotifyConnected) return;
+
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
@@ -100,7 +108,7 @@ const PodcastWidget = () => {
       }
       document.body.removeChild(script);
     };
-  }, []);
+  }, [isSpotifyConnected]);
 
   const handleTimeUpdate = () => {
     if (playerState.spotifyPlayer) {
@@ -191,6 +199,13 @@ const PodcastWidget = () => {
     }
   };
 
+  const handleSpotifyConnect = async () => {
+    const token = await getSpotifyAuthToken();
+    if (token) {
+      setIsSpotifyConnected(true);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -210,106 +225,123 @@ const PodcastWidget = () => {
         </div>
       </div>
 
-      <motion.div className={styles.collapsibleContent}>
-        <div className={styles.episodeCard}>
-          <div className={styles.artwork}>
-            <div className={styles.featuredBadge}>
-              <span className={styles.featuredIcon}>✨</span>
-              <span className={styles.featuredText}>Featured</span>
-            </div>
-            <img 
-              src={currentEpisode.artwork} 
-              alt={currentEpisode.title}
-              className={styles.artworkImage}
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.background = 'linear-gradient(45deg, #1a1a1a, #2a2a2a)';
-                (e.target as HTMLImageElement).style.opacity = '0.5';
-              }}
-            />
-          </div>
-
-          <div className={styles.episodeInfo}>
-            <h3 className={styles.episodeTitle}>{currentEpisode.title}</h3>
-            <div className={styles.episodeMeta}>
-              <span className={styles.episodeAuthor}>{currentEpisode.author}</span>
-              <span className={styles.metaDivider}>•</span>
-              <span className={styles.episodeDuration}>{currentEpisode.duration}</span>
-            </div>
-            <div className={styles.episodeCategory}>
-              <span className={styles.categoryTag}>Self Improvement</span>
-            </div>
-          </div>
-
-          <div className={styles.playerControls}>
-            <div className={styles.mainControls}>
-              <button 
-                className={`${styles.skipButton} group`}
-                onClick={handleSkipBackward}
-                aria-label="Skip 15 seconds backward"
-              >
-                <ChevronLeftIcon className={styles.skipIcon} />
-                <span className={styles.skipText}>15</span>
-              </button>
-              
-              <button 
-                className={styles.playButton}
-                onClick={togglePlay}
-                aria-label={playerState.isPlaying ? "Pause episode" : "Play episode"}
-              >
-                {playerState.isPlaying ? (
-                  <PauseIcon className={styles.playerIcon} />
-                ) : (
-                  <PlayIcon className={styles.playerIcon} />
-                )}
-              </button>
-
-              <button 
-                className={styles.skipButton}
-                onClick={handleSkipForward}
-                aria-label="Skip 15 seconds forward"
-              >
-                <ChevronRightIcon className={styles.skipIcon} />
-                <span className={styles.skipText}>15</span>
-              </button>
-            </div>
-
-            <div className={styles.progressSection}>
-              <div 
-                className={styles.progressBar}
-                onClick={handleProgressBarClick}
-                role="slider"
-                aria-label="Audio progress"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={(playerState.currentTime / playerState.duration) * 100}
-              >
-                <div 
-                  className={styles.progress}
-                  style={{ width: `${(playerState.currentTime / playerState.duration) * 100}%` }}
-                />
+      <div className={styles.contentWrapper}>
+        <motion.div className={`${styles.collapsibleContent} ${!isSpotifyConnected ? styles.blurred : ''}`}>
+          <div className={styles.episodeCard}>
+            <div className={styles.artwork}>
+              <div className={styles.featuredBadge}>
+                <span className={styles.featuredIcon}>✨</span>
+                <span className={styles.featuredText}>Featured</span>
               </div>
-              <div className={styles.timeInfo}>
-                <span>{formatTime(playerState.currentTime)}</span>
-                <span>{formatTime(playerState.duration)}</span>
+              <img 
+                src={currentEpisode.artwork} 
+                alt={currentEpisode.title}
+                className={styles.artworkImage}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.background = 'linear-gradient(45deg, #1a1a1a, #2a2a2a)';
+                  (e.target as HTMLImageElement).style.opacity = '0.5';
+                }}
+              />
+            </div>
+
+            <div className={styles.episodeInfo}>
+              <h3 className={styles.episodeTitle}>{currentEpisode.title}</h3>
+              <div className={styles.episodeMeta}>
+                <span className={styles.episodeAuthor}>{currentEpisode.author}</span>
+                <span className={styles.metaDivider}>•</span>
+                <span className={styles.episodeDuration}>{currentEpisode.duration}</span>
+              </div>
+              <div className={styles.episodeCategory}>
+                <span className={styles.categoryTag}>Self Improvement</span>
               </div>
             </div>
 
-            <div className={styles.waveform}>
-              {[...Array(40)].map((_, i) => (
+            <div className={styles.playerControls}>
+              <div className={styles.mainControls}>
+                <button 
+                  className={`${styles.skipButton} group`}
+                  onClick={handleSkipBackward}
+                  aria-label="Skip 15 seconds backward"
+                >
+                  <ChevronLeftIcon className={styles.skipIcon} />
+                  <span className={styles.skipText}>15</span>
+                </button>
+                
+                <button 
+                  className={styles.playButton}
+                  onClick={togglePlay}
+                  aria-label={playerState.isPlaying ? "Pause episode" : "Play episode"}
+                >
+                  {playerState.isPlaying ? (
+                    <PauseIcon className={styles.playerIcon} />
+                  ) : (
+                    <PlayIcon className={styles.playerIcon} />
+                  )}
+                </button>
+
+                <button 
+                  className={styles.skipButton}
+                  onClick={handleSkipForward}
+                  aria-label="Skip 15 seconds forward"
+                >
+                  <ChevronRightIcon className={styles.skipIcon} />
+                  <span className={styles.skipText}>15</span>
+                </button>
+              </div>
+
+              <div className={styles.progressSection}>
                 <div 
-                  key={i}
-                  className={styles.waveformBar}
-                  data-playing={playerState.isPlaying}
-                  style={{
-                    height: `${30 + Math.random() * 70}%`,
-                    animationDelay: `${i * 0.05}s`
-                  }}
-                />
-              ))}
+                  className={styles.progressBar}
+                  onClick={handleProgressBarClick}
+                  role="slider"
+                  aria-label="Audio progress"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={(playerState.currentTime / playerState.duration) * 100}
+                >
+                  <div 
+                    className={styles.progress}
+                    style={{ width: `${(playerState.currentTime / playerState.duration) * 100}%` }}
+                  />
+                </div>
+                <div className={styles.timeInfo}>
+                  <span>{formatTime(playerState.currentTime)}</span>
+                  <span>{formatTime(playerState.duration)}</span>
+                </div>
+              </div>
+
+              <div className={styles.waveform}>
+                {[...Array(40)].map((_, i) => (
+                  <div 
+                    key={i}
+                    className={styles.waveformBar}
+                    data-playing={playerState.isPlaying}
+                    style={{
+                      height: `${30 + Math.random() * 70}%`,
+                      animationDelay: `${i * 0.05}s`
+                    }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+
+        {!isSpotifyConnected && (
+          <div className={styles.spotifyOverlay}>
+            <button 
+              className={styles.spotifyConnectButton}
+              onClick={handleSpotifyConnect}
+            >
+              <SpotifyIcon className={styles.spotifyIcon} />
+              Connect to Spotify
+            </button>
+            <p className={styles.spotifyHint}>
+              Connect to Spotify to listen to podcast episodes
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
