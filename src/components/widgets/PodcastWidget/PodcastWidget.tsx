@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { 
   PlayIcon, 
@@ -6,7 +6,8 @@ import {
   ChevronDownIcon, 
   SkipBackward15Icon,
   SkipForward15Icon,
-  SpotifyIcon 
+  SpotifyIcon,
+  VolumeIcon
 } from '@/components/common/icons';
 import { PodcastEpisode, SpotifyPlayerState } from './types';
 import { MOCK_EPISODES, SPOTIFY_CONFIG } from './config';
@@ -33,6 +34,10 @@ const PodcastWidget = () => {
     const expiry = localStorage.getItem('spotify_token_expiry');
     return token && expiry && Date.now() < parseInt(expiry);
   });
+  const [isMuted, setIsMuted] = useState(false);
+  const [previousVolume, setPreviousVolume] = useState(0.5);
+  const [isVolumeSliderVisible, setIsVolumeSliderVisible] = useState(false);
+  const volumeSliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isSpotifyConnected) return;
@@ -245,6 +250,71 @@ const PodcastWidget = () => {
     }
   };
 
+  const handleVolumeChange = async (newVolume: number) => {
+    if (!playerState.spotifyPlayer) return;
+
+    try {
+      await playerState.spotifyPlayer.setVolume(newVolume);
+      setPlayerState(prev => ({ ...prev, volume: newVolume }));
+      
+      // Update mute state
+      if (newVolume === 0) {
+        setIsMuted(true);
+      } else if (isMuted) {
+        setIsMuted(false);
+      }
+      
+      // Store as previous volume if not muted
+      if (newVolume > 0) {
+        setPreviousVolume(newVolume);
+      }
+    } catch (err) {
+      console.error('Failed to change volume:', err);
+      setError('Failed to change volume');
+    }
+  };
+
+  const toggleMute = async () => {
+    if (!playerState.spotifyPlayer) return;
+
+    try {
+      if (isMuted) {
+        // Unmute: restore previous volume
+        const volumeToRestore = previousVolume || 0.5; // Fallback to 0.5 if no previous volume
+        await playerState.spotifyPlayer.setVolume(volumeToRestore);
+        setPlayerState(prev => ({ ...prev, volume: volumeToRestore }));
+        setIsMuted(false);
+      } else {
+        // Mute: save current volume and set to 0
+        if (playerState.volume > 0) {
+          setPreviousVolume(playerState.volume);
+        }
+        await playerState.spotifyPlayer.setVolume(0);
+        setPlayerState(prev => ({ ...prev, volume: 0 }));
+        setIsMuted(true);
+      }
+    } catch (err) {
+      console.error('Failed to toggle mute:', err);
+      setError('Failed to toggle mute');
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (volumeSliderRef.current && !volumeSliderRef.current.contains(event.target as Node)) {
+        setIsVolumeSliderVisible(false);
+      }
+    };
+
+    if (isVolumeSliderVisible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isVolumeSliderVisible]);
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -325,6 +395,41 @@ const PodcastWidget = () => {
                 >
                   <SkipForward15Icon className={styles.skipIcon} />
                 </button>
+
+                <div className={styles.volumeControl}>
+                  <button
+                    className={styles.muteButton}
+                    onClick={() => {
+                      if (isMuted) {
+                        toggleMute();
+                      } else {
+                        setIsVolumeSliderVisible(!isVolumeSliderVisible);
+                      }
+                    }}
+                    aria-label={isMuted ? "Unmute" : "Mute"}
+                    aria-expanded={isVolumeSliderVisible}
+                  >
+                    <VolumeIcon muted={isMuted} level={playerState.volume} />
+                  </button>
+                  
+                  <div 
+                    className={styles.volumeSliderContainer}
+                    ref={volumeSliderRef}
+                    data-visible={isVolumeSliderVisible}
+                  >
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={playerState.volume}
+                      onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                      className={styles.volumeSlider}
+                      aria-label="Volume"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className={styles.progressSection}>

@@ -986,22 +986,47 @@ export const PauseIcon = ({ className = '' }: { className?: string }) => (
   </svg>
 );
 
-export const VolumeIcon = ({ className = '' }: { className?: string }) => (
-  <svg 
-    className={className} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path 
-      d="M11 5L6 9H2V15H6L11 19V5Z M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 12C17.0039 13.3308 16.4774 14.6024 15.54 15.54 M19.07 4.93C20.9447 6.80527 21.9979 9.34835 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    />
-  </svg>
-);
+export const VolumeIcon = ({ 
+  muted, 
+  level = 1, 
+  className = '' 
+}: { 
+  muted: boolean; 
+  level?: number;
+  className?: string;
+}) => {
+  if (muted || level === 0) {
+    return (
+      <svg className={className} viewBox="0 0 16 16" fill="currentColor">
+        <path d="M13.86 5.47a.75.75 0 0 0-1.061 0l-1.47 1.47-1.47-1.47A.75.75 0 0 0 8.8 6.53L10.269 8l-1.47 1.47a.75.75 0 1 0 1.06 1.06l1.47-1.47 1.47 1.47a.75.75 0 0 0 1.06-1.06L12.39 8l1.47-1.47a.75.75 0 0 0 0-1.06z"/>
+        <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649v-1.906a4.73 4.73 0 0 1-1.5-.694v1.3L2.817 9.852a2.141 2.141 0 0 1-.781-2.92c.187-.324.456-.594.78-.782l5.8-3.35v1.3c.45-.313.956-.55 1.5-.694V1.5z"/>
+      </svg>
+    );
+  }
+
+  if (level < 0.3) {
+    return (
+      <svg className={className} viewBox="0 0 16 16" fill="currentColor">
+        <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649V1.5z"/>
+      </svg>
+    );
+  }
+
+  if (level < 0.7) {
+    return (
+      <svg className={className} viewBox="0 0 16 16" fill="currentColor">
+        <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649V1.5zM11.469 6.097a.75.75 0 0 0-.72 1.31A1.23 1.23 0 0 1 11 8.5a1.23 1.23 0 0 1-.251 1.093.75.75 0 0 0 1.202.897A2.73 2.73 0 0 0 12.5 8.5a2.73 2.73 0 0 0-.549-1.403z"/>
+      </svg>
+    );
+  }
+
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="currentColor">
+      <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649V1.5z"/>
+      <path d="M11.469 6.097a.75.75 0 0 0-.72 1.31A1.23 1.23 0 0 1 11 8.5a1.23 1.23 0 0 1-.251 1.093.75.75 0 0 0 1.202.897A2.73 2.73 0 0 0 12.5 8.5a2.73 2.73 0 0 0-.549-1.403zm2.03-1.564a.75.75 0 0 0-.671 1.342 4.23 4.23 0 0 1 0 5.25.75.75 0 1 0 1.342.671 5.73 5.73 0 0 0 0-7.121.75.75 0 0 0-.671-.142z"/>
+    </svg>
+  );
+};
 
 export const SpotifyIcon = ({ className }: { className?: string }) => (
   <svg 
