@@ -4,8 +4,8 @@ import {
   PlayIcon, 
   PauseIcon, 
   ChevronDownIcon, 
-  ChevronLeftIcon, 
-  ChevronRightIcon,
+  SkipBackward15Icon,
+  SkipForward15Icon,
   SpotifyIcon 
 } from '@/components/common/icons';
 import { PodcastEpisode, SpotifyPlayerState } from './types';
@@ -263,13 +263,13 @@ const PodcastWidget = () => {
                   onClick={handleSkipBackward}
                   aria-label="Skip 15 seconds backward"
                 >
-                  <ChevronLeftIcon className={styles.skipIcon} />
-                  <span className={styles.skipText}>15</span>
+                  <SkipBackward15Icon className={styles.skipIcon} />
                 </button>
                 
                 <button 
                   className={styles.playButton}
                   onClick={togglePlay}
+                  data-playing={playerState.isPlaying}
                   aria-label={playerState.isPlaying ? "Pause episode" : "Play episode"}
                 >
                   {playerState.isPlaying ? (
@@ -284,8 +284,7 @@ const PodcastWidget = () => {
                   onClick={handleSkipForward}
                   aria-label="Skip 15 seconds forward"
                 >
-                  <ChevronRightIcon className={styles.skipIcon} />
-                  <span className={styles.skipText}>15</span>
+                  <SkipForward15Icon className={styles.skipIcon} />
                 </button>
               </div>
 
@@ -311,17 +310,22 @@ const PodcastWidget = () => {
               </div>
 
               <div className={styles.waveform}>
-                {[...Array(40)].map((_, i) => (
-                  <div 
-                    key={i}
-                    className={styles.waveformBar}
-                    data-playing={playerState.isPlaying}
-                    style={{
-                      height: `${30 + Math.random() * 70}%`,
-                      animationDelay: `${i * 0.05}s`
-                    }}
-                  />
-                ))}
+                {[...Array(40)].map((_, i) => {
+                  const isCenter = i > 15 && i < 25; // Center area where controls are
+                  return (
+                    <div 
+                      key={i}
+                      className={styles.waveformBar}
+                      data-playing={playerState.isPlaying}
+                      data-center={isCenter}
+                      style={{
+                        height: `${20 + Math.sin(i * 0.3) * 60}%`, // Sine wave pattern
+                        animationDelay: `${i * 0.05}s`,
+                        opacity: isCenter ? 0.3 : 0.8 // Fade out behind controls
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>

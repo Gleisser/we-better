@@ -110,9 +110,40 @@
   @apply w-14 h-14
          flex items-center justify-center
          rounded-full
-         bg-white
          text-black
-         transition-colors duration-200;
+         relative
+         transition-all duration-300
+         hover:scale-105
+         active:scale-95
+         hover:shadow-lg hover:shadow-purple-500/20;
+  background: linear-gradient(
+    45deg,
+    rgba(139, 92, 246, 1),
+    /* Purple-500 */ rgba(217, 70, 239, 1),
+    /* Fuchsia-500 */ rgba(139, 92, 246, 1) /* Back to Purple-500 */
+  );
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+.playButton::before {
+  content: "";
+  @apply absolute inset-[2px]
+         rounded-full
+         bg-white
+         transition-all duration-300;
+}
+
+.playButton:hover::before {
+  @apply inset-[1px]
+         bg-gradient-to-br
+         from-white to-white/90;
+}
+
+.playerIcon {
+  @apply w-6 h-6
+         relative
+         z-10; /* Keep icon above the pseudo-element */
 }
 
 .skipButton {
@@ -122,7 +153,23 @@
          rounded-full
          bg-white/10
          text-white
-         transition-colors duration-200;
+         transition-all duration-300
+         hover:bg-white/20
+         hover:scale-110
+         active:scale-95;
+}
+
+.skipButton::after {
+  content: "";
+  @apply absolute -inset-1
+         rounded-full
+         border border-white/20
+         scale-0 opacity-0
+         transition-all duration-300;
+}
+
+.skipButton:hover::after {
+  @apply scale-110 opacity-100;
 }
 
 /* Add group class separately */
@@ -130,12 +177,8 @@
   @apply cursor-pointer;
 }
 
-.playerIcon {
-  @apply w-6 h-6;
-}
-
 .skipIcon {
-  @apply w-5 h-5;
+  @apply w-6 h-6;
 }
 
 /* Progress section */
@@ -152,6 +195,12 @@
          relative
          hover:h-1.5
          transition-all duration-200;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
 }
 
 .progress {
@@ -159,6 +208,12 @@
          bg-white
          rounded-full
          relative;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 /* Add progress hover effect */
@@ -174,13 +229,26 @@
 }
 
 .progressBar:hover .progress::after {
-  @apply opacity-100;
+  @apply opacity-100
+         scale-110
+         shadow-lg shadow-white/20;
+  animation: pulse 2s infinite;
 }
 
 .timeInfo {
   @apply flex justify-between
          text-xs text-white/50
          font-plus-jakarta;
+}
+
+.timeInfo span {
+  @apply transition-all duration-300;
+}
+
+.timeInfo span:hover {
+  @apply text-white
+         scale-110
+         font-semibold;
 }
 
 /* Waveform */
@@ -194,11 +262,26 @@
 .waveformBar {
   @apply w-[2px] h-full
          bg-white/20
-         rounded-full;
+         rounded-full
+         transition-all duration-300;
 }
 
 .waveformBar[data-playing="true"] {
-  @apply bg-white/40;
+  animation: wave 1.2s ease-in-out infinite;
+}
+
+.waveformBar[data-center="true"] {
+  transform: scaleY(0.6);
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.5);
+  }
 }
 
 /* Update header styles to match other widgets */
@@ -228,12 +311,14 @@
 
 /* Remove pulse animation */
 @keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.4;
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
   }
-  50% {
-    opacity: 0.6;
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
   }
 }
 
@@ -259,15 +344,7 @@
 
 /* Update the skip text to use the global group class */
 .skipText {
-  @apply absolute -bottom-4
-         text-[10px] text-white/60
-         opacity-0
-         transition-opacity duration-200
-         font-plus-jakarta;
-}
-
-:global(.group:hover) .skipText {
-  @apply opacity-100;
+  @apply hidden;
 }
 
 /* Add new styles */
@@ -329,4 +406,48 @@
 .spotifyIcon {
   width: 24px;
   height: 24px;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Add a glow effect when playing */
+.playButton[data-playing="true"] {
+  @apply shadow-lg;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(217, 70, 239, 0.2);
+}
+
+/* Optional: Add a subtle pulse animation when playing */
+.playButton[data-playing="true"]::after {
+  content: "";
+  @apply absolute -inset-2
+         rounded-full
+         bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20
+         animate-pulse
+         opacity-0;
+  animation: playPulse 2s ease-out infinite;
+}
+
+@keyframes playPulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
 }

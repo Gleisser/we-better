@@ -1012,3 +1012,55 @@ export const SpotifyIcon = ({ className }: { className?: string }) => (
     <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
   </svg>
 );
+
+export const SkipBackward15Icon = ({ className = '' }: { className?: string }) => (
+  <svg 
+    className={className} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path 
+      d="M12 4V2L7 7L12 12V9.5C15.3 9.5 18 12.2 18 15.5C18 18.8 15.3 21.5 12 21.5C8.7 21.5 6 18.8 6 15.5H4C4 19.9 7.6 23.5 12 23.5C16.4 23.5 20 19.9 20 15.5C20 11.1 16.4 7.5 12 7.5V4Z" 
+      fill="currentColor"
+    />
+    <text 
+      x="12" 
+      y="17.5" 
+      fill="currentColor" 
+      fontSize="8"
+      fontWeight="bold"
+      fontFamily="system-ui"
+      textAnchor="middle"
+      dominantBaseline="middle"
+    >
+      15
+    </text>
+  </svg>
+);
+
+export const SkipForward15Icon = ({ className = '' }: { className?: string }) => (
+  <svg 
+    className={className} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path 
+      d="M12 4V2L17 7L12 12V9.5C8.7 9.5 6 12.2 6 15.5C6 18.8 8.7 21.5 12 21.5C15.3 21.5 18 18.8 18 15.5H20C20 19.9 16.4 23.5 12 23.5C7.6 23.5 4 19.9 4 15.5C4 11.1 7.6 7.5 12 7.5V4Z" 
+      fill="currentColor"
+    />
+    <text 
+      x="12" 
+      y="17.5" 
+      fill="currentColor" 
+      fontSize="8"
+      fontWeight="bold"
+      fontFamily="system-ui"
+      textAnchor="middle"
+      dominantBaseline="middle"
+    >
+      15
+    </text>
+  </svg>
+);
