@@ -315,6 +315,17 @@ const PodcastWidget = () => {
     };
   }, [isVolumeSliderVisible]);
 
+  const handleProgressHover = (e: React.MouseEvent<HTMLDivElement>) => {
+    const progressBar = e.currentTarget;
+    const rect = progressBar.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const width = progressBar.offsetWidth;
+    const percentage = (x / width) * 100;
+    
+    // Update the preview progress
+    progressBar.style.setProperty('--preview-progress', `${percentage}%`);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -436,6 +447,8 @@ const PodcastWidget = () => {
                 <div 
                   className={styles.progressBar}
                   onClick={handleProgressBarClick}
+                  onMouseMove={handleProgressHover}
+                  onMouseLeave={(e) => e.currentTarget.style.setProperty('--preview-progress', '0%')}
                   role="slider"
                   aria-label="Audio progress"
                   aria-valuemin={0}

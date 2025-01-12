@@ -188,57 +188,71 @@
 
 .progressBar {
   @apply w-full h-1
-         bg-white/10
          rounded-full
-         overflow-hidden
          cursor-pointer
          relative
          hover:h-1.5
          transition-all duration-200;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0.1) 100%
-  );
+  composes: group from global;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .progress {
   @apply h-full
-         bg-white
          rounded-full
          relative;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.8) 0%,
-    rgba(255, 255, 255, 1) 100%
+    rgb(139, 92, 246),
+    /* Purple-500 */ rgb(217, 70, 239) /* Fuchsia-500 */
   );
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-/* Add progress hover effect */
+/* Progress handle (the circle) */
 .progress::after {
   content: "";
   @apply absolute right-0 top-1/2
-         w-2.5 h-2.5
+         w-4 h-4
+         -translate-y-1/2
+         translate-x-1/2
          bg-white
          rounded-full
          opacity-0
-         transition-opacity duration-200
-         -translate-y-1/2;
+         shadow-md
+         scale-0
+         transition-all duration-200
+         z-10;
 }
 
+/* Show handle on hover */
 .progressBar:hover .progress::after {
   @apply opacity-100
-         scale-110
-         shadow-lg shadow-white/20;
-  animation: pulse 2s infinite;
+         scale-100;
 }
 
+/* Preview progress on hover */
+.progressBar::before {
+  content: "";
+  @apply absolute top-0 left-0
+         h-full
+         rounded-full
+         bg-white/20
+         pointer-events-none
+         opacity-0
+         transition-opacity duration-200;
+  width: var(--preview-progress, 0%);
+}
+
+.progressBar:hover::before {
+  @apply opacity-100;
+}
+
+/* Time info below progress bar */
 .timeInfo {
   @apply flex justify-between
          text-xs text-white/50
-         font-plus-jakarta;
+         font-plus-jakarta
+         mt-1;
 }
 
 .timeInfo span {
