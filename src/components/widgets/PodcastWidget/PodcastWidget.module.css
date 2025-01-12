@@ -576,24 +576,19 @@
 .progressRing {
   @apply absolute inset-0
          w-full h-full
-         z-20;
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 20;
+         z-20
+         pointer-events-none;
 }
 
-.progressBg {
+.progressBg, 
+.progressBar {
   @apply fill-none
-         stroke-white/10
-         cursor-pointer;
+         cursor-pointer
+         pointer-events-auto;
 }
 
 .progressBar {
-  @apply fill-none
-         transition-all duration-200
-         cursor-pointer;
+  @apply transition-all duration-200;
   stroke: url(#progress-gradient);
 }
 
@@ -630,8 +625,7 @@
          flex items-center justify-center
          bg-black/30
          transition-all duration-200
-         z-20;
-  pointer-events: none; /* Prevent click events on the overlay */
+         z-40;
 }
 
 .artworkPlayIcon {
@@ -645,9 +639,10 @@
          hover:bg-white/20
          hover:border-white/30
          hover:scale-110
-         active:scale-95;
+         active:scale-95
+         cursor-pointer
+         z-50;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
-  pointer-events: auto; /* Re-enable click events for the play button */
 }
 
 .progressPreview {
