@@ -367,6 +367,20 @@ const PodcastWidget = () => {
                   onSeek={handleSeek}
                 />
                 <div className={styles.artworkCircle}>
+                  <div 
+                    className={styles.artworkPlayButton}
+                    onClick={togglePlay}
+                    role="button"
+                    aria-label={playerState.isPlaying ? "Pause episode" : "Play episode"}
+                  >
+                    <div className={styles.artworkPlayIcon}>
+                      {playerState.isPlaying ? (
+                        <PauseIcon className="w-full h-full" />
+                      ) : (
+                        <PlayIcon className="w-full h-full" />
+                      )}
+                    </div>
+                  </div>
                   <img 
                     src={currentEpisode.artwork}
                     alt={currentEpisode.title}

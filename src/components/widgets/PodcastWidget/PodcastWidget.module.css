@@ -576,19 +576,24 @@
 .progressRing {
   @apply absolute inset-0
          w-full h-full
-         cursor-pointer
          z-20;
-  composes: group from global;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
 }
 
 .progressBg {
   @apply fill-none
-         stroke-white/10;
+         stroke-white/10
+         cursor-pointer;
 }
 
 .progressBar {
   @apply fill-none
-         transition-all duration-200;
+         transition-all duration-200
+         cursor-pointer;
   stroke: url(#progress-gradient);
 }
 
@@ -609,7 +614,7 @@
 }
 
 /* Add hover state using group */
-:global(.group:hover) .progressHandle {
+.progressRing:hover .progressHandle {
   @apply opacity-100
          scale-100;
 }
@@ -617,4 +622,30 @@
 /* Add dragging state */
 .progressHandle[style*="cursor: grabbing"] {
   @apply scale-110;
+}
+
+.artworkPlayButton {
+  @apply absolute
+         inset-0
+         flex items-center justify-center
+         bg-black/30
+         transition-all duration-200
+         z-20;
+  pointer-events: none; /* Prevent click events on the overlay */
+}
+
+.artworkPlayIcon {
+  @apply w-16 h-16
+         p-4
+         rounded-full
+         bg-white/10
+         border border-white/20
+         text-white
+         transition-transform duration-200
+         hover:bg-white/20
+         hover:border-white/30
+         hover:scale-110
+         active:scale-95;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+  pointer-events: auto; /* Re-enable click events for the play button */
 }

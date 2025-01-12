@@ -70,10 +70,10 @@ export const CircularProgress = ({ progress, duration, onSeek }: CircularProgres
     const progressPercentage = duration > 0 ? progress / duration : 0;
     const angle = (progressPercentage * 2 * Math.PI) - (Math.PI / 2);
     return {
-      x: radius + padding + (radius - 2) * Math.cos(angle),
-      y: radius + padding + (radius - 2) * Math.sin(angle)
+      x: radius + padding + (radius - 4) * Math.cos(angle),
+      y: radius + padding + (radius - 4) * Math.sin(angle)
     };
-  }, [progress, duration, radius]);
+  }, [progress, duration, radius, padding]);
 
   const strokeDashoffset = useMemo(() => {
     const progressPercentage = duration > 0 ? progress / duration : 0;
@@ -82,6 +82,15 @@ export const CircularProgress = ({ progress, duration, onSeek }: CircularProgres
 
   const handleSeek = useCallback((e: React.MouseEvent<SVGElement>) => {
     if (isDragging) return;
+    
+    // Get the clicked element
+    const clickedElement = e.target as SVGElement;
+    
+    // Only handle clicks on the progress bar or background circle
+    if (!clickedElement.classList.contains(styles.progressBar) && 
+        !clickedElement.classList.contains(styles.progressBg)) {
+      return;
+    }
     
     const svg = e.currentTarget;
     const rect = svg.getBoundingClientRect();
@@ -135,6 +144,7 @@ export const CircularProgress = ({ progress, duration, onSeek }: CircularProgres
         strokeDasharray={circumference}
         strokeDashoffset={strokeDashoffset}
         transform={`rotate(-90 ${radius + padding} ${radius + padding})`}
+        strokeLinecap="round"
       />
       {/* Handle */}
       <circle
