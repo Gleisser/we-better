@@ -17,49 +17,33 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
       icon: (
         <AIMarketingIcon className={styles.menuIcon} />
       ),
-      title: "AI Marketing Tools",
-      description: "Instantly upgrade your marketing campaigns.",
+      title: "Articles",
+      description: "Articles from our community",
       iconAlt: "AI-powered marketing tools icon with analytics visualization"
     },
     {
       icon: (
         <AIGraphicDesignIcon className={styles.menuIcon} />
       ),
-      title: "AI Graphic Design",
-      description: "Instantly upgrade your design workflow.",
+      title: "Courses",
+      description: "Courses from our community",
       iconAlt: "AI graphic design tools icon with artistic elements"
     },
     {
       icon: (
         <AIPrintOnDemandIcon className={styles.menuIcon} />
       ),
-      title: "AI Print on Demand",
-      description: "Transform your digital art into print-ready masterpieces.",
+      title: "Videos",
+      description: "Videos from our community",
       iconAlt: "Print on demand service icon with customizable products"
     },
     {
       icon: (
         <AIMarketingToolsIcon className={styles.menuIcon} />
       ),
-      title: "AI Marketing Tools",
-      description: "Uplift your portfolio with our flexible suite of creative AI tools.",
+      title: "Newsletter",
+      description: "Newsletter from our community",
       iconAlt: "Advanced AI marketing suite icon with campaign tools"
-    },
-    {
-      icon: (
-        <AIInteriorDesignIcon className={styles.menuIcon} />
-      ),
-      title: "AI Interior Design",
-      description: "Your digital studio for interior design.",
-      iconAlt: "Interior design tools icon with room layout elements"
-    },
-    {
-      icon: (
-        <AIArchitectureIcon className={styles.menuIcon} />
-      ),
-      title: "AI Architecture",
-      description: "Architecture generator tools to enhance your workflow.",
-      iconAlt: "Architectural design tools icon with building elements"
     }
   ];
 
@@ -75,7 +59,7 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
       icon: (
         <WikiIcon className={styles.menuIcon} />
       ),
-      title: "Wiki",
+      title: "Webinar",
       description: "Community Mentores."
     },
     {
