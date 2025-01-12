@@ -546,3 +546,75 @@
          rotate-45
          bg-[#282828];
 }
+
+.circularPlayer {
+  @apply relative
+         w-[200px] /* Adjust size as needed */
+         aspect-square
+         mx-auto;
+}
+
+.artworkContainer {
+  @apply relative
+         w-full h-full;
+}
+
+.artworkCircle {
+  @apply absolute
+         inset-[12px]
+         rounded-full
+         overflow-hidden
+         bg-black/20
+         z-10;
+}
+
+.artworkImage {
+  @apply w-full h-full
+         object-cover;
+}
+
+.progressRing {
+  @apply absolute inset-0
+         w-full h-full
+         cursor-pointer
+         z-20;
+  composes: group from global;
+}
+
+.progressBg {
+  @apply fill-none
+         stroke-white/10;
+}
+
+.progressBar {
+  @apply fill-none
+         transition-all duration-200;
+  stroke: url(#progress-gradient);
+}
+
+.progressHandle {
+  @apply w-3 h-3
+         rounded-full
+         shadow-lg
+         absolute
+         opacity-0
+         scale-0
+         transition-all duration-200
+         bg-white
+         z-30;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  transform-origin: center;
+  user-select: none;
+  touch-action: none;
+}
+
+/* Add hover state using group */
+:global(.group:hover) .progressHandle {
+  @apply opacity-100
+         scale-100;
+}
+
+/* Add dragging state */
+.progressHandle[style*="cursor: grabbing"] {
+  @apply scale-110;
+}

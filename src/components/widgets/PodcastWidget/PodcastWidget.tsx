@@ -13,6 +13,7 @@ import { PodcastEpisode, SpotifyPlayerState } from './types';
 import { MOCK_EPISODES, SPOTIFY_CONFIG } from './config';
 import styles from './PodcastWidget.module.css';
 import { getSpotifyAuthToken } from '@/utils/spotify';
+import { CircularProgress } from './CircularProgress';
 
 const PodcastWidget = () => {
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -225,22 +226,32 @@ const PodcastWidget = () => {
     }
   };
 
-  const handleProgressBarClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleSeek = async (time: number) => {
     if (!playerState.spotifyPlayer) return;
     
-    const progressBar = e.currentTarget;
-    const clickPosition = e.clientX - progressBar.getBoundingClientRect().left;
-    const percentageClicked = clickPosition / progressBar.offsetWidth;
-    
-    // Use the current duration from playerState instead of getting it from getCurrentState
-    const newPosition = Math.floor(percentageClicked * playerState.duration * 1000); // Convert to ms
-    
     try {
-      await playerState.spotifyPlayer.seek(newPosition);
+      // Convert time to milliseconds for Spotify API
+      const positionMs = Math.floor(time * 1000);
+      // Update local state immediately
+      setPlayerState(prev => ({
+        ...prev,
+        currentTime: time
+      }));
+      await playerState.spotifyPlayer.seek(positionMs);
     } catch (err) {
       console.error('Failed to seek:', err);
       setError('Failed to update playback position');
     }
+  };
+
+  // Add handler for linear progress bar clicks
+  const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const progressBar = e.currentTarget;
+    const rect = progressBar.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = x / rect.width;
+    const newTime = percentage * playerState.duration;
+    handleSeek(newTime);
   };
 
   const handleSpotifyConnect = async () => {
@@ -348,20 +359,21 @@ const PodcastWidget = () => {
       <div className={styles.contentWrapper}>
         <motion.div className={`${styles.collapsibleContent} ${!isSpotifyConnected ? styles.blurred : ''}`}>
           <div className={styles.episodeCard}>
-            <div className={styles.artwork}>
-              <div className={styles.featuredBadge}>
-                <span className={styles.featuredIcon}>✨</span>
-                <span className={styles.featuredText}>Featured</span>
+            <div className={styles.circularPlayer}>
+              <div className={styles.artworkContainer}>
+                <CircularProgress
+                  progress={playerState.currentTime}
+                  duration={playerState.duration}
+                  onSeek={handleSeek}
+                />
+                <div className={styles.artworkCircle}>
+                  <img 
+                    src={currentEpisode.artwork}
+                    alt={currentEpisode.title}
+                    className={styles.artworkImage}
+                  />
+                </div>
               </div>
-              <img 
-                src={currentEpisode.artwork} 
-                alt={currentEpisode.title}
-                className={styles.artworkImage}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.background = 'linear-gradient(45deg, #1a1a1a, #2a2a2a)';
-                  (e.target as HTMLImageElement).style.opacity = '0.5';
-                }}
-              />
             </div>
 
             <div className={styles.episodeInfo}>
