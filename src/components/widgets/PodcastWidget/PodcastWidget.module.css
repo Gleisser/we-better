@@ -587,6 +587,10 @@
          pointer-events-auto;
 }
 
+.progressBg {
+  @apply stroke-white/10;
+}
+
 .progressBar {
   @apply transition-all duration-200;
   stroke: url(#progress-gradient);
