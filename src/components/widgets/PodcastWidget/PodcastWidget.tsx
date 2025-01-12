@@ -359,35 +359,53 @@ const PodcastWidget = () => {
       <div className={styles.contentWrapper}>
         <motion.div className={`${styles.collapsibleContent} ${!isSpotifyConnected ? styles.blurred : ''}`}>
           <div className={styles.episodeCard}>
-            <div className={styles.circularPlayer}>
-              <div className={styles.artworkContainer}>
-                <CircularProgress
-                  progress={playerState.currentTime}
-                  duration={playerState.duration}
-                  onSeek={handleSeek}
-                />
-                <div className={styles.artworkCircle}>
-                  <div className={styles.artworkPlayButton}>
-                    <div 
-                      className={styles.artworkPlayIcon}
-                      onClick={togglePlay}
-                      role="button"
-                      aria-label={playerState.isPlaying ? "Pause episode" : "Play episode"}
-                    >
-                      {playerState.isPlaying ? (
-                        <PauseIcon className="w-full h-full" />
-                      ) : (
-                        <PlayIcon className="w-full h-full" />
-                      )}
-                    </div>
-                  </div>
-                  <img 
-                    src={currentEpisode.artwork}
-                    alt={currentEpisode.title}
-                    className={styles.artworkImage}
+            <div className={styles.playerSection}>
+              <button 
+                className={styles.skipButton}
+                onClick={handleSkipBackward}
+                aria-label="Skip 15 seconds backward"
+              >
+                <SkipBackward15Icon className={styles.skipIcon} />
+              </button>
+
+              <div className={styles.circularPlayer}>
+                <div className={styles.artworkContainer}>
+                  <CircularProgress
+                    progress={playerState.currentTime}
+                    duration={playerState.duration}
+                    onSeek={handleSeek}
                   />
+                  <div className={styles.artworkCircle}>
+                    <div className={styles.artworkPlayButton}>
+                      <div 
+                        className={styles.artworkPlayIcon}
+                        onClick={togglePlay}
+                        role="button"
+                        aria-label={playerState.isPlaying ? "Pause episode" : "Play episode"}
+                      >
+                        {playerState.isPlaying ? (
+                          <PauseIcon className="w-full h-full" />
+                        ) : (
+                          <PlayIcon className="w-full h-full" />
+                        )}
+                      </div>
+                    </div>
+                    <img 
+                      src={currentEpisode.artwork}
+                      alt={currentEpisode.title}
+                      className={styles.artworkImage}
+                    />
+                  </div>
                 </div>
               </div>
+
+              <button 
+                className={styles.skipButton}
+                onClick={handleSkipForward}
+                aria-label="Skip 15 seconds forward"
+              >
+                <SkipForward15Icon className={styles.skipIcon} />
+              </button>
             </div>
 
             <div className={styles.episodeInfo}>

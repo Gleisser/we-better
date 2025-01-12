@@ -147,14 +147,16 @@
 }
 
 .skipButton {
-  @apply relative
-         w-10 h-10
+  @apply w-10 h-10
          flex items-center justify-center
          rounded-full
-         bg-white/10
-         text-white
-         transition-all duration-300
-         hover:bg-white/20
+         bg-black/40
+         text-white/80
+         border border-white/10
+         backdrop-blur-sm
+         transition-all duration-200
+         hover:bg-black/60
+         hover:text-white
          hover:scale-110
          active:scale-95;
 }
@@ -549,9 +551,8 @@
 
 .circularPlayer {
   @apply relative
-         w-[200px] /* Adjust size as needed */
-         aspect-square
-         mx-auto;
+         w-[200px]
+         aspect-square;
 }
 
 .artworkContainer {
@@ -654,4 +655,22 @@
          fill-none
          transition-all duration-200;
   pointer-events: none;
+}
+
+/* Add styles for the skip buttons container */
+.skipButtonsContainer {
+  @apply absolute
+         inset-0
+         flex items-center justify-between
+         w-full
+         px-4;  /* Add padding to position buttons away from artwork */
+  z-index: 30;  /* Between progress ring and play button */
+}
+
+.playerSection {
+  @apply flex items-center justify-center
+         gap-6
+         w-full
+         max-w-[300px]  /* Adjust this value to control overall width */
+         mx-auto;
 }
