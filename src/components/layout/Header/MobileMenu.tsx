@@ -1,7 +1,16 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import styles from './MobileMenu.module.css';
-import { AIGraphicDesignIcon, AIMarketingIcon, AIPrintOnDemandIcon, AIMarketingToolsIcon, AIInteriorDesignIcon, AIArchitectureIcon, AINewsIcon, WikiIcon, FAQIcon, MobileMenuArrowIcon } from '@/components/common/icons';
+import { 
+  ArticlesIcon, 
+  CoursesIcon, 
+  VideosIcon, 
+  NewsletterIcon,
+  AINewsIcon,
+  WikiIcon,
+  FAQIcon,
+  MobileMenuArrowIcon 
+} from '@/components/common/icons';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -14,36 +23,28 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
 
   const solutionsItems = [
     {
-      icon: (
-        <AIMarketingIcon className={styles.menuIcon} />
-      ),
+      icon: <ArticlesIcon className={styles.menuIcon} />,
       title: "Articles",
       description: "Articles from our community",
-      iconAlt: "AI-powered marketing tools icon with analytics visualization"
+      iconAlt: "Articles icon showing a document with text lines"
     },
     {
-      icon: (
-        <AIGraphicDesignIcon className={styles.menuIcon} />
-      ),
+      icon: <CoursesIcon className={styles.menuIcon} />,
       title: "Courses",
       description: "Courses from our community",
-      iconAlt: "AI graphic design tools icon with artistic elements"
+      iconAlt: "Courses icon showing stacked books"
     },
     {
-      icon: (
-        <AIPrintOnDemandIcon className={styles.menuIcon} />
-      ),
+      icon: <VideosIcon className={styles.menuIcon} />,
       title: "Videos",
       description: "Videos from our community",
-      iconAlt: "Print on demand service icon with customizable products"
+      iconAlt: "Video player icon with play button"
     },
     {
-      icon: (
-        <AIMarketingToolsIcon className={styles.menuIcon} />
-      ),
+      icon: <NewsletterIcon className={styles.menuIcon} />,
       title: "Newsletter",
       description: "Newsletter from our community",
-      iconAlt: "Advanced AI marketing suite icon with campaign tools"
+      iconAlt: "Newsletter icon showing an envelope"
     }
   ];
 
@@ -159,13 +160,13 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
                   <div className={styles.latestPostLabel}>Latest post</div>
                   <div className={styles.postImage}>
                     <img 
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400"
+                      src="/assets/images/hero/blog_post.webp"
                       alt="Latest Post"
                       className={styles.postImg}
                     />
                   </div>
-                  <div className={styles.postTitle}>28 AI Statistics for Marketers</div>
-                  <span className={styles.postDate}>Published on November 19, 2024</span>
+                  <div className={styles.postTitle}>15 Principles to be sucessful in Business</div>
+                  <span className={styles.postDate}>Published Today</span>
                 </div>
 
                 <div className={styles.submenuDivider} aria-hidden="true" />
@@ -191,9 +192,9 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
           </div>
 
           {/* Regular menu items */}
-          <a href="#teams" className={styles.menuItem}>For Teams</a>
-          <a href="#developers" className={styles.menuItem}>For Developers</a>
-          <a href="#contact" className={styles.menuItem}>Contact</a>
+          <a href="#teams" className={styles.menuItem}>For Business</a>
+          <a href="#developers" className={styles.menuItem}>For Mentors</a>
+          <a href="#contact" className={styles.menuItem}>For Coaches</a>
         </div>
 
         <div 

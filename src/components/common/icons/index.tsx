@@ -1089,3 +1089,148 @@ export const SkipForward15Icon = ({ className = '' }: { className?: string }) =>
     </text>
   </svg>
 );
+
+export const ArticlesIcon = ({ className }: IconProps) => (
+  <svg 
+    className={className}
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    fill="none"
+  >
+    <path 
+      d="M19 5v14H5V5h14zm0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+      stroke="url(#articles-gradient)" 
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <path 
+      d="M8 7h8M8 11h8M8 15h5" 
+      stroke="url(#articles-gradient)" 
+      strokeWidth="2" 
+      strokeLinecap="round"
+    />
+    <defs>
+      <linearGradient 
+        id="articles-gradient" 
+        x1="3" 
+        y1="3" 
+        x2="21" 
+        y2="21" 
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stopColor="#8B5CF6"/>
+        <stop offset="1" stopColor="#D946EF"/>
+      </linearGradient>
+    </defs>
+  </svg>
+);
+
+export const CoursesIcon = ({ className }: IconProps) => (
+  <svg 
+    className={className}
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    fill="none"
+  >
+    <path 
+      d="M12 3L3 8l9 5 9-5-9-5z"
+      stroke="url(#courses-gradient)" 
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path 
+      d="M3 16l9 5 9-5M3 12l9 5 9-5" 
+      stroke="url(#courses-gradient)" 
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <defs>
+      <linearGradient 
+        id="courses-gradient" 
+        x1="3" 
+        y1="3" 
+        x2="21" 
+        y2="21" 
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stopColor="#8B5CF6"/>
+        <stop offset="1" stopColor="#D946EF"/>
+      </linearGradient>
+    </defs>
+  </svg>
+);
+
+export const VideosIcon = ({ className }: IconProps) => (
+  <svg 
+    className={className}
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    fill="none"
+  >
+    <rect 
+      x="3" 
+      y="6" 
+      width="18" 
+      height="12" 
+      rx="2"
+      stroke="url(#videos-gradient)" 
+      strokeWidth="2"
+    />
+    <path 
+      d="M10 9l5 3-5 3V9z"
+      stroke="url(#videos-gradient)" 
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <defs>
+      <linearGradient 
+        id="videos-gradient" 
+        x1="3" 
+        y1="6" 
+        x2="21" 
+        y2="18" 
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stopColor="#8B5CF6"/>
+        <stop offset="1" stopColor="#D946EF"/>
+      </linearGradient>
+    </defs>
+  </svg>
+);
+
+export const NewsletterIcon = ({ className }: IconProps) => (
+  <svg 
+    className={className}
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    fill="none"
+  >
+    <path 
+      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+      stroke="url(#newsletter-gradient)" 
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <defs>
+      <linearGradient 
+        id="newsletter-gradient" 
+        x1="3" 
+        y1="5" 
+        x2="21" 
+        y2="19" 
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop stopColor="#8B5CF6"/>
+        <stop offset="1" stopColor="#D946EF"/>
+      </linearGradient>
+    </defs>
+  </svg>
+);
