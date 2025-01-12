@@ -674,3 +674,24 @@
          max-w-[300px]  /* Adjust this value to control overall width */
          mx-auto;
 }
+
+.waveformSection {
+  @apply w-full
+         flex items-center justify-between
+         gap-4
+         mt-3;
+}
+
+.timeInfo {
+  @apply text-xs text-white/50
+         font-plus-jakarta
+         min-w-[40px]
+         text-center;
+}
+
+.waveform {
+  @apply flex-1
+         h-10
+         flex items-center justify-center
+         gap-[2px];
+}

@@ -420,99 +420,11 @@ const PodcastWidget = () => {
               </div>
             </div>
 
-            <div className={styles.playerControls}>
-              <div className={styles.mainControls}>
-                <button 
-                  className={`${styles.skipButton} group`}
-                  onClick={handleSkipBackward}
-                  aria-label="Skip 15 seconds backward"
-                >
-                  <SkipBackward15Icon className={styles.skipIcon} />
-                </button>
-                
-                <button 
-                  className={styles.playButton}
-                  onClick={togglePlay}
-                  data-playing={playerState.isPlaying}
-                  aria-label={playerState.isPlaying ? "Pause episode" : "Play episode"}
-                >
-                  {playerState.isPlaying ? (
-                    <PauseIcon className={styles.playerIcon} />
-                  ) : (
-                    <PlayIcon className={styles.playerIcon} />
-                  )}
-                </button>
-
-                <button 
-                  className={styles.skipButton}
-                  onClick={handleSkipForward}
-                  aria-label="Skip 15 seconds forward"
-                >
-                  <SkipForward15Icon className={styles.skipIcon} />
-                </button>
-
-                <div className={styles.volumeControl}>
-                  <button
-                    className={styles.muteButton}
-                    onClick={() => {
-                      if (isMuted) {
-                        toggleMute();
-                      } else {
-                        setIsVolumeSliderVisible(!isVolumeSliderVisible);
-                      }
-                    }}
-                    aria-label={isMuted ? "Unmute" : "Mute"}
-                    aria-expanded={isVolumeSliderVisible}
-                  >
-                    <VolumeIcon muted={isMuted} level={playerState.volume} />
-                  </button>
-                  
-                  <div 
-                    className={styles.volumeSliderContainer}
-                    ref={volumeSliderRef}
-                    data-visible={isVolumeSliderVisible}
-                  >
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.01"
-                      value={playerState.volume}
-                      onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                      className={styles.volumeSlider}
-                      aria-label="Volume"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.progressSection}>
-                <div 
-                  className={styles.progressBar}
-                  onClick={handleProgressBarClick}
-                  onMouseMove={handleProgressHover}
-                  onMouseLeave={(e) => e.currentTarget.style.setProperty('--preview-progress', '0%')}
-                  role="slider"
-                  aria-label="Audio progress"
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={(playerState.currentTime / playerState.duration) * 100}
-                >
-                  <div 
-                    className={styles.progress}
-                    style={{ width: `${(playerState.currentTime / playerState.duration) * 100}%` }}
-                  />
-                </div>
-                <div className={styles.timeInfo}>
-                  <span>{formatTime(playerState.currentTime)}</span>
-                  <span>{formatTime(playerState.duration)}</span>
-                </div>
-              </div>
-
+            <div className={styles.waveformSection}>
+              <span className={styles.timeInfo}>{formatTime(playerState.currentTime)}</span>
               <div className={styles.waveform}>
                 {[...Array(40)].map((_, i) => {
-                  const isCenter = i > 15 && i < 25; // Center area where controls are
+                  const isCenter = i > 15 && i < 25;
                   return (
                     <div 
                       key={i}
@@ -520,14 +432,15 @@ const PodcastWidget = () => {
                       data-playing={playerState.isPlaying}
                       data-center={isCenter}
                       style={{
-                        height: `${20 + Math.sin(i * 0.3) * 60}%`, // Sine wave pattern
+                        height: `${20 + Math.sin(i * 0.3) * 60}%`,
                         animationDelay: `${i * 0.05}s`,
-                        opacity: isCenter ? 0.3 : 0.8 // Fade out behind controls
+                        opacity: isCenter ? 0.3 : 0.8
                       }}
                     />
                   );
                 })}
               </div>
+              <span className={styles.timeInfo}>{formatTime(playerState.duration)}</span>
             </div>
           </div>
         </motion.div>
