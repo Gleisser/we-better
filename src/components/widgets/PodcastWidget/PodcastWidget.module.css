@@ -649,3 +649,10 @@
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
   pointer-events: auto; /* Re-enable click events for the play button */
 }
+
+.progressPreview {
+  @apply stroke-[url(#preview-gradient)]
+         fill-none
+         transition-all duration-200;
+  pointer-events: none;
+}
