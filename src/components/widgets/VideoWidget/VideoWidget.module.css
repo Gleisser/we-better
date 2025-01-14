@@ -3,7 +3,12 @@
          bg-black/40 backdrop-blur-xl
          rounded-2xl
          border border-white/[0.08]
-         overflow-hidden;
+         overflow-hidden
+         transition-all duration-300;
+  --gradient-start: rgba(var(--accent-rgb), 0.12);
+  --gradient-middle: rgba(var(--accent-rgb), 0.08);
+  --gradient-end: rgba(var(--accent-rgb), 0.04);
+  --accent-rgb: 147, 51, 234;  /* Default purple accent */
 }
 
 .header {
@@ -30,7 +35,7 @@
 }
 
 .collapsibleContent {
-  @apply overflow-hidden
+  @apply overflow-visible
          flex flex-col
          h-[calc(100%-48px)]
          p-4;
@@ -39,7 +44,8 @@
 .videoCarousel {
   @apply flex gap-4
          w-full
-         relative;
+         relative
+         overflow-visible;
   transform-style: preserve-3d;
 }
 
@@ -54,8 +60,8 @@
 }
 
 .videoCard:hover {
-  filter: brightness(1);
   @apply shadow-xl shadow-black/30;
+  transform: translateY(-8px) scale(1.05);
 }
 
 .thumbnailContainer {
@@ -158,8 +164,8 @@
   @apply relative
          flex items-center
          w-full
-         overflow-hidden
-         px-8;
+         px-8
+         py-2;
   perspective: 1000px;
 }
 
@@ -523,5 +529,26 @@
 .navButton:active {
   @apply scale-95
          bg-black/70;
+}
+
+/* Add background gradient container */
+.backgroundGradient {
+  @apply absolute inset-0
+         opacity-30
+         pointer-events-none;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    var(--gradient-start) 0%,
+    var(--gradient-middle) 25%,
+    var(--gradient-end) 100%
+  );
+  filter: blur(32px);
+}
+
+/* Add container for overflow control */
+.carouselWrapper {
+  @apply relative
+         w-full
+         overflow-hidden;
 }
  
