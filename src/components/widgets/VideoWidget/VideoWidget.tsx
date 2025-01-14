@@ -21,12 +21,15 @@ const VideoWidget = () => {
   const [userRatings, setUserRatings] = useState<Record<string, number>>({});
   const [hoverRating, setHoverRating] = useState<{id: string, rating: number} | null>(null);
   const [watchedVideos, setWatchedVideos] = useState<Record<string, WatchProgress>>({});
+  const [direction, setDirection] = useState(0);
 
   const handleNextPage = useCallback(() => {
+    setDirection(1);
     setCurrentPage((prev) => (prev + 1) % totalPages);
   }, [totalPages]);
 
   const handlePrevPage = useCallback(() => {
+    setDirection(-1);
     setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
   }, [totalPages]);
 
@@ -143,6 +146,34 @@ const VideoWidget = () => {
     onProgress: handleVideoProgress
   }), [showModal, selectedVideo, handleVideoProgress]);
 
+  // Calculate variants for parallax effect
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+      scale: 0.8,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        type: "spring",
+        stiffness: 300,
+        damping: 30
+      }
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+      scale: 0.8,
+      transition: {
+        duration: 0.5
+      }
+    })
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -182,25 +213,44 @@ const VideoWidget = () => {
             <ChevronLeftIcon className={styles.navIcon} />
           </button>
 
-          <AnimatePresence mode='wait'>
+          <AnimatePresence
+            mode="wait"
+            custom={direction}
+            initial={false}
+          >
             <motion.div 
               key={currentPage}
               className={styles.videoCarousel}
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.3 }}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
             >
-              {MOCK_VIDEOS.slice(currentPage * videosPerPage, (currentPage + 1) * videosPerPage).map((video) => (
+              {MOCK_VIDEOS.slice(
+                currentPage * videosPerPage,
+                (currentPage + 1) * videosPerPage
+              ).map((video, index) => (
                 <motion.div 
                   key={video.id}
                   className={styles.videoCard}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 0,
+                    transition: {
+                      delay: index * 0.1 // Stagger effect
+                    }
+                  }}
                   whileHover={{ 
                     scale: 1.05,
                     y: -5,
                     transition: { duration: 0.2 }
+                  }}
+                  style={{
+                    // Add perspective transform for depth
+                    perspective: 1000,
+                    translateZ: index * -20
                   }}
                   onHoverStart={() => setHoveredVideoId(video.id)}
                   onHoverEnd={() => setHoveredVideoId(null)}
