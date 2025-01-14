@@ -114,6 +114,11 @@ const VideoWidget = () => {
                   className={styles.videoCard}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ 
+                    scale: 1.05,
+                    y: -5,
+                    transition: { duration: 0.2 }
+                  }}
                   onHoverStart={() => setHoveredVideoId(video.id)}
                   onHoverEnd={() => setHoveredVideoId(null)}
                 >
@@ -136,7 +141,7 @@ const VideoWidget = () => {
                       className={styles.overlay}
                       animate={{
                         background: hoveredVideoId === video.id 
-                          ? 'linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3))'
+                          ? 'linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.3))'
                           : 'linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2))'
                       }}
                     >
@@ -149,6 +154,22 @@ const VideoWidget = () => {
                       <div className={styles.videoInfo}>
                         <div className={styles.titleSection}>
                           <h3 className={styles.videoTitle}>{video.title}</h3>
+                          <motion.div 
+                            className={styles.videoMetadata}
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ 
+                              opacity: hoveredVideoId === video.id ? 1 : 0,
+                              height: hoveredVideoId === video.id ? 'auto' : 0
+                            }}
+                          >
+                            <div className={styles.metaRow}>
+                              <span className={styles.duration}>{video.duration}</span>
+                              <span className={styles.views}>{video.views} views</span>
+                            </div>
+                            <div className={styles.authorInfo}>
+                              <span className={styles.authorName}>{video.author}</span>
+                            </div>
+                          </motion.div>
                           <div className={styles.categoryBadge}>
                             {video.category} / {video.subCategory}
                           </div>
