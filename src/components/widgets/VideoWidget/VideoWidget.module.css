@@ -360,12 +360,13 @@
 
 .duration {
   @apply px-1.5 py-0.5
-         rounded-sm
-         bg-black/60
-         backdrop-blur-sm
-         border border-white/10
+         rounded-full
+         bg-gradient-to-r from-purple-600/90 to-pink-600/90
+         shadow-lg shadow-black/20
          text-white
-         font-medium;
+         font-semibold
+         tracking-wide;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .views {
@@ -550,5 +551,32 @@
   @apply relative
          w-full
          overflow-hidden;
+}
+
+/* Update/add duration badge styles */
+.durationBadge {
+  @apply absolute bottom-3 right-3
+         px-3 py-1
+         rounded-full
+         bg-gradient-to-r from-purple-600/90 to-pink-600/90
+         shadow-lg shadow-black/20
+         text-xs text-white
+         font-semibold
+         tracking-wide
+         z-30;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Add hover effect */
+.videoCard:hover .durationBadge {
+  @apply from-purple-500/90 to-pink-500/90
+         shadow-xl;
+  transform: translateY(-1px);
+}
+
+.videoCard:hover .duration {
+  @apply from-purple-500/90 to-pink-500/90
+         shadow-xl;
+  transform: translateY(-1px);
 }
  

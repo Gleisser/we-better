@@ -300,6 +300,7 @@ const VideoWidget = () => {
                         onError={() => handlePreviewError(video.youtubeId)}
                         onLoadStart={() => hoveredVideoId === video.id && startPreviewLoad(video.youtubeId)}
                       />
+                      
                       {watchedVideos[video.id] && (
                         <div className={styles.progressIndicator}>
                           <div 
