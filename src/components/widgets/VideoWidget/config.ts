@@ -50,7 +50,7 @@ export const MOCK_VIDEOS: Video[] = [
     title: 'Emotional Intelligence at Work',
     category: 'Leadership',
     subCategory: 'EQ',
-    youtubeId: 'Y7m9eNoB3NU',
+    youtubeId: 'kwOz4VCXzD8',
     rating: 4.8,
     duration: '20:18',
     author: 'Daniel Goleman',

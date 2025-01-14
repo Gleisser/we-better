@@ -15,6 +15,9 @@ const VideoWidget = () => {
   const totalPages = Math.ceil(MOCK_VIDEOS.length / videosPerPage);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [hoveredVideoId, setHoveredVideoId] = useState<string | null>(null);
+  const [previewLoadError, setPreviewLoadError] = useState<Set<string>>(new Set());
+  const [loadingPreviews, setLoadingPreviews] = useState<Set<string>>(new Set());
 
   const handleNextPage = useCallback(() => {
     setCurrentPage((prev) => (prev + 1) % totalPages);
@@ -27,6 +30,34 @@ const VideoWidget = () => {
   const handleVideoClick = (video: Video) => {
     setSelectedVideo(video);
     setShowModal(true);
+  };
+
+  const getVideoPreviewUrl = (videoId: string) => {
+    if (previewLoadError.has(videoId)) {
+      return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    }
+    return `https://i.ytimg.com/vi_webp/${videoId}/maxresdefault.webp`;
+  };
+
+  const startPreviewLoad = (videoId: string) => {
+    setLoadingPreviews(prev => new Set(prev).add(videoId));
+    // Set timeout to stop shimmer after 1 second
+    setTimeout(() => {
+      setLoadingPreviews(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(videoId);
+        return newSet;
+      });
+    }, 1000);
+  };
+
+  const handlePreviewError = (videoId: string) => {
+    setPreviewLoadError(prev => new Set(prev).add(videoId));
+    setLoadingPreviews(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(videoId);
+      return newSet;
+    });
   };
 
   return (
@@ -83,14 +114,32 @@ const VideoWidget = () => {
                   className={styles.videoCard}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
+                  onHoverStart={() => setHoveredVideoId(video.id)}
+                  onHoverEnd={() => setHoveredVideoId(null)}
                 >
-                  <div className={styles.thumbnailContainer}>
-                    <img 
-                      src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
+                  <div className={`${styles.thumbnailContainer} ${loadingPreviews.has(video.youtubeId) ? styles.loading : ''}`}>
+                    <motion.img 
+                      src={hoveredVideoId === video.id && !previewLoadError.has(video.youtubeId)
+                        ? getVideoPreviewUrl(video.youtubeId)
+                        : `https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`
+                      }
                       alt={video.title}
                       className={styles.thumbnail}
+                      animate={{
+                        scale: hoveredVideoId === video.id ? 1.05 : 1
+                      }}
+                      transition={{ duration: 0.3 }}
+                      onError={() => handlePreviewError(video.youtubeId)}
+                      onLoadStart={() => hoveredVideoId === video.id && startPreviewLoad(video.youtubeId)}
                     />
-                    <div className={styles.overlay}>
+                    <motion.div 
+                      className={styles.overlay}
+                      animate={{
+                        background: hoveredVideoId === video.id 
+                          ? 'linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3))'
+                          : 'linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2))'
+                      }}
+                    >
                       <button 
                         className={styles.playButton}
                         onClick={() => handleVideoClick(video)}
@@ -109,7 +158,7 @@ const VideoWidget = () => {
                           <span className={styles.ratingValue}>{video.rating}</span>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
                 </motion.div>
               ))}

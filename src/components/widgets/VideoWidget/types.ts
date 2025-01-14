@@ -8,4 +8,5 @@ export interface Video {
   duration: string;
   author: string;
   views?: string;
+  previewUrl?: string;
 } 
