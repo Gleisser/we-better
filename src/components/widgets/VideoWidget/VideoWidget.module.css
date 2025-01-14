@@ -91,16 +91,16 @@
 
 .overlay {
   @apply absolute inset-0
-         bg-gradient-to-t from-black/90 via-black/40 to-transparent
+         bg-gradient-to-t from-black/95 via-black/80 to-transparent
          flex items-end
          p-3
          transition-all duration-300
-         z-10;
+         z-30;
 }
 
 .videoCard:hover .overlay {
-  @apply bg-gradient-to-t from-black/95 via-black/60 to-black/20 
-         backdrop-blur-[2px];
+  @apply bg-gradient-to-t from-black to-black/20;
+  backdrop-filter: none;
 }
 
 .playButton {
@@ -114,7 +114,7 @@
          transition-all duration-200
          hover:bg-white/20
          hover:scale-110
-         z-20;
+         z-40;
   transform: none;
 }
 
@@ -127,7 +127,9 @@
          flex flex-col
          gap-2
          mt-auto
-         pr-14;
+         pr-14
+         relative
+         z-20;
 }
 
 .titleSection {
@@ -135,15 +137,20 @@
 }
 
 .videoTitle {
-  @apply text-white text-sm font-semibold
+  @apply text-white text-sm font-bold
          line-clamp-1
-         drop-shadow-md;
+         tracking-tight
+         z-40;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .categoryBadge {
-  @apply text-white/80 text-xs
+  @apply text-white text-xs
          mt-1
-         drop-shadow-md;
+         font-semibold;
+  text-shadow: none;
 }
 
 .rating {
@@ -164,7 +171,7 @@
   @apply relative
          flex items-center
          w-full
-         px-8
+         px-12
          py-2;
   perspective: 1000px;
 }
@@ -177,20 +184,20 @@
          bg-black/40
          border border-white/10
          text-white/80
-         z-10
          transition-all duration-200
          hover:bg-black/60
          hover:text-white
          hover:scale-110
-         backdrop-blur-sm;
+         backdrop-blur-sm
+         z-10;
 }
 
 .prevButton {
-  @apply left-2;
+  @apply -left-6;
 }
 
 .nextButton {
-  @apply right-2;
+  @apply -right-6;
 }
 
 .navIcon {
@@ -348,9 +355,14 @@
 
 .videoMetadata {
   @apply overflow-hidden
-         text-xs text-white/90
-         drop-shadow-md
-         mt-1;
+         text-xs
+         text-white
+         mt-1
+         relative
+         z-30;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .metaRow {
@@ -359,19 +371,22 @@
 }
 
 .duration {
-  @apply px-1.5 py-0.5
+  @apply px-2 py-0.5
          rounded-full
-         bg-gradient-to-r from-purple-600/90 to-pink-600/90
-         shadow-lg shadow-black/20
+         bg-gradient-to-r from-purple-600 to-pink-600
          text-white
-         font-semibold
-         tracking-wide;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+         font-bold
+         tracking-tight;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .views {
-  @apply text-white/90
-         font-medium;
+  @apply text-white
+         font-semibold;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .authorInfo {
@@ -380,8 +395,9 @@
 
 .authorName {
   @apply text-white
-         font-medium
-         drop-shadow-md;
+         font-semibold
+         tracking-tight;
+  text-shadow: none;
 }
 
 .ratingContainer {
@@ -550,7 +566,8 @@
 .carouselWrapper {
   @apply relative
          w-full
-         overflow-hidden;
+         overflow-visible
+         px-6;
 }
 
 /* Update/add duration badge styles */
