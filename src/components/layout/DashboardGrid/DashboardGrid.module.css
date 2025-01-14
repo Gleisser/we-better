@@ -3,14 +3,15 @@
 }
 
 .bentoGrid {
-  @apply grid gap-4;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: auto;
+  @apply grid gap-4
+         w-full
+         grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
   grid-template-areas:
-    "quote affirmation videos videos"
-    "habits habits habits habits"
-    "goals goals goals goals"
-    "podcast article course course";
+    "quote affirmation article"
+    "habits habits habits"
+    "goals goals goals"
+    "videos videos videos"
+    "podcast course course";
 }
 
 .widget {
@@ -94,25 +95,25 @@
     grid-template-columns: repeat(2, 1fr);
     grid-template-areas:
       "quote affirmation"
+      "article article"
       "habits habits"
       "goals goals"
       "videos videos"
-      "podcast article"
-      "course course";
+      "podcast course";
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .bentoGrid {
     grid-template-columns: 1fr;
     grid-template-areas:
       "quote"
       "affirmation"
+      "article"
       "habits"
       "goals"
       "videos"
       "podcast"
-      "article"
       "course";
   }
 }
@@ -121,4 +122,10 @@
 .widget > * {
   position: relative;
   z-index: 2;
+}
+
+/* Update the videos widget to span full width */
+.widget.videos {
+  grid-area: videos;
+  @apply bg-gradient-to-br from-black/40 to-black/20;
 }

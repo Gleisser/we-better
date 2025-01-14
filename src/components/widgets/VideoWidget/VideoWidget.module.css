@@ -1,0 +1,168 @@
+.container {
+  @apply relative w-full h-full
+         bg-black/40 backdrop-blur-xl
+         rounded-2xl
+         border border-white/[0.08]
+         overflow-hidden;
+}
+
+.header {
+  @apply px-4 py-3
+         border-b border-white/[0.08];
+}
+
+.headerMain {
+  @apply flex items-center justify-between;
+}
+
+.headerLeft {
+  @apply flex items-center gap-2.5;
+}
+
+.headerIcon {
+  @apply text-xl opacity-90;
+}
+
+.headerText {
+  @apply text-white/90 text-base font-semibold
+         tracking-tight
+         font-plus-jakarta;
+}
+
+.collapsibleContent {
+  @apply overflow-hidden
+         flex flex-col
+         h-[calc(100%-48px)]
+         p-4;
+}
+
+.videoCarousel {
+  @apply flex gap-4
+         w-full
+         px-8;
+}
+
+.videoCard {
+  @apply flex-1
+         min-w-0
+         basis-1/3;
+}
+
+.thumbnailContainer {
+  @apply relative
+         aspect-video
+         w-full
+         rounded-xl
+         overflow-hidden;
+}
+
+.thumbnail {
+  @apply w-full h-full
+         object-cover;
+}
+
+.overlay {
+  @apply absolute inset-0
+         bg-gradient-to-t from-black/80 via-black/20 to-transparent
+         flex items-end
+         p-3;
+}
+
+.playButton {
+  @apply absolute left-3 top-1/2
+         -translate-y-1/2
+         w-10 h-10
+         flex items-center justify-center
+         rounded-full
+         bg-white/10
+         border border-white/20
+         backdrop-blur-sm
+         transition-all duration-200
+         hover:bg-white/20
+         hover:scale-110;
+}
+
+.playIcon {
+  @apply w-5 h-5 text-white;
+}
+
+.videoInfo {
+  @apply flex items-end justify-between
+         w-full;
+}
+
+.titleSection {
+  @apply flex flex-col gap-1;
+}
+
+.videoTitle {
+  @apply text-white text-sm font-medium
+         line-clamp-1;
+}
+
+.categoryBadge {
+  @apply text-white/60 text-xs;
+}
+
+.rating {
+  @apply flex items-center gap-1;
+}
+
+.starIcon {
+  @apply w-4 h-4 text-yellow-400;
+}
+
+.ratingValue {
+  @apply text-white text-sm font-medium;
+}
+
+.carouselContainer {
+  @apply relative
+         flex items-center
+         w-full;
+}
+
+.navButton {
+  @apply absolute
+         w-10 h-10
+         flex items-center justify-center
+         rounded-full
+         bg-black/40
+         border border-white/10
+         text-white/80
+         z-10
+         transition-all duration-200
+         hover:bg-black/60
+         hover:text-white
+         hover:scale-110;
+}
+
+.prevButton {
+  @apply -left-5;
+}
+
+.nextButton {
+  @apply -right-5;
+}
+
+.navIcon {
+  @apply w-5 h-5;
+}
+
+.pagination {
+  @apply flex items-center justify-center
+         gap-2
+         mt-4;
+}
+
+.paginationDot {
+  @apply w-2 h-2
+         rounded-full
+         bg-white/20
+         transition-all duration-200;
+}
+
+.paginationDot.active {
+  @apply bg-white/80
+         scale-125;
+} 

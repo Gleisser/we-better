@@ -3,6 +3,7 @@ import { AffirmationWidget } from '@/components/widgets/AffirmationWidget';
 import HabitsWidget from '@/components/widgets/HabitsWidget/HabitsWidget';
 import GoalsWidget from '@/components/widgets/GoalsWidget/GoalsWidget';
 import PodcastWidget from '@/components/widgets/PodcastWidget/PodcastWidget';
+import VideoWidget from '@/components/widgets/VideoWidget/VideoWidget';
 import styles from './DashboardGrid.module.css';
 
 const DashboardGrid = () => {
@@ -19,10 +20,10 @@ const DashboardGrid = () => {
           <AffirmationWidget />
         </div>
 
-        {/* Videos Widget */}
-        <div className={`${styles.widget} ${styles.videos}`}>
+        {/* Article Widget */}
+        <div className={`${styles.widget} ${styles.article}`}>
           <div className={styles.placeholder}>
-            <h3 className={styles.widgetTitle}>Recommended Videos</h3>
+            <h3 className={styles.widgetTitle}>Article of the Day</h3>
             <p className={styles.comingSoon}>Widget coming soon...</p>
           </div>
         </div>
@@ -42,12 +43,9 @@ const DashboardGrid = () => {
           <PodcastWidget />
         </div>
 
-        {/* Article Widget */}
-        <div className={`${styles.widget} ${styles.article}`}>
-          <div className={styles.placeholder}>
-            <h3 className={styles.widgetTitle}>Article of the Day</h3>
-            <p className={styles.comingSoon}>Widget coming soon...</p>
-          </div>
+        {/* Videos Widget */}
+        <div className={`${styles.widget} ${styles.videos}`}>
+          <VideoWidget />
         </div>
 
         {/* Course Widget */}
