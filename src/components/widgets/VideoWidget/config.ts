@@ -1,14 +1,15 @@
+import { Video } from './types';
+
 export const MOCK_VIDEOS: Video[] = [
   {
     id: 'v1',
     title: 'The Psychology of Self-Improvement',
     category: 'Personal Growth',
     subCategory: 'Psychology',
-    thumbnail: '/assets/images/videos/psychology-improvement.webp',
+    youtubeId: 'vj-91dMvQQo',
     rating: 4.8,
     duration: '18:24',
-    youtubeId: 'your_youtube_id',
-    author: 'Dr. Sarah Mitchell',
+    author: 'Academy of Ideas',
     views: '124K'
   },
   {
@@ -16,11 +17,10 @@ export const MOCK_VIDEOS: Video[] = [
     title: 'Mindful Leadership: Leading with Purpose',
     category: 'Leadership',
     subCategory: 'Mindfulness',
-    thumbnail: '/assets/images/videos/mindful-leadership.webp',
+    youtubeId: 'u2eY_3OHHkY',
     rating: 4.9,
     duration: '22:15',
-    youtubeId: 'your_youtube_id',
-    author: 'Mark Thompson',
+    author: 'Simon Sinek',
     views: '89K'
   },
   {
@@ -28,10 +28,9 @@ export const MOCK_VIDEOS: Video[] = [
     title: 'Deep Work: Achieving Flow State',
     category: 'Productivity',
     subCategory: 'Focus',
-    thumbnail: '/assets/images/videos/deep-work.webp',
+    youtubeId: 'ZD7dXfdDPfg',
     rating: 4.7,
     duration: '15:30',
-    youtubeId: 'your_youtube_id',
     author: 'Cal Newport',
     views: '256K'
   },
@@ -40,11 +39,10 @@ export const MOCK_VIDEOS: Video[] = [
     title: 'Morning Routine for Peak Performance',
     category: 'Health',
     subCategory: 'Habits',
-    thumbnail: '/assets/images/videos/morning-routine.webp',
+    youtubeId: '377AQ0y6LPA',
     rating: 4.9,
     duration: '12:45',
-    youtubeId: 'your_youtube_id',
-    author: 'Dr. Emily Chen',
+    author: 'Jim Kwik',
     views: '198K'
   },
   {
@@ -52,10 +50,9 @@ export const MOCK_VIDEOS: Video[] = [
     title: 'Emotional Intelligence at Work',
     category: 'Leadership',
     subCategory: 'EQ',
-    thumbnail: '/assets/images/videos/emotional-intelligence.webp',
+    youtubeId: 'Y7m9eNoB3NU',
     rating: 4.8,
     duration: '20:18',
-    youtubeId: 'your_youtube_id',
     author: 'Daniel Goleman',
     views: '167K'
   },
@@ -64,11 +61,10 @@ export const MOCK_VIDEOS: Video[] = [
     title: 'Meditation for Beginners',
     category: 'Mindfulness',
     subCategory: 'Meditation',
-    thumbnail: '/assets/images/videos/meditation.webp',
+    youtubeId: 'inpok4MKVLM',
     rating: 4.9,
     duration: '16:50',
-    youtubeId: 'your_youtube_id',
-    author: 'Lisa Anderson',
+    author: 'Goodful',
     views: '302K'
   }
 ]; 

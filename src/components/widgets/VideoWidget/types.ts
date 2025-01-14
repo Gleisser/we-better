@@ -3,10 +3,9 @@ export interface Video {
   title: string;
   category: 'Mindfulness' | 'Productivity' | 'Health' | 'Leadership' | 'Personal Growth';
   subCategory?: string;
-  thumbnail: string;
+  youtubeId: string;
   rating: number;
   duration: string;
-  youtubeId: string;
   author: string;
   views?: string;
 } 

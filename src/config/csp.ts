@@ -29,10 +29,13 @@ export const CSP_POLICY = {
     "data:",
     "blob:",
     "https://images.unsplash.com",
+    "https://img.youtube.com",
+    "https://*.ytimg.com",
     import.meta.env.VITE_API_URL || 'http://localhost:1337',
   ],
   'media-src': [
     "'self'",
+    "https://*.youtube.com",
     import.meta.env.VITE_API_URL || 'http://localhost:1337',
   ],
   'connect-src': [
@@ -52,7 +55,9 @@ export const CSP_POLICY = {
   'frame-src': [
     "'self'",
     "https://open.spotify.com",
-    "https://sdk.scdn.co"
+    "https://sdk.scdn.co",
+    "https://www.youtube.com",
+    "https://youtube.com"
   ],
   'worker-src': ["'self'", "blob:"],
 }; 

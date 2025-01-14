@@ -4,6 +4,7 @@ import { ChevronDownIcon, PlayIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon 
 import styles from './VideoWidget.module.css';
 import { MOCK_VIDEOS } from './config';
 import { Video } from './types';
+import { YoutubeModal } from './YoutubeModal';
 
 const VideoWidget = () => {
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -12,6 +13,8 @@ const VideoWidget = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const videosPerPage = 3;
   const totalPages = Math.ceil(MOCK_VIDEOS.length / videosPerPage);
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const handleNextPage = useCallback(() => {
     setCurrentPage((prev) => (prev + 1) % totalPages);
@@ -20,6 +23,11 @@ const VideoWidget = () => {
   const handlePrevPage = useCallback(() => {
     setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
   }, [totalPages]);
+
+  const handleVideoClick = (video: Video) => {
+    setSelectedVideo(video);
+    setShowModal(true);
+  };
 
   return (
     <div className={styles.container}>
@@ -78,12 +86,15 @@ const VideoWidget = () => {
                 >
                   <div className={styles.thumbnailContainer}>
                     <img 
-                      src={video.thumbnail} 
+                      src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
                       alt={video.title}
                       className={styles.thumbnail}
                     />
                     <div className={styles.overlay}>
-                      <button className={styles.playButton}>
+                      <button 
+                        className={styles.playButton}
+                        onClick={() => handleVideoClick(video)}
+                      >
                         <PlayIcon className={styles.playIcon} />
                       </button>
                       <div className={styles.videoInfo}>
@@ -125,6 +136,14 @@ const VideoWidget = () => {
           ))}
         </div>
       </motion.div>
+
+      {selectedVideo && (
+        <YoutubeModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          videoId={selectedVideo.youtubeId}
+        />
+      )}
     </div>
   );
 };
