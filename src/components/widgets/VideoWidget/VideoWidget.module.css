@@ -169,19 +169,20 @@
 
 .modalOverlay {
   @apply fixed inset-0
-         bg-black/80 backdrop-blur-sm
+         bg-black/90 backdrop-blur-md
          flex items-center justify-center
-         z-[9999];
+         z-[9999]
+         p-4 md:p-8;
 }
 
 .modalContent {
   @apply w-full max-w-4xl
          aspect-video
-         mx-4
          rounded-2xl
          overflow-hidden
          border border-white/10
-         relative;
+         relative
+         shadow-2xl;
 }
 
 .youtubeIframe {
@@ -189,4 +190,71 @@
          border-none
          relative;
   z-index: 1;
+}
+
+/* Loading Spinner */
+.loadingContainer {
+  @apply absolute inset-0
+         flex items-center justify-center
+         bg-black/60 backdrop-blur-sm;
+}
+
+.loadingSpinner {
+  @apply w-12 h-12
+         border-4 border-white/20
+         border-t-white
+         rounded-full;
+}
+
+/* Close Button */
+.closeButton {
+  @apply absolute top-4 right-4
+         w-10 h-10
+         flex items-center justify-center
+         rounded-full
+         bg-black/60
+         border border-white/10
+         backdrop-blur-sm
+         transition-all duration-200
+         hover:bg-white/10
+         hover:scale-110
+         z-10;
+}
+
+.closeIcon {
+  @apply w-5 h-5 text-white/90;
+}
+
+/* Video Info Overlay */
+.videoInfoOverlay {
+  @apply absolute bottom-0 left-0 right-0
+         p-4
+         bg-gradient-to-t from-black/80 to-transparent
+         backdrop-blur-sm;
+}
+
+.modalVideoTitle {
+  @apply text-white text-lg font-semibold
+         mb-1;
+}
+
+.modalVideoMeta {
+  @apply text-white/70 text-sm;
+}
+
+/* Keyboard Navigation Styles */
+.closeButton:focus-visible {
+  @apply ring-2 ring-white/50 ring-offset-2 ring-offset-black
+         outline-none;
+}
+
+/* Animation Keyframes */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.modalContent {
+  animation: pulse 1s ease-in-out;
 } 

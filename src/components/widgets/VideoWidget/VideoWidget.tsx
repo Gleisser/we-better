@@ -141,7 +141,7 @@ const VideoWidget = () => {
         <YoutubeModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
-          videoId={selectedVideo.youtubeId}
+          video={selectedVideo}
         />
       )}
     </div>
