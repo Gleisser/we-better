@@ -431,4 +431,35 @@
          bg-black/80
          transform -translate-x-1/2 rotate-45;
 }
+
+.progressIndicator {
+  @apply absolute bottom-0 left-0 right-0
+         h-1
+         bg-black/40
+         backdrop-blur-sm
+         z-10;
+}
+
+.progressBar {
+  @apply h-full
+         bg-gradient-to-r from-purple-500 to-pink-500
+         transition-all duration-300;
+}
+
+.watchedBadge {
+  @apply absolute -top-6 right-3
+         px-2 py-0.5
+         rounded-sm
+         bg-black/60
+         backdrop-blur-sm
+         border border-white/10
+         text-xs text-white/90
+         font-medium;
+}
+
+/* Add hover effect */
+.videoCard:hover .progressBar {
+  @apply from-purple-400 to-pink-400
+         shadow-lg shadow-purple-500/20;
+}
  

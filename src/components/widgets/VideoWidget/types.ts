@@ -9,4 +9,9 @@ export interface Video {
   author: string;
   views?: string;
   previewUrl?: string;
+}
+
+export interface WatchProgress {
+  progress: number; // 0 to 100
+  lastWatched: Date;
 } 

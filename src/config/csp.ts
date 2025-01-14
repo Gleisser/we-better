@@ -5,12 +5,16 @@ export const CSP_POLICY = {
     "'unsafe-inline'",
     "'unsafe-eval'",
     "https://sdk.scdn.co",
+    "https://www.youtube.com",
+    "https://*.youtube.com"
   ],
   'script-src-elem': [
     "'self'",
     "'unsafe-inline'",
     "'unsafe-eval'",
     "https://sdk.scdn.co",
+    "https://www.youtube.com",
+    "https://*.youtube.com"
   ],
   'style-src': [
     "'self'",
@@ -43,6 +47,8 @@ export const CSP_POLICY = {
     import.meta.env.VITE_API_URL || 'http://localhost:1337',
     "https://accounts.spotify.com",
     "https://api.spotify.com",
+    "https://www.youtube.com",
+    "https://*.youtube.com"
   ],
   'font-src': [
     "'self'",

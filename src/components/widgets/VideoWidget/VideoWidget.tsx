@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon, PlayIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon, StarFilledIcon, StarEmptyIcon } from '@/components/common/icons';
 import styles from './VideoWidget.module.css';
 import { MOCK_VIDEOS } from './config';
-import { Video } from './types';
+import { Video, WatchProgress } from './types';
 import { YoutubeModal } from './YoutubeModal';
 
 const VideoWidget = () => {
@@ -20,6 +20,7 @@ const VideoWidget = () => {
   const [loadingPreviews, setLoadingPreviews] = useState<Set<string>>(new Set());
   const [userRatings, setUserRatings] = useState<Record<string, number>>({});
   const [hoverRating, setHoverRating] = useState<{id: string, rating: number} | null>(null);
+  const [watchedVideos, setWatchedVideos] = useState<Record<string, WatchProgress>>({});
 
   const handleNextPage = useCallback(() => {
     setCurrentPage((prev) => (prev + 1) % totalPages);
@@ -29,10 +30,10 @@ const VideoWidget = () => {
     setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
   }, [totalPages]);
 
-  const handleVideoClick = (video: Video) => {
+  const handleVideoClick = useCallback((video: Video) => {
     setSelectedVideo(video);
     setShowModal(true);
-  };
+  }, []);
 
   const getVideoPreviewUrl = (videoId: string) => {
     if (previewLoadError.has(videoId)) {
@@ -66,6 +67,16 @@ const VideoWidget = () => {
     setUserRatings(prev => ({
       ...prev,
       [videoId]: rating
+    }));
+  };
+
+  const handleVideoProgress = (videoId: string, progress: number) => {
+    setWatchedVideos(prev => ({
+      ...prev,
+      [videoId]: {
+        progress,
+        lastWatched: new Date()
+      }
     }));
   };
 
@@ -123,6 +134,14 @@ const VideoWidget = () => {
       </div>
     );
   };
+
+  // Memoize the modal props
+  const modalProps = useMemo(() => ({
+    isOpen: showModal,
+    onClose: () => setShowModal(false),
+    video: selectedVideo!,
+    onProgress: handleVideoProgress
+  }), [showModal, selectedVideo, handleVideoProgress]);
 
   return (
     <div className={styles.container}>
@@ -201,6 +220,21 @@ const VideoWidget = () => {
                       onError={() => handlePreviewError(video.youtubeId)}
                       onLoadStart={() => hoveredVideoId === video.id && startPreviewLoad(video.youtubeId)}
                     />
+                    {watchedVideos[video.id] && (
+                      <div className={styles.progressIndicator}>
+                        <div 
+                          className={styles.progressBar}
+                          style={{ width: `${watchedVideos[video.id].progress}%` }}
+                        />
+                        <span className={styles.watchedBadge}>
+                          {watchedVideos[video.id].progress === 100 ? (
+                            'Watched'
+                          ) : (
+                            `${Math.round(watchedVideos[video.id].progress)}%`
+                          )}
+                        </span>
+                      </div>
+                    )}
                     <motion.div 
                       className={styles.overlay}
                       animate={{
@@ -271,11 +305,7 @@ const VideoWidget = () => {
       </motion.div>
 
       {selectedVideo && (
-        <YoutubeModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          video={selectedVideo}
-        />
+        <YoutubeModal {...modalProps} />
       )}
     </div>
   );
