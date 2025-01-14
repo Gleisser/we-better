@@ -85,18 +85,18 @@
          bg-gradient-to-t from-black/80 via-black/20 to-transparent
          flex items-end
          p-3
-         transition-all duration-300;
+         transition-all duration-300
+         z-10;
 }
 
 .videoCard:hover .overlay {
-  @apply bg-gradient-to-t from-black/95 via-black/40 to-transparent
-         backdrop-blur-[2px];
+  @apply bg-gradient-to-t from-black/95 via-black/60 to-black/20 backdrop-blur-[2px];
 }
 
 .playButton {
-  @apply absolute left-3 top-1/2
-         -translate-y-1/2
-         w-10 h-10
+  @apply absolute left-1/2 top-1/4
+         -translate-x-1/2 -translate-y-1/2
+         w-12 h-12
          flex items-center justify-center
          rounded-full
          bg-white/10
@@ -104,20 +104,24 @@
          backdrop-blur-sm
          transition-all duration-200
          hover:bg-white/20
-         hover:scale-110;
+         hover:scale-110
+         z-20;
 }
 
 .playIcon {
-  @apply w-5 h-5 text-white;
+  @apply w-6 h-6 text-white;
 }
 
 .videoInfo {
-  @apply flex items-end justify-between
-         w-full;
+  @apply w-full
+         flex flex-col
+         gap-2
+         mt-auto
+         pt-12;
 }
 
 .titleSection {
-  @apply flex flex-col gap-1;
+  @apply flex-1;
 }
 
 .videoTitle {
@@ -133,7 +137,9 @@
 }
 
 .rating {
-  @apply flex items-center gap-1;
+  @apply mt-auto
+         flex items-center
+         justify-between;
 }
 
 .starIcon {
@@ -329,12 +335,13 @@
 .videoMetadata {
   @apply overflow-hidden
          text-xs text-white/90
-         drop-shadow-md;
+         drop-shadow-md
+         mt-2;
 }
 
 .metaRow {
   @apply flex items-center gap-2
-         mt-1.5;
+         mb-2;
 }
 
 .duration {
@@ -420,7 +427,7 @@
          text-xs text-white
          whitespace-nowrap
          transform -translate-x-1/2
-         z-10;
+         z-40;
 }
 
 /* Add arrow to tooltip */
@@ -437,7 +444,7 @@
          h-1
          bg-black/40
          backdrop-blur-sm
-         z-10;
+         z-20;
 }
 
 .progressBar {
@@ -447,19 +454,30 @@
 }
 
 .watchedBadge {
-  @apply absolute -top-6 right-3
+  @apply absolute top-3 right-3
          px-2 py-0.5
          rounded-sm
          bg-black/60
          backdrop-blur-sm
          border border-white/10
          text-xs text-white/90
-         font-medium;
+         font-medium
+         z-30;
 }
 
 /* Add hover effect */
 .videoCard:hover .progressBar {
   @apply from-purple-400 to-pink-400
          shadow-lg shadow-purple-500/20;
+}
+
+/* Optional: Add transition for metadata */
+.videoMetadata {
+  @apply transition-all duration-300
+         transform;
+}
+
+.videoCard:hover .videoMetadata {
+  @apply translate-y-0 opacity-100;
 }
  
