@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDownIcon, PlayIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon } from '@/components/common/icons';
+import { ChevronDownIcon, PlayIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon, StarFilledIcon, StarEmptyIcon } from '@/components/common/icons';
 import styles from './VideoWidget.module.css';
 import { MOCK_VIDEOS } from './config';
 import { Video } from './types';
@@ -18,6 +18,8 @@ const VideoWidget = () => {
   const [hoveredVideoId, setHoveredVideoId] = useState<string | null>(null);
   const [previewLoadError, setPreviewLoadError] = useState<Set<string>>(new Set());
   const [loadingPreviews, setLoadingPreviews] = useState<Set<string>>(new Set());
+  const [userRatings, setUserRatings] = useState<Record<string, number>>({});
+  const [hoverRating, setHoverRating] = useState<{id: string, rating: number} | null>(null);
 
   const handleNextPage = useCallback(() => {
     setCurrentPage((prev) => (prev + 1) % totalPages);
@@ -58,6 +60,68 @@ const VideoWidget = () => {
       newSet.delete(videoId);
       return newSet;
     });
+  };
+
+  const handleRating = (videoId: string, rating: number) => {
+    setUserRatings(prev => ({
+      ...prev,
+      [videoId]: rating
+    }));
+  };
+
+  const renderStars = (video: Video) => {
+    const currentRating = userRatings[video.id] || video.rating;
+    const isHovering = hoverRating?.id === video.id;
+    const hoverValue = hoverRating?.rating || 0;
+
+    return (
+      <div className={styles.ratingWrapper}>
+        <motion.div 
+          className={styles.ratingContainer}
+          initial={false}
+        >
+          {[1, 2, 3, 4, 5].map((star) => (
+            <motion.button
+              key={star}
+              className={styles.starButton}
+              onHoverStart={() => setHoverRating({ id: video.id, rating: star })}
+              onHoverEnd={() => setHoverRating(null)}
+              onClick={() => handleRating(video.id, star)}
+              whileTap={{ scale: 0.8 }}
+            >
+              <motion.div
+                animate={{
+                  scale: (isHovering && hoverValue >= star) || (!isHovering && currentRating >= star) ? 1.2 : 1,
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                {(isHovering && hoverValue >= star) || (!isHovering && currentRating >= star) ? (
+                  <StarFilledIcon className={styles.starIconFilled} />
+                ) : (
+                  <StarEmptyIcon className={styles.starIconEmpty} />
+                )}
+              </motion.div>
+            </motion.button>
+          ))}
+          <span className={styles.ratingValue}>{currentRating.toFixed(1)}</span>
+        </motion.div>
+        
+        {/* Tooltip for potential rating */}
+        <AnimatePresence>
+          {isHovering && (
+            <motion.div 
+              className={styles.ratingTooltip}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+            >
+              Rate: {hoverValue.toFixed(1)}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
   };
 
   return (
@@ -175,8 +239,7 @@ const VideoWidget = () => {
                           </div>
                         </div>
                         <div className={styles.rating}>
-                          <StarIcon className={styles.starIcon} />
-                          <span className={styles.ratingValue}>{video.rating}</span>
+                          {renderStars(video)}
                         </div>
                       </div>
                     </motion.div>
