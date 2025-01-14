@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import styles from './VideoWidget.module.css';
 
 interface YoutubeModalProps {
@@ -10,7 +11,7 @@ interface YoutubeModalProps {
 export const YoutubeModal = ({ isOpen, onClose, videoId }: YoutubeModalProps) => {
   if (!isOpen) return null;
 
-  return (
+  const portalContent = (
     <AnimatePresence>
       <motion.div 
         className={styles.modalOverlay}
@@ -36,4 +37,12 @@ export const YoutubeModal = ({ isOpen, onClose, videoId }: YoutubeModalProps) =>
       </motion.div>
     </AnimatePresence>
   );
+
+  // Get portal root element
+  const portalRoot = document.getElementById('portal-root');
+  
+  // Only render if portal root exists
+  if (!portalRoot) return null;
+
+  return createPortal(portalContent, portalRoot);
 }; 
