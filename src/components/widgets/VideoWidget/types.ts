@@ -1,14 +1,16 @@
+export type VideoBadge = 'trending' | 'new' | null;
+
 export interface Video {
   id: string;
-  title: string;
-  category: 'Mindfulness' | 'Productivity' | 'Health' | 'Leadership' | 'Personal Growth';
-  subCategory?: string;
   youtubeId: string;
-  rating: number;
-  duration: string;
+  title: string;
   author: string;
-  views?: string;
-  previewUrl?: string;
+  duration: string;
+  views: string;
+  rating: number;
+  category: string;
+  subCategory: string;
+  badge?: VideoBadge;
 }
 
 export interface WatchProgress {

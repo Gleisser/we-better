@@ -2,26 +2,28 @@ import { Video } from './types';
 
 export const MOCK_VIDEOS: Video[] = [
   {
-    id: 'v1',
+    id: '1',
+    youtubeId: 'dQw4w9WgXcQ',
     title: 'The Psychology of Self-Improvement',
+    author: 'Academy of Ideas',
+    duration: '18:24',
+    views: '124K views',
+    rating: 4.8,
     category: 'Personal Growth',
     subCategory: 'Psychology',
-    youtubeId: 'vj-91dMvQQo',
-    rating: 4.8,
-    duration: '18:24',
-    author: 'Academy of Ideas',
-    views: '124K'
+    badge: 'trending'
   },
   {
-    id: 'v2',
+    id: '2',
+    youtubeId: 'rC7xZmLcOeY',
     title: 'Mindful Leadership: Leading with Purpose',
+    author: 'Simon Sinek',
+    duration: '22:15',
+    views: '89K views',
+    rating: 4.9,
     category: 'Leadership',
     subCategory: 'Mindfulness',
-    youtubeId: 'u2eY_3OHHkY',
-    rating: 4.9,
-    duration: '22:15',
-    author: 'Simon Sinek',
-    views: '89K'
+    badge: 'new'
   },
   {
     id: 'v3',

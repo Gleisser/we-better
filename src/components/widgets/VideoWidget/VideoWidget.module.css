@@ -596,4 +596,43 @@
          shadow-xl;
   transform: translateY(-1px);
 }
+
+/* Add badge styles */
+.badge {
+  @apply absolute top-3 left-3
+         px-2.5 py-1
+         rounded-full
+         text-xs font-bold
+         tracking-tight
+         z-30
+         flex items-center gap-1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.trendingBadge {
+  @apply bg-gradient-to-r from-orange-500 to-red-500
+         text-white;
+}
+
+.trendingBadge::before {
+  content: "🔥";
+  @apply text-sm;
+}
+
+.newBadge {
+  @apply bg-gradient-to-r from-emerald-500 to-teal-500
+         text-white;
+}
+
+.newBadge::before {
+  content: "✨";
+  @apply text-sm;
+}
+
+/* Add hover effect */
+.videoCard:hover .badge {
+  transform: translateY(-1px);
+  @apply shadow-lg shadow-black/20;
+}
  
