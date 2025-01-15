@@ -384,9 +384,17 @@
 
 .views {
   @apply text-white
-         font-semibold;
+         font-semibold
+         flex items-center gap-1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Add subtle glow effect on hover */
+.videoCard:hover .views {
+  @apply text-white;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+  transition: filter 0.3s ease;
 }
 
 .authorInfo {

@@ -6,6 +6,7 @@ import { MOCK_VIDEOS } from './config';
 import { Video, WatchProgress } from './types';
 import { YoutubeModal } from './YoutubeModal';
 import { useTiltEffect } from '@/hooks/useTiltEffect';
+import ViewCounter from './ViewCounter';
 
 const VideoWidget = () => {
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -343,7 +344,7 @@ const VideoWidget = () => {
                             >
                               <div className={styles.metaRow}>
                                 <span className={styles.duration}>{video.duration}</span>
-                                <span className={styles.views}>{video.views} views</span>
+                                <ViewCounter value={video.views} className={styles.views} />
                               </div>
                               <div className={styles.authorInfo}>
                                 <span className={styles.authorName}>{video.author}</span>
