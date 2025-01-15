@@ -1,15 +1,33 @@
 let apiLoaded = false;
+let apiLoadPromise: Promise<void> | null = null;
 
 export const loadYouTubeAPI = () => {
-  if (!window.YT && !apiLoaded) {
-    apiLoaded = true;
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-    return new Promise((resolve) => {
-      window.onYouTubeIframeAPIReady = resolve;
-    });
+  // Return existing promise if API is already loading
+  if (apiLoadPromise) {
+    return apiLoadPromise;
   }
-  return Promise.resolve();
+
+  // Return resolved promise if API is already loaded and initialized
+  if (window.YT && window.YT.Player) {
+    return Promise.resolve();
+  }
+
+  // Create new promise for API loading
+  apiLoadPromise = new Promise<void>((resolve) => {
+    // Set global callback
+    window.onYouTubeIframeAPIReady = () => {
+      apiLoaded = true;
+      resolve();
+    };
+
+    // Only inject the script tag if it hasn't been injected yet
+    if (!apiLoaded && !document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+    }
+  });
+
+  return apiLoadPromise;
 }; 

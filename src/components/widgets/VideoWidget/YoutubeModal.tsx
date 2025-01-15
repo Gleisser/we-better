@@ -35,6 +35,18 @@ export const YoutubeModal = memo(({ isOpen, onClose, video, onProgress }: Youtub
       try {
         await loadYouTubeAPI();
         
+        if (!window.YT || !window.YT.Player) {
+          console.log('[YT Debug] Waiting for YT API to fully initialize...');
+          await new Promise<void>((resolve) => {
+            const checkYT = setInterval(() => {
+              if (window.YT && window.YT.Player) {
+                clearInterval(checkYT);
+                resolve();
+              }
+            }, 100);
+          });
+        }
+        
         if (!isMounted) return;
 
         playerRef.current = new window.YT.Player(containerIdRef.current, {
