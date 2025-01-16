@@ -4,6 +4,7 @@ import HabitsWidget from '@/components/widgets/HabitsWidget/HabitsWidget';
 import GoalsWidget from '@/components/widgets/GoalsWidget/GoalsWidget';
 import PodcastWidget from '@/components/widgets/PodcastWidget/PodcastWidget';
 import VideoWidget from '@/components/widgets/VideoWidget/VideoWidget';
+import CourseWidget from '@/components/widgets/CourseWidget/CourseWidget';
 import styles from './DashboardGrid.module.css';
 
 const DashboardGrid = () => {
@@ -50,10 +51,7 @@ const DashboardGrid = () => {
 
         {/* Course Widget */}
         <div className={`${styles.widget} ${styles.course}`}>
-          <div className={styles.placeholder}>
-            <h3 className={styles.widgetTitle}>Recommended Course</h3>
-            <p className={styles.comingSoon}>Widget coming soon...</p>
-          </div>
+          <CourseWidget />
         </div>
       </div>
     </div>
