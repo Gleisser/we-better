@@ -1,4 +1,4 @@
-import { Platform, PlatformConfig } from './types';
+import { Platform, PlatformConfig, Course } from './types';
 
 export const PLATFORM_CONFIG: Record<Platform, PlatformConfig> = {
   udemy: {
@@ -27,44 +27,83 @@ export const PLATFORM_CONFIG: Record<Platform, PlatformConfig> = {
   }
 };
 
-export const MOCK_COURSES = [
+export const MOCK_COURSES: Course[] = [
   {
     id: 'course_1',
-    title: 'Advanced React Patterns & Best Practices',
-    platform: 'udemy' as Platform,
-    thumbnail: '/assets/images/courses/react-patterns.jpg',
-    instructor: 'Sarah Developer',
-    rating: 4.8,
-    studentsCount: 12500,
+    title: 'Productivity & Time Management for the Overwhelmed',
+    platform: 'udemy',
+    thumbnail: '/assets/images/courses/productivity-course.jpg',
+    instructor: 'Josh Paulsen',
+    rating: 4.6,
+    studentsCount: 52149,
     price: {
-      current: 29.99,
-      original: 199.99,
+      current: 14.99,
+      original: 84.99,
     },
-    duration: '22h 30m',
-    level: 'intermediate',
-    skills: ['React', 'TypeScript', 'Performance'],
-    matchScore: 92,
-    description: 'Master advanced React patterns and learn to build scalable and maintainable applications.',
-    lastUpdated: '2024-03-15',
-    url: 'https://www.udemy.com/course/advanced-react-patterns'
+    duration: '3h 15m',
+    level: 'beginner',
+    skills: [
+      'Time Management',
+      'Productivity',
+      'Goal Setting',
+      'Work-Life Balance',
+      'Stress Management'
+    ],
+    matchScore: 95,
+    description: 'Master proven productivity techniques to reduce stress, increase focus, and get more done in less time.',
+    lastUpdated: '2024-02-15',
+    url: 'https://www.udemy.com/course/productivity-and-time-management/'
   },
   {
     id: 'course_2',
-    title: 'Machine Learning A-Z: Hands-On Python & R',
-    platform: 'coursera' as Platform,
-    thumbnail: '/assets/images/courses/ml-course.jpg',
-    instructor: 'Dr. Angela Yu',
-    rating: 4.9,
-    studentsCount: 45000,
+    title: 'Mindfulness & Meditation: A Complete Guide to Inner Peace',
+    platform: 'coursera',
+    thumbnail: '/assets/images/courses/mindfulness-course.jpg',
+    instructor: 'Dr. Sarah Williams',
+    rating: 4.8,
+    studentsCount: 34750,
     price: {
-      current: 79.99,
-      original: 199.99,
+      current: 29.99,
+      original: 99.99,
     },
-    duration: '44h 15m',
+    duration: '6h 30m',
     level: 'beginner',
-    skills: ['Python', 'Machine Learning', 'Data Science'],
+    skills: [
+      'Mindfulness',
+      'Meditation',
+      'Stress Reduction',
+      'Emotional Balance',
+      'Mental Clarity'
+    ],
     matchScore: 88,
-    description: 'Learn to create Machine Learning Algorithms in Python and R from two Data Science experts.',
-    lastUpdated: '2024-03-10'
+    description: 'Learn practical mindfulness techniques and meditation practices for reducing stress and finding inner peace.',
+    lastUpdated: '2024-03-01',
+    url: 'https://www.coursera.org/learn/mindfulness-meditation'
+  },
+  {
+    id: 'course_3',
+    title: 'The Science of Well-being & Happiness',
+    platform: 'edx',
+    thumbnail: '/assets/images/courses/wellbeing-course.jpg',
+    instructor: 'Prof. Lauren Santos',
+    rating: 4.9,
+    studentsCount: 45200,
+    price: {
+      current: 49.99,
+      original: 149.99,
+    },
+    duration: '10h 45m',
+    level: 'intermediate',
+    skills: [
+      'Positive Psychology',
+      'Habit Formation',
+      'Mental Health',
+      'Life Satisfaction',
+      'Personal Growth'
+    ],
+    matchScore: 92,
+    description: 'Discover scientifically-proven strategies for increasing happiness and building a more fulfilling life.',
+    lastUpdated: '2024-03-10',
+    url: 'https://www.edx.org/learn/science-of-wellbeing'
   }
 ]; 
