@@ -45,7 +45,8 @@ export const MOCK_COURSES = [
     skills: ['React', 'TypeScript', 'Performance'],
     matchScore: 92,
     description: 'Master advanced React patterns and learn to build scalable and maintainable applications.',
-    lastUpdated: '2024-03-15'
+    lastUpdated: '2024-03-15',
+    url: 'https://www.udemy.com/course/advanced-react-patterns'
   },
   {
     id: 'course_2',

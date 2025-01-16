@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDownIcon, InfoIcon, SkillsIcon } from '@/components/common/icons';
+import { ChevronDownIcon, InfoIcon, SkillsIcon, ArrowTopRight } from '@/components/common/icons';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import { Course } from './types';
 import { MOCK_COURSES, PLATFORM_CONFIG } from './config';
@@ -147,6 +147,16 @@ const CourseWidget = () => {
                     </span>
                   </div>
                 </div>
+
+                <a 
+                  href={currentCourse.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={styles.goToCourseButton}
+                >
+                  <span>Go to the Course</span>
+                  <ArrowTopRight className={styles.goToCourseIcon} />
+                </a>
               </div>
             </div>
           </div>

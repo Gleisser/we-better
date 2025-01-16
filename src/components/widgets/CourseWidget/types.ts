@@ -19,6 +19,7 @@ export interface Course {
   matchScore: number;
   description: string;
   lastUpdated: string;
+  url: string;
 }
 
 export interface PlatformConfig {
