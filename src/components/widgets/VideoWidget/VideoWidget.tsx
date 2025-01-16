@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon, PlayIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon, StarFilledIcon, StarEmptyIcon } from '@/components/common/icons';
 import styles from './VideoWidget.module.css';
@@ -186,10 +186,22 @@ const VideoWidget = () => {
     })
   };
 
+  // Add resize effect
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth <= 768;
+      setIsCollapsed(isMobile);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div
       ref={elementRef}
-      className={styles.container}
+      className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
