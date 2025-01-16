@@ -1,29 +1,16 @@
-import { useState } from 'react';
+import { ReactNode } from 'react';
 import styles from './Tooltip.module.css';
 
 interface TooltipProps {
-  text: string;
-  children: React.ReactNode;
-  position?: 'top' | 'bottom';
+  content: string;
+  children: ReactNode;
 }
 
-const Tooltip = ({ text, children, position = 'bottom' }: TooltipProps) => {
-  const [isVisible, setIsVisible] = useState(false);
-
+export const Tooltip = ({ content, children }: TooltipProps) => {
   return (
-    <div 
-      className={styles.tooltipWrapper}
-      onMouseEnter={() => setIsVisible(true)}
-      onMouseLeave={() => setIsVisible(false)}
-    >
+    <div className={styles.tooltipContainer}>
       {children}
-      {isVisible && (
-        <div className={`${styles.tooltip} ${styles[position]}`}>
-          {text}
-        </div>
-      )}
+      <span className={styles.tooltipText}>{content}</span>
     </div>
   );
-};
-
-export default Tooltip; 
+}; 

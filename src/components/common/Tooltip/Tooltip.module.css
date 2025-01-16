@@ -1,40 +1,26 @@
-.tooltipWrapper {
-  @apply relative inline-flex;
+.tooltipContainer {
+  @apply relative inline-block;
 }
 
-.tooltip {
-  @apply absolute left-1/2 -translate-x-1/2
-         px-2 py-1 rounded-md
-         bg-black/90 backdrop-blur-sm
-         border border-white/[0.08]
-         text-xs text-white/70
+.tooltipText {
+  @apply invisible opacity-0
+         absolute bottom-full left-1/2 -translate-x-1/2 mb-2
+         px-3 py-1.5
+         text-sm text-white
          whitespace-nowrap
-         z-[100];
+         bg-black/90 rounded-lg
+         border border-white/10
+         transition-all duration-200
+         z-50;
 }
 
-.tooltip.top {
-  @apply bottom-[calc(100%+8px)];
+.tooltipText::after {
+  content: '';
+  @apply absolute top-full left-1/2 -translate-x-1/2
+         border-4 border-transparent
+         border-t-black/90;
 }
 
-.tooltip.bottom {
-  @apply top-[calc(100%+8px)];
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 5px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.2s ease-out;
-}
-
-.tooltipWrapper:hover .tooltip {
-  @apply block;
+.tooltipContainer:hover .tooltipText {
+  @apply visible opacity-100;
 }
