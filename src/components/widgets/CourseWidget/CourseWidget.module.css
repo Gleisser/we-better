@@ -299,4 +299,23 @@
   100% {
     background-position: 0% 50%;
   }
+}
+
+.iconButton.bookmarked {
+  @apply bg-white/20 border-white/20;
+}
+
+.iconButton.bookmarked .actionIcon {
+  @apply text-white;
+}
+
+/* Add a subtle animation when bookmarking */
+@keyframes bookmark {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.iconButton.bookmarked {
+  animation: bookmark 0.3s ease-in-out;
 } 

@@ -793,19 +793,18 @@ export const PlayIcon = ({ className }: IconProps) => (
   </svg>
 );
 
-export const BookmarkIcon = ({ className, filled }: { className?: string; filled?: boolean }) => (
+export const BookmarkIcon = ({ className, filled }: IconProps & { filled?: boolean }) => (
   <svg 
     viewBox="0 0 24 24" 
+    fill={filled ? "currentColor" : "none"}
+    stroke="currentColor" 
     className={className}
-    fill="none"
-    stroke="currentColor"
   >
     <path 
       strokeLinecap="round" 
       strokeLinejoin="round" 
       strokeWidth={2} 
-      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-      fill={filled ? 'currentColor' : 'none'}
+      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" 
     />
   </svg>
 );
