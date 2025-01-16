@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { BookmarkIcon, ShareIcon, ArrowTopRight } from '@/components/common/icons';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import { Article } from './types';

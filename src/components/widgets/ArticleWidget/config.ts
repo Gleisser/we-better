@@ -10,7 +10,7 @@ export const MOCK_ARTICLES: Article[] = [
     source: {
       id: 'source_1',
       name: 'Neuroscience Today',
-      icon: '/assets/images/sources/neuroscience-today.png',
+      icon: '/assets/images/articles/neuroscience-today.jpg',
       url: 'https://example.com/neuroscience-today'
     },
     readTime: 8,
