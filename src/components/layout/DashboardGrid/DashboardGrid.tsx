@@ -6,6 +6,7 @@ import PodcastWidget from '@/components/widgets/PodcastWidget/PodcastWidget';
 import VideoWidget from '@/components/widgets/VideoWidget/VideoWidget';
 import CourseWidget from '@/components/widgets/CourseWidget/CourseWidget';
 import styles from './DashboardGrid.module.css';
+import ArticleWidget from '@/components/widgets/ArticleWidget/ArticleWidget';
 
 const DashboardGrid = () => {
   return (
@@ -23,10 +24,7 @@ const DashboardGrid = () => {
 
         {/* Article Widget */}
         <div className={`${styles.widget} ${styles.article}`}>
-          <div className={styles.placeholder}>
-            <h3 className={styles.widgetTitle}>Article of the Day</h3>
-            <p className={styles.comingSoon}>Widget coming soon...</p>
-          </div>
+          <ArticleWidget />
         </div>
 
         {/* Habits Widget */}
