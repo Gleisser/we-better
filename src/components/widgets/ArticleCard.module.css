@@ -1,0 +1,274 @@
+.card {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced gradient background with animation */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(139, 92, 246, 0.25),    /* Purple - increased opacity */
+    rgba(59, 130, 246, 0.25),    /* Blue - increased opacity */
+    rgba(236, 72, 153, 0.25),    /* Pink - increased opacity */
+    rgba(139, 92, 246, 0.25)     /* Back to Purple - increased opacity */
+  );
+  background-size: 400% 400%;    /* Larger background size for smoother animation */
+  backdrop-filter: blur(10px);
+  z-index: -1;
+  animation: gradientRotate 15s ease infinite;  /* Slower, smoother animation */
+}
+
+/* Adjusted overlay for better contrast */
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(23, 23, 23, 0.6);  /* Darker background for better contrast */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  backdrop-filter: blur(10px);
+  z-index: -1;
+}
+
+@keyframes gradientRotate {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Enhanced hover effect */
+.card:hover::before {
+  animation-play-state: paused;
+  filter: brightness(1.3) saturate(1.2);  /* Increased brightness and saturation on hover */
+}
+
+/* Update content container to be relative */
+.content {
+  position: relative;
+  padding: 20px;
+  z-index: 1;
+}
+
+/* Update thumbnailSection to be relative */
+.thumbnailSection {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.categoryBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: var(--category-color);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.categoryIcon {
+  margin-right: 6px;
+}
+
+.categoryLabel {
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.title {
+  flex: 1;
+  font-size: 1.25rem;
+  color: white;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.description {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 16px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metadata {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  gap: 12px;
+}
+
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40 backdrop-blur-sm
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+}
+
+.iconButton.bookmarked {
+  @apply bg-purple-500/20 border-purple-500/30
+         text-purple-400;
+}
+
+.actionIcon {
+  @apply w-4 h-4;
+}
+
+.readButton {
+  @apply flex items-center gap-1.5
+         px-3 py-1.5 rounded-lg
+         bg-white/10 backdrop-blur-sm
+         border border-white/[0.08]
+         text-white text-sm font-medium
+         transition-all duration-200
+         hover:bg-white/20
+         whitespace-nowrap;
+}
+
+.readIcon {
+  @apply w-3.5 h-3.5;
+}
+
+.contentHeader {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.votes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.voteButton {
+  @apply flex items-center gap-1
+         px-3 py-1.5 rounded-md
+         bg-transparent
+         text-white/70
+         transition-all duration-200
+         hover:bg-opacity-90;
+}
+
+.voteButton:hover {
+  @apply text-white;
+}
+
+.voteButton:first-child:hover {
+  background-color: rgba(34, 197, 94, 0.2); /* Green background */
+}
+
+.voteButton:last-child:hover {
+  background-color: rgba(239, 68, 68, 0.2); /* Red background */
+}
+
+.voteButton.votedUp {
+  @apply text-green-400;
+  background-color: rgba(34, 197, 94, 0.2);
+}
+
+.voteButton.votedDown {
+  @apply text-red-400;
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+.voteIcon {
+  @apply w-4 h-4;
+  transition: transform 0.2s ease;
+}
+
+.voteButton:hover .voteIcon {
+  transform: scale(1.1);
+}
+
+.voteCount {
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 20px;
+}
+
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.voteContainer {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.shareButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+} 

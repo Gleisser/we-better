@@ -1006,7 +1006,7 @@ export const VolumeIcon = ({
   if (level < 0.3) {
     return (
       <svg className={className} viewBox="0 0 16 16" fill="currentColor">
-        <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649V1.5z"/>
+        <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649V1.5zM11.469 6.097a.75.75 0 0 0-.72 1.31A1.23 1.23 0 0 1 11 8.5a1.23 1.23 0 0 1-.251 1.093.75.75 0 0 0 1.202.897A2.73 2.73 0 0 0 12.5 8.5a2.73 2.73 0 0 0-.549-1.403z"/>
       </svg>
     );
   }
@@ -1014,7 +1014,7 @@ export const VolumeIcon = ({
   if (level < 0.7) {
     return (
       <svg className={className} viewBox="0 0 16 16" fill="currentColor">
-        <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649V1.5zM11.469 6.097a.75.75 0 0 0-.72 1.31A1.23 1.23 0 0 1 11 8.5a1.23 1.23 0 0 1-.251 1.093.75.75 0 0 0 1.202.897A2.73 2.73 0 0 0 12.5 8.5a2.73 2.73 0 0 0-.549-1.403z"/>
+        <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649V1.5zM11.469 6.097a.75.75 0 0 0-.72 1.31A1.23 1.23 0 0 1 11 8.5a1.23 1.23 0 0 1-.251 1.093.75.75 0 0 0 1.202.897A2.73 2.73 0 0 0 12.5 8.5a2.73 2.73 0 0 0-.549-1.403zm2.03-1.564a.75.75 0 0 0-.671 1.342 4.23 4.23 0 0 1 0 5.25.75.75 0 1 0 1.342.671 5.73 5.73 0 0 0 0-7.121.75.75 0 0 0-.671-.142z"/>
       </svg>
     );
   }
@@ -1315,6 +1315,54 @@ export const ShareIcon = ({ className }: IconProps) => (
       strokeLinejoin="round" 
       strokeWidth={2} 
       d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+    />
+  </svg>
+);
+
+export const ChevronUpIcon = ({ className }: IconProps) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    className={className}
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M5 15l7-7 7 7" 
+    />
+  </svg>
+);
+
+export const ThumbUpIcon = ({ className }: IconProps) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    className={className}
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" 
+    />
+  </svg>
+);
+
+export const ThumbDownIcon = ({ className }: IconProps) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    className={className}
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v2a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714-.211-1.412-.608-2.006L17 13V4m-7 10h2m5 0v2a2 2 0 01-2 2h-2.5" 
     />
   </svg>
 );
