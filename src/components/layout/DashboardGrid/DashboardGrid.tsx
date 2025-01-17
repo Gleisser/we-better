@@ -5,8 +5,9 @@ import GoalsWidget from '@/components/widgets/GoalsWidget/GoalsWidget';
 import PodcastWidget from '@/components/widgets/PodcastWidget/PodcastWidget';
 import VideoWidget from '@/components/widgets/VideoWidget/VideoWidget';
 import CourseWidget from '@/components/widgets/CourseWidget/CourseWidget';
-import styles from './DashboardGrid.module.css';
+import BookWidget from '@/components/widgets/BookWidget/BookWidget';
 import ArticleWidget from '@/components/widgets/ArticleWidget/ArticleWidget';
+import styles from './DashboardGrid.module.css';
 
 const DashboardGrid = () => {
   return (
@@ -50,6 +51,11 @@ const DashboardGrid = () => {
         {/* Course Widget */}
         <div className={`${styles.widget} ${styles.course}`}>
           <CourseWidget />
+        </div>
+
+        {/* Book Widget */}
+        <div className={`${styles.widget} ${styles.book}`}>
+          <BookWidget />
         </div>
       </div>
     </div>

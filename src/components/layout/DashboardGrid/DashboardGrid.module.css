@@ -3,15 +3,14 @@
 }
 
 .bentoGrid {
-  @apply grid gap-4
-         w-full
-         grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+  @apply grid gap-4 w-full;
+  grid-template-columns: repeat(3, 1fr);
   grid-template-areas:
     "quote affirmation article"
     "habits habits habits"
     "goals goals goals"
     "videos videos videos"
-    "podcast course course";
+    "podcast course book";
 }
 
 .widget {
@@ -23,7 +22,75 @@
   z-index: 0;
 }
 
-/* Add glow effect similar to AIAssistantButton */
+/* Widget areas */
+.quote {
+  grid-area: quote;
+}
+
+.affirmation {
+  grid-area: affirmation;
+}
+
+.article {
+  grid-area: article;
+}
+
+.habits {
+  grid-area: habits;
+}
+
+.goals {
+  grid-area: goals;
+}
+
+.videos {
+  grid-area: videos;
+}
+
+.podcast {
+  grid-area: podcast;
+}
+
+.course {
+  grid-area: course;
+}
+
+.book {
+  grid-area: book;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .bentoGrid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "quote affirmation"
+      "article article"
+      "habits habits"
+      "goals goals"
+      "videos videos"
+      "podcast course"
+      "book book";
+  }
+}
+
+@media (max-width: 768px) {
+  .bentoGrid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "quote"
+      "affirmation"
+      "article"
+      "habits"
+      "goals"
+      "videos"
+      "podcast"
+      "course"
+      "book";
+  }
+}
+
+/* Glow effect */
 .widget::after {
   content: "";
   @apply absolute inset-0 rounded-[32px] opacity-0 transition-opacity duration-300 pointer-events-none;
@@ -39,93 +106,8 @@
   @apply opacity-100;
 }
 
-/* Widget sizes */
-.widget.small {
-  @apply col-span-1 row-span-1;
-}
-
-.widget.medium {
-  @apply col-span-1 row-span-1;
-}
-
-.widget.large {
-  grid-area: videos;
-  @apply bg-gradient-to-br from-black/40 to-black/20;
-}
-
-.widget.vertical {
-  grid-area: goals;
-  @apply bg-gradient-to-br from-black/40 to-black/20;
-}
-
-.widget.horizontal {
-  grid-area: course;
-  @apply bg-gradient-to-br from-black/40 to-black/20;
-}
-
-.widget.habits {
-  grid-area: habits;
-  @apply bg-gradient-to-br from-black/40 to-black/20;
-}
-
-.widget.goals {
-  grid-area: goals;
-  @apply bg-gradient-to-br from-black/40 to-black/20;
-}
-
-.placeholder {
-  @apply w-full h-full p-6
-         flex flex-col items-center justify-center
-         transition-all duration-300;
-}
-
-.widgetTitle {
-  @apply text-xl text-white font-plus-jakarta mb-2
-         bg-clip-text text-transparent 
-         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
-}
-
-.comingSoon {
-  @apply text-white/50 text-sm;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .bentoGrid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-areas:
-      "quote affirmation"
-      "article article"
-      "habits habits"
-      "goals goals"
-      "videos videos"
-      "podcast course";
-  }
-}
-
-@media (max-width: 768px) {
-  .bentoGrid {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "quote"
-      "affirmation"
-      "article"
-      "habits"
-      "goals"
-      "videos"
-      "podcast"
-      "course";
-  }
-}
-
 /* Ensure widget content is above the glow effect */
 .widget > * {
   position: relative;
   z-index: 2;
-}
-
-/* Update the videos widget to span full width */
-.widget.videos {
-  grid-area: videos;
-  @apply bg-gradient-to-br from-black/40 to-black/20;
 }
