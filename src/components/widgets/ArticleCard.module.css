@@ -2,78 +2,45 @@
   position: relative;
   border-radius: 24px;
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  height: 520px; /* Increased from 460px to 520px */
+  display: flex;
+  background: #000;
 }
 
-/* Enhanced gradient background with animation */
+/* Gradient border effect */
 .card::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    45deg,
-    rgba(139, 92, 246, 0.25),    /* Purple - increased opacity */
-    rgba(59, 130, 246, 0.25),    /* Blue - increased opacity */
-    rgba(236, 72, 153, 0.25),    /* Pink - increased opacity */
-    rgba(139, 92, 246, 0.25)     /* Back to Purple - increased opacity */
-  );
-  background-size: 400% 400%;    /* Larger background size for smoother animation */
-  backdrop-filter: blur(10px);
-  z-index: -1;
-  animation: gradientRotate 15s ease infinite;  /* Slower, smoother animation */
-}
-
-/* Adjusted overlay for better contrast */
-.card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(23, 23, 23, 0.6);  /* Darker background for better contrast */
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  inset: 0;
+  padding: 1px; /* Creates border width */
   border-radius: 24px;
-  backdrop-filter: blur(10px);
-  z-index: -1;
+  background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: all 0.3s ease;
 }
 
-@keyframes gradientRotate {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* Enhanced hover effect */
-.card:hover::before {
-  animation-play-state: paused;
-  filter: brightness(1.3) saturate(1.2);  /* Increased brightness and saturation on hover */
-}
-
-/* Update content container to be relative */
-.content {
-  position: relative;
-  padding: 20px;
+/* Inner content container */
+.innerCard {
+  background: #000;
+  border-radius: 24px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   z-index: 1;
 }
 
-/* Update thumbnailSection to be relative */
+/* Thumbnail section */
 .thumbnailSection {
   position: relative;
   width: 100%;
-  aspect-ratio: 16/9;
-  overflow: hidden;
-  z-index: 1;
+  height: 220px; /* Fixed height */
+  flex-shrink: 0;
 }
 
 .thumbnail {
@@ -81,6 +48,52 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* Content section */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 28px 24px; /* Increased right padding from 24px to 28px */
+  position: relative;
+}
+
+.title {
+  font-size: 1.25rem;
+  color: white;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.description {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: auto;
+}
+
+.footer {
+  margin-top: 24px; /* Increased from 16px */
+  padding-bottom: 20px; /* Added padding to ensure space at bottom */
+}
+
+/* Hover effects */
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+/* Rest of your existing styles... */
 
 .categoryBadge {
   position: absolute;
@@ -106,30 +119,6 @@
   font-weight: 500;
 }
 
-.title {
-  flex: 1;
-  font-size: 1.25rem;
-  color: white;
-  margin-bottom: 8px;
-  line-height: 1.4;
-}
-
-.description {
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 16px;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.footer {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 .metadata {
   display: flex;
   justify-content: space-between;
@@ -137,18 +126,10 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-.actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 8px;
-  gap: 12px;
-}
-
 .actionButtons {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px; /* Reduced from 8px to compensate for increased space on right */
 }
 
 .iconButton {
@@ -172,8 +153,8 @@
 
 .readButton {
   @apply flex items-center gap-1.5
-         px-3 py-1.5 rounded-lg
-         bg-white/10 backdrop-blur-sm
+         px-5 py-1.5 rounded-lg
+         bg-white/10
          border border-white/[0.08]
          text-white text-sm font-medium
          transition-all duration-200
@@ -261,7 +242,7 @@
   gap: 1px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  padding: 2px;
+  padding: 2px 4px;
 }
 
 .shareButton {
@@ -271,4 +252,29 @@
   backdrop-filter: blur(8px);
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bookmarkButton {
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Top action buttons container */
+.topActions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+/* Bottom actions container */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 0 4px;
 } 

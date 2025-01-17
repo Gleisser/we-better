@@ -55,67 +55,69 @@ const ArticleCard = ({ article }) => {
 
   return (
     <div className={styles.card}>
-      <div className={styles.thumbnailSection}>
-        <img 
-          src={article.thumbnail} 
-          alt={article.title} 
-          className={styles.thumbnail}
-        />
-        
-        {/* Category Badge */}
-        <div 
-          className={styles.categoryBadge}
-          style={{ 
-            '--category-color': category.color 
-          } as React.CSSProperties}
-        >
-          <span className={styles.categoryIcon}>{category.icon}</span>
-          <span className={styles.categoryLabel}>{category.label}</span>
-        </div>
-
-        {/* Share Button - New Position */}
-        <Tooltip content="Share article">
-          <button
-            className={`${styles.iconButton} ${styles.shareButton}`}
-            onClick={handleShare}
+      <div className={styles.innerCard}>
+        <div className={styles.thumbnailSection}>
+          <img 
+            src={article.thumbnail} 
+            alt={article.title} 
+            className={styles.thumbnail}
+          />
+          
+          {/* Category Badge */}
+          <div 
+            className={styles.categoryBadge}
+            style={{ 
+              '--category-color': category.color 
+            } as React.CSSProperties}
           >
-            <ShareIcon className={styles.actionIcon} />
-          </button>
-        </Tooltip>
-      </div>
-
-      <div className={styles.content}>
-        <h2 className={styles.title}>{article.title}</h2>
-        <p className={styles.description}>{article.description}</p>
-
-        <div className={styles.footer}>
-          <div className={styles.metadata}>
-            <span className={styles.readTime}>⏱️ {article.readTime} min read</span>
-            <span className={styles.publishDate}>
-              {new Date(article.publishedAt).toLocaleDateString()}
-            </span>
+            <span className={styles.categoryIcon}>{category.icon}</span>
+            <span className={styles.categoryLabel}>{category.label}</span>
           </div>
 
-          <div className={styles.actions}>
-            <div className={styles.actionButtons}>
-              <Tooltip content={isBookmarked(article.id) ? "Remove bookmark" : "Bookmark article"}>
-                <button
-                  className={`${styles.iconButton} ${isBookmarked(article.id) ? styles.bookmarked : ''}`}
-                  onClick={() => {
-                    if (isBookmarked(article.id)) {
-                      removeBookmark(article.id);
-                    } else {
-                      addBookmark(article);
-                    }
-                  }}
-                >
-                  <BookmarkIcon 
-                    className={styles.actionIcon} 
-                    filled={isBookmarked(article.id)}
-                  />
-                </button>
-              </Tooltip>
+          {/* Top Action Buttons */}
+          <div className={styles.topActions}>
+            <Tooltip content={isBookmarked(article.id) ? "Remove bookmark" : "Bookmark article"}>
+              <button
+                className={`${styles.iconButton} ${styles.bookmarkButton} ${isBookmarked(article.id) ? styles.bookmarked : ''}`}
+                onClick={() => {
+                  if (isBookmarked(article.id)) {
+                    removeBookmark(article.id);
+                  } else {
+                    addBookmark(article);
+                  }
+                }}
+              >
+                <BookmarkIcon 
+                  className={styles.actionIcon} 
+                  filled={isBookmarked(article.id)}
+                />
+              </button>
+            </Tooltip>
 
+            <Tooltip content="Share article">
+              <button
+                className={`${styles.iconButton} ${styles.shareButton}`}
+                onClick={handleShare}
+              >
+                <ShareIcon className={styles.actionIcon} />
+              </button>
+            </Tooltip>
+          </div>
+        </div>
+
+        <div className={styles.content}>
+          <h2 className={styles.title}>{article.title}</h2>
+          <p className={styles.description}>{article.description}</p>
+
+          <div className={styles.footer}>
+            <div className={styles.metadata}>
+              <span className={styles.readTime}>⏱️ {article.readTime} min read</span>
+              <span className={styles.publishDate}>
+                {new Date(article.publishedAt).toLocaleDateString()}
+              </span>
+            </div>
+
+            <div className={styles.actions}>
               <div className={styles.voteContainer}>
                 <Tooltip content="Upvote">
                   <button
@@ -138,17 +140,17 @@ const ArticleCard = ({ article }) => {
                   </button>
                 </Tooltip>
               </div>
-            </div>
 
-            <a 
-              href={article.url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className={styles.readButton}
-            >
-              <span>Read Article</span>
-              <ArrowTopRight className={styles.readIcon} />
-            </a>
+              <a 
+                href={article.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={styles.readButton}
+              >
+                <span>Read Article</span>
+                <ArrowTopRight className={styles.readIcon} />
+              </a>
+            </div>
           </div>
         </div>
       </div>
