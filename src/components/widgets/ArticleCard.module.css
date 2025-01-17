@@ -3,9 +3,10 @@
   border-radius: 24px;
   overflow: hidden;
   transition: all 0.3s ease;
-  height: 520px; /* Increased from 460px to 520px */
+  height: 520px;
   display: flex;
   background: #000;
+  padding: 2px;
 }
 
 /* Gradient border effect */
@@ -13,7 +14,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  padding: 1px; /* Creates border width */
+  padding: 2px;
   border-radius: 24px;
   background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%);
   -webkit-mask: 
@@ -21,14 +22,14 @@
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  opacity: 0;
+  opacity: 0.1;
   transition: all 0.3s ease;
 }
 
 /* Inner content container */
 .innerCard {
   background: #000;
-  border-radius: 24px;
+  border-radius: 22px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -91,6 +92,9 @@
 
 .card:hover::before {
   opacity: 1;
+  box-shadow: 
+    0 0 20px rgba(232, 28, 255, 0.3),
+    inset 0 0 20px rgba(64, 201, 255, 0.3);
 }
 
 /* Rest of your existing styles... */
@@ -152,18 +156,55 @@
 }
 
 .readButton {
-  @apply flex items-center gap-1.5
-         px-5 py-1.5 rounded-lg
-         bg-white/10
-         border border-white/[0.08]
+  @apply flex items-center gap-2
+         px-6 py-2 rounded-lg
          text-white text-sm font-medium
-         transition-all duration-200
-         hover:bg-white/20
+         transition-all duration-300
          whitespace-nowrap;
+  background: linear-gradient(135deg, #e81cff 0%, #40c9ff 100%);
+  border: none;
+  position: relative;
+  background-size: 200% 100%;
+  background-position: 0% 0%;
+}
+
+.readButton::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #fc00ff 0%, #00dbde 100%);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.readButton:hover {
+  background-position: 100% 0%;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(232, 28, 255, 0.25);
+}
+
+.readButton:hover::before {
+  opacity: 1;
+}
+
+.readButton:active {
+  transform: translateY(0px);
 }
 
 .readIcon {
-  @apply w-3.5 h-3.5;
+  @apply w-4 h-4;
+  transition: transform 0.2s ease;
+}
+
+.readButton:hover .readIcon {
+  transform: translate(2px, -2px);
 }
 
 .contentHeader {
