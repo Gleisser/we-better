@@ -341,4 +341,57 @@
   backdrop-filter: blur(8px);
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Add these styles */
+.moreWrapper {
+  position: relative;
+}
+
+.moreButton.active {
+  @apply bg-white/20 text-white
+         border-white/20;
+}
+
+.moreMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 50;
+}
+
+.moreOption {
+  @apply w-full px-4 py-2.5
+         flex items-center gap-3
+         text-sm text-white/70
+         transition-all duration-200
+         rounded-lg
+         hover:bg-white/5 hover:text-white;
+}
+
+.optionIcon {
+  @apply w-4 h-4 text-white/50;
+}
+
+.moreOption:hover .optionIcon {
+  @apply text-white;
+}
+
+.menuDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 8px 0;
+}
+
+.menuOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
 } 

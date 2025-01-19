@@ -811,10 +811,10 @@ export const BookmarkIcon = ({ className, filled }: IconProps & { filled?: boole
 
 export const MoreVerticalIcon = ({ className }: IconProps) => (
   <svg 
-    viewBox="0 0 24 24" 
-    fill="none"
-    stroke="currentColor" 
     className={className}
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor"
   >
     <path 
       strokeLinecap="round" 
@@ -1427,6 +1427,54 @@ export const BlockIcon = ({ className }: IconProps) => (
       strokeLinejoin="round" 
       strokeWidth={2} 
       d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+    />
+  </svg>
+);
+
+export const EyeOffIcon = ({ className }: IconProps) => (
+  <svg 
+    className={className}
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor"
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+    />
+  </svg>
+);
+
+export const HashtagIcon = ({ className }: IconProps) => (
+  <svg 
+    className={className}
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor"
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
+    />
+  </svg>
+);
+
+export const FlagIcon = ({ className }: IconProps) => (
+  <svg 
+    className={className}
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor"
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"
     />
   </svg>
 );

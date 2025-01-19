@@ -6,7 +6,11 @@ import {
   ShareIcon, 
   ArrowTopRight,
   ChevronUpIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  MoreVerticalIcon,
+  EyeOffIcon,
+  HashtagIcon,
+  FlagIcon
 } from '@/components/common/icons';
 import { Tooltip } from '@/components/common/Tooltip';
 import { useBookmarkedArticles } from '@/hooks/useBookmarkedArticles';
@@ -15,6 +19,7 @@ const ArticleCard = ({ article }) => {
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedArticles();
   const [votes, setVotes] = useState(0);
   const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
 
   const category = CATEGORY_CONFIG[article.category] || {
     icon: '📚',
@@ -51,6 +56,32 @@ const ArticleCard = ({ article }) => {
         console.log('Error sharing:', err);
       }
     }
+  };
+
+  const handleMoreClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowMoreMenu(!showMoreMenu);
+  };
+
+  const handleOptionClick = (action: string) => {
+    switch (action) {
+      case 'share':
+        handleShare();
+        break;
+      case 'hide':
+        // Handle hide
+        break;
+      case 'follow':
+        // Handle follow
+        break;
+      case 'block':
+        // Handle block
+        break;
+      case 'notInterested':
+        // Handle not interested
+        break;
+    }
+    setShowMoreMenu(false);
   };
 
   return (
@@ -94,14 +125,91 @@ const ArticleCard = ({ article }) => {
               </button>
             </Tooltip>
 
-            <Tooltip content="Share article">
-              <button
-                className={`${styles.iconButton} ${styles.shareButton}`}
-                onClick={handleShare}
-              >
-                <ShareIcon className={styles.actionIcon} />
-              </button>
-            </Tooltip>
+            <div className={styles.moreWrapper}>
+              <Tooltip content="More options">
+                <button
+                  className={`${styles.iconButton} ${styles.moreButton} ${showMoreMenu ? styles.active : ''}`}
+                  onClick={handleMoreClick}
+                >
+                  <MoreVerticalIcon className={styles.actionIcon} />
+                </button>
+              </Tooltip>
+
+              {showMoreMenu && (
+                <>
+                  <div className={styles.moreMenu}>
+                    <button 
+                      className={styles.moreOption}
+                      onClick={() => handleOptionClick('share')}
+                    >
+                      <ShareIcon className={styles.optionIcon} />
+                      <span>Share via</span>
+                    </button>
+
+                    <button 
+                      className={styles.moreOption}
+                      onClick={() => handleOptionClick('hide')}
+                    >
+                      <EyeOffIcon className={styles.optionIcon} />
+                      <span>Hide</span>
+                    </button>
+
+                    <button 
+                      className={styles.moreOption}
+                      onClick={() => handleOptionClick('follow')}
+                    >
+                      <BookmarkIcon className={styles.optionIcon} />
+                      <span>Follow It's Foss</span>
+                    </button>
+
+                    <div className={styles.menuDivider} />
+
+                    <button 
+                      className={styles.moreOption}
+                      onClick={() => handleOptionClick('block')}
+                    >
+                      <EyeOffIcon className={styles.optionIcon} />
+                      <span>Don't show posts from It's Foss</span>
+                    </button>
+
+                    <button 
+                      className={styles.moreOption}
+                      onClick={() => handleOptionClick('notInterested')}
+                    >
+                      <HashtagIcon className={styles.optionIcon} />
+                      <span>Not interested in #security</span>
+                    </button>
+
+                    <button 
+                      className={styles.moreOption}
+                      onClick={() => handleOptionClick('notInterested')}
+                    >
+                      <HashtagIcon className={styles.optionIcon} />
+                      <span>Not interested in #tools</span>
+                    </button>
+
+                    <button 
+                      className={styles.moreOption}
+                      onClick={() => handleOptionClick('notInterested')}
+                    >
+                      <HashtagIcon className={styles.optionIcon} />
+                      <span>Not interested in #linux</span>
+                    </button>
+
+                    <div className={styles.menuDivider} />
+
+                    <button 
+                      className={styles.moreOption}
+                      onClick={() => handleOptionClick('report')}
+                    >
+                      <FlagIcon className={styles.optionIcon} />
+                      <span>Report</span>
+                    </button>
+                  </div>
+                  <div className={styles.menuOverlay} onClick={() => setShowMoreMenu(false)} />
+                </>
+              )}
+            </div>
           </div>
         </div>
 
