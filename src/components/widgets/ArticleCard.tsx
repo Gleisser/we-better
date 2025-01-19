@@ -113,7 +113,7 @@ const ArticleCard = ({ article }) => {
             <div className={styles.metadata}>
               <span className={styles.readTime}>⏱️ {article.readTime} min read</span>
               <span className={styles.publishDate}>
-                {new Date(article.publishedAt).toLocaleDateString()}
+                {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
               </span>
             </div>
 
