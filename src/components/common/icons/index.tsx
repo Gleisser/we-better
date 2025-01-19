@@ -1366,3 +1366,67 @@ export const ThumbDownIcon = ({ className }: IconProps) => (
     />
   </svg>
 );
+
+export const TagIcon = ({ className }: IconProps) => (
+  <svg 
+    className={className}
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor"
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"
+    />
+  </svg>
+);
+
+export const UsersIcon = ({ className }: IconProps) => (
+  <svg 
+    className={className}
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor"
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+    />
+  </svg>
+);
+
+export const SparklesIcon = ({ className }: IconProps) => (
+  <svg 
+    className={className}
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor"
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+    />
+  </svg>
+);
+
+export const BlockIcon = ({ className }: IconProps) => (
+  <svg 
+    className={className}
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor"
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+    />
+  </svg>
+);

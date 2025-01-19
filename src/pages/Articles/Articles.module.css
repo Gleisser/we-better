@@ -96,4 +96,200 @@
   inset: 0;
   background: transparent;
   z-index: 40;
+}
+
+/* Modal styles */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  width: 100%;
+  max-width: 900px;
+  height: 600px;
+  background: #0A0A0A;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+}
+
+.modalLayout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Side Menu */
+.sideMenu {
+  width: 240px;
+  padding: 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.menuItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.menuItem.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.menuIcon {
+  @apply w-5 h-5;
+}
+
+/* Content Area */
+.modalContent {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.feedNameSection {
+  max-width: 400px;
+}
+
+.feedNameSection h3 {
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.sectionDescription {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  margin-bottom: 12px;
+}
+
+.feedNameInput {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  font-size: 0.875rem;
+}
+
+.feedNameInput:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.settingsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settingButton {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  transition: all 0.2s;
+}
+
+.settingButton:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.settingIcon {
+  @apply w-10 h-10 rounded-xl
+         bg-black/60
+         flex items-center justify-center
+         border border-white/[0.08];
+}
+
+.icon {
+  @apply w-5 h-5 text-white/70;
+}
+
+.settingInfo {
+  flex: 1;
+  text-align: left;
+}
+
+.settingTitle {
+  display: block;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.settingDescription {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+}
+
+.chevronIcon {
+  @apply w-4 h-4 text-white/30;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.saveButton {
+  @apply px-4 py-2 rounded-xl
+         bg-purple-500
+         text-sm text-white font-medium
+         transition-all duration-200
+         hover:bg-purple-600;
+}
+
+.closeButton {
+  @apply px-4 py-2 rounded-xl
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
 } 
