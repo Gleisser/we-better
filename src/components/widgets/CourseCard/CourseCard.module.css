@@ -109,4 +109,44 @@
   @apply transform translate-x-0.5 -translate-y-0.5;
 }
 
+.voteContainer {
+  @apply flex items-center gap-2 mt-4
+         justify-center;
+}
+
+.voteButton {
+  @apply flex items-center gap-1
+         px-2 py-1.5 rounded-lg
+         text-white/50
+         transition-all duration-200;
+}
+
+/* Upvote button */
+.upvoteButton:hover {
+  background-color: rgba(52, 199, 89, 0.1);
+  color: #34C759;
+}
+
+.upvoteButton.votedUp {
+  color: #34C759;
+}
+
+/* Downvote button */
+.downvoteButton:hover {
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #FF3B30;
+}
+
+.downvoteButton.votedDown {
+  color: #FF3B30;
+}
+
+.voteIcon {
+  @apply w-5 h-5;
+}
+
+.voteCount {
+  @apply text-sm min-w-[20px] text-center;
+}
+
 /* Copy the rest of the relevant styles from CourseWidget.module.css */ 
