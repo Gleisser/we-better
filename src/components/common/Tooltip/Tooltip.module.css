@@ -24,3 +24,28 @@
 .tooltipContainer:hover .tooltipText {
   @apply visible opacity-100;
 }
+
+.tooltipPositioner {
+  @apply fixed
+         pointer-events-none
+         z-[200]
+         transform -translate-x-1/2 -translate-y-full;
+}
+
+.tooltip {
+  @apply px-2 py-1
+         text-xs text-white
+         bg-black/90 backdrop-blur-sm
+         rounded shadow-lg
+         whitespace-nowrap
+         border border-white/10;
+}
+
+/* Add arrow */
+.tooltip:after {
+  content: '';
+  @apply absolute left-1/2 top-full
+         -translate-x-1/2
+         border-4 border-transparent
+         border-t-black/90;
+}
