@@ -1554,3 +1554,36 @@ export const VolumeOffIcon = ({ className }: IconProps) => (
     />
   </svg>
 );
+
+// Add these new icons
+export const MinimizeIcon = ({ className }: IconProps) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    className={className}
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M20 12H4M4 12l6-6M4 12l6 6"
+    />
+  </svg>
+);
+
+export const MaximizeIcon = ({ className }: IconProps) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    className={className}
+  >
+    <path 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      strokeWidth={2} 
+      d="M4 12h16m0 0l-6-6m6 6l-6 6"
+    />
+  </svg>
+);

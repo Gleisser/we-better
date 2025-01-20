@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { 
   PlayIcon, PauseIcon, SkipBackward15Icon, SkipForward15Icon,
-  VolumeIcon, VolumeOffIcon, ChevronLeftIcon, ChevronRightIcon 
+  VolumeIcon, VolumeOffIcon, ChevronLeftIcon, ChevronRightIcon,
+  MinimizeIcon, MaximizeIcon, CloseIcon 
 } from '@/components/common/icons';
 import type { Podcast } from '@/pages/Podcasts/mockPodcasts';
 import styles from './PodcastPlayer.module.css';
@@ -29,6 +30,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
   const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
   const [isVolumeSliderVisible, setIsVolumeSliderVisible] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const volumeSliderRef = useRef<HTMLDivElement>(null);
 
@@ -90,10 +92,22 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const handleClose = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+    onClose();
+  };
+
+  const toggleMinimize = () => {
+    setIsMinimized(!isMinimized);
+  };
+
   if (!podcast) return null;
 
   return (
-    <div className={styles.player}>
+    <div className={`${styles.player} ${isMinimized ? styles.minimized : ''}`}>
       <div className={styles.content}>
         <div className={styles.podcastInfo}>
           <img 
@@ -107,7 +121,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
           </div>
         </div>
 
-        <div className={styles.controls}>
+        <div className={`${styles.controls} ${isMinimized ? styles.hidden : ''}`}>
           {hasPrevious && (
             <button 
               className={styles.skipButton}
@@ -160,7 +174,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
           )}
         </div>
 
-        <div className={styles.timeControls}>
+        <div className={`${styles.timeControls} ${isMinimized ? styles.hidden : ''}`}>
           <span className={styles.time}>{formatTime(currentTime)}</span>
           <input
             type="range"
@@ -173,11 +187,7 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
           <span className={styles.time}>{formatTime(duration)}</span>
         </div>
 
-        <div 
-          className={styles.volumeControls}
-          onMouseEnter={() => setIsVolumeSliderVisible(true)}
-          onMouseLeave={() => setIsVolumeSliderVisible(false)}
-        >
+        <div className={`${styles.volumeControls} ${isMinimized ? styles.hidden : ''}`}>
           <button 
             className={styles.volumeButton}
             onClick={toggleMute}
@@ -205,6 +215,27 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
               />
             </div>
           )}
+        </div>
+
+        <div className={styles.playerActions}>
+          <button
+            className={styles.actionButton}
+            onClick={toggleMinimize}
+            aria-label={isMinimized ? "Maximize player" : "Minimize player"}
+          >
+            {isMinimized ? (
+              <MaximizeIcon className={styles.actionIcon} />
+            ) : (
+              <MinimizeIcon className={styles.actionIcon} />
+            )}
+          </button>
+          <button
+            className={styles.actionButton}
+            onClick={handleClose}
+            aria-label="Close player"
+          >
+            <CloseIcon className={styles.actionIcon} />
+          </button>
         </div>
       </div>
 

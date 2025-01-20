@@ -2,12 +2,56 @@
   @apply fixed bottom-0 left-0 right-0
          bg-black/95 backdrop-blur-xl
          border-t border-white/10
+         transition-all duration-300
          z-50;
+}
+
+.player.minimized {
+  @apply bg-black/80;
 }
 
 .content {
   @apply max-w-7xl mx-auto px-6 py-4
          flex items-center gap-8;
+}
+
+.hidden {
+  display: none;
+}
+
+.playerActions {
+  @apply flex items-center gap-2;
+}
+
+.actionButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         text-white/50
+         transition-all duration-200
+         hover:text-white
+         hover:bg-white/10;
+}
+
+.actionIcon {
+  @apply w-4 h-4;
+}
+
+/* When minimized, adjust the content layout */
+.minimized .content {
+  @apply py-2;
+}
+
+.minimized .podcastInfo {
+  @apply flex-1;
+}
+
+.minimized .thumbnail {
+  @apply w-8 h-8;
+}
+
+/* Adjust the play button position when minimized */
+.minimized .playButton {
+  @apply ml-auto mr-4;
 }
 
 .podcastInfo {
