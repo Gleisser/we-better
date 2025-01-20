@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { 
   PlayIcon, PauseIcon, SkipBackward15Icon, SkipForward15Icon,
   VolumeIcon, VolumeOffIcon, ChevronLeftIcon, ChevronRightIcon,
-  MinimizeIcon, MaximizeIcon, CloseIcon 
+  ChevronUpIcon, ChevronDownIcon, CloseIcon 
 } from '@/components/common/icons';
 import type { Podcast } from '@/pages/Podcasts/mockPodcasts';
 import styles from './PodcastPlayer.module.css';
@@ -107,145 +107,156 @@ const PodcastPlayer: React.FC<PodcastPlayerProps> = ({
   if (!podcast) return null;
 
   return (
-    <div className={`${styles.player} ${isMinimized ? styles.minimized : ''}`}>
-      <div className={styles.content}>
-        <div className={styles.podcastInfo}>
-          <img 
-            src={podcast.thumbnail} 
-            alt={podcast.title}
-            className={styles.thumbnail}
-          />
-          <div className={styles.info}>
-            <h4 className={styles.title}>{podcast.title}</h4>
-            <p className={styles.episode}>{podcast.episode}</p>
+    <>
+      {/* Drawer Pull Tab - Always visible when minimized */}
+      {isMinimized && (
+        <button 
+          onClick={toggleMinimize}
+          className={styles.pullTab}
+          aria-label="Show player"
+        >
+          <ChevronUpIcon className={styles.pullTabIcon} />
+          <span className={styles.pullTabText}>Now Playing</span>
+        </button>
+      )}
+
+      {/* Main Player */}
+      <div className={`${styles.player} ${isMinimized ? styles.minimized : ''}`}>
+        <div className={styles.content}>
+          <div className={styles.podcastInfo}>
+            <img 
+              src={podcast.thumbnail} 
+              alt={podcast.title}
+              className={styles.thumbnail}
+            />
+            <div className={styles.info}>
+              <h4 className={styles.title}>{podcast.title}</h4>
+              <p className={styles.episode}>{podcast.episode}</p>
+            </div>
+          </div>
+
+          <div className={`${styles.controls} ${isMinimized ? styles.hidden : ''}`}>
+            {hasPrevious && (
+              <button 
+                className={styles.skipButton}
+                onClick={onPrevious}
+              >
+                <ChevronLeftIcon className={styles.skipIcon} />
+              </button>
+            )}
+
+            <button 
+              className={styles.skipButton}
+              onClick={() => {
+                if (audioRef.current) {
+                  audioRef.current.currentTime -= 15;
+                }
+              }}
+            >
+              <SkipBackward15Icon className={styles.skipIcon} />
+            </button>
+
+            <button 
+              className={styles.playButton}
+              onClick={togglePlay}
+            >
+              {isPlaying ? (
+                <PauseIcon className={styles.playIcon} />
+              ) : (
+                <PlayIcon className={styles.playIcon} />
+              )}
+            </button>
+
+            <button 
+              className={styles.skipButton}
+              onClick={() => {
+                if (audioRef.current) {
+                  audioRef.current.currentTime += 15;
+                }
+              }}
+            >
+              <SkipForward15Icon className={styles.skipIcon} />
+            </button>
+
+            {hasNext && (
+              <button 
+                className={styles.skipButton}
+                onClick={onNext}
+              >
+                <ChevronRightIcon className={styles.skipIcon} />
+              </button>
+            )}
+          </div>
+
+          <div className={`${styles.timeControls} ${isMinimized ? styles.hidden : ''}`}>
+            <span className={styles.time}>{formatTime(currentTime)}</span>
+            <input
+              type="range"
+              min={0}
+              max={duration}
+              value={currentTime}
+              onChange={handleSeek}
+              className={styles.timeSlider}
+            />
+            <span className={styles.time}>{formatTime(duration)}</span>
+          </div>
+
+          <div className={`${styles.volumeControls} ${isMinimized ? styles.hidden : ''}`}>
+            <button 
+              className={styles.volumeButton}
+              onClick={toggleMute}
+            >
+              {isMuted ? (
+                <VolumeOffIcon className={styles.volumeIcon} />
+              ) : (
+                <VolumeIcon className={styles.volumeIcon} />
+              )}
+            </button>
+            
+            {isVolumeSliderVisible && (
+              <div 
+                className={styles.volumeSliderContainer}
+                ref={volumeSliderRef}
+              >
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.1}
+                  value={isMuted ? 0 : volume}
+                  onChange={handleVolumeChange}
+                  className={styles.volumeSlider}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className={styles.playerActions}>
+            <button
+              className={styles.actionButton}
+              onClick={toggleMinimize}
+              aria-label={isMinimized ? "Show player" : "Hide player"}
+            >
+              <ChevronDownIcon className={styles.actionIcon} />
+            </button>
+            <button
+              className={styles.actionButton}
+              onClick={handleClose}
+              aria-label="Close player"
+            >
+              <CloseIcon className={styles.actionIcon} />
+            </button>
           </div>
         </div>
 
-        <div className={`${styles.controls} ${isMinimized ? styles.hidden : ''}`}>
-          {hasPrevious && (
-            <button 
-              className={styles.skipButton}
-              onClick={onPrevious}
-            >
-              <ChevronLeftIcon className={styles.skipIcon} />
-            </button>
-          )}
-
-          <button 
-            className={styles.skipButton}
-            onClick={() => {
-              if (audioRef.current) {
-                audioRef.current.currentTime -= 15;
-              }
-            }}
-          >
-            <SkipBackward15Icon className={styles.skipIcon} />
-          </button>
-
-          <button 
-            className={styles.playButton}
-            onClick={togglePlay}
-          >
-            {isPlaying ? (
-              <PauseIcon className={styles.playIcon} />
-            ) : (
-              <PlayIcon className={styles.playIcon} />
-            )}
-          </button>
-
-          <button 
-            className={styles.skipButton}
-            onClick={() => {
-              if (audioRef.current) {
-                audioRef.current.currentTime += 15;
-              }
-            }}
-          >
-            <SkipForward15Icon className={styles.skipIcon} />
-          </button>
-
-          {hasNext && (
-            <button 
-              className={styles.skipButton}
-              onClick={onNext}
-            >
-              <ChevronRightIcon className={styles.skipIcon} />
-            </button>
-          )}
-        </div>
-
-        <div className={`${styles.timeControls} ${isMinimized ? styles.hidden : ''}`}>
-          <span className={styles.time}>{formatTime(currentTime)}</span>
-          <input
-            type="range"
-            min={0}
-            max={duration}
-            value={currentTime}
-            onChange={handleSeek}
-            className={styles.timeSlider}
-          />
-          <span className={styles.time}>{formatTime(duration)}</span>
-        </div>
-
-        <div className={`${styles.volumeControls} ${isMinimized ? styles.hidden : ''}`}>
-          <button 
-            className={styles.volumeButton}
-            onClick={toggleMute}
-          >
-            {isMuted ? (
-              <VolumeOffIcon className={styles.volumeIcon} />
-            ) : (
-              <VolumeIcon className={styles.volumeIcon} />
-            )}
-          </button>
-          
-          {isVolumeSliderVisible && (
-            <div 
-              className={styles.volumeSliderContainer}
-              ref={volumeSliderRef}
-            >
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.1}
-                value={isMuted ? 0 : volume}
-                onChange={handleVolumeChange}
-                className={styles.volumeSlider}
-              />
-            </div>
-          )}
-        </div>
-
-        <div className={styles.playerActions}>
-          <button
-            className={styles.actionButton}
-            onClick={toggleMinimize}
-            aria-label={isMinimized ? "Maximize player" : "Minimize player"}
-          >
-            {isMinimized ? (
-              <MaximizeIcon className={styles.actionIcon} />
-            ) : (
-              <MinimizeIcon className={styles.actionIcon} />
-            )}
-          </button>
-          <button
-            className={styles.actionButton}
-            onClick={handleClose}
-            aria-label="Close player"
-          >
-            <CloseIcon className={styles.actionIcon} />
-          </button>
-        </div>
+        <audio
+          ref={audioRef}
+          src={podcast.spotifyUri}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleTimeUpdate}
+        />
       </div>
-
-      <audio
-        ref={audioRef}
-        src={podcast.spotifyUri}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleTimeUpdate}
-      />
-    </div>
+    </>
   );
 };
 

@@ -4,10 +4,32 @@
          border-t border-white/10
          transition-all duration-300
          z-50;
+  transform: translateY(0);
 }
 
 .player.minimized {
-  @apply bg-black/80;
+  transform: translateY(100%);
+}
+
+/* Pull Tab Styles */
+.pullTab {
+  @apply fixed bottom-0 left-1/2 
+         -translate-x-1/2
+         px-4 py-2 rounded-t-xl
+         bg-black/95 backdrop-blur-xl
+         border-t border-l border-r border-white/10
+         flex items-center gap-2
+         transition-all duration-200
+         hover:bg-black/80
+         z-50;
+}
+
+.pullTabIcon {
+  @apply w-5 h-5 text-white/70;
+}
+
+.pullTabText {
+  @apply text-sm font-medium text-white/70;
 }
 
 .content {
@@ -181,4 +203,13 @@
          cursor-pointer
          hover:bg-purple-400
          transition-colors duration-200;
+}
+
+/* Update action button hover effect */
+.actionButton:hover {
+  @apply bg-white/10 text-white;
+}
+
+.actionButton:hover .actionIcon {
+  @apply transform scale-110;
 } 
