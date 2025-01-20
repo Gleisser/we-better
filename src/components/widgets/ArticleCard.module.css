@@ -378,22 +378,4 @@
   position: fixed;
   inset: 0;
   z-index: 40;
-}
-
-.voteButton:hover {
-  background-color: rgba(52, 199, 89, 0.1); /* Light green background */
-  color: #34C759; /* Green text color */
-}
-
-.voteButton:last-child:hover {
-  background-color: rgba(255, 59, 48, 0.1); /* Light red background */
-  color: #FF3B30; /* Red text color */
-}
-
-.voteButton.votedUp {
-  color: #34C759;
-}
-
-.voteButton.votedDown {
-  color: #FF3B30;
 } 
