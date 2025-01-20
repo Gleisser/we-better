@@ -4,13 +4,16 @@ export interface Video {
   id: string;
   youtubeId: string;
   title: string;
-  author: string;
+  description: string;
   duration: string;
-  views: string;
-  rating: number;
+  views: number;
+  author: string;
   category: string;
   subCategory: string;
-  badge?: VideoBadge;
+  rating: number;
+  badge?: 'trending' | 'new';
+  publishedAt: string;
+  tags: string[];
 }
 
 export interface WatchProgress {
