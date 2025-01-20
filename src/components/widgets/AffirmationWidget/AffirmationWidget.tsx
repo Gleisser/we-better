@@ -5,7 +5,7 @@ import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, XIcon, Bel
 import ParticleEffect from './ParticleEffect';
 import { useAffirmationStreak } from '@/hooks/useAffirmationStreak';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
-import Tooltip from '@/components/common/Tooltip/Tooltip';
+import { Tooltip } from '@/components/common/Tooltip';
 import { useAffirmationReminder } from '@/hooks/useAffirmationReminder';
 import { ReminderSettings } from './ReminderSettings';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';

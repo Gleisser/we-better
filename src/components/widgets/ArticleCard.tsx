@@ -279,7 +279,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
                 <div className={styles.voteContainer}>
                   <Tooltip content="Upvote">
                     <button
-                      className={`${styles.voteButton} ${userVote === 'up' ? styles.votedUp : ''}`}
+                      className={`${styles.voteButton} ${styles.upvoteButton} ${
+                        userVote === 'up' ? styles.votedUp : ''
+                      }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleVote('up');
@@ -293,7 +295,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
                   
                   <Tooltip content="Downvote">
                     <button
-                      className={`${styles.voteButton} ${userVote === 'down' ? styles.votedDown : ''}`}
+                      className={`${styles.voteButton} ${styles.downvoteButton} ${
+                        userVote === 'down' ? styles.votedDown : ''
+                      }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleVote('down');

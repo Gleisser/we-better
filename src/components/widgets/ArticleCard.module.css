@@ -244,65 +244,49 @@
   backdrop-filter: blur(8px);
 }
 
+.voteContainer {
+  @apply flex items-center gap-2;
+}
+
 .voteButton {
   @apply flex items-center gap-1
-         px-3 py-1.5 rounded-md
-         bg-transparent
-         text-white/70
-         transition-all duration-200
-         hover:bg-opacity-90;
+         px-2 py-1.5 rounded-lg
+         text-white/50
+         transition-all duration-200;
 }
 
-.voteButton:hover {
-  @apply text-white;
+/* Upvote button */
+.upvoteButton:hover {
+  background-color: rgba(52, 199, 89, 0.1);
+  color: #34C759;
 }
 
-.voteButton:first-child:hover {
-  background-color: rgba(34, 197, 94, 0.2); /* Green background */
+.upvoteButton.votedUp {
+  color: #34C759;
 }
 
-.voteButton:last-child:hover {
-  background-color: rgba(239, 68, 68, 0.2); /* Red background */
+/* Downvote button */
+.downvoteButton:hover {
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #FF3B30;
 }
 
-.voteButton.votedUp {
-  @apply text-green-400;
-  background-color: rgba(34, 197, 94, 0.2);
-}
-
-.voteButton.votedDown {
-  @apply text-red-400;
-  background-color: rgba(239, 68, 68, 0.2);
+.downvoteButton.votedDown {
+  color: #FF3B30;
 }
 
 .voteIcon {
-  @apply w-4 h-4;
-  transition: transform 0.2s ease;
-}
-
-.voteButton:hover .voteIcon {
-  transform: scale(1.1);
+  @apply w-5 h-5;
 }
 
 .voteCount {
-  font-size: 0.875rem;
-  font-weight: 600;
-  min-width: 20px;
+  @apply text-sm min-w-[20px] text-center;
 }
 
 .actionButtons {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.voteContainer {
-  display: flex;
-  align-items: center;
-  gap: 1px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  padding: 2px 4px;
 }
 
 .shareButton {
@@ -394,4 +378,22 @@
   position: fixed;
   inset: 0;
   z-index: 40;
+}
+
+.voteButton:hover {
+  background-color: rgba(52, 199, 89, 0.1); /* Light green background */
+  color: #34C759; /* Green text color */
+}
+
+.voteButton:last-child:hover {
+  background-color: rgba(255, 59, 48, 0.1); /* Light red background */
+  color: #FF3B30; /* Red text color */
+}
+
+.voteButton.votedUp {
+  color: #34C759;
+}
+
+.voteButton.votedDown {
+  color: #FF3B30;
 } 

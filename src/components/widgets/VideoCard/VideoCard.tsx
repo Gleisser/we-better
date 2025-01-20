@@ -30,15 +30,16 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
 
   const handleVote = (voteType: 'up' | 'down') => {
-    if (userVote === voteType) {
-      setVotes(prev => voteType === 'up' ? prev - 1 : prev + 1);
-      setUserVote(null);
-    } else {
-      if (userVote) {
-        setVotes(prev => userVote === 'up' ? prev - 2 : prev + 2);
+    if (voteType === 'up') {
+      if (userVote === 'up') {
+        setVotes(prev => prev - 1);
+        setUserVote(null);
+      } else {
+        setVotes(prev => prev + 1);
+        setUserVote('up');
       }
-      setVotes(prev => voteType === 'up' ? prev + 1 : prev - 1);
-      setUserVote(voteType);
+    } else {
+      setUserVote(userVote === 'down' ? null : 'down');
     }
   };
 
@@ -269,8 +270,13 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
           <div className={styles.voteContainer}>
             <Tooltip content="Upvote">
               <button
-                className={`${styles.voteButton} ${userVote === 'up' ? styles.votedUp : ''}`}
-                onClick={() => handleVote('up')}
+                className={`${styles.voteButton} ${styles.upvoteButton} ${
+                  userVote === 'up' ? styles.votedUp : ''
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleVote('up');
+                }}
               >
                 <ChevronUpIcon className={styles.voteIcon} />
                 <span className={styles.voteCount}>{votes > 0 ? votes : ''}</span>
@@ -279,8 +285,13 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
             
             <Tooltip content="Downvote">
               <button
-                className={`${styles.voteButton} ${userVote === 'down' ? styles.votedDown : ''}`}
-                onClick={() => handleVote('down')}
+                className={`${styles.voteButton} ${styles.downvoteButton} ${
+                  userVote === 'down' ? styles.votedDown : ''
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleVote('down');
+                }}
               >
                 <ChevronDownIcon className={styles.voteIcon} />
               </button>

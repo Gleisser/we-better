@@ -106,21 +106,34 @@
 }
 
 .voteContainer {
-  @apply flex items-center gap-1;
+  @apply flex items-center gap-2;
 }
 
 .voteButton {
-  @apply p-1 rounded
-         text-white/50 hover:text-white
-         transition-colors duration-200;
+  @apply flex items-center gap-1
+         px-2 py-1.5 rounded-lg
+         text-white/50
+         transition-all duration-200;
 }
 
-.voteButton.votedUp {
-  @apply text-green-500;
+/* Upvote button */
+.upvoteButton:hover {
+  background-color: rgba(52, 199, 89, 0.1);
+  color: #34C759;
 }
 
-.voteButton.votedDown {
-  @apply text-red-500;
+.upvoteButton.votedUp {
+  color: #34C759;
+}
+
+/* Downvote button */
+.downvoteButton:hover {
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #FF3B30;
+}
+
+.downvoteButton.votedDown {
+  color: #FF3B30;
 }
 
 .voteIcon {
@@ -128,7 +141,7 @@
 }
 
 .voteCount {
-  @apply text-sm;
+  @apply text-sm min-w-[20px] text-center;
 }
 
 .moreContainer {
