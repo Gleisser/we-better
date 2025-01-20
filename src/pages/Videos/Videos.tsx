@@ -4,6 +4,7 @@ import { ChevronDownIcon, SettingsIcon } from '@/components/common/icons';
 import { YoutubeModal } from '@/components/widgets/VideoWidget/YoutubeModal';
 import type { Video } from '@/components/widgets/VideoWidget/types';
 import VideoCard from '@/components/widgets/VideoCard/VideoCard';
+import FeedSettingsModal from '@/components/common/FeedSettingsModal/FeedSettingsModal';
 
 // Mock data structure similar to VideoWidget but expanded
 const mockVideos: Video[] = [
@@ -100,6 +101,11 @@ const Videos = () => {
           </div>
         </div>
       </div>
+
+      <FeedSettingsModal 
+        isOpen={showFeedSettings} 
+        onClose={() => setShowFeedSettings(false)} 
+      />
 
       {loading ? (
         <p className="text-white/70">Loading videos...</p>
