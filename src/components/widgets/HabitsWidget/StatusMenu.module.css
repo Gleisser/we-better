@@ -1,0 +1,69 @@
+.backdrop {
+  @apply fixed inset-0
+         bg-black/50 backdrop-blur-sm
+         z-[100];
+}
+
+.menu {
+  position: fixed;
+  z-index: 1000;
+  background: #0a0a0a;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  min-width: 200px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.options {
+  @apply grid grid-cols-2 gap-1;
+}
+
+.option {
+  @apply flex items-center gap-2
+         px-2 py-1.5 rounded-lg
+         text-sm text-white/70
+         hover:bg-white/5
+         transition-colors duration-200;
+}
+
+.icon {
+  @apply text-base;
+}
+
+.label {
+  @apply text-xs;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .menu.mobileMenu {
+    @apply fixed bottom-0 left-0 right-0
+           w-full max-w-full
+           bg-black/95 backdrop-blur-xl
+           rounded-t-2xl rounded-b-none
+           border-t border-white/10
+           p-4;
+    transform: translateY(0);
+  }
+
+  .options {
+    @apply grid grid-cols-3 gap-3;
+  }
+
+  .option {
+    @apply flex flex-col items-center justify-center
+           p-4 rounded-xl
+           bg-black/40
+           border border-white/10;
+  }
+
+  .icon {
+    @apply text-2xl mb-2;
+  }
+
+  .label {
+    @apply text-sm text-white/70;
+  }
+}

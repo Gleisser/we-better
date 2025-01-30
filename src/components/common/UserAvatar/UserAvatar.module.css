@@ -1,0 +1,62 @@
+.container {
+  @apply relative flex-shrink-0;
+}
+
+.image {
+  @apply w-full h-full rounded-full object-cover;
+}
+
+.fallback {
+  @apply w-full h-full rounded-full
+         bg-gradient-to-br from-[#8B5CF6] to-[#D946EF]
+         flex items-center justify-center
+         text-white font-medium;
+}
+
+.initials {
+  @apply font-plus-jakarta;
+}
+
+.onlineStatus {
+  @apply absolute -bottom-0.5 -right-0.5
+         bg-green-400 rounded-full
+         border-2 border-black
+         ring-1 ring-green-400/20;
+}
+
+/* Size variants */
+.sm {
+  @apply w-8 h-8;
+}
+
+.sm .initials {
+  @apply text-xs;
+}
+
+.sm .onlineStatus {
+  @apply w-2.5 h-2.5;
+}
+
+.md {
+  @apply w-10 h-10;
+}
+
+.md .initials {
+  @apply text-sm;
+}
+
+.md .onlineStatus {
+  @apply w-3 h-3;
+}
+
+.lg {
+  @apply w-12 h-12;
+}
+
+.lg .initials {
+  @apply text-base;
+}
+
+.lg .onlineStatus {
+  @apply w-3.5 h-3.5;
+}

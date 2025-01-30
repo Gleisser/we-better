@@ -1,33 +1,30 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { generateCSP } from './src/middleware/csp';
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    react(),
-    {
-      name: 'html-transform',
-      transformIndexHtml(html) {
-        return html.replace(
-          '__CSP_PLACEHOLDER__',
-          generateCSP()
-        );
+export default defineConfig(({ mode }) => {
+  // Load env file based on `mode` in the current working directory.
+  const env = loadEnv(mode, process.cwd(), '');
+  
+  // Provide fallback values for required env variables
+  const apiUrl = env.VITE_API_URL || 'http://localhost:1337';
+
+  return {
+    plugins: [react()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
       },
     },
-  ],
-  optimizeDeps: {
-    exclude: ['lucide-react'],
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
+    server: {
+      proxy: {
+        '/api': {
+          target: apiUrl,
+          changeOrigin: true,
+          secure: false,
+        },
+      },
     },
-  },
-  server: {
-    headers: {
-      'Content-Security-Policy': generateCSP(),
-    },
-  },
+  };
 });

@@ -1,0 +1,12 @@
+.particleContainer {
+  @apply absolute inset-0
+         pointer-events-none
+         overflow-hidden;
+}
+
+.particle {
+  @apply absolute
+         left-1/2 top-1/2
+         -translate-x-1/2 -translate-y-1/2
+         text-lg;
+}

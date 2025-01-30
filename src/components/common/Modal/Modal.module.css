@@ -1,0 +1,13 @@
+.modalOverlay {
+  @apply fixed inset-0 
+         flex items-center justify-center
+         bg-black/60 backdrop-blur-sm
+         z-50;
+}
+
+.modalContent {
+  @apply bg-black/80 rounded-3xl
+         w-full max-w-2xl mx-4
+         border border-white/10
+         overflow-hidden;
+} 

@@ -1,0 +1,53 @@
+.container {
+  @apply p-8;
+}
+
+.header {
+  @apply mb-6;
+}
+
+.filters {
+  @apply flex items-center gap-4;
+}
+
+.filterButton {
+  @apply flex items-center gap-2 px-4 py-2
+         bg-white/5 hover:bg-white/10
+         text-white/70 hover:text-white
+         rounded-lg transition-colors duration-200
+         backdrop-blur-sm border border-white/10;
+}
+
+.filterIcon {
+  @apply w-4 h-4;
+}
+
+.filterIcon.rotated {
+  @apply rotate-180;
+}
+
+.dropdownContainer {
+  @apply relative;
+}
+
+.dropdownMenu {
+  @apply absolute top-full mt-2 w-48
+         bg-black/90 backdrop-blur-sm
+         border border-white/10 rounded-lg
+         py-1 z-10;
+}
+
+.dropdownItem {
+  @apply flex items-center justify-between
+         w-full px-4 py-2
+         text-white/70 hover:text-white hover:bg-white/5
+         text-sm transition-colors duration-200;
+}
+
+.checkmark {
+  @apply text-purple-500;
+}
+
+.videoGrid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+} 

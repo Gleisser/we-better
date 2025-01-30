@@ -1,0 +1,70 @@
+.container {
+  @apply p-8;
+}
+
+.header {
+  @apply flex justify-between items-center mb-8;
+}
+
+.filters {
+  @apply flex items-center gap-4;
+}
+
+.filterButton {
+  @apply flex items-center gap-2
+         px-4 py-2 rounded-xl
+         bg-black/40 backdrop-blur-sm
+         border border-white/[0.08]
+         text-sm text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white
+         hover:border-white/20;
+}
+
+.filterButton.active {
+  @apply bg-black/60 text-white
+         border-white/20;
+}
+
+.filterIcon {
+  @apply w-4 h-4 text-white/70
+         transition-transform duration-200;
+}
+
+.filterIcon.rotated {
+  transform: rotate(180deg);
+}
+
+.dropdownContainer {
+  @apply relative;
+}
+
+.dropdownMenu {
+  @apply absolute top-full right-0 mt-2
+         w-48 py-2
+         bg-black/90 backdrop-blur-sm
+         border border-white/[0.08]
+         rounded-xl
+         z-50;
+}
+
+.dropdownItem {
+  @apply w-full px-4 py-2
+         flex items-center justify-between
+         text-sm text-white/70
+         hover:bg-white/5 hover:text-white
+         transition-colors duration-200;
+}
+
+.dropdownItem.selected {
+  @apply text-white;
+}
+
+.checkmark {
+  @apply text-primary-purple;
+}
+
+.courseGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3
+         gap-6;
+} 

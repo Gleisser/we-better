@@ -1,0 +1,697 @@
+.container {
+  @apply relative w-full h-full
+         bg-black/40 backdrop-blur-xl
+         rounded-2xl
+         border border-white/[0.08]
+         overflow-hidden;
+}
+
+/* Add gradient overlay */
+.container::before {
+  content: "";
+  @apply absolute inset-0
+         bg-gradient-to-br from-purple-600/10 via-purple-500/5 to-transparent
+         pointer-events-none;
+}
+
+.collapsibleContent {
+  @apply overflow-hidden
+         flex flex-col
+         h-[calc(100%-48px)]
+         p-4;
+}
+
+/* Updated episode card for vertical layout */
+.episodeCard {
+  @apply flex-1
+         flex flex-col
+         items-center
+         gap-4;
+}
+
+/* Larger artwork at the top */
+.artwork {
+  @apply relative w-full
+         aspect-square
+         rounded-xl
+         overflow-hidden
+         bg-gradient-to-br from-black/40 to-black/20;
+}
+
+.artworkImage {
+  @apply w-full h-full
+         object-cover
+         transition-opacity duration-200;
+}
+
+/* Episode info centered below artwork */
+.episodeInfo {
+  @apply w-full
+         flex flex-col
+         items-center
+         text-center
+         space-y-2;
+}
+
+.episodeTitle {
+  @apply text-white text-lg font-semibold
+         leading-snug
+         max-w-[90%]
+         font-plus-jakarta;
+}
+
+/* Update episode meta to be in column */
+.episodeMeta {
+  @apply flex flex-col items-center gap-1
+         text-sm
+         font-plus-jakarta;
+}
+
+.episodeAuthor {
+  @apply text-white/70;
+}
+
+/* Remove the divider since items are now stacked */
+.metaDivider {
+  @apply hidden;
+}
+
+.episodeDuration {
+  @apply text-white/50 text-xs; /* Made duration slightly smaller and more subtle */
+}
+
+.episodeCategory {
+  @apply mt-1;
+}
+
+.categoryTag {
+  @apply px-2.5 py-1
+         rounded-full
+         bg-purple-500/20
+         border border-purple-500/20
+         text-xs text-white/90
+         font-plus-jakarta;
+}
+
+/* Player controls section */
+.playerControls {
+  @apply w-full
+         mt-auto
+         space-y-4;
+}
+
+/* Main controls (play, skip, etc) */
+.mainControls {
+  @apply flex items-center justify-center
+         gap-8;
+}
+
+.playButton {
+  @apply w-14 h-14
+         flex items-center justify-center
+         rounded-full
+         text-black
+         relative
+         transition-all duration-300
+         hover:scale-105
+         active:scale-95
+         hover:shadow-lg hover:shadow-purple-500/20;
+  background: linear-gradient(
+    45deg,
+    rgba(139, 92, 246, 1),
+    /* Purple-500 */ rgba(217, 70, 239, 1),
+    /* Fuchsia-500 */ rgba(139, 92, 246, 1) /* Back to Purple-500 */
+  );
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+.playButton::before {
+  content: "";
+  @apply absolute inset-[2px]
+         rounded-full
+         bg-white
+         transition-all duration-300;
+}
+
+.playButton:hover::before {
+  @apply inset-[1px]
+         bg-gradient-to-br
+         from-white to-white/90;
+}
+
+.playerIcon {
+  @apply w-6 h-6
+         relative
+         z-10; /* Keep icon above the pseudo-element */
+}
+
+.skipButton {
+  @apply w-10 h-10
+         flex items-center justify-center
+         rounded-full
+         bg-black/40
+         text-white/80
+         border border-white/10
+         backdrop-blur-sm
+         transition-all duration-200
+         hover:bg-black/60
+         hover:text-white
+         hover:scale-110
+         active:scale-95;
+}
+
+.skipButton::after {
+  content: "";
+  @apply absolute -inset-1
+         rounded-full
+         border border-white/20
+         scale-0 opacity-0
+         transition-all duration-300;
+}
+
+.skipButton:hover::after {
+  @apply scale-110 opacity-100;
+}
+
+/* Add group class separately */
+.skipButton:global(.group) {
+  @apply cursor-pointer;
+}
+
+.skipIcon {
+  @apply w-6 h-6;
+}
+
+/* Progress section */
+.progressSection {
+  @apply w-full space-y-2;
+}
+
+.progressBar {
+  @apply w-full h-1
+         rounded-full
+         cursor-pointer
+         relative
+         hover:h-1.5
+         transition-all duration-200;
+  composes: group from global;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.progress {
+  @apply h-full
+         rounded-full
+         relative;
+  background: linear-gradient(
+    90deg,
+    rgb(139, 92, 246),
+    /* Purple-500 */ rgb(217, 70, 239) /* Fuchsia-500 */
+  );
+}
+
+/* Progress handle (the circle) */
+.progress::after {
+  content: "";
+  @apply absolute right-0 top-1/2
+         w-4 h-4
+         -translate-y-1/2
+         translate-x-1/2
+         bg-white
+         rounded-full
+         opacity-0
+         shadow-md
+         scale-0
+         transition-all duration-200
+         z-10;
+}
+
+/* Show handle on hover */
+.progressBar:hover .progress::after {
+  @apply opacity-100
+         scale-100;
+}
+
+/* Preview progress on hover */
+.progressBar::before {
+  content: "";
+  @apply absolute top-0 left-0
+         h-full
+         rounded-full
+         bg-white/20
+         pointer-events-none
+         opacity-0
+         transition-opacity duration-200;
+  width: var(--preview-progress, 0%);
+}
+
+.progressBar:hover::before {
+  @apply opacity-100;
+}
+
+/* Time info below progress bar */
+.timeInfo {
+  @apply flex justify-between
+         text-xs text-white/50
+         font-plus-jakarta
+         mt-1;
+}
+
+.timeInfo span {
+  @apply transition-all duration-300;
+}
+
+.timeInfo span:hover {
+  @apply text-white
+         scale-110
+         font-semibold;
+}
+
+/* Waveform */
+.waveform {
+  @apply w-full h-10
+         mt-3
+         flex items-center justify-center
+         gap-[2px];
+}
+
+.waveformBar {
+  @apply w-[2px] h-full
+         bg-white/20
+         rounded-full
+         transition-all duration-300;
+}
+
+.waveformBar[data-playing="true"] {
+  animation: wave 1.2s ease-in-out infinite;
+}
+
+.waveformBar[data-center="true"] {
+  transform: scaleY(0.6);
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.5);
+  }
+}
+
+/* Update header styles to match other widgets */
+.header {
+  @apply px-4 py-3
+         border-b border-white/[0.08];
+}
+
+.headerMain {
+  @apply flex items-center justify-between;
+}
+
+.headerLeft {
+  @apply flex items-center gap-2.5;
+}
+
+.headerIcon {
+  @apply text-xl
+         opacity-90;
+}
+
+.headerText {
+  @apply text-white/90 text-base font-semibold
+         tracking-tight
+         font-plus-jakarta;
+}
+
+/* Remove pulse animation */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+/* Add featured badge */
+.featuredBadge {
+  @apply absolute top-3 left-3
+         flex items-center gap-1.5
+         px-2.5 py-1
+         rounded-full
+         bg-black/60 backdrop-blur-sm
+         border border-white/10
+         z-10;
+}
+
+.featuredIcon {
+  @apply text-xs text-yellow-400;
+}
+
+.featuredText {
+  @apply text-xs text-white/90 font-medium
+         font-plus-jakarta;
+}
+
+/* Update the skip text to use the global group class */
+.skipText {
+  @apply hidden;
+}
+
+/* Add new styles */
+.contentWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.content.blurred {
+  filter: blur(4px);
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.spotifyOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+.spotifyConnectButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: #1db954;
+  border-radius: 500px;
+  color: #000;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.spotifyConnectButton:hover {
+  background: #1ed760;
+  transform: scale(1.02);
+}
+
+.spotifyHint {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.spotifyIcon {
+  width: 24px;
+  height: 24px;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Add a glow effect when playing */
+.playButton[data-playing="true"] {
+  @apply shadow-lg;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(217, 70, 239, 0.2);
+}
+
+/* Optional: Add a subtle pulse animation when playing */
+.playButton[data-playing="true"]::after {
+  content: "";
+  @apply absolute -inset-2
+         rounded-full
+         bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20
+         animate-pulse
+         opacity-0;
+  animation: playPulse 2s ease-out infinite;
+}
+
+@keyframes playPulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
+
+.volumeControl {
+  @apply relative
+         flex items-center justify-center
+         ml-4;
+}
+
+.muteButton {
+  @apply p-1.5
+         rounded-full
+         text-white/80
+         hover:text-white
+         transition-colors duration-200
+         w-7 h-7
+         flex items-center justify-center;
+}
+
+.muteButton svg {
+  @apply w-4 h-4;
+}
+
+.volumeSliderContainer {
+  @apply absolute bottom-full
+         mb-3
+         px-3 py-4
+         bg-[#282828]
+         rounded-lg
+         shadow-xl
+         z-20
+         transition-all duration-200
+         opacity-0 invisible
+         scale-95
+         origin-bottom
+         left-1/2
+         -translate-x-1/2;
+}
+
+.volumeSliderContainer[data-visible="true"] {
+  @apply opacity-100 visible
+         scale-100;
+}
+
+.volumeSlider {
+  @apply h-20 w-[3px]
+         rounded-full
+         bg-white/20
+         appearance-none
+         cursor-pointer;
+  writing-mode: bt-lr;
+  -webkit-appearance: slider-vertical;
+}
+
+.volumeSlider::-webkit-slider-thumb {
+  @apply w-3 h-3
+         rounded-full
+         bg-white
+         appearance-none
+         transition-transform duration-200
+         hover:scale-110;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.volumeSlider::-moz-range-thumb {
+  @apply w-3 h-3
+         rounded-full
+         bg-white
+         border-none
+         transition-transform duration-200
+         hover:scale-110;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Add a subtle arrow */
+.volumeSliderContainer::after {
+  content: "";
+  @apply absolute -bottom-1.5 left-1/2
+         w-3 h-3
+         -translate-x-1/2
+         rotate-45
+         bg-[#282828];
+}
+
+.circularPlayer {
+  @apply relative
+         w-[200px]
+         aspect-square;
+}
+
+.artworkContainer {
+  @apply relative
+         w-full h-full;
+}
+
+.artworkCircle {
+  @apply absolute
+         inset-[12px]
+         rounded-full
+         overflow-hidden
+         bg-black/20
+         z-10;
+}
+
+.artworkImage {
+  @apply w-full h-full
+         object-cover;
+}
+
+.progressRing {
+  @apply absolute inset-0
+         w-full h-full
+         z-20
+         pointer-events-none;
+}
+
+.progressBg, 
+.progressBar {
+  @apply fill-none
+         cursor-pointer
+         pointer-events-auto;
+}
+
+.progressBg {
+  @apply stroke-white/10;
+}
+
+.progressBar {
+  @apply transition-all duration-200;
+  stroke: url(#progress-gradient);
+}
+
+.progressHandle {
+  @apply w-3 h-3
+         rounded-full
+         shadow-lg
+         absolute
+         opacity-0
+         scale-0
+         transition-all duration-200
+         bg-white
+         z-30;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  transform-origin: center;
+  user-select: none;
+  touch-action: none;
+}
+
+/* Add hover state using group */
+.progressRing:hover .progressHandle {
+  @apply opacity-100
+         scale-100;
+}
+
+/* Add dragging state */
+.progressHandle[style*="cursor: grabbing"] {
+  @apply scale-110;
+}
+
+.artworkPlayButton {
+  @apply absolute
+         inset-0
+         flex items-center justify-center
+         bg-black/30
+         transition-all duration-200
+         z-40;
+}
+
+.artworkPlayIcon {
+  @apply w-16 h-16
+         p-4
+         rounded-full
+         bg-white/10
+         border border-white/20
+         text-white
+         transition-transform duration-200
+         hover:bg-white/20
+         hover:border-white/30
+         hover:scale-110
+         active:scale-95
+         cursor-pointer
+         z-50;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+.progressPreview {
+  @apply stroke-[url(#preview-gradient)]
+         fill-none
+         transition-all duration-200;
+  pointer-events: none;
+}
+
+/* Add styles for the skip buttons container */
+.skipButtonsContainer {
+  @apply absolute
+         inset-0
+         flex items-center justify-between
+         w-full
+         px-4;  /* Add padding to position buttons away from artwork */
+  z-index: 30;  /* Between progress ring and play button */
+}
+
+.playerSection {
+  @apply flex items-center justify-center
+         gap-6
+         w-full
+         max-w-[300px]  /* Adjust this value to control overall width */
+         mx-auto;
+}
+
+.waveformSection {
+  @apply w-full
+         flex items-center justify-between
+         gap-4
+         mt-3;
+}
+
+.timeInfo {
+  @apply text-xs text-white/50
+         font-plus-jakarta
+         min-w-[40px]
+         text-center;
+}
+
+.waveform {
+  @apply flex-1
+         h-10
+         flex items-center justify-center
+         gap-[2px];
+}

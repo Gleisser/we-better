@@ -1,0 +1,11 @@
+.container {
+  @apply w-full min-h-full;
+}
+
+.content {
+  @apply w-full mx-auto px-8 py-6
+         bg-black/40 backdrop-blur-xl
+         rounded-t-3xl
+         pb-32;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+}

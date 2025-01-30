@@ -1,0 +1,132 @@
+.overlay {
+  @apply fixed inset-0 
+         bg-black/95 backdrop-blur-lg
+         z-[9999]
+         flex flex-col;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  width: 100vw;
+}
+
+.header {
+  @apply flex items-center justify-between
+         px-4 py-5
+         border-b border-white/[0.08];
+}
+
+.title {
+  @apply text-lg font-semibold text-white font-plus-jakarta;
+}
+
+.closeButton {
+  @apply p-2 rounded-lg
+         hover:bg-white/5
+         transition-colors;
+}
+
+.closeIcon {
+  @apply w-6 h-6 text-white/70;
+}
+
+.content {
+  @apply flex-1 overflow-y-auto px-4;
+}
+
+.notificationItem {
+  @apply py-4 border-b border-white/[0.08]
+         hover:bg-white/5
+         transition-colors;
+}
+
+.notificationItem.unread {
+  @apply bg-white/[0.02];
+}
+
+.notificationHeader {
+  @apply flex items-center gap-3;
+}
+
+.notificationInfo {
+  @apply flex-1 min-w-0;
+}
+
+.userAction {
+  @apply flex flex-wrap items-center gap-1.5 
+         font-plus-jakarta text-sm;
+}
+
+.userName {
+  @apply font-semibold text-white;
+}
+
+.action {
+  @apply text-white/70;
+}
+
+.target {
+  @apply text-white font-medium;
+}
+
+.timestamp {
+  @apply block text-xs text-white/50 mt-1 font-plus-jakarta;
+}
+
+.deleteButton {
+  @apply p-1.5 rounded-lg
+         hover:bg-white/5
+         transition-colors;
+}
+
+.trashIcon {
+  @apply w-4 h-4 text-white/40
+         hover:text-white/70
+         transition-colors;
+}
+
+.actions {
+  @apply flex gap-2 mt-3 ml-11;
+}
+
+.followButton,
+.replyButton,
+.viewButton {
+  @apply px-3 py-1.5 rounded-lg text-sm font-medium
+         transition-colors duration-200
+         font-plus-jakarta;
+}
+
+.followButton {
+  @apply bg-[#8B5CF6] text-white
+         hover:bg-[#7C3AED];
+}
+
+.replyButton,
+.viewButton {
+  @apply bg-white/5 text-white
+         hover:bg-white/10;
+}
+
+.footer {
+  @apply p-4 border-t border-white/[0.08]
+         flex justify-center
+         bg-black/50
+         backdrop-blur-sm;
+}
+
+.markReadButton {
+  @apply text-sm text-white/70 
+         hover:text-white
+         transition-colors
+         font-plus-jakarta;
+}
+
+/* Hide on desktop */
+@media (min-width: 769px) {
+  .overlay {
+    display: none;
+  }
+}

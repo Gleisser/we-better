@@ -1,0 +1,110 @@
+.sidebar {
+  @apply fixed top-0 left-0 h-full w-[240px]
+         bg-black/40 backdrop-blur-xl
+         border-r border-white/[0.08]
+         transition-all duration-300
+         z-50;
+}
+
+/* Add this media query to hide sidebar on mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    @apply hidden;
+  }
+}
+
+.sidebarContent {
+  @apply flex flex-col h-full py-6;
+}
+
+.topSection {
+  @apply px-4 mb-8 flex items-center justify-center;
+}
+
+.collapseButton {
+  @apply w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center
+         hover:bg-white/20 transition-all duration-200
+         hover:scale-105 border border-white/10;
+}
+
+.collapseButton svg {
+  @apply w-4 h-4;
+}
+
+.collapseButton .rotated {
+  @apply rotate-180 transition-transform duration-300;
+}
+
+.mainNav,
+.bottomNav {
+  @apply flex flex-col gap-2 px-3;
+}
+
+.mainNav {
+  @apply flex-grow;
+}
+
+.navItem {
+  @apply flex items-center gap-4 px-4 py-3
+         text-gray-400 hover:text-white
+         transition-all duration-300
+         relative;
+}
+
+.icon {
+  @apply w-5 h-5 text-white/70 transition-colors duration-200;
+}
+
+.label {
+  @apply text-sm font-medium whitespace-nowrap;
+}
+
+/* Active state */
+.navItem[aria-current="page"] {
+  @apply text-white bg-primary-purple/20 border border-primary-purple/20;
+}
+
+.navItem[aria-current="page"] .icon {
+  @apply text-white;
+}
+
+/* Active state with glow effect */
+.navItem[data-active="true"] {
+  @apply text-white;
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.navItem[data-active="true"]::before {
+  content: "";
+  @apply absolute left-0 top-0 bottom-0 w-1
+         bg-gradient-to-b from-purple-500 to-pink-500;
+  box-shadow: 0 0 10px theme("colors.purple.500"),
+    0 0 20px theme("colors.purple.500");
+  animation: glowPulse 2s infinite;
+}
+
+.navItem[data-active="true"] .icon {
+  @apply text-purple-500;
+  filter: drop-shadow(0 0 8px theme("colors.purple.500"));
+  animation: iconGlow 2s infinite;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes iconGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px theme("colors.purple.500"));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px theme("colors.purple.500"));
+  }
+}

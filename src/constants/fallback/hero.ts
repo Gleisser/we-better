@@ -33,7 +33,7 @@ export const HERO_FALLBACK = {
     secondary_cta_text: HERO_CONSTANTS.DEFAULT_SECONDARY_CTA_TEXT,
     images: HERO_CONSTANTS.FLOATING_IMAGES,
     main_image_mobile: {
-      src: "/assets/images/hero/mobile/app_hero_img-mobile.webp",
+      src: "/assets/images/hero/mobile/app_hero_mobile.webp",
       alt: "We Better Mobile App",
     },
     main_image: {

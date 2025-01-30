@@ -1,0 +1,58 @@
+.searchButton {
+  @apply w-10 h-10 rounded-xl
+         flex items-center justify-center
+         bg-black/40 backdrop-blur-sm
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-200;
+}
+
+.searchIcon {
+  @apply w-5 h-5;
+}
+
+.overlay {
+  @apply fixed inset-0 
+         bg-black/95 backdrop-blur-lg
+         z-[100]
+         flex flex-col;
+}
+
+.searchHeader {
+  @apply flex items-center gap-3
+         p-4 border-b border-white/[0.08];
+}
+
+.searchInputWrapper {
+  @apply flex-1 flex items-center gap-3
+         px-4 py-2 rounded-xl
+         bg-white/5
+         border border-white/[0.08];
+}
+
+.inputIcon {
+  @apply w-5 h-5 text-white/50;
+}
+
+.searchInput {
+  @apply flex-1 bg-transparent
+         text-white placeholder:text-white/50
+         border-none outline-none
+         text-base;
+}
+
+.closeButton {
+  @apply w-10 h-10 rounded-xl
+         flex items-center justify-center
+         bg-white/5
+         border border-white/[0.08]
+         text-white/70;
+}
+
+.closeIcon {
+  @apply w-5 h-5;
+}
+
+.searchResults {
+  @apply flex-1 overflow-y-auto p-4;
+}

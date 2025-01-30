@@ -1,0 +1,86 @@
+.container {
+  @apply relative flex items-center;
+}
+
+.searchContainer {
+  @apply relative h-10 rounded-xl bg-white/5 border border-white/10
+         flex items-center overflow-hidden;
+}
+
+.searchButton {
+  @apply w-10 h-10 flex items-center justify-center flex-shrink-0
+         hover:bg-white/5 transition-colors;
+}
+
+.searchIcon {
+  @apply w-5 h-5 text-white/70;
+}
+
+.expandedContent {
+  @apply flex-grow flex items-center pr-4;
+}
+
+.inputContainer {
+  @apply flex-grow flex items-center gap-2;
+}
+
+.categoryDropdown {
+  @apply relative z-50;
+}
+
+.categoryButton {
+  @apply flex items-center gap-2 px-3 py-1.5 rounded-lg 
+         text-white/70 hover:text-white hover:bg-white/5 
+         transition-all duration-200 font-plus-jakarta text-sm;
+}
+
+.chevronIcon {
+  @apply w-4 h-4 transition-transform duration-200;
+}
+
+.rotate {
+  @apply rotate-180;
+}
+
+.dropdownMenu {
+  @apply fixed mt-2 w-48 
+         bg-black/90 backdrop-blur-xl border border-white/10 
+         rounded-xl overflow-hidden shadow-xl
+         z-[100];
+}
+
+.dropdownItem {
+  @apply w-full px-4 py-2.5 text-left text-sm text-white/70
+         hover:text-white hover:bg-white/5 transition-all duration-200
+         font-plus-jakarta;
+}
+
+.selected {
+  @apply text-white bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]
+         hover:from-[#7C3AED] hover:to-[#C026D3];
+}
+
+.searchInput {
+  @apply flex-grow bg-transparent text-white placeholder:text-white/50
+         outline-none font-plus-jakarta text-sm pl-2;
+}
+
+.closeButton {
+  @apply w-10 h-10 flex items-center justify-center flex-shrink-0
+         hover:bg-white/5 transition-colors;
+}
+
+.closeIcon {
+  @apply w-5 h-5 text-white/70;
+}
+
+/* Add gradient border effect */
+.searchContainer::before {
+  content: "";
+  @apply absolute inset-[-1px] rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] -z-10
+         opacity-0 transition-opacity duration-200;
+}
+
+.searchContainer:focus-within::before {
+  @apply opacity-100;
+}

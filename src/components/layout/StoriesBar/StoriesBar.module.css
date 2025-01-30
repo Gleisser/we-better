@@ -1,0 +1,126 @@
+.container {
+  @apply fixed bottom-6 left-1/2 
+         w-full max-w-[calc(100%-32rem)]
+         z-50;
+  transform: translateX(-50%);
+  perspective: 1000px;
+}
+
+.storiesContainer {
+  @apply relative mx-auto px-8 py-4
+         bg-black/40 backdrop-blur-xl
+         rounded-2xl border border-white/10
+         transition-all duration-500;
+  transform: rotateX(-1deg) translateY(0);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+.collapseButton {
+  @apply absolute top-4 right-4
+         p-2 rounded-lg
+         hover:bg-white/5 transition-colors;
+}
+
+.collapseIcon {
+  @apply w-5 h-5 text-white/70;
+}
+
+.collapsedButton {
+  @apply flex flex-col items-center gap-2
+         mx-auto;
+}
+
+.collapsedIcon {
+  @apply w-16 h-16 rounded-full
+         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]
+         flex items-center justify-center
+         border border-white/10
+         shadow-lg shadow-purple-500/20;
+}
+
+.playIcon {
+  @apply w-8 h-8 text-white
+         drop-shadow-[0_0_3px_rgba(255,255,255,0.5)];
+}
+
+.collapsedText {
+  @apply text-sm text-white/70 font-medium;
+}
+
+/* Existing hover effects */
+.storiesContainer:hover {
+  transform: rotateX(0deg) translateY(-4px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(139, 92, 246, 0.2);
+}
+
+.storiesWrapper {
+  @apply flex items-center justify-center gap-6;
+}
+
+/* Remove unused styles */
+
+/* Add mobile-specific styles */
+@media (max-width: 768px) {
+  .container {
+    @apply fixed bottom-0 left-0 
+           w-full max-w-full
+           transform-none
+           z-[90];
+    perspective: none;
+  }
+
+  .storiesContainer {
+    @apply mx-0
+           bg-black/95
+           backdrop-blur-none
+           rounded-t-2xl rounded-b-none
+           border-t border-white/10
+           h-[80vh]
+           overflow-y-auto
+           relative
+           z-[95];
+    box-shadow: none;
+    transform: none;
+  }
+
+  .storiesWrapper {
+    @apply pt-14 px-4;
+  }
+
+  .collapseButton {
+    @apply absolute top-4 right-4
+           z-[1]
+           bg-black/40
+           rounded-full
+           p-3;
+    position: sticky;
+    top: 1rem;
+  }
+
+  .collapsedButton {
+    @apply fixed left-4 bottom-20
+           z-[90]
+           w-10 h-10
+           p-0
+           flex items-center justify-center
+           bg-black/90
+           backdrop-blur-none
+           rounded-xl
+           border border-white/10
+           shadow-lg;
+  }
+
+  .collapsedIcon {
+    @apply w-8 h-8;
+  }
+
+  .collapsedText {
+    @apply hidden;
+  }
+
+  .playIcon {
+    @apply w-5 h-5;
+  }
+}

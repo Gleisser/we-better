@@ -1,0 +1,133 @@
+.backdrop {
+  @apply fixed inset-0 
+         bg-black/80 backdrop-blur-sm
+         z-[100];
+}
+
+.container {
+  @apply fixed top-1/2 left-1/2 
+         w-[480px] max-w-[calc(100%-32px)]
+         bg-black/90 backdrop-blur-xl
+         rounded-2xl border border-white/10
+         shadow-2xl
+         z-[101];
+  transform: translate(-50%, -50%);
+}
+
+.header {
+  @apply flex items-center justify-between
+         px-6 py-4
+         border-b border-white/[0.08];
+}
+
+.title {
+  @apply text-lg font-semibold text-white
+         font-plus-jakarta;
+}
+
+.closeButton {
+  @apply p-2 rounded-lg
+         hover:bg-white/5
+         transition-colors;
+}
+
+.closeIcon {
+  @apply w-5 h-5 text-white/70;
+}
+
+.content {
+  @apply p-6;
+}
+
+.inputWrapper {
+  @apply relative;
+}
+
+.input {
+  @apply w-full px-4 py-3
+         bg-white/5
+         rounded-xl border border-white/10
+         text-white placeholder:text-white/40
+         resize-none
+         focus:outline-none focus:border-purple-500/50
+         font-plus-jakarta;
+}
+
+.charCount {
+  @apply absolute bottom-3 right-4
+         text-xs text-white/40;
+}
+
+.preview {
+  @apply mt-6 p-4
+         bg-white/5 rounded-xl
+         border border-white/10;
+}
+
+.previewLabel {
+  @apply text-sm text-white/50 mb-2
+         font-plus-jakarta;
+}
+
+.previewText {
+  @apply text-white font-medium
+         font-plus-jakarta;
+}
+
+.confirmMessage {
+  @apply mt-6 p-4
+         bg-purple-500/10 rounded-xl
+         border border-purple-500/20
+         text-sm text-purple-200
+         font-plus-jakarta;
+}
+
+.actions {
+  @apply flex justify-end gap-3 mt-6;
+}
+
+.cancelButton {
+  @apply px-4 py-2 rounded-lg
+         bg-white/5
+         text-sm text-white/70
+         hover:bg-white/10 hover:text-white
+         transition-colors
+         font-plus-jakarta;
+}
+
+.saveButton {
+  @apply px-4 py-2 rounded-lg
+         bg-purple-500
+         text-sm text-white font-medium
+         hover:bg-purple-600
+         transition-colors
+         disabled:opacity-50 disabled:cursor-not-allowed
+         font-plus-jakarta;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .container {
+    @apply fixed top-[10%] bottom-0 left-0 right-0
+           w-full max-w-full
+           rounded-t-2xl rounded-b-none;
+    transform: none;
+  }
+
+  .content {
+    @apply h-[calc(100%-70px)] /* Subtract header height */
+           flex flex-col;
+  }
+
+  .inputWrapper {
+    @apply flex-grow;
+  }
+
+  .input {
+    @apply h-full;
+  }
+
+  .actions {
+    @apply mt-auto pt-4; /* Push buttons to bottom */
+  }
+}
