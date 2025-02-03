@@ -67,25 +67,71 @@ interface ArticleParams {
     page: number; 
     pageSize: number; 
   };
-  filters?: ArticleFilters;
+  filters?: any;
+  populate?: string[] | string;
 }
 
 export const articleService = {
   async getArticles(params?: ArticleParams): Promise<ArticleResponse> {
     try {
-      const populateQuery = 'populate=category&&populate=tags';
-      const queryParams = new URLSearchParams(populateQuery);
+      const queryParams = new URLSearchParams();
       
-      // if (params?.sort) {
-      //   queryParams.append('sort', params.sort);
-      // }
+      // Handle populate parameter
+      const defaultPopulate = ['category', 'tags'];
+      const populateParams = params?.populate || defaultPopulate;
       
-      if (params?.filters) {
-        queryParams.append('filters', JSON.stringify(params.filters));
+      if (Array.isArray(populateParams)) {
+        populateParams.forEach(item => {
+          queryParams.append('populate', item);
+        });
+      } else {
+        queryParams.append('populate', populateParams);
       }
       
-      if (params?.pagination) {
-        queryParams.append('pagination', JSON.stringify(params.pagination));
+      // Handle sorting
+      if (params?.sort) {
+        queryParams.append('sort', params.sort);
+      }
+      
+      // Handle filters in Strapi's format
+      if (params?.filters) {
+        // Handle $ne operator for id
+        if (params.filters.id?.$ne) {
+          queryParams.append('filters[id][$ne]', params.filters.id.$ne);
+        }
+
+        // Handle $or conditions
+        if (params.filters.$or) {
+          console.log(params.filters.$or);
+          params.filters.$or.forEach((condition: any, index: number) => {
+            // Handle category condition
+            if (condition.category?.id?.$eq) {
+              queryParams.append(
+                `filters[$or][${index}][category][id][$eq]`, 
+                condition.category.id.$eq.toString()
+              );
+            }
+            
+            // Handle tags condition
+            if (condition.tags?.id?.$in) {
+              condition.tags.id.$in.forEach((tagId: number) => {
+                queryParams.append(
+                  `filters[$or][${index}][tags][id][$in][]`, 
+                  tagId.toString()
+                );
+              });
+            }
+          });
+        }
+      }
+
+      // Handle pagination - ensure we're not adding duplicates
+      const existingParams = Array.from(queryParams.entries());
+      const hasPaginationParams = existingParams.some(([key]) => key.startsWith('pagination'));
+
+      if (params?.pagination && !hasPaginationParams) {
+        queryParams.append('pagination[page]', params.pagination.page.toString());
+        queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
       const { data } = await apiClient.get<ArticleResponse>(`/api/articles?${queryParams}`);

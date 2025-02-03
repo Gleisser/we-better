@@ -35,14 +35,11 @@ interface ArticleCardProps {
 }
 
 const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
-  console.log(article.thumbnail);
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedArticles();
   const [votes, setVotes] = useState(0);
   const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  console.log(article.category);
 
   const category = CATEGORY_CONFIG[formatSlug(article.category)] || {
     icon: '📚',

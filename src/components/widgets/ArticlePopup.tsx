@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   XIcon, 
   ThumbUpIcon, 
@@ -15,18 +15,27 @@ import {
   ChevronUpIcon
 } from '../common/icons';
 import { usePreventScroll } from '../../hooks/usePreventScroll';
-import mockArticles from '@/pages/Articles/mockArticles';
+import { articleService, Article } from '@/services/articleService';
 
 interface ArticlePopupProps {
   isOpen: boolean;
   onClose: () => void;
   article: {
+    id: string;
     title: string;
     image?: string;
     thumbnail?: string;
     tldr: string;
-    tags?: string[];
-    hashtags?: string[];
+    tags?: Array<{
+      id: number;
+      name: string;
+      slug: string;
+    }>;
+    category?: {
+      id: number;
+      name: string;
+      slug: string;
+    };
     description?: string;
     readTime?: number;
     publishedAt?: string;
@@ -38,18 +47,81 @@ const defaultHashtags = ['selfimprovement', 'productivity', 'learning', 'growth'
 const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article }) => {
   usePreventScroll(isOpen);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
+  const [isLoadingRelated, setIsLoadingRelated] = useState(false);
 
-  // Get 3 random articles excluding the current one
-  
-  const relatedArticles = React.useMemo(() => {
-    const otherArticles =  mockArticles.filter(a => a.id !== article.id); //instead of the mock data call the articles api
-    return otherArticles
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 3);
-  }, [article.id]);
+  // Fetch related articles based on category and tags
+  useEffect(() => {
+    const fetchRelatedArticles = async () => {
+      if (!article.id) return;
+      
+      try {
+        setIsLoadingRelated(true);
+        
+        // Create base filters object
+        const filters: any = {
+          id: {
+            $ne: article.id
+          }
+        };
+
+        // Create $or array only if we have category or tags
+        const orConditions = [];
+
+        // Add category filter if category exists
+        if (article.category?.id) {
+          orConditions.push({
+            category: {
+              id: {
+                $eq: article.category.id
+              }
+            }
+          });
+        }
+
+        // Add tags filter if tags exist and have valid IDs
+        const validTagIds = article.tags?.map(tag => tag.id) || [];
+        console.log(article.tags);
+        if (validTagIds.length > 0) {
+          orConditions.push({
+            tags: {
+              id: {
+                $in: validTagIds
+              }
+            }
+          });
+        }
+
+        // Only add $or if we have conditions
+        if (orConditions.length > 0) {
+          filters.$or = orConditions;
+        }
+
+        const response = await articleService.getArticles({
+          filters,
+          pagination: {
+            page: 1,
+            pageSize: 3
+          },
+          sort: 'publishedAt:desc',
+          populate: ['category', 'tags']
+        });
+
+        setRelatedArticles(response.data);
+      } catch (error) {
+        console.error('Error fetching related articles:', error);
+      } finally {
+        setIsLoadingRelated(false);
+      }
+    };
+
+    if (isOpen) {
+      fetchRelatedArticles();
+    }
+  }, [isOpen, article.id, article.category, article.tags]);
 
   // Use provided hashtags or fallback to defaults
-  const hashtags = article.tags || defaultHashtags;
+  const hashtags = article.tags?.map(tag => tag.name) || defaultHashtags;
 
   const summaryText = article.description || '';
 
@@ -149,12 +221,12 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
               {article.tags && article.tags.length > 0 && (
                 <div className="flex items-center gap-2 mb-6">
                   <TagIcon className="w-5 h-5 text-gray-400" />
-                  {article.tags.map((tag) => (
+                  {article.tags.slice(0, 3).map((tag) => (
                     <span 
-                      key={tag}
+                      key={tag.id}
                       className="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full text-sm"
                     >
-                      {tag}
+                      {tag.name}
                     </span>
                   ))}
                 </div>
@@ -210,14 +282,27 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
             <div>
               <h3 className="text-lg font-semibold mb-4 dark:text-white">You might also like</h3>
               <div className="space-y-4">
-                {relatedArticles.map((relatedArticle) => (
-                  <div key={relatedArticle.id} className="flex items-start gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg">
-                    <SparklesIcon className="w-5 h-5 text-purple-500 flex-shrink-0 mt-1" />
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      {relatedArticle.title}
-                    </p>
-                  </div>
-                ))}
+                {isLoadingRelated ? (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Loading related articles...</p>
+                ) : relatedArticles.length > 0 ? (
+                  relatedArticles.map((relatedArticle) => (
+                    <div 
+                      key={relatedArticle.id} 
+                      className="flex items-start gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg"
+                      onClick={() => {
+                        // Handle navigation to the related article
+                        // You might want to implement this based on your routing setup
+                      }}
+                    >
+                      <SparklesIcon className="w-5 h-5 text-purple-500 flex-shrink-0 mt-1" />
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        {relatedArticle.title}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No related articles found</p>
+                )}
               </div>
             </div>
           </div>

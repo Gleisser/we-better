@@ -73,7 +73,13 @@ const Articles = () => {
       // Mocked fields
       readTime: article.readTime, // Random read time between 2-12 minutes
       category: article.category?.slug || 'general',
-      tags: article.tags?.map(tag => tag.slug) || [],
+      tags: article.tags?.map(tag => {
+        return {
+          id: tag.id,
+          name: tag.name,
+          slug: tag.slug
+        }
+      }) || [],
       url: article.url,
     };
   };
