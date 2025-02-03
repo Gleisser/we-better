@@ -28,22 +28,38 @@ interface ArticleCardProps {
     thumbnail?: string;
     readTime?: number;
     publishedAt?: string;
-    category?: string;
+    category?: {
+      slug: string;
+    };
   };
 }
 
 const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
+  console.log(article.thumbnail);
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedArticles();
   const [votes, setVotes] = useState(0);
   const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const category = CATEGORY_CONFIG[article.category] || {
+  console.log(article.category);
+
+  const category = CATEGORY_CONFIG[formatSlug(article.category)] || {
     icon: '📚',
     label: 'General',
     color: 'rgba(255, 255, 255, 0.5)',
   };
+
+  function formatSlug(slug: string | undefined) {
+    if (slug) {
+      if(slug === '12-minute-meditation') {
+        return 'meditation';
+      }
+      //replace trace with underscore
+      return slug.replace(/-/g, '_');
+    }
+    return 'general';
+  }
 
   const handleVote = (voteType: 'up' | 'down') => {
     if (userVote === voteType) {

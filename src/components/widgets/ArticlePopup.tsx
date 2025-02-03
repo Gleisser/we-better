@@ -40,32 +40,18 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Get 3 random articles excluding the current one
+  
   const relatedArticles = React.useMemo(() => {
-    const otherArticles = mockArticles.filter(a => a.id !== article.id);
+    const otherArticles =  mockArticles.filter(a => a.id !== article.id); //instead of the mock data call the articles api
     return otherArticles
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
   }, [article.id]);
 
   // Use provided hashtags or fallback to defaults
-  const hashtags = article.hashtags || defaultHashtags;
+  const hashtags = article.tags || defaultHashtags;
 
-  // Mock summary text - in real app, this would come from the article data
-  const summaryText = `
-    Linux terminal tools have evolved beyond mere functionality into the realm of entertainment and visual appeal. This comprehensive guide explores various tools that not only serve practical purposes but also add a cinematic flair to your command-line experience.
-
-    The article covers eight main tools, each bringing unique visual effects and functionalities:
-
-    1. Genact: A tool that generates realistic-looking activity in your terminal, perfect for demonstrations or when you want to make your screen look busy with authentic-looking processes.
-
-    2. Cmatrix: Inspired by the iconic Matrix movies, this tool creates cascading green characters that transform your terminal into a scene right out of the film.
-
-    3. Hollywood: As the name suggests, this tool makes your terminal look like the sophisticated hacking scenes often depicted in movies, complete with multiple panes showing different activities.
-
-    4. TEXTREME: Adds over-the-top animations to your text, making even simple terminal outputs look dramatic and engaging.
-
-    These tools aren't just about aesthetics; they serve practical purposes in demonstrations, presentations, and educational settings. They help make the command line less intimidating for newcomers and add an element of fun to the learning process.
-  `.trim();
+  const summaryText = article.description || '';
 
   const truncatedText = summaryText.slice(0, 250) + '...';
 
