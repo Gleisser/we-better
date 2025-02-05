@@ -10,11 +10,14 @@ import {
   MoreVerticalIcon,
   EyeOffIcon,
   HashtagIcon,
-  FlagIcon
+  FlagIcon,
+  ClockIcon,
+  CalendarIcon
 } from '@/components/common/icons';
 import { Tooltip } from '@/components/common/Tooltip';
 import { useBookmarkedArticles } from '@/hooks/useBookmarkedArticles';
 import ArticlePopup from './ArticlePopup';
+import { formatRelativeDate } from '@/utils/dateUtils';
 
 interface ArticleCardProps {
   article: {
@@ -27,6 +30,7 @@ interface ArticleCardProps {
     url?: string;
     thumbnail?: string;
     readTime?: number;
+    postDate: string;
     publishedAt?: string;
     category?: {
       slug: string;
@@ -40,6 +44,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
   const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  console.log(article.postDate);
 
   const category = CATEGORY_CONFIG[formatSlug(article.category)] || {
     icon: '📚',
@@ -282,10 +287,20 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
 
             <div className={styles.footer}>
               <div className={styles.metadata}>
-                <span className={styles.readTime}>⏱️ {article.readTime} min read</span>
-                <span className={styles.publishDate}>
-                  {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
-                </span>
+                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                  {article.readTime && (
+                    <span className="flex items-center gap-1">
+                      <ClockIcon className="w-4 h-4" />
+                      {article.readTime} min read
+                    </span>
+                  )}
+                  {article.postDate && (
+                    <span className="flex items-center gap-1">
+                      <CalendarIcon className="w-4 h-4" />
+                      {formatRelativeDate(article.postDate)}
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className={styles.actions}>

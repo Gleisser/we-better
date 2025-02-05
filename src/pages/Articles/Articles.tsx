@@ -70,8 +70,8 @@ const Articles = () => {
       thumbnail: article.thumbnail || '/placeholder-image.jpg',
       tldr: article.description, // Using description as TLDR for now
       publishedAt: article.publishedAt,
-      // Mocked fields
-      readTime: article.readTime, // Random read time between 2-12 minutes
+      postDate: article.postDate,
+      readTime: article.readTime, 
       category: article.category?.slug || 'general',
       tags: article.tags?.map(tag => {
         return {

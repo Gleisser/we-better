@@ -16,6 +16,7 @@ import {
 } from '../common/icons';
 import { usePreventScroll } from '../../hooks/usePreventScroll';
 import { articleService, Article } from '@/services/articleService';
+import { formatRelativeDate } from '@/utils/dateUtils';
 
 interface ArticlePopupProps {
   isOpen: boolean;
@@ -38,7 +39,7 @@ interface ArticlePopupProps {
     };
     description?: string;
     readTime?: number;
-    publishedAt?: string;
+    postDate: string;
   };
 }
 
@@ -159,13 +160,8 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
               {/* Metadata */}
               <div className="flex items-center gap-4 mb-6 text-sm text-gray-500 dark:text-gray-400">
                 {article.readTime && <span>⏱️ {article.readTime} min read</span>}
-                {article.publishedAt && (
-                  <span>
-                    {new Date(article.publishedAt).toLocaleDateString('en-US', { 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                  </span>
+                {article.postDate && (
+                  <span>📅 {formatRelativeDate(article.postDate)}</span>
                 )}
               </div>
 

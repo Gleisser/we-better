@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { handleServiceError } from '@/utils/service-utils';
+import qs from 'qs';
 
 export interface Article {
   id: number;
@@ -33,7 +34,7 @@ export interface Article {
         publishedAt: string;
       }
     ]
-    
+    postDate: string;
   };
 
 
