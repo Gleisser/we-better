@@ -81,6 +81,7 @@ const Articles = () => {
         }
       }) || [],
       url: article.url,
+      tableOfContents: article.tableOfContents,
     };
   };
 

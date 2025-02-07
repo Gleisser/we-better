@@ -40,6 +40,11 @@ interface ArticlePopupProps {
     description?: string;
     readTime?: number;
     postDate: string;
+    tableOfContents?: Array<{
+      id: string;
+      title: string;
+      level: number;
+    }>;
   };
 }
 
@@ -50,6 +55,8 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
   const [isExpanded, setIsExpanded] = useState(false);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
+
+  console.log(article.tableOfContents);
 
   // Fetch related articles based on category and tags
   useEffect(() => {
@@ -266,12 +273,25 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
             {/* Table of contents */}
             <div className="mb-8">
               <h3 className="text-lg font-semibold mb-4 dark:text-white">Table of contents</h3>
-              <nav className="space-y-2 text-gray-600 dark:text-gray-300">
-                <a href="#" className="block hover:text-purple-600">1. Introduction</a>
-                <a href="#" className="block hover:text-purple-600">2. Getting Started</a>
-                <a href="#" className="block hover:text-purple-600">3. Features</a>
-                <a href="#" className="block hover:text-purple-600">4. Conclusion</a>
-              </nav>
+              {article.tableOfContents && article.tableOfContents.length > 0 ? (
+                <nav className="space-y-2 text-gray-600 dark:text-gray-300">
+                  {article.tableOfContents.map((section, index) => (
+                    <a
+                      key={section.id}
+                      href={`#${section.id}`}
+                      className={`block hover:text-purple-600 ${
+                        section.level > 1 ? 'ml-' + (section.level - 1) * 4 : ''
+                      }`}
+                    >
+                      {`${index + 1}. ${section.title}`}
+                    </a>
+                  ))}
+                </nav>
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No table of contents available
+                </p>
+              )}
             </div>
 
             {/* You might also like */}

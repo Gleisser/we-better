@@ -35,6 +35,11 @@ interface ArticleCardProps {
     category?: {
       slug: string;
     };
+    tableOfContents?: Array<{
+      id: string;
+      title: string;
+      level: number;
+    }>;
   };
 }
 
@@ -44,7 +49,6 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
   const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  console.log(article.postDate);
 
   const category = CATEGORY_CONFIG[formatSlug(article.category)] || {
     icon: '📚',

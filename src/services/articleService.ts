@@ -35,6 +35,11 @@ export interface Article {
       }
     ]
     postDate: string;
+    tableOfContents: Array<{
+      id: string;
+      title: string;
+      level: number;
+    }>;
   };
 
 
@@ -103,7 +108,6 @@ export const articleService = {
 
         // Handle $or conditions
         if (params.filters.$or) {
-          console.log(params.filters.$or);
           params.filters.$or.forEach((condition: any, index: number) => {
             // Handle category condition
             if (condition.category?.id?.$eq) {
