@@ -12,7 +12,8 @@ import {
   LinkedInIcon,
   HashtagIcon,
   ChevronDownIcon,
-  ChevronUpIcon
+  ChevronUpIcon,
+  ArrowTopRight
 } from '../common/icons';
 import { usePreventScroll } from '../../hooks/usePreventScroll';
 import { articleService, Article } from '@/services/articleService';
@@ -45,6 +46,7 @@ interface ArticlePopupProps {
       title: string;
       level: number;
     }>;
+    url: string;
   };
 }
 
@@ -209,7 +211,7 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
                 {/* Hashtags section */}
                 <div className="mt-4 flex flex-wrap gap-2">
                   <HashtagIcon className="w-5 h-5 text-purple-500 dark:text-purple-400" />
-                  {hashtags.map((hashtag) => (
+                  {hashtags.slice(0, 5).map((hashtag) => (
                     <span 
                       key={hashtag}
                       className="text-purple-600 dark:text-purple-400 text-sm hover:text-purple-700 dark:hover:text-purple-300 cursor-pointer"
@@ -235,16 +237,28 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
                 </div>
               )}
 
-              {/* Voting */}
-              <div className="flex items-center gap-4">
-                <button className="flex items-center gap-2 text-gray-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-500">
-                  <ThumbUpIcon className="w-6 h-6" />
-                  <span>Upvote</span>
-                </button>
-                <button className="flex items-center gap-2 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
-                  <ThumbDownIcon className="w-6 h-6" />
-                  <span>Downvote</span>
-                </button>
+              {/* Voting and Read Article buttons */}
+              <div className="flex items-center gap-4 justify-between">
+                <div className="flex items-center gap-4">
+                  <button className="flex items-center gap-2 text-gray-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-500">
+                    <ThumbUpIcon className="w-6 h-6" />
+                    <span>Upvote</span>
+                  </button>
+                  <button className="flex items-center gap-2 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
+                    <ThumbDownIcon className="w-6 h-6" />
+                    <span>Downvote</span>
+                  </button>
+                </div>
+
+                <a 
+                  href={article.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  <span>Read Article</span>
+                  <ArrowTopRight className="w-4 h-4" />
+                </a>
               </div>
             </div>
           </div>
@@ -275,17 +289,18 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
               <h3 className="text-lg font-semibold mb-4 dark:text-white">Table of contents</h3>
               {article.tableOfContents && article.tableOfContents.length > 0 ? (
                 <nav className="space-y-2 text-gray-600 dark:text-gray-300">
-                  {article.tableOfContents.map((section, index) => (
-                    <a
-                      key={section.id}
-                      href={`#${section.id}`}
-                      className={`block hover:text-purple-600 ${
-                        section.level > 1 ? 'ml-' + (section.level - 1) * 4 : ''
-                      }`}
-                    >
-                      {`${index + 1}. ${section.title}`}
-                    </a>
-                  ))}
+                  {article.tableOfContents
+                    .filter(section => section.level <= 2) // Only show level 1 and 2
+                    .map((section) => (
+                      <div
+                        key={section.id}
+                        className={`block hover:text-purple-600 ${
+                          section.level === 2 ? '' : ''  // Indent only level 2
+                        }`}
+                      >
+                        {`${section.title}`}
+                      </div>
+                    ))}
                 </nav>
               ) : (
                 <p className="text-sm text-gray-500 dark:text-gray-400">
