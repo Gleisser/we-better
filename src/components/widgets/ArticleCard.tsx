@@ -34,6 +34,8 @@ interface ArticleCardProps {
     publishedAt?: string;
     category?: {
       slug: string;
+      name: string;
+      id: number;
     };
     tableOfContents?: Array<{
       id: string;
@@ -49,6 +51,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
   const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  console.log(article);
 
   const category = CATEGORY_CONFIG[formatSlug(article.category)] || {
     icon: '📚',
@@ -287,7 +290,15 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
 
           <div className={styles.content}>
             <h2 className={styles.title}>{article.title}</h2>
-            <p className={styles.description}>{article.description}</p>
+            <div className={styles.description}>
+              {article.tldr ? (
+                <>
+                  <span className="font-semibold">TLDR:</span> {article.tldr}
+                </>
+              ) : (
+                article.description
+              )}
+            </div>
 
             <div className={styles.footer}>
               <div className={styles.metadata}>

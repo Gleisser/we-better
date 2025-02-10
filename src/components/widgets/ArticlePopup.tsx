@@ -58,8 +58,6 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
 
-  console.log(article.tableOfContents);
-
   // Fetch related articles based on category and tags
   useEffect(() => {
     const fetchRelatedArticles = async () => {
@@ -91,7 +89,7 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
 
         // Add tags filter if tags exist and have valid IDs
         const validTagIds = article.tags?.map(tag => tag.id) || [];
-        console.log(article.tags);
+
         if (validTagIds.length > 0) {
           orConditions.push({
             tags: {
@@ -131,7 +129,7 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
   }, [isOpen, article.id, article.category, article.tags]);
 
   // Use provided hashtags or fallback to defaults
-  const hashtags = article.tags?.map(tag => tag.name) || defaultHashtags;
+  const hashtags = article.tags || defaultHashtags;
 
   const summaryText = article.description || '';
 
@@ -213,10 +211,10 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
                   <HashtagIcon className="w-5 h-5 text-purple-500 dark:text-purple-400" />
                   {hashtags.slice(0, 5).map((hashtag) => (
                     <span 
-                      key={hashtag}
+                      key={hashtag.id}
                       className="text-purple-600 dark:text-purple-400 text-sm hover:text-purple-700 dark:hover:text-purple-300 cursor-pointer"
                     >
-                      #{hashtag}
+                      #{hashtag.name}
                     </span>
                   ))}
                 </div>

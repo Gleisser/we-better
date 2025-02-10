@@ -68,18 +68,12 @@ const Articles = () => {
       description: article.description,
       image: article.thumbnail || '/placeholder-image.jpg',
       thumbnail: article.thumbnail || '/placeholder-image.jpg',
-      tldr: article.description, // Using description as TLDR for now
+      tldr: article.tldr || article.description,
       publishedAt: article.publishedAt,
       postDate: article.postDate,
       readTime: article.readTime, 
       category: article.category?.slug || 'general',
-      tags: article.tags?.map(tag => {
-        return {
-          id: tag.id,
-          name: tag.name,
-          slug: tag.slug
-        }
-      }) || [],
+      tags: article.tags || [],
       url: article.url,
       tableOfContents: article.tableOfContents,
     };

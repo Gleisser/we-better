@@ -14,6 +14,7 @@ export interface Article {
   readTime: number;
   url: string;
   thumbnail: string;    
+  tldr: string;
   category?: {
       id: number;
       slug: string;
@@ -23,24 +24,22 @@ export interface Article {
       publishedAt: string;
         documentId: string;
     };
-    tags?: [
-      {
-        id: number;
-        documentId: string;
-        slug: string;
-        name: string;
-        createdAt: string;
-        updatedAt: string;
-        publishedAt: string;
-      }
-    ]
+    tags?: Array<{
+      id: number;
+      documentId: string;
+      slug: string;
+      name: string;
+      createdAt: string;
+      updatedAt: string;
+      publishedAt: string;
+    }>;
     postDate: string;
     tableOfContents: Array<{
       id: string;
       title: string;
       level: number;
     }>;
-  };
+  }; 
 
 
 export interface ArticleResponse {
