@@ -106,7 +106,25 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick }) => {
     setShowMoreMenu(!showMoreMenu);
   };
 
-  const handleOptionClick = (action: string) => {
+  const renderNotInterestedOptions = () => {
+    if (!article.tags || article.tags.length === 0) return null;
+
+    return article.tags.slice(0, 3).map((tag) => (
+      <button 
+        key={tag.id}
+        className={styles.moreOption}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleOptionClick('notInterested', tag);
+        }}
+      >
+        <HashtagIcon className={styles.optionIcon} />
+        <span>Not interested in #{tag.name}</span>
+      </button>
+    ));
+  };
+
+  const handleOptionClick = (action: string, tag?: { id: number; name: string }) => {
     switch (action) {
       case 'share':
         handleShare();
@@ -121,7 +139,13 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick }) => {
         // Handle block
         break;
       case 'notInterested':
-        // Handle not interested
+        if (tag) {
+          // Handle not interested in specific tag
+          console.log(`Not interested in tag: ${tag.name}`);
+        }
+        break;
+      case 'report':
+        // Handle report
         break;
     }
     setShowMoreMenu(false);
@@ -238,38 +262,8 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick }) => {
                         <span>Don't show posts from It's Foss</span>
                       </button>
 
-                      <button 
-                        className={styles.moreOption}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOptionClick('notInterested');
-                        }}
-                      >
-                        <HashtagIcon className={styles.optionIcon} />
-                        <span>Not interested in #security</span>
-                      </button>
-
-                      <button 
-                        className={styles.moreOption}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOptionClick('notInterested');
-                        }}
-                      >
-                        <HashtagIcon className={styles.optionIcon} />
-                        <span>Not interested in #tools</span>
-                      </button>
-
-                      <button 
-                        className={styles.moreOption}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOptionClick('notInterested');
-                        }}
-                      >
-                        <HashtagIcon className={styles.optionIcon} />
-                        <span>Not interested in #linux</span>
-                      </button>
+                      {/* Dynamic Not Interested Options */}
+                      {renderNotInterestedOptions()}
 
                       <div className={styles.menuDivider} />
 
