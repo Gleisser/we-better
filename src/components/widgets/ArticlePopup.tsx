@@ -179,7 +179,7 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
                   <div className="h-px flex-1 bg-purple-200 dark:bg-purple-800"></div>
                 </div>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  {article.tldr}
+                  {article.tldr || article.description}
                 </p>
 
                 
