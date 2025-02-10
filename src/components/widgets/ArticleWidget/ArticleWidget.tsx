@@ -1,30 +1,67 @@
-import { useState } from 'react';
 import { BookmarkIcon, ShareIcon, ArrowTopRight } from '@/components/common/icons';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
-import { Article } from './types';
-import { MOCK_ARTICLES } from './config';
 import styles from './ArticleWidget.module.css';
 import { Tooltip } from '@/components/common/Tooltip';
 import { useBookmarkedArticles } from '@/hooks/useBookmarkedArticles';
+import { Article } from '@/services/articleService';
+import { formatRelativeDate } from '@/utils/dateUtils';
 
-const ArticleWidget = () => {
-  const [currentArticle] = useState<Article>(MOCK_ARTICLES[0]);
+interface ArticleWidgetProps {
+  article: Article | null;
+  isLoading?: boolean;
+}
+
+const ArticleWidget: React.FC<ArticleWidgetProps> = ({ article, isLoading }) => {
   const { theme } = useTimeBasedTheme();
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedArticles();
 
   const handleShare = async () => {
+    if (!article) return;
+    
     if (navigator.share) {
       try {
         await navigator.share({
-          title: currentArticle.title,
-          text: currentArticle.description,
-          url: currentArticle.url
+          title: article.title,
+          text: article.description,
+          url: article.url
         });
       } catch (err) {
         console.log('Error sharing:', err);
       }
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <div className={styles.headerLeft}>
+            <span className={styles.headerIcon}>📰</span>
+            <span className={styles.headerText}>Article of the Day</span>
+          </div>
+        </div>
+        <div className={styles.content}>
+          <p className="text-white/70">Loading article...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!article) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <div className={styles.headerLeft}>
+            <span className={styles.headerIcon}>📰</span>
+            <span className={styles.headerText}>Article of the Day</span>
+          </div>
+        </div>
+        <div className={styles.content}>
+          <p className="text-white/70">No article available</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div 
@@ -46,48 +83,48 @@ const ArticleWidget = () => {
         <div className={styles.articleCard}>
           <div className={styles.thumbnailSection}>
             <img 
-              src={currentArticle.thumbnail} 
-              alt={currentArticle.title}
+              src={article.thumbnail} 
+              alt={article.title}
               className={styles.thumbnail}
             />
-            <div className={styles.sourceBadge}>
+            {/* <div className={styles.sourceBadge}>
               <img 
-                src={currentArticle.source.icon} 
-                alt={currentArticle.source.name}
+                src={article.source.icon} 
+                alt={article.source.name}
                 className={styles.sourceIcon}
               />
-              {currentArticle.source.name}
-            </div>
+              {article.source.name}
+            </div> */}
           </div>
 
           <div className={styles.articleInfo}>
-            <h3 className={styles.articleTitle}>{currentArticle.title}</h3>
+            <h3 className={styles.articleTitle}>{article.title}</h3>
             
-            <p className={styles.articleDescription}>{currentArticle.description}</p>
+            <p className={styles.articleDescription}>{article.description}</p>
 
             <div className={styles.metadata}>
-              <span className={styles.readTime}>⏱️ {currentArticle.readTime} min read</span>
+              <span className={styles.readTime}>⏱️ {article.readTime} min read</span>
               <span className={styles.publishDate}>
-                {new Date(currentArticle.publishedAt).toLocaleDateString()}
+                {formatRelativeDate(article.publishedAt)}
               </span>
             </div>
 
             <div className={styles.bottomRow}>
               <div className={styles.actionButtons}>
-                <Tooltip content={isBookmarked(currentArticle.id) ? "Remove bookmark" : "Bookmark article"}>
+                <Tooltip content={isBookmarked(article.id.toString()) ? "Remove bookmark" : "Bookmark article"}>
                   <button
-                    className={`${styles.iconButton} ${isBookmarked(currentArticle.id) ? styles.bookmarked : ''}`}
+                    className={`${styles.iconButton} ${isBookmarked(article.id.toString()) ? styles.bookmarked : ''}`}
                     onClick={() => {
-                      if (isBookmarked(currentArticle.id)) {
-                        removeBookmark(currentArticle.id);
+                      if (isBookmarked(article.id.toString())) {
+                        removeBookmark(article.id.toString());
                       } else {
-                        addBookmark(currentArticle);
+                        addBookmark(article);
                       }
                     }}
                   >
                     <BookmarkIcon 
                       className={styles.actionIcon} 
-                      filled={isBookmarked(currentArticle.id)}
+                      filled={isBookmarked(article.id.toString())}
                     />
                   </button>
                 </Tooltip>
@@ -103,7 +140,7 @@ const ArticleWidget = () => {
               </div>
 
               <a 
-                href={currentArticle.url} 
+                href={article.url} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className={styles.readButton}
