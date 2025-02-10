@@ -175,36 +175,14 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
               {/* TLDR Section with enhanced styling */}
               <div className="mb-8 bg-purple-50 dark:bg-purple-900/10 rounded-lg p-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <h2 className="text-purple-600 dark:text-purple-400 font-semibold text-lg">TLDR</h2>
+                  <h2 className="text-purple-600 dark:text-purple-400 font-semibold text-lg">About this article</h2>
                   <div className="h-px flex-1 bg-purple-200 dark:bg-purple-800"></div>
                 </div>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                   {article.tldr}
                 </p>
 
-                {/* Summary section */}
-                <div className="mt-6">
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    {isExpanded ? summaryText : truncatedText}
-                  </p>
-                  
-                  <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="mt-2 flex items-center gap-1 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 text-sm font-medium transition-colors"
-                  >
-                    {isExpanded ? (
-                      <>
-                        Show less
-                        <ChevronUpIcon className="w-4 h-4" />
-                      </>
-                    ) : (
-                      <>
-                        Show more
-                        <ChevronDownIcon className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-                </div>
+                
                 
                 {/* Hashtags section */}
                 <div className="mt-4 flex flex-wrap gap-2">

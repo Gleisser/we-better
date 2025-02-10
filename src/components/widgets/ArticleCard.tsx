@@ -291,13 +291,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
           <div className={styles.content}>
             <h2 className={styles.title}>{article.title}</h2>
             <div className={styles.description}>
-              {article.tldr ? (
-                <>
-                  <span className="font-semibold">TLDR:</span> {article.tldr}
-                </>
-              ) : (
-                article.description
-              )}
+              {article.description}
             </div>
 
             <div className={styles.footer}>

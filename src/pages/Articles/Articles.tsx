@@ -68,7 +68,7 @@ const Articles = () => {
       description: article.description,
       image: article.thumbnail || '/placeholder-image.jpg',
       thumbnail: article.thumbnail || '/placeholder-image.jpg',
-      tldr: article.tldr || article.description,
+      tldr: article.tldr,
       publishedAt: article.publishedAt,
       postDate: article.postDate,
       readTime: article.readTime, 
