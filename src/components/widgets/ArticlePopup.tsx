@@ -52,43 +52,45 @@ interface ArticlePopupProps {
 
 const defaultHashtags = ['selfimprovement', 'productivity', 'learning', 'growth'];
 
-const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article }) => {
+const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article: initialArticle }) => {
   usePreventScroll(isOpen);
   const [isExpanded, setIsExpanded] = useState(false);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
+  const [currentArticle, setCurrentArticle] = useState(initialArticle);
+
+  // Update currentArticle when initialArticle changes
+  useEffect(() => {
+    setCurrentArticle(initialArticle);
+  }, [initialArticle]);
 
   // Fetch related articles based on category and tags
   useEffect(() => {
     const fetchRelatedArticles = async () => {
-      if (!article.id) return;
+      if (!currentArticle.id) return;
       
       try {
         setIsLoadingRelated(true);
         
-        // Create base filters object
         const filters: any = {
           id: {
-            $ne: article.id
+            $ne: currentArticle.id
           }
         };
 
-        // Create $or array only if we have category or tags
         const orConditions = [];
 
-        // Add category filter if category exists
-        if (article.category?.id) {
+        if (currentArticle.category?.id) {
           orConditions.push({
             category: {
               id: {
-                $eq: article.category.id
+                $eq: currentArticle.category.id
               }
             }
           });
         }
 
-        // Add tags filter if tags exist and have valid IDs
-        const validTagIds = article.tags?.map(tag => tag.id) || [];
+        const validTagIds = currentArticle.tags?.map(tag => tag.id) || [];
 
         if (validTagIds.length > 0) {
           orConditions.push({
@@ -100,7 +102,6 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
           });
         }
 
-        // Only add $or if we have conditions
         if (orConditions.length > 0) {
           filters.$or = orConditions;
         }
@@ -126,12 +127,39 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
     if (isOpen) {
       fetchRelatedArticles();
     }
-  }, [isOpen, article.id, article.category, article.tags]);
+  }, [isOpen, currentArticle.id, currentArticle.category, currentArticle.tags]);
+
+  // Handle clicking on a related article
+  const handleRelatedArticleClick = async (articleId: string) => {
+    try {
+      const response = await articleService.getArticle(articleId);
+      if (response.data) {
+        // Map the article data to match the expected format
+        const mappedArticle = {
+          id: response.data.id.toString(),
+          title: response.data.title,
+          description: response.data.description,
+          image: response.data.thumbnail,
+          thumbnail: response.data.thumbnail,
+          tldr: response.data.tldr,
+          tags: response.data.tags,
+          category: response.data.category,
+          readTime: response.data.readTime,
+          postDate: response.data.postDate,
+          tableOfContents: response.data.tableOfContents,
+          url: response.data.url
+        };
+        setCurrentArticle(mappedArticle);
+      }
+    } catch (error) {
+      console.error('Error fetching article details:', error);
+    }
+  };
 
   // Use provided hashtags or fallback to defaults
-  const hashtags = article.tags || defaultHashtags;
+  const hashtags = currentArticle.tags || defaultHashtags;
 
-  const summaryText = article.description || '';
+  const summaryText = currentArticle.description || '';
 
   const truncatedText = summaryText.slice(0, 250) + '...';
 
@@ -154,21 +182,21 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
             <div className="max-w-3xl">
               {/* Image */}
               <img 
-                src={article.image || article.thumbnail} 
-                alt={article.title}
+                src={currentArticle.image || currentArticle.thumbnail} 
+                alt={currentArticle.title}
                 className="w-full h-64 object-cover rounded-lg mb-6"
               />
 
               {/* Title */}
               <h1 className="text-2xl font-bold mb-4 dark:text-white">
-                {article.title}
+                {currentArticle.title}
               </h1>
 
               {/* Metadata */}
               <div className="flex items-center gap-4 mb-6 text-sm text-gray-500 dark:text-gray-400">
-                {article.readTime && <span>⏱️ {article.readTime} min read</span>}
-                {article.postDate && (
-                  <span>📅 {formatRelativeDate(article.postDate)}</span>
+                {currentArticle.readTime && <span>⏱️ {currentArticle.readTime} min read</span>}
+                {currentArticle.postDate && (
+                  <span>📅 {formatRelativeDate(currentArticle.postDate)}</span>
                 )}
               </div>
 
@@ -179,7 +207,7 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
                   <div className="h-px flex-1 bg-purple-200 dark:bg-purple-800"></div>
                 </div>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  {article.tldr || article.description}
+                  {currentArticle.tldr || currentArticle.description}
                 </p>
 
                 
@@ -199,10 +227,10 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
               </div>
 
               {/* Tags */}
-              {article.tags && article.tags.length > 0 && (
+              {currentArticle.tags && currentArticle.tags.length > 0 && (
                 <div className="flex items-center gap-2 mb-6">
                   <TagIcon className="w-5 h-5 text-gray-400" />
-                  {article.tags.slice(0, 3).map((tag) => (
+                  {currentArticle.tags.slice(0, 3).map((tag) => (
                     <span 
                       key={tag.id}
                       className="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full text-sm"
@@ -227,7 +255,7 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
                 </div>
 
                 <a 
-                  href={article.url} 
+                  href={currentArticle.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
@@ -263,9 +291,9 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
             {/* Table of contents */}
             <div className="mb-8">
               <h3 className="text-lg font-semibold mb-4 dark:text-white">Table of contents</h3>
-              {article.tableOfContents && article.tableOfContents.length > 0 ? (
+              {currentArticle.tableOfContents && currentArticle.tableOfContents.length > 0 ? (
                 <nav className="space-y-2 text-gray-600 dark:text-gray-300">
-                  {article.tableOfContents
+                  {currentArticle.tableOfContents
                     .filter(section => section.level <= 2) // Only show level 1 and 2
                     .map((section) => (
                       <div
@@ -295,13 +323,10 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article })
                   relatedArticles.map((relatedArticle) => (
                     <div 
                       key={relatedArticle.id} 
-                      className="flex items-start gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg"
-                      onClick={() => {
-                        // Handle navigation to the related article
-                        // You might want to implement this based on your routing setup
-                      }}
+                      className="flex items-start gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors"
+                      onClick={() => handleRelatedArticleClick(relatedArticle.documentId)}
                     >
-                      <SparklesIcon className="w-5 h-5 text-purple-500 flex-shrink-0 mt-1" />
+                      <SparklesIcon className="w-5 h-5 text-purple-500 dark:text-purple-400 flex-shrink-0 mt-1" />
                       <p className="text-sm text-gray-600 dark:text-gray-300">
                         {relatedArticle.title}
                       </p>

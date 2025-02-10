@@ -4,6 +4,7 @@ import qs from 'qs';
 
 export interface Article {
   id: number;
+  documentId: string;
   title: string;
   content: string;
   description: string;
@@ -145,9 +146,9 @@ export const articleService = {
     }
   },
 
-  async getArticle(id: string): Promise<{ data: Article }> {
+  async getArticle(documentId: string): Promise<{ data: Article }> {
     try {
-      const { data } = await apiClient.get<{ data: Article }>(`/articles/${id}?populate=*`);
+      const { data } = await apiClient.get<{ data: Article }>(`/api/articles/${documentId}?populate=category&populate=tags`);
       return data;
     } catch (error) {
       return handleServiceError(error, 'Article');
