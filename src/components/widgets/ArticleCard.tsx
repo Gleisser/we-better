@@ -238,30 +238,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick }) => {
                         <span>Hide</span>
                       </button>
 
-                      <button 
-                        className={styles.moreOption}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOptionClick('follow');
-                        }}
-                      >
-                        <BookmarkIcon className={styles.optionIcon} />
-                        <span>Follow It's Foss</span>
-                      </button>
-
                       <div className={styles.menuDivider} />
-
-                      <button 
-                        className={styles.moreOption}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOptionClick('block');
-                        }}
-                      >
-                        <EyeOffIcon className={styles.optionIcon} />
-                        <span>Don't show posts from It's Foss</span>
-                      </button>
-
                       {/* Dynamic Not Interested Options */}
                       {renderNotInterestedOptions()}
 
