@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ArticleCard from '@/components/widgets/ArticleCard';
 import styles from './Articles.module.css';
-import { ChevronDownIcon, SettingsIcon, TagIcon, UsersIcon, SparklesIcon, BlockIcon } from '@/components/common/icons';
+import { ChevronDownIcon, SettingsIcon, TagIcon, UsersIcon, SparklesIcon, BlockIcon, XIcon } from '@/components/common/icons';
 import FeedSettingsModal from '@/components/common/FeedSettingsModal/FeedSettingsModal';
 import { articleService, Article } from '@/services/articleService';
 
@@ -17,6 +17,7 @@ const Articles = () => {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const loader = useRef(null);
+  const [selectedTag, setSelectedTag] = useState<{ id: number; name: string } | null>(null);
 
   const PAGE_SIZE = 10;
 
@@ -30,13 +31,25 @@ const Articles = () => {
   const fetchArticles = async (pageNum: number, sortValue?: string) => {
     try {
       setIsLoadingMore(true);
-      const response = await articleService.getArticles({
-        sort: sortValue || 'publishedAt:desc',
-        pagination: {
-          page: pageNum,
-          pageSize: PAGE_SIZE,
-        },
-      });
+      
+      let response;
+      if (selectedTag) {
+        response = await articleService.getArticlesByTag(selectedTag.id, {
+          sort: sortValue || 'publishedAt:desc',
+          pagination: {
+            page: pageNum,
+            pageSize: PAGE_SIZE,
+          }
+        });
+      } else {
+        response = await articleService.getArticles({
+          sort: sortValue || 'publishedAt:desc',
+          pagination: {
+            page: pageNum,
+            pageSize: PAGE_SIZE,
+          }
+        });
+      }
 
       if (pageNum === 1) {
         setArticles(response.data);
@@ -44,9 +57,7 @@ const Articles = () => {
         setArticles(prev => [...prev, ...response.data]);
       }
 
-      // Check if we have more pages
       setHasMore(response.meta.pagination.page < response.meta.pagination.pageCount);
-      
     } catch (error) {
       console.error('Error fetching articles:', error);
     } finally {
@@ -102,8 +113,23 @@ const Articles = () => {
     setFilteredArticles(results);
   }, [searchTerm, articles]);
 
+  // Reset page and fetch articles when tag changes
+  useEffect(() => {
+    setPage(1);
+    const selectedOption = orderOptions.find(opt => opt.label === selectedOrder);
+    fetchArticles(1, selectedOption?.value);
+  }, [selectedTag]);
+
   const handleFeedSettingsClick = () => {
     setShowFeedSettings(true);
+  };
+
+  const handleTagSelect = (tag: { id: number; name: string }) => {
+    setSelectedTag(tag);
+  };
+
+  const clearTagFilter = () => {
+    setSelectedTag(null);
   };
 
   const mapArticleToCardProps = (article: Article) => {
@@ -118,7 +144,11 @@ const Articles = () => {
       postDate: article.postDate,
       readTime: article.readTime, 
       category: article.category?.slug || 'general',
-      tags: article.tags || [],
+      tags: article.tags?.map(tag => ({
+        id: tag.id,
+        name: tag.name,
+        slug: tag.slug
+      })) || [],
       url: article.url,
       tableOfContents: article.tableOfContents,
     };
@@ -135,6 +165,21 @@ const Articles = () => {
             <SettingsIcon className={styles.filterIcon} />
             <span>Feed Settings</span>
           </button>
+
+          {/* Tag filter indicator */}
+          {selectedTag && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+              <span className="text-sm text-purple-700 dark:text-purple-300">
+                #{selectedTag.name}
+              </span>
+              <button
+                onClick={clearTagFilter}
+                className="p-0.5 hover:bg-purple-200 dark:hover:bg-purple-800 rounded-full"
+              >
+                <XIcon className="w-4 h-4 text-purple-500" />
+              </button>
+            </div>
+          )}
 
           <div className={styles.dropdownContainer}>
             <button 
@@ -175,6 +220,7 @@ const Articles = () => {
                 <ArticleCard 
                   key={article.id} 
                   article={mapArticleToCardProps(article)} 
+                  onTagClick={handleTagSelect}
                 />
               ))
             ) : (

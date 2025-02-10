@@ -154,4 +154,44 @@ export const articleService = {
       return handleServiceError(error, 'Article');
     }
   },
+
+  async getArticlesByTag(
+    tagId: number, 
+    params?: Omit<ArticleParams, 'filters'>
+  ): Promise<ArticleResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+      
+      // Handle populate parameter
+      const defaultPopulate = ['category', 'tags'];
+      const populateParams = params?.populate || defaultPopulate;
+      
+      if (Array.isArray(populateParams)) {
+        populateParams.forEach(item => {
+          queryParams.append('populate', item);
+        });
+      } else {
+        queryParams.append('populate', populateParams);
+      }
+      
+      // Handle sorting
+      if (params?.sort) {
+        queryParams.append('sort', params.sort);
+      }
+      
+      // Add tag filter
+      queryParams.append('filters[tags][id][$eq]', tagId.toString());
+
+      // Handle pagination
+      if (params?.pagination) {
+        queryParams.append('pagination[page]', params.pagination.page.toString());
+        queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
+      }
+
+      const { data } = await apiClient.get<ArticleResponse>(`/api/articles?${queryParams}`);
+      return data;
+    } catch (error) {
+      return handleServiceError(error, 'Articles');
+    }
+  },
 }; 

@@ -22,6 +22,7 @@ import { formatRelativeDate } from '@/utils/dateUtils';
 interface ArticlePopupProps {
   isOpen: boolean;
   onClose: () => void;
+  onTagClick?: (tag: { id: number; name: string }) => void;
   article: {
     id: string;
     title: string;
@@ -52,7 +53,7 @@ interface ArticlePopupProps {
 
 const defaultHashtags = ['selfimprovement', 'productivity', 'learning', 'growth'];
 
-const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article: initialArticle }) => {
+const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick, article: initialArticle }) => {
   usePreventScroll(isOpen);
   const [isExpanded, setIsExpanded] = useState(false);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
@@ -163,6 +164,13 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article: i
 
   const truncatedText = summaryText.slice(0, 250) + '...';
 
+  const handleTagClick = (tag: { id: number; name: string }) => {
+    if (onTagClick) {
+      onTagClick(tag);
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -215,13 +223,14 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, article: i
                 {/* Hashtags section */}
                 <div className="mt-4 flex flex-wrap gap-2">
                   <HashtagIcon className="w-5 h-5 text-purple-500 dark:text-purple-400" />
-                  {hashtags.slice(0, 5).map((hashtag) => (
-                    <span 
-                      key={hashtag.id}
+                  {hashtags.slice(0, 5).map((tag) => (
+                    <button 
+                      key={tag.id}
+                      onClick={() => handleTagClick(tag)}
                       className="text-purple-600 dark:text-purple-400 text-sm hover:text-purple-700 dark:hover:text-purple-300 cursor-pointer"
                     >
-                      #{hashtag.name}
-                    </span>
+                      #{tag.name}
+                    </button>
                   ))}
                 </div>
               </div>

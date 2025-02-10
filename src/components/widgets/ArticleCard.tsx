@@ -24,7 +24,11 @@ interface ArticleCardProps {
     title: string;
     image: string;
     tldr: string;
-    tags?: string[];
+    tags?: Array<{
+      id: number;
+      name: string;
+      slug: string;
+    }>;
     id?: string;
     description?: string;
     url?: string;
@@ -32,26 +36,22 @@ interface ArticleCardProps {
     readTime?: number;
     postDate: string;
     publishedAt?: string;
-    category?: {
-      slug: string;
-      name: string;
-      id: number;
-    };
+    category?: string;
     tableOfContents?: Array<{
       id: string;
       title: string;
       level: number;
     }>;
   };
+  onTagClick?: (tag: { id: number; name: string }) => void;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
+const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick }) => {
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedArticles();
   const [votes, setVotes] = useState(0);
   const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  console.log(article);
 
   const category = CATEGORY_CONFIG[formatSlug(article.category)] || {
     icon: '📚',
@@ -125,6 +125,12 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
         break;
     }
     setShowMoreMenu(false);
+  };
+
+  const handleTagClick = (tag: { id: number; name: string }) => {
+    if (onTagClick) {
+      onTagClick(tag);
+    }
   };
 
   return (
@@ -364,6 +370,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
       <ArticlePopup 
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
+        onTagClick={onTagClick}
         article={article}
       />
     </>
