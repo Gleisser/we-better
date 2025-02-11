@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './QuoteWidget.module.css';
-import { MoreVerticalIcon } from '../../common/icons';
+import { MoreVerticalIcon, RefreshIcon } from '../../common/icons';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/hooks/useTiltEffect';
 import { quoteService, type Quote } from '@/services/quoteService';
@@ -159,6 +159,7 @@ const QuoteWidget = () => {
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5);
   
   const [quote, setQuote] = useState<Quote | null>(null);
+  const [quotePool, setQuotePool] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -220,30 +221,32 @@ const QuoteWidget = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const fetchQuote = useCallback(async () => {
+  const fetchQuotes = useCallback(async () => {
     try {
       setLoading(true);
       const response = await quoteService.getQuotes({
         sort: 'publishedAt:desc',
         pagination: {
           page: 1,
-          pageSize: 1
+          pageSize: 15 // Fetch 15 quotes at once
         }
       });
       
-      const [mappedQuote] = quoteService.mapQuoteResponse(response);
-      setQuote(mappedQuote);
+      const mappedQuotes = quoteService.mapQuoteResponse(response);
+      setQuotePool(mappedQuotes);
+      // Set the first quote as current
+      setQuote(mappedQuotes[0]);
     } catch (error) {
-      console.error('Error fetching quote:', error);
-      setError('Failed to load quote');
+      console.error('Error fetching quotes:', error);
+      setError('Failed to load quotes');
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchQuote();
-  }, [fetchQuote]);
+    fetchQuotes();
+  }, [fetchQuotes]);
 
   const handleBookmark = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -337,6 +340,29 @@ const QuoteWidget = () => {
   const handleSubmitQuote = () => {
     console.log('Open submit quote form');
     setShowMoreOptions(false);
+  };
+
+  const handleNewQuote = () => {
+    if (quotePool.length === 0) {
+      // If we've used all quotes, fetch new ones
+      fetchQuotes();
+      return;
+    }
+
+    // Get current quote index
+    const currentIndex = quote ? quotePool.findIndex(q => q.id === quote.id) : -1;
+    
+    // Get next quote (randomly from the pool, excluding current quote)
+    const availableQuotes = quotePool.filter((_, index) => index !== currentIndex);
+    const randomIndex = Math.floor(Math.random() * availableQuotes.length);
+    const nextQuote = availableQuotes[randomIndex];
+    
+    // If we're running low on quotes (e.g., only 5 left), fetch more
+    if (availableQuotes.length <= 5) {
+      fetchQuotes();
+    }
+
+    setQuote(nextQuote);
   };
 
   return (
@@ -533,7 +559,7 @@ const QuoteWidget = () => {
             <span className={styles.errorIcon}>⚠️</span>
             <span className={styles.errorMessage}>{error}</span>
             <button 
-              onClick={fetchQuote} 
+              onClick={fetchQuotes} 
               className={styles.retryButton}
             >
               Try Again
@@ -637,6 +663,16 @@ const QuoteWidget = () => {
                     )}
                   </AnimatePresence>
                 </div>
+
+                <button
+                  type="button"
+                  className={`${styles.actionButton} ${styles.newQuoteButton}`}
+                  onClick={handleNewQuote}
+                  aria-label="Get new quote"
+                  disabled={loading}
+                >
+                  <RefreshIcon className={`${styles.actionIcon} ${loading ? styles.spinning : ''}`} />
+                </button>
 
                 <button
                   type="button"
