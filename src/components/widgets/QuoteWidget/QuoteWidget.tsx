@@ -139,6 +139,21 @@ type Reaction = '❤️' | '👏' | '💡' | '💪' | '🙏';
 
 const REACTIONS: Reaction[] = ['❤️', '👏', '💡', '💪', '🙏'];
 
+const LoadingSkeleton = () => (
+  <div className={styles.skeletonContent}>
+    <div className={styles.skeletonTag} />
+    <div className={styles.skeletonQuote}>
+      <div className={styles.skeletonLine} style={{ width: '90%' }} />
+      <div className={styles.skeletonLine} style={{ width: '85%' }} />
+      <div className={styles.skeletonLine} style={{ width: '40%' }} />
+    </div>
+    <div className={styles.skeletonFooter}>
+      <div className={styles.skeletonAuthor} />
+      <div className={styles.skeletonActions} />
+    </div>
+  </div>
+);
+
 const QuoteWidget = () => {
   const { theme } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5);
@@ -512,9 +527,18 @@ const QuoteWidget = () => {
         </div>
 
         {loading ? (
-          <div className={styles.loading}>Loading quote...</div>
+          <LoadingSkeleton />
         ) : error ? (
-          <div className={styles.error}>{error}</div>
+          <div className={styles.error}>
+            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorMessage}>{error}</span>
+            <button 
+              onClick={fetchQuote} 
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
         ) : quote ? (
           <motion.div 
             className={styles.quoteContent}

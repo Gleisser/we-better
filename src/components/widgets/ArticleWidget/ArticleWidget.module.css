@@ -152,4 +152,87 @@
 
 .iconButton.bookmarked {
   animation: bookmark 0.3s ease-in-out;
+}
+
+/* Loading Skeleton Styles */
+.skeletonContent {
+  @apply flex flex-col gap-6 animate-pulse;
+}
+
+.skeletonHeader {
+  @apply flex items-center justify-between mb-4;
+}
+
+.skeletonTitle {
+  @apply h-6 w-40 rounded-lg bg-white/10;
+}
+
+.skeletonActions {
+  @apply h-8 w-24 rounded-lg bg-white/10;
+}
+
+.skeletonArticle {
+  @apply flex gap-6;
+}
+
+.skeletonImage {
+  @apply w-[280px] h-[200px] rounded-2xl bg-white/10
+         flex-shrink-0;
+}
+
+.skeletonDetails {
+  @apply flex-1 flex flex-col gap-4;
+}
+
+.skeletonTags {
+  @apply flex gap-2;
+}
+
+.skeletonTag {
+  @apply h-6 w-20 rounded-full bg-white/10;
+}
+
+.skeletonHeadline {
+  @apply h-8 w-[90%] rounded-lg bg-white/10;
+}
+
+.skeletonDescription {
+  @apply flex flex-col gap-2;
+}
+
+.skeletonLine {
+  @apply h-4 rounded bg-white/10;
+}
+
+.skeletonMeta {
+  @apply flex items-center gap-4 mt-auto;
+}
+
+.skeletonAuthor {
+  @apply h-5 w-32 rounded bg-white/10;
+}
+
+.skeletonDate {
+  @apply h-5 w-24 rounded bg-white/10;
+}
+
+/* Error State Styles */
+.error {
+  @apply flex flex-col items-center justify-center gap-4 
+         py-8 text-center text-white/70;
+}
+
+.errorIcon {
+  @apply text-3xl;
+}
+
+.errorMessage {
+  @apply text-sm;
+}
+
+.retryButton {
+  @apply px-4 py-2 mt-2 rounded-lg
+         bg-white/10 hover:bg-white/20
+         text-sm font-medium
+         transition-colors duration-200;
 } 

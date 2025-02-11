@@ -11,6 +11,35 @@ interface ArticleWidgetProps {
   isLoading?: boolean;
 }
 
+const LoadingSkeleton = () => (
+  <div className={styles.skeletonContent}>
+    <div className={styles.skeletonHeader}>
+      <div className={styles.skeletonTitle} />
+      <div className={styles.skeletonActions} />
+    </div>
+    
+    <div className={styles.skeletonArticle}>
+      <div className={styles.skeletonImage} />
+      <div className={styles.skeletonDetails}>
+        <div className={styles.skeletonTags}>
+          <div className={styles.skeletonTag} />
+          <div className={styles.skeletonTag} style={{ width: '100px' }} />
+        </div>
+        <div className={styles.skeletonHeadline} />
+        <div className={styles.skeletonDescription}>
+          <div className={styles.skeletonLine} style={{ width: '100%' }} />
+          <div className={styles.skeletonLine} style={{ width: '90%' }} />
+          <div className={styles.skeletonLine} style={{ width: '95%' }} />
+        </div>
+        <div className={styles.skeletonMeta}>
+          <div className={styles.skeletonAuthor} />
+          <div className={styles.skeletonDate} />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 const ArticleWidget: React.FC<ArticleWidgetProps> = ({ article, isLoading }) => {
   const { theme } = useTimeBasedTheme();
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedArticles();
@@ -41,7 +70,7 @@ const ArticleWidget: React.FC<ArticleWidgetProps> = ({ article, isLoading }) => 
           </div>
         </div>
         <div className={styles.content}>
-          <p className="text-white/70">Loading article...</p>
+          <LoadingSkeleton />
         </div>
       </div>
     );
@@ -57,7 +86,7 @@ const ArticleWidget: React.FC<ArticleWidgetProps> = ({ article, isLoading }) => 
           </div>
         </div>
         <div className={styles.content}>
-          <p className="text-white/70">No article available</p>
+          <LoadingSkeleton />
         </div>
       </div>
     );
