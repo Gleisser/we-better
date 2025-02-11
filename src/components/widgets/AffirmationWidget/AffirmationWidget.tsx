@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './AffirmationWidget.module.css';
 import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, XIcon, BellIcon, PlusIcon, PencilIcon, TrashIcon, BookmarkIcon } from '@/components/common/icons';
 import ParticleEffect from './ParticleEffect';
@@ -15,8 +15,19 @@ import { usePersonalAffirmation } from '@/hooks/usePersonalAffirmation';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog/ConfirmDialog';
 import { Toast } from '@/components/common/Toast/Toast';
 import { useBookmarkedAffirmations } from '@/hooks/useBookmarkedAffirmations';
+import { affirmationService, type Affirmation } from '@/services/affirmationService';
 
-type AffirmationCategory = 'personal' | 'confidence' | 'growth' | 'gratitude' | 'abundance' | 'health';
+type AffirmationCategory = 
+  | 'personal' 
+  | 'beauty' 
+  | 'blessing' 
+  | 'gratitude' 
+  | 'happiness' 
+  | 'health' 
+  | 'love' 
+  | 'money' 
+  | 'sleep' 
+  | 'spiritual';
 
 interface Affirmation {
   id: string;
@@ -24,124 +35,6 @@ interface Affirmation {
   category: AffirmationCategory;
   intensity: 1 | 2 | 3; // 1: gentle, 2: moderate, 3: powerful
 }
-
-// Sample affirmations data
-const AFFIRMATIONS: Record<AffirmationCategory, Affirmation[]> = {
-  personal: [
-    {
-      id: 'personal_1',
-      text: 'I am capable of achieving anything I set my mind to',
-      category: 'personal',
-      intensity: 3
-    },
-    {
-      id: 'personal_2',
-      text: 'I trust in my abilities and inner wisdom',
-      category: 'personal',
-      intensity: 2
-    }
-  ],
-  confidence: [
-    {
-      id: 'conf_1',
-      text: 'I am capable of achieving anything I set my mind to',
-      category: 'confidence',
-      intensity: 3
-    },
-    {
-      id: 'conf_2',
-      text: 'I trust in my abilities and inner wisdom',
-      category: 'confidence',
-      intensity: 2
-    },
-    {
-      id: 'conf_3',
-      text: 'I radiate confidence, self-respect, and inner harmony',
-      category: 'confidence',
-      intensity: 2
-    }
-  ],
-  growth: [
-    {
-      id: 'growth_1',
-      text: "Every day I'm growing stronger and wiser",
-      category: 'growth',
-      intensity: 2
-    },
-    {
-      id: 'growth_2',
-      text: 'I embrace challenges as opportunities to learn',
-      category: 'growth',
-      intensity: 3
-    },
-    {
-      id: 'growth_3',
-      text: 'I am constantly evolving and becoming a better version of myself',
-      category: 'growth',
-      intensity: 2
-    }
-  ],
-  gratitude: [
-    {
-      id: 'grat_1',
-      text: 'I am thankful for all the abundance in my life',
-      category: 'gratitude',
-      intensity: 2
-    },
-    {
-      id: 'grat_2',
-      text: 'I appreciate the small moments of joy in each day',
-      category: 'gratitude',
-      intensity: 1
-    },
-    {
-      id: 'grat_3',
-      text: 'My heart is full of gratitude for all that I have',
-      category: 'gratitude',
-      intensity: 3
-    }
-  ],
-  abundance: [
-    {
-      id: 'abund_1',
-      text: 'I attract success and prosperity effortlessly',
-      category: 'abundance',
-      intensity: 3
-    },
-    {
-      id: 'abund_2',
-      text: 'I am open to receiving all the wealth life offers',
-      category: 'abundance',
-      intensity: 2
-    },
-    {
-      id: 'abund_3',
-      text: 'Abundance flows freely into my life',
-      category: 'abundance',
-      intensity: 2
-    }
-  ],
-  health: [
-    {
-      id: 'health_1',
-      text: 'My body is healthy, strong, and full of energy',
-      category: 'health',
-      intensity: 3
-    },
-    {
-      id: 'health_2',
-      text: 'I make choices that nourish my mind, body, and soul',
-      category: 'health',
-      intensity: 2
-    },
-    {
-      id: 'health_3',
-      text: 'I radiate health, vitality, and positive energy',
-      category: 'health',
-      intensity: 2
-    }
-  ]
-};
 
 const CATEGORY_CONFIG: Record<AffirmationCategory, {
   icon: string;
@@ -153,38 +46,56 @@ const CATEGORY_CONFIG: Record<AffirmationCategory, {
     label: 'Personal',
     colorRGB: '236, 72, 153' // Pink RGB values
   },
-  confidence: {
-    icon: '⚡️',
-    label: 'Confidence',
-    colorRGB: '139, 92, 246' // Purple RGB values
+  beauty: {
+    icon: '✨',
+    label: 'Beauty',
+    colorRGB: '244, 114, 182' // Pink-500
   },
-  growth: {
-    icon: '🌱',
-    label: 'Growth',
-    colorRGB: '16, 185, 129' // Emerald RGB values
+  blessing: {
+    icon: '🙌',
+    label: 'Blessing',
+    colorRGB: '139, 92, 246' // Purple-500
   },
   gratitude: {
     icon: '🙏',
     label: 'Gratitude',
-    colorRGB: '245, 158, 11' // Amber RGB values
+    colorRGB: '245, 158, 11' // Amber-500
   },
-  abundance: {
-    icon: '✨',
-    label: 'Abundance',
-    colorRGB: '236, 72, 153' // Pink RGB values
+  happiness: {
+    icon: '😊',
+    label: 'Happiness',
+    colorRGB: '250, 204, 21' // Yellow-400
   },
   health: {
     icon: '💪',
     label: 'Health',
-    colorRGB: '59, 130, 246' // Blue RGB values
+    colorRGB: '34, 197, 94' // Green-500
+  },
+  love: {
+    icon: '❤️',
+    label: 'Love',
+    colorRGB: '239, 68, 68' // Red-500
+  },
+  money: {
+    icon: '💰',
+    label: 'Money',
+    colorRGB: '16, 185, 129' // Emerald-500
+  },
+  sleep: {
+    icon: '😴',
+    label: 'Sleep',
+    colorRGB: '99, 102, 241' // Indigo-500
+  },
+  spiritual: {
+    icon: '🕊️',
+    label: 'Spiritual',
+    colorRGB: '168, 85, 247' // Purple-500
   }
 };
 
 const AffirmationWidget = () => {
-  const [currentAffirmation, setCurrentAffirmation] = useState<Affirmation>(
-    AFFIRMATIONS.confidence[0]
-  );
-  const [selectedCategory, setSelectedCategory] = useState<AffirmationCategory>('confidence');
+  const [currentAffirmation, setCurrentAffirmation] = useState<Affirmation | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<AffirmationCategory>('personal');
   const [showScrollButtons, setShowScrollButtons] = useState({
     left: false,
     right: false
@@ -215,22 +126,98 @@ const AffirmationWidget = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations();
+  const [affirmations, setAffirmations] = useState<Affirmation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [checkedPersonal, setCheckedPersonal] = useState(false);
 
-  const getRandomAffirmation = (category: AffirmationCategory): Affirmation => {
-    if (category === 'personal') {
-      return personalAffirmation ?? AFFIRMATIONS.confidence[0]; // Fallback to confidence
+  const fetchAffirmationsByCategory = useCallback(async (category: AffirmationCategory) => {
+    try {
+      setLoading(true);
+      
+      if (category === 'personal') {
+        if (personalAffirmation) {
+          setCurrentAffirmation(personalAffirmation);
+          setCheckedPersonal(true);
+        } else if (!checkedPersonal) {
+          setSelectedCategory('beauty');
+          setCheckedPersonal(true);
+          setLoading(false);
+          return;
+        }
+      } else {
+        const response = await affirmationService.getAffirmationsByCategory(category, {
+          sort: 'publishedAt:desc',
+          pagination: {
+            page: 1,
+            pageSize: 15
+          }
+        });
+
+        const mappedAffirmations = affirmationService.mapAffirmationResponse(response);
+        setAffirmations(mappedAffirmations);
+
+        if (mappedAffirmations.length > 0) {
+          const randomIndex = Math.floor(Math.random() * mappedAffirmations.length);
+          const selectedAffirmation = mappedAffirmations[randomIndex];
+          
+          setCurrentAffirmation({
+            id: selectedAffirmation.documentId,
+            text: selectedAffirmation.text,
+            category: affirmationService.determineAffirmationType(selectedAffirmation.categories),
+            intensity: affirmationService.determineIntensity(selectedAffirmation.categories)
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching affirmations:', error);
+      setError('Failed to load affirmations for this category');
+      
+      if (category === 'personal' && !checkedPersonal) {
+        setSelectedCategory('beauty');
+        setCheckedPersonal(true);
+      }
+    } finally {
+      setLoading(false);
     }
-    const affirmations = AFFIRMATIONS[category];
-    const randomIndex = Math.floor(Math.random() * affirmations.length);
-    return affirmations[randomIndex];
-  };
+  }, [personalAffirmation, checkedPersonal]);
+
+  useEffect(() => {
+    fetchAffirmationsByCategory(selectedCategory);
+  }, [fetchAffirmationsByCategory, selectedCategory]);
 
   const handleCategoryChange = (category: AffirmationCategory) => {
     setSelectedCategory(category);
-    setCurrentAffirmation(getRandomAffirmation(category));
+    fetchAffirmationsByCategory(category);
   };
 
-  // Check if scroll buttons should be shown
+  const getRandomAffirmation = () => {
+    if (selectedCategory === 'personal' && personalAffirmation) {
+      return personalAffirmation;
+    }
+
+    if (affirmations.length === 0) {
+      return null;
+    }
+
+    const randomIndex = Math.floor(Math.random() * affirmations.length);
+    const selectedAffirmation = affirmations[randomIndex];
+
+    return {
+      id: selectedAffirmation.documentId,
+      text: selectedAffirmation.text,
+      category: affirmationService.determineAffirmationType(selectedAffirmation.categories),
+      intensity: affirmationService.determineIntensity(selectedAffirmation.categories)
+    };
+  };
+
+  const handleNextAffirmation = () => {
+    const nextAffirmation = getRandomAffirmation();
+    if (nextAffirmation) {
+      setCurrentAffirmation(nextAffirmation);
+    }
+  };
+
   const checkScroll = () => {
     if (categorySelectorRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = categorySelectorRef.current;
@@ -241,7 +228,6 @@ const AffirmationWidget = () => {
     }
   };
 
-  // Add scroll listeners
   useEffect(() => {
     const selector = categorySelectorRef.current;
     if (selector) {
@@ -257,7 +243,7 @@ const AffirmationWidget = () => {
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (categorySelectorRef.current) {
-      const scrollAmount = 200; // Adjust this value as needed
+      const scrollAmount = 200;
       const newScrollLeft = categorySelectorRef.current.scrollLeft + 
         (direction === 'left' ? -scrollAmount : scrollAmount);
       
@@ -273,7 +259,6 @@ const AffirmationWidget = () => {
     if (didIncrementStreak) {
       setIsAffirming(true);
       setShowParticles(true);
-      // Reset the animation state after animation completes
       setTimeout(() => setIsAffirming(false), 1000);
     }
   };
@@ -299,9 +284,8 @@ const AffirmationWidget = () => {
     setShowSuccessToast(true);
     setTimeout(() => setShowSuccessToast(false), 3000);
     
-    // Switch to confidence category
     setSelectedCategory('confidence');
-    setCurrentAffirmation(getRandomAffirmation('confidence'));
+    setCurrentAffirmation(getRandomAffirmation());
   };
 
   return (
@@ -362,7 +346,6 @@ const AffirmationWidget = () => {
             className={styles.categorySelector}
           >
             {Object.entries(CATEGORY_CONFIG)
-              // Only show personal category if there's a personal affirmation
               .filter(([category]) => category !== 'personal' || personalAffirmation !== null)
               .map(([category, config]) => (
                 <button
@@ -399,18 +382,33 @@ const AffirmationWidget = () => {
           onComplete={handleParticlesComplete}
         />
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentAffirmation.id}
-            className={styles.affirmationText}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-          >
-            "{currentAffirmation.text}"
-          </motion.div>
-        </AnimatePresence>
+        {loading ? (
+          <div className={styles.loading}>Loading affirmations...</div>
+        ) : error ? (
+          <div className={styles.error}>
+            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorMessage}>{error}</span>
+            <button 
+              onClick={fetchAffirmationsByCategory}
+              className={styles.retryButton}
+            >
+              Try Again
+            </button>
+          </div>
+        ) : currentAffirmation ? (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentAffirmation.id}
+              className={styles.affirmationText}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+            >
+              "{currentAffirmation.text}"
+            </motion.div>
+          </AnimatePresence>
+        ) : null}
 
         <motion.button
           className={`${styles.affirmButton} ${isAffirming ? styles.affirming : ''}`}
@@ -477,26 +475,26 @@ const AffirmationWidget = () => {
                 </motion.div>
               </Tooltip>
 
-              <Tooltip text={isBookmarked(currentAffirmation.id) ? "Remove bookmark" : "Bookmark"} position="top">
+              <Tooltip text={isBookmarked(currentAffirmation?.id) ? "Remove bookmark" : "Bookmark"} position="top">
                 <button
-                  className={`${styles.voiceButton} ${isBookmarked(currentAffirmation.id) ? styles.bookmarked : ''}`}
+                  className={`${styles.voiceButton} ${isBookmarked(currentAffirmation?.id) ? styles.bookmarked : ''}`}
                   onClick={() => {
-                    if (isBookmarked(currentAffirmation.id)) {
-                      removeBookmark(currentAffirmation.id);
+                    if (isBookmarked(currentAffirmation?.id)) {
+                      removeBookmark(currentAffirmation?.id);
                     } else {
                       addBookmark({
-                        id: currentAffirmation.id,
-                        text: currentAffirmation.text,
-                        category: currentAffirmation.category,
+                        id: currentAffirmation?.id,
+                        text: currentAffirmation?.text,
+                        category: currentAffirmation?.category,
                         timestamp: Date.now()
                       });
                     }
                   }}
-                  aria-label={isBookmarked(currentAffirmation.id) ? "Remove bookmark" : "Bookmark affirmation"}
+                  aria-label={isBookmarked(currentAffirmation?.id) ? "Remove bookmark" : "Bookmark affirmation"}
                 >
                   <BookmarkIcon 
                     className={styles.voiceIcon} 
-                    filled={isBookmarked(currentAffirmation.id)}
+                    filled={isBookmarked(currentAffirmation?.id)}
                   />
                 </button>
               </Tooltip>
