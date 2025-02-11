@@ -1,6 +1,5 @@
 import { apiClient } from '@/lib/api-client';
 import { handleServiceError } from '@/utils/service-utils';
-import qs from 'qs';
 
 export interface Article {
   id: number;

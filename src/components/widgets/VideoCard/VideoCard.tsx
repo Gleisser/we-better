@@ -262,7 +262,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
           <div className={styles.author}>{video.author}</div>
           <ViewCounter value={video.views} className={styles.views} />
           <div className={styles.category}>
-            {video.category} / {video.subCategory}
+            {video.category} / {video.subCategory || video.tags[video.tags.length - 1]}
           </div>
         </div>
 
