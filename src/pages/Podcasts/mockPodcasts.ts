@@ -3,7 +3,7 @@ export interface Podcast {
   title: string;
   episode: string;
   author: string;
-  thumbnail: string;
+  thumbnailUrl: string;
   duration: string;
   description: string;
   category: string;
@@ -19,7 +19,7 @@ export const mockPodcasts: Podcast[] = [
     title: 'Just Football Podcast',
     episode: 'The Art of Goal Setting and Achievement',
     author: 'Andrius Peregonius',
-    thumbnail: 'https://images.pexels.com/photos/2156881/pexels-photo-2156881.jpeg',
+    thumbnailUrl: 'https://images.pexels.com/photos/2156881/pexels-photo-2156881.jpeg',
     duration: '01:05:30',
     description: 'Learn how to set and achieve meaningful goals with proven strategies from top performers.',
     category: 'Personal Development',
@@ -33,7 +33,7 @@ export const mockPodcasts: Podcast[] = [
     title: 'Mindful Moments',
     episode: 'Finding Peace in Chaos',
     author: 'Sarah Chen',
-    thumbnail: 'https://images.pexels.com/photos/3822622/pexels-photo-3822622.jpeg',
+    thumbnailUrl: 'https://images.pexels.com/photos/3822622/pexels-photo-3822622.jpeg',
     duration: '45:20',
     description: 'Discover practical mindfulness techniques for staying centered in challenging times.',
     category: 'Mindfulness',

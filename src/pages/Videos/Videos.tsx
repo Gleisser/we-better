@@ -40,7 +40,6 @@ const Videos = () => {
       });
 
       const mappedVideos = videoService.mapVideoResponse(response);
-      console.log(mappedVideos);
       
       if (pageNum === 1) {
         setVideos(mappedVideos);

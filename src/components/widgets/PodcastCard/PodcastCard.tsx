@@ -44,7 +44,7 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
     <div className={styles.card}>
       <div className={styles.thumbnailSection}>
         <img 
-          src={podcast.thumbnail} 
+          src={podcast.thumbnailUrl} 
           alt={podcast.title}
           className={styles.thumbnail}
         />
@@ -72,7 +72,7 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
           <span className={styles.dot}>•</span>
           <span className={styles.duration}>{podcast.duration}</span>
           <span className={styles.dot}>•</span>
-          <span className={styles.listens}>{formatListenCount(podcast.listens)} listens</span>
+          {podcast.listens && <span className={styles.listens}>{formatListenCount(podcast.listens)} listens</span>}
         </div>
 
         <div className={styles.categories}>
