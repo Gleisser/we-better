@@ -4,7 +4,7 @@ import { Tooltip } from '@/components/common/Tooltip';
 import { useBookmarkedCourses } from '@/hooks/useBookmarkedCourses';
 import { PLATFORM_CONFIG } from '../CourseWidget/config';
 import styles from './CourseCard.module.css';
-import type { Course } from '@/pages/Courses/mockCourses';
+import type { Course } from '@/services/courseService';
 
 interface CourseCardProps {
   course: Course;
@@ -15,11 +15,13 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   const [votes, setVotes] = useState(0);
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedCourses();
 
-  const formatStudentCount = (count: number): string => {
+  const formatStudentCount = (count: number | undefined): string => {
+    if (!count) return '0';
     return count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count.toString();
   };
 
   const calculateDiscount = (original: number, current: number): number => {
+    if (!original || !current) return 0;
     return Math.round(((original - current) / original) * 100);
   };
 
@@ -39,6 +41,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
     }
   };
 
+  const platformConfig = PLATFORM_CONFIG[course.platform] || {
+    name: course.platform,
+    bgColor: 'rgba(0, 0, 0, 0.15)',
+    color: '#ffffff'
+  };
+
   return (
     <div className={styles.courseCard}>
       <div className={styles.thumbnailSection}>
@@ -49,14 +57,11 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         />
         <div className={styles.platformBadge}
           style={{
-            backgroundColor: PLATFORM_CONFIG[course.platform].bgColor,
-            color: PLATFORM_CONFIG[course.platform].color
+            backgroundColor: platformConfig.bgColor,
+            color: platformConfig.color
           }}
         >
-          <span className={styles.platformIcon}>
-            {PLATFORM_CONFIG[course.platform].icon}
-          </span>
-          {PLATFORM_CONFIG[course.platform].name}
+          {platformConfig.name}
         </div>
       </div>
 
@@ -71,13 +76,13 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
         <div className={styles.statsRow}>
           <div className={styles.rating}>
-            ⭐ {course.rating.toFixed(1)}
+            ⭐ {course.rating ? course.rating.toFixed(1) : 'N/A'}
           </div>
           <div className={styles.students}>
             👥 {formatStudentCount(course.studentsCount)} students
           </div>
           <div className={styles.duration}>
-            ⏱️ {course.duration}
+            ⏱️ {course.duration || 'N/A'}
           </div>
         </div>
 
@@ -104,11 +109,13 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
           <div className={styles.priceSection}>
             <span className={styles.currentPrice}>
-              ${course.price.current}
+              ${course.price?.current || 0}
             </span>
-            <span className={styles.discountBadge}>
-              {calculateDiscount(course.price.original, course.price.current)}% OFF
-            </span>
+            {course.price?.original > course.price?.current && (
+              <span className={styles.discountBadge}>
+                {calculateDiscount(course.price.original, course.price.current)}% OFF
+              </span>
+            )}
           </div>
         </div>
 

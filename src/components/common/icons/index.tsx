@@ -1633,3 +1633,19 @@ export const RefreshIcon = ({ className }: { className?: string }) => (
     <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16" />
   </svg>
 );
+
+// Add these if they don't exist
+export const UdemyIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0L1.815 6v12L12 24l10.185-6V6L12 0zm0 2.77l7.588 4.47L12 11.709 4.412 7.24 12 2.77zm-8.185 5.234l7.588 4.47v8.937l-7.588-4.47V8.004zm16.37 0v8.937l-7.588 4.47v-8.937l7.588-4.47z" />
+  </svg>
+);
+
+export const CourseraIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm0 22.5C6.21 22.5 1.5 17.79 1.5 12S6.21 1.5 12 1.5 22.5 6.21 22.5 12 17.79 22.5 12 22.5z" />
+    <path d="M16.5 7.5h-9v9h9v-9zm-7.5 1.5h6v6h-6v-6z" />
+  </svg>
+);
+
+// Add other platform icons similarly...
