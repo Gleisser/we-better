@@ -8,6 +8,7 @@ import Videos from '@/pages/Videos';
 import Articles from '@/pages/Articles';
 import Courses from '@/pages/Courses';
 import Podcasts from '@/pages/Podcasts';
+import Login from '@/pages/Auth/Login';
 import { BottomSheetProvider } from '@/contexts/BottomSheetContext';
 
 const SpotifyCallback = () => {
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
+  },
+  {
+    path: '/auth/login',
+    element: <Login />,
   },
   {
     path: '/app',

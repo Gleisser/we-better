@@ -1,6 +1,4 @@
-import { QueryClientProvider, useQueryClient } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { queryClient } from './lib/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { prefetchHero } from '@/hooks/useHero';
 import ErrorBoundary from './components/common/ErrorBoundary/ErrorBoundary';
@@ -23,7 +21,7 @@ import { CommunityErrorFallback } from './components/layout/Community/CommunityE
 import { TestimoniesErrorFallback } from './components/layout/Testimonies/TestimoniesErrorFallback';
 import { PartnersErrorFallback } from './components/layout/Partners/PartnersErrorFallback';
 
-function AppContent() {
+function App() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -84,15 +82,6 @@ function AppContent() {
         </ErrorBoundary>
       </div>
     </ErrorBoundary>
-  );
-}
-
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AppContent />
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
   );
 }
 
