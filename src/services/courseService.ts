@@ -43,7 +43,23 @@ export interface Course {
 interface CourseResponse {
   data: Array<{
     id: number;
-    attributes: Omit<Course, 'id'>;
+    title: string;
+    description: string;
+    instructor: string;
+    rating: number;
+    studentsCount: number;
+    thumbnail: string;
+    url: string;
+    documentId: string;
+    categories: CourseCategory[];
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+    price: CoursePrice;
+    duration: string;
+    level: 'beginner' | 'intermediate' | 'advanced' | 'all-levels';
+    language: string;
+    platform: PlatformType;
   }>;
   meta: {
     pagination: {

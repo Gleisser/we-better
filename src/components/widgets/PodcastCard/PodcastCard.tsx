@@ -75,10 +75,12 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
           {podcast.listens && <span className={styles.listens}>{formatListenCount(podcast.listens)} listens</span>}
         </div>
 
-        <div className={styles.categories}>
-          <span className={styles.category}>{podcast.category}</span>
-          <span className={styles.subCategory}>{podcast.subCategory}</span>
-        </div>
+        {podcast.category && (
+          <div className={styles.categories}>
+            <span className={styles.category}>{podcast.category}</span>
+            <span className={styles.subCategory}>{podcast.subCategory}</span>
+          </div>
+        )}
 
         <div className={styles.actions}>
           <div className={styles.leftActions}>

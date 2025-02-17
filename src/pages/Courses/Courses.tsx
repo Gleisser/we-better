@@ -53,7 +53,8 @@ const Courses = () => {
         level: item.level,
         language: item.language,
         publishedAt: item.publishedAt,
-        price: item.price
+        price: item.price,
+        platform: item.platform
       })));
     } catch (error) {
       console.error('Error fetching courses:', error);
