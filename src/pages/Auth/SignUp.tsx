@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
+import { authService } from '@/services/authService';
 import styles from './Login.module.css'; // We'll reuse the login styles for now
 
 const SignUp = () => {
@@ -25,13 +26,30 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual signup logic
-      console.log('Signup attempt with:', { email, password });
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      navigate('/app');
+      const { user, error: authError } = await authService.signUp(email, password);
+      
+      if (authError) throw authError;
+
+      if (user) {
+        navigate('/app');
+      }
     } catch (error) {
-      setError('Failed to create account');
+      setError(error instanceof Error ? error.message : 'Failed to create account');
     } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const { error: authError } = await authService.signInWithGoogle();
+      if (authError) throw authError;
+      // The redirect will happen automatically
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to sign in with Google');
       setIsLoading(false);
     }
   };
@@ -132,7 +150,12 @@ const SignUp = () => {
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>
 
-              <button type="button" className={styles.googleButton}>
+              <button 
+                type="button" 
+                className={styles.googleButton}
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+              >
                 <img 
                   src="/assets/images/icons/google_logo.png" 
                   alt="" 

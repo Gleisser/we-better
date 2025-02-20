@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
+import { authService } from '@/services/authService';
 import styles from './Login.module.css';
 
 const Login = () => {
@@ -17,15 +18,25 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual login logic
-      console.log('Login attempt with:', { email, password });
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      navigate('/app');
-    } catch (_error) {
-      setError('Invalid email or password');
+      const { user, error: authError } = await authService.signIn(email, password);
+      
+      if (authError) {
+        throw authError;
+      }
+
+      if (user) {
+        navigate('/app');
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Invalid email or password');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    // TODO: Implement Google sign-in later
+    setError('Google sign-in will be available soon');
   };
 
   return (
@@ -113,13 +124,18 @@ const Login = () => {
                 {isLoading ? 'Signing In...' : 'Sign In'}
               </button>
 
-              <button type="button" className={styles.googleButton}>
+              <button 
+                type="button" 
+                className={styles.googleButton}
+                onClick={handleGoogleSignIn}
+                disabled={true} // Disabled until implemented
+              >
                 <img 
                   src="/assets/images/icons/google_logo.png" 
                   alt="" 
                   className={styles.googleIcon}
                 />
-                Sign In with Google
+                Sign In with Google (Coming Soon)
               </button>
             </form>
 
