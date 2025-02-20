@@ -159,5 +159,30 @@ export const authService = {
         error: error instanceof Error ? error : new Error('An unknown error occurred'),
       };
     }
+  },
+
+  async getCurrentUser(): Promise<AuthResponse> {
+    try {
+      const response = await fetch(`${API_URL}/auth/session`, {
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to get current user');
+      }
+
+      return {
+        user: data.user,
+        session: data.session,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        user: null,
+        error: error instanceof Error ? error : new Error('An unknown error occurred'),
+      };
+    }
   }
 }; 

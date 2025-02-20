@@ -13,6 +13,8 @@ import SignUp from '@/pages/Auth/SignUp';
 import { BottomSheetProvider } from '@/contexts/BottomSheetContext';
 import AuthLayout from '@/pages/Auth/AuthLayout';
 import EmailConfirmation from '@/pages/Auth/EmailConfirmation';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { PublicRoute } from '@/components/auth/PublicRoute';
 
 const SpotifyCallback = () => {
   useEffect(() => {
@@ -37,7 +39,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/auth',
-    element: <AuthLayout />,
+    element: (
+      <PublicRoute>
+        <AuthLayout />
+      </PublicRoute>
+    ),
     children: [
       {
         path: 'login',
@@ -52,9 +58,11 @@ export const router = createBrowserRouter([
   {
     path: '/app',
     element: (
-      <BottomSheetProvider>
-        <WeBetterApp />
-      </BottomSheetProvider>
+      <ProtectedRoute>
+        <BottomSheetProvider>
+          <WeBetterApp />
+        </BottomSheetProvider>
+      </ProtectedRoute>
     ),
     children: [
       {
