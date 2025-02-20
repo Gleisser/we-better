@@ -12,6 +12,7 @@ import Login from '@/pages/Auth/Login';
 import SignUp from '@/pages/Auth/SignUp';
 import { BottomSheetProvider } from '@/contexts/BottomSheetContext';
 import AuthLayout from '@/pages/Auth/AuthLayout';
+import EmailConfirmation from '@/pages/Auth/EmailConfirmation';
 
 const SpotifyCallback = () => {
   useEffect(() => {
@@ -85,5 +86,9 @@ export const router = createBrowserRouter([
   {
     path: '/callback',
     element: <SpotifyCallback />,
+  },
+  {
+    path: '/auth/confirm',
+    element: <EmailConfirmation />,
   },
 ]); 

@@ -13,6 +13,7 @@ const SignUp = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isConfirmationSent, setIsConfirmationSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,11 +27,13 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      const { user, error: authError } = await authService.signUp(email, password);
+      const { user, error: authError, needsEmailConfirmation } = await authService.signUp(email, password);
       
       if (authError) throw authError;
 
-      if (user) {
+      if (needsEmailConfirmation) {
+        setIsConfirmationSent(true);
+      } else if (user) {
         navigate('/app');
       }
     } catch (error) {
@@ -53,6 +56,77 @@ const SignUp = () => {
       setIsLoading(false);
     }
   };
+
+  const handleResendConfirmation = async () => {
+    try {
+      const { error } = await authService.resendConfirmation(email);
+      if (error) {
+        setError(error.message);
+      } else {
+        setError('Confirmation email resent. Please check your inbox.');
+      }
+    } catch (error) {
+      setError('Failed to resend confirmation email');
+    }
+  };
+
+  if (isConfirmationSent) {
+    return (
+      <>
+        {/* Left Panel - Quote Section */}
+        <div className={styles.quotePanel}>
+          <div className={styles.quoteContent}>
+            <span className={styles.quoteLabel}>Almost There!</span>
+            <div className={styles.quoteTextContainer}>
+              <h2 className={styles.quoteTitle}>
+                Check Your
+                <br />
+                Email
+              </h2>
+              <p className={styles.quoteText}>
+                We're excited to have you join our community.
+                Just one more step to get started!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Panel - Confirmation Message */}
+        <div className={styles.formPanel}>
+          <div className={styles.formWrapper}>
+            <div className={styles.formSection}>
+              <h1 className={styles.title}>Check Your Email</h1>
+              <p className={styles.subtitle}>
+                We've sent a confirmation link to:
+              </p>
+              <p className={styles.emailHighlight}>{email}</p>
+
+              {error && <div className={styles.error}>{error}</div>}
+
+              <div className={styles.confirmationActions}>
+                <p className={styles.resendPrompt}>
+                  Didn't receive the email?
+                </p>
+                <button 
+                  onClick={handleResendConfirmation}
+                  className={styles.submitButton}
+                >
+                  Resend Confirmation
+                </button>
+
+                <Link 
+                  to="/auth/login" 
+                  className={styles.googleButton}
+                >
+                  Back to Login
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

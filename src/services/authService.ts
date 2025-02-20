@@ -14,6 +14,7 @@ export interface AuthResponse {
   user: User | null;
   session?: Session | null;
   error: Error | null;
+  needsEmailConfirmation?: boolean;
 }
 
 const API_URL = import.meta.env.VITE_USER_API_BASE_URL || 'http://localhost:3000/api';
@@ -65,7 +66,6 @@ export const authService = {
       });
 
       const data = await response.json();
-      console.log(data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to sign up');
@@ -73,6 +73,7 @@ export const authService = {
 
       return {
         user: data.user,
+        needsEmailConfirmation: true,
         error: null,
       };
     } catch (error) {
@@ -101,6 +102,55 @@ export const authService = {
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Failed to sign out');
+      }
+
+      return { error: null };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error : new Error('An unknown error occurred'),
+      };
+    }
+  },
+
+  async confirmEmail(token: string): Promise<{ error: Error | null }> {
+    try {
+      const response = await fetch(`${API_URL}/auth/confirm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to confirm email');
+      }
+
+      return { error: null };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error : new Error('An unknown error occurred'),
+      };
+    }
+  },
+
+  async resendConfirmation(email: string): Promise<{ error: Error | null }> {
+    try {
+      const response = await fetch(`${API_URL}/auth/resend-confirmation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to resend confirmation email');
       }
 
       return { error: null };
