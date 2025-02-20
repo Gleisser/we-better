@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { authService } from '@/services/authService';
 import styles from './Login.module.css';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +27,7 @@ const Login = () => {
       }
 
       if (user) {
+        await checkAuth();
         navigate('/app');
       }
     } catch (error) {
