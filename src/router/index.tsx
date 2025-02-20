@@ -9,7 +9,9 @@ import Articles from '@/pages/Articles';
 import Courses from '@/pages/Courses';
 import Podcasts from '@/pages/Podcasts';
 import Login from '@/pages/Auth/Login';
+import SignUp from '@/pages/Auth/SignUp';
 import { BottomSheetProvider } from '@/contexts/BottomSheetContext';
+import AuthLayout from '@/pages/Auth/AuthLayout';
 
 const SpotifyCallback = () => {
   useEffect(() => {
@@ -33,8 +35,18 @@ export const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: '/auth/login',
-    element: <Login />,
+    path: '/auth',
+    element: <AuthLayout />,
+    children: [
+      {
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'signup',
+        element: <SignUp />,
+      },
+    ],
   },
   {
     path: '/app',

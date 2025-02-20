@@ -1,28 +1,36 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
-import styles from './Login.module.css';
+import styles from './Login.module.css'; // We'll reuse the login styles for now
 
-const Login = () => {
+const SignUp = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual login logic
-      console.log('Login attempt with:', { email, password });
+      // TODO: Implement actual signup logic
+      console.log('Signup attempt with:', { email, password });
       await new Promise(resolve => setTimeout(resolve, 1000));
       navigate('/app');
-    } catch (_error) {
-      setError('Invalid email or password');
+    } catch (error) {
+      setError('Failed to create account');
     } finally {
       setIsLoading(false);
     }
@@ -33,29 +41,28 @@ const Login = () => {
       {/* Left Panel - Quote Section */}
       <div className={styles.quotePanel}>
         <div className={styles.quoteContent}>
-          <span className={styles.quoteLabel}>A Wise Quote</span>
+          <span className={styles.quoteLabel}>Start Your Journey</span>
           <div className={styles.quoteTextContainer}>
             <h2 className={styles.quoteTitle}>
-              Get Everything
+              Begin Your
               <br />
-              You Want
+              Journey Today
             </h2>
             <p className={styles.quoteText}>
-              You can get everything you want if you work hard,
-              trust the process, and stick to the plan.
+              Join our community of self-improvers and start your
+              journey towards becoming your best self.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Right Panel - Login Form */}
+      {/* Right Panel - Signup Form */}
       <div className={styles.formPanel}>
         <div className={styles.formWrapper}>
-          {/* Form Section */}
           <div className={styles.formSection}>
-            <h1 className={styles.title}>Welcome Back</h1>
+            <h1 className={styles.title}>Create Account</h1>
             <p className={styles.subtitle}>
-              Enter your email and password to access your account
+              Enter your details to create your account
             </p>
 
             {error && <div className={styles.error}>{error}</div>}
@@ -81,7 +88,7 @@ const Login = () => {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
+                    placeholder="Create a password"
                     required
                   />
                   <button
@@ -95,14 +102,26 @@ const Login = () => {
                 </div>
               </div>
 
-              <div className={styles.options}>
-                <label className={styles.rememberMe}>
-                  <input type="checkbox" />
-                  <span>Remember me</span>
-                </label>
-                <Link to="/auth/forgot-password" className={styles.forgotPassword}>
-                  Forgot Password
-                </Link>
+              <div className={styles.inputGroup}>
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                <div className={styles.passwordInput}>
+                  <input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className={styles.passwordToggle}
+                    aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
               </div>
 
               <button 
@@ -110,7 +129,7 @@ const Login = () => {
                 className={styles.submitButton}
                 disabled={isLoading}
               >
-                {isLoading ? 'Signing In...' : 'Sign In'}
+                {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>
 
               <button type="button" className={styles.googleButton}>
@@ -119,14 +138,14 @@ const Login = () => {
                   alt="" 
                   className={styles.googleIcon}
                 />
-                Sign In with Google
+                Sign Up with Google
               </button>
             </form>
 
             <p className={styles.signupPrompt}>
-              Don't have an account? 
-              <Link to="/auth/signup" className={styles.signupLink}>
-                Sign Up
+              Already have an account?
+              <Link to="/auth/login" className={styles.signupLink}>
+                Sign In
               </Link>
             </p>
           </div>
@@ -136,4 +155,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default SignUp; 

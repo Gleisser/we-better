@@ -12,15 +12,16 @@
 
 .quotePanel {
   @apply lg:flex lg:w-[45%] relative hidden;
-  background-image: url('/assets/images/login/waves.webp');
+  background-image: url('/assets/images/login/background.webp');
   background-size: cover;
   background-position: center;
   border-radius: 24px 0 0 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .quoteContent {
   @apply relative h-full flex flex-col p-12;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.4));
+  background: linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.1));
 }
 
 .quoteLabel {
@@ -38,42 +39,48 @@
 }
 
 .quoteTitle {
-  @apply text-[3.5rem] font-serif leading-[1.1] mb-6 text-white;
+  @apply text-[3.5rem] font-serif leading-[1.1] mb-6;
+  color: rgba(255, 255, 255, 0.95);
   font-family: 'Playfair Display', serif;
 }
 
 .quoteText {
-  @apply text-base text-white/80 font-light;
+  @apply text-base font-light;
+  color: rgba(255, 255, 255, 0.8);
   max-width: 460px;
   line-height: 1.6;
 }
 
 .formPanel {
-  @apply flex-1 flex flex-col bg-white/95 backdrop-blur-sm;
+  @apply flex-1 flex items-center justify-center bg-white/95 backdrop-blur-sm;
 }
 
-.formHeader {
-  @apply p-8 flex justify-end;
+.formWrapper {
+  @apply w-[360px] flex flex-col;
+}
+
+.logoSection {
+  @apply flex justify-center items-center;
 }
 
 .logo {
   @apply h-8;
 }
 
-.formContent {
-  @apply flex-1 flex flex-col justify-center max-w-md mx-auto w-full px-12;
+.formSection {
+  @apply w-full;
 }
 
 .title {
-  @apply text-4xl font-serif text-gray-900 mb-3 font-light;
+  @apply text-[32px] font-serif text-gray-900 mb-3 font-light text-center;
 }
 
 .subtitle {
-  @apply text-gray-600 mb-12;
+  @apply text-gray-600 mb-12 text-center text-base;
 }
 
 .form {
-  @apply space-y-6;
+  @apply w-full space-y-6;
 }
 
 .inputGroup {
@@ -144,4 +151,10 @@
 
 .error {
   @apply text-red-500 text-sm p-3 bg-red-50 rounded-lg border border-red-100 mb-6;
+}
+
+.inputGroup input,
+.submitButton,
+.googleButton {
+  @apply w-full;
 } 
