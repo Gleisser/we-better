@@ -208,5 +208,57 @@ export const authService = {
         error: error instanceof Error ? error : new Error('An unknown error occurred'),
       };
     }
+  },
+
+  async verifyResetToken(token: string): Promise<{ error: Error | null }> {
+    console.log(token);
+    try {
+      const response = await fetch(`${API_URL}/auth/verify-reset-token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Invalid reset token');
+      }
+
+      return { error: null };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error : new Error('An unknown error occurred'),
+      };
+    }
+  },
+
+  async resetPassword(password: string, token: string): Promise<{ error: Error | null }> {
+    console.log(password, token);
+    try {
+      const response = await fetch(`${API_URL}/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password, token }),
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to reset password');
+      }
+
+      return { error: null };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error : new Error('An unknown error occurred'),
+      };
+    }
   }
 }; 
