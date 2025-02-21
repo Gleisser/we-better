@@ -184,5 +184,29 @@ export const authService = {
         error: error instanceof Error ? error : new Error('An unknown error occurred'),
       };
     }
+  },
+
+  async forgotPassword(email: string): Promise<{ error: Error | null }> {
+    try {
+      const response = await fetch(`${API_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send reset instructions');
+      }
+
+      return { error: null };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error : new Error('An unknown error occurred'),
+      };
+    }
   }
 }; 

@@ -196,4 +196,16 @@
   text-align: center;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
+}
+
+.success {
+  @apply bg-green-50 text-green-800 p-4 rounded-md mb-4;
+}
+
+.backToLogin {
+  @apply text-sm text-blue-600 hover:text-blue-700;
+}
+
+.formFooter {
+  @apply mt-6 text-center;
 } 

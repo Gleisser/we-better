@@ -15,6 +15,7 @@ import AuthLayout from '@/pages/Auth/AuthLayout';
 import EmailConfirmation from '@/pages/Auth/EmailConfirmation';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublicRoute } from '@/components/auth/PublicRoute';
+import ForgotPassword from '@/pages/Auth/ForgotPassword';
 
 const SpotifyCallback = () => {
   useEffect(() => {
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
       {
         path: 'signup',
         element: <SignUp />,
+      },
+      {
+        path: 'forgot-password',
+        element: <ForgotPassword />,
       },
     ],
   },
@@ -98,5 +103,9 @@ export const router = createBrowserRouter([
   {
     path: '/auth/confirm',
     element: <EmailConfirmation />,
+  },
+  {
+    path: '/auth/forgot-password',
+    element: <AuthLayout><ForgotPassword /></AuthLayout>,
   },
 ]); 
