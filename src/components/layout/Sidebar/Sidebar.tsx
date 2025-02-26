@@ -41,12 +41,11 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { logout } = useAuth();
 
   const handleSignOut = async () => {
     try {
-      await signOut();
-      navigate('/auth/login');
+      await logout();
     } catch (error) {
       console.error('Failed to sign out:', error);
     }

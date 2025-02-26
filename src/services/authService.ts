@@ -1,3 +1,5 @@
+import { supabase } from './supabaseClient';
+
 interface User {
   id: string;
   email: string;
@@ -17,26 +19,20 @@ export interface AuthResponse {
   needsEmailConfirmation?: boolean;
 }
 
-const API_URL = import.meta.env.VITE_USER_API_BASE_URL || 'http://localhost:3000/api';
+// Define your app's redirect URL for Supabase configuration
+const REDIRECT_URL = `${window.location.origin}/app`;
 
 export const authService = {
   async signIn(email: string, password: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_URL}/auth/signin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include', // Important for handling cookies
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
 
-      const data = await response.json();
+      if (error) throw new Error(error.message);
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to sign in');
-      }
-
+      // Remove manual redirect, let the component handle it
       return {
         user: data.user,
         session: data.session,
@@ -52,28 +48,25 @@ export const authService = {
 
   async signUp(email: string, password: string, fullName?: string): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_URL}/auth/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+          // Add explicit redirect URL
+          emailRedirectTo: REDIRECT_URL,
         },
-        body: JSON.stringify({ 
-          email, 
-          password,
-          full_name: fullName 
-        }),
-        credentials: 'include',
       });
 
-      const data = await response.json();
+      if (error) throw new Error(error.message);
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to sign up');
-      }
-
+      // For email confirmation flows
       return {
         user: data.user,
-        needsEmailConfirmation: true,
+        session: data.session,
+        needsEmailConfirmation: !data.session,
         error: null,
       };
     } catch (error) {
@@ -85,97 +78,18 @@ export const authService = {
   },
 
   async signInWithGoogle(): Promise<AuthResponse> {
-    // TODO: Implement when backend supports Google auth
-    return {
-      user: null,
-      error: new Error('Google sign-in not implemented yet')
-    };
-  },
-
-  async signOut(): Promise<{ error: Error | null }> {
     try {
-      const response = await fetch(`${API_URL}/auth/signout`, {
-        method: 'POST',
-        credentials: 'include',
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: REDIRECT_URL,
+        }
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to sign out');
-      }
-
-      return { error: null };
-    } catch (error) {
-      return {
-        error: error instanceof Error ? error : new Error('An unknown error occurred'),
-      };
-    }
-  },
-
-  async confirmEmail(token: string): Promise<{ error: Error | null }> {
-    try {
-      const response = await fetch(`${API_URL}/auth/confirm`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token }),
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to confirm email');
-      }
-
-      return { error: null };
-    } catch (error) {
-      return {
-        error: error instanceof Error ? error : new Error('An unknown error occurred'),
-      };
-    }
-  },
-
-  async resendConfirmation(email: string): Promise<{ error: Error | null }> {
-    try {
-      const response = await fetch(`${API_URL}/auth/resend-confirmation`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-        credentials: 'include',
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to resend confirmation email');
-      }
-
-      return { error: null };
-    } catch (error) {
-      return {
-        error: error instanceof Error ? error : new Error('An unknown error occurred'),
-      };
-    }
-  },
-
-  async getCurrentUser(): Promise<AuthResponse> {
-    try {
-      const response = await fetch(`${API_URL}/auth/session`, {
-        credentials: 'include',
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to get current user');
-      }
+      if (error) throw new Error(error.message);
 
       return {
-        user: data.user,
-        session: data.session,
+        user: null, // Will be populated after redirect
         error: null,
       };
     } catch (error) {
@@ -186,22 +100,84 @@ export const authService = {
     }
   },
 
+  async signOut(): Promise<{ error: Error | null }> {
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) throw new Error(error.message);
+      
+      return { error: null };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error : new Error('An unknown error occurred'),
+      };
+    }
+  },
+
+  async confirmEmail(token: string): Promise<{ error: Error | null }> {
+    try {
+      // The link from the email will be handled automatically by Supabase
+      // This method would only be needed for manual verification
+      return { error: null };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error : new Error('An unknown error occurred'),
+      };
+    }
+  },
+
+  async resendConfirmation(email: string): Promise<{ error: Error | null }> {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+      });
+      
+      if (error) throw new Error(error.message);
+      
+      return { error: null };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error : new Error('An unknown error occurred'),
+      };
+    }
+  },
+
+  async getCurrentUser(): Promise<AuthResponse> {
+    try {
+      console.log('Checking current user...');
+      const { data, error } = await supabase.auth.getSession();
+      
+      // Extract user from session if it exists
+      const user = data.session?.user || null;
+      
+      console.log('User data from session:', user);
+      console.log('Session data:', data.session);
+      
+      if (error) throw new Error(error.message);
+      
+      return {
+        user,
+        session: data.session,
+        error: null,
+      };
+    } catch (error) {
+      console.error('getCurrentUser error:', error);
+      return {
+        user: null,
+        error: error instanceof Error ? error : new Error('An unknown error occurred'),
+      };
+    }
+  },
+
   async forgotPassword(email: string): Promise<{ error: Error | null }> {
     try {
-      const response = await fetch(`${API_URL}/auth/forgot-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to send reset instructions');
-      }
-
+      
+      if (error) throw new Error(error.message);
+      
       return { error: null };
     } catch (error) {
       return {
@@ -210,50 +186,14 @@ export const authService = {
     }
   },
 
-  async verifyResetToken(token: string): Promise<{ error: Error | null }> {
-    console.log(token);
+  async resetPassword(password: string): Promise<{ error: Error | null }> {
     try {
-      const response = await fetch(`${API_URL}/auth/verify-reset-token`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token }),
+      const { error } = await supabase.auth.updateUser({
+        password,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Invalid reset token');
-      }
-
-      return { error: null };
-    } catch (error) {
-      return {
-        error: error instanceof Error ? error : new Error('An unknown error occurred'),
-      };
-    }
-  },
-
-  async resetPassword(password: string, token: string): Promise<{ error: Error | null }> {
-    console.log(password, token);
-    try {
-      const response = await fetch(`${API_URL}/auth/reset-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ password, token }),
-        credentials: 'include',
-      });
-
-      const data = await response.json();
-      console.log(data);
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to reset password');
-      }
-
+      
+      if (error) throw new Error(error.message);
+      
       return { error: null };
     } catch (error) {
       return {

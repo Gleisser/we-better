@@ -1,18 +1,25 @@
+import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
-export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
+export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoading, checkAuth } = useAuth();
   const location = useLocation();
 
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   if (isLoading) {
-    return <div>Loading...</div>; // You can replace this with a proper loading component
+    // Return a loading spinner or placeholder while checking authentication
+    return <div>Loading...</div>;
   }
 
   if (!user) {
-    // Redirect to login but save the attempted location
+    console.log('Not authenticated, redirecting to login');
+    // Redirect to login if not authenticated
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
-} 
+}; 

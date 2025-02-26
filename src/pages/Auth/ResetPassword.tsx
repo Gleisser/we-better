@@ -1,38 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { authService } from '@/services/authService';
 import styles from './Login.module.css';
 
 const ResetPassword = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const [type, setType] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
-    const token = searchParams.get('token');
-
-    //Retrieve all search params
-    const searchParamsArray = [];
-    for (const [key, value] of searchParams.entries()) {
-      searchParamsArray.push({ key, value });
-    }
-    console.log(searchParamsArray);
-
-    if (!token) {
+    const code = searchParams.get('code');
+    const type = searchParams.get('type');
+    if (!code || !type) {
       setError('Invalid reset link');
       return;
     }
-
-    // Verify the token
-    authService.verifyResetToken(token).catch(() => {
-      
-      setError('This reset link is invalid or has expired');
-    });
+    setCode(code);
+    setType(type);
   }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,22 +32,10 @@ const ResetPassword = () => {
     setSuccessMessage('');
     setIsLoading(true);
 
-    const token = searchParams.get('token');
-    
     //Retrieve all search params
-    const searchParamsArray = [];
-    for (const [key, value] of searchParams.entries()) {
-      searchParamsArray.push({ key, value });
-    }
-    console.log(searchParamsArray);
-
-    if (!token) {
-      setError('Invalid reset link');
-      return;
-    }
-
     try {
-      const { error } = await authService.resetPassword(password, token);
+      console.log(code);
+      const { error } = await authService.resetPassword(password, code, type);
       
       if (error) throw error;
       

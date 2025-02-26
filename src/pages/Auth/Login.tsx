@@ -20,17 +20,25 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const { user, error: authError } = await authService.signIn(email, password);
+      console.log('Starting sign in process...');
+      const { user, session, error: authError } = await authService.signIn(email, password);
+      
+      console.log('Sign in response:', { user, session, error: authError });
       
       if (authError) {
         throw authError;
       }
 
       if (user) {
+        console.log('User authenticated, checking auth state and navigating...');
         await checkAuth();
         navigate('/app');
+      } else {
+        console.warn('Sign in returned empty user object');
+        setError('Authentication failed - no user returned');
       }
     } catch (error) {
+      console.error('Sign in error:', error);
       setError(error instanceof Error ? error.message : 'Invalid email or password');
     } finally {
       setIsLoading(false);

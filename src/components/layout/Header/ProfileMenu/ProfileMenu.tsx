@@ -10,13 +10,12 @@ interface ProfileMenuProps {
 
 const ProfileMenu = ({ onClose }: ProfileMenuProps) => {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await logout();
       onClose();
-      navigate('/auth/login');
     } catch (error) {
       console.error('Failed to sign out:', error);
     }

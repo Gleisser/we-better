@@ -17,6 +17,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublicRoute } from '@/components/auth/PublicRoute';
 import ForgotPassword from '@/pages/Auth/ForgotPassword';
 import ResetPassword from '@/pages/Auth/ResetPassword';
+import AuthDebugger from '@/components/auth/AuthDebugger';
 
 const SpotifyCallback = () => {
   useEffect(() => {
@@ -69,6 +70,7 @@ export const router = createBrowserRouter([
     path: '/app',
     element: (
       <ProtectedRoute>
+        <AuthDebugger />
         <BottomSheetProvider>
           <WeBetterApp />
         </BottomSheetProvider>
