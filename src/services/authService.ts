@@ -188,6 +188,8 @@ export const authService = {
 
   async resetPassword(password: string): Promise<{ error: Error | null }> {
     try {
+      // When using the reset password link, Supabase automatically extracts
+      // the token from the URL, so we only need to provide the new password
       const { error } = await supabase.auth.updateUser({
         password,
       });
@@ -196,6 +198,7 @@ export const authService = {
       
       return { error: null };
     } catch (error) {
+      console.error('Reset password error:', error);
       return {
         error: error instanceof Error ? error : new Error('An unknown error occurred'),
       };

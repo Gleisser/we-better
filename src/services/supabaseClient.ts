@@ -7,9 +7,13 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
+// Determine if we're on a reset-password route
+const isResetPasswordFlow = window.location.pathname.includes('/auth/reset-password');
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    redirectTo: `${window.location.origin}/app`,
+    // Only redirect to app if NOT in password reset flow
+    redirectTo: isResetPasswordFlow ? undefined : `${window.location.origin}/app`,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
