@@ -114,7 +114,14 @@ const RadarChart = ({
               key={`point-${idx}`}
               initial={animate ? { opacity: 0 } : { opacity: 1 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 + idx * 0.1, duration: 0.3 }}
+              transition={{ 
+                delay: 0.8 + idx * 0.1, 
+                duration: 0.3 
+              }}
+              whileHover={{ 
+                scale: 1.2,
+                filter: "drop-shadow(0px 0px 6px rgba(0, 0, 0, 0.5))"
+              }}
               className={styles.radarPoint}
               cx={x}
               cy={y}
