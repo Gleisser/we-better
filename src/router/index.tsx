@@ -18,6 +18,46 @@ import { PublicRoute } from '@/components/auth/PublicRoute';
 import ForgotPassword from '@/pages/Auth/ForgotPassword';
 import ResetPassword from '@/pages/Auth/ResetPassword';
 import AuthDebugger from '@/components/auth/AuthDebugger';
+import { LifeWheel } from '@/components/LifeWheel';
+
+// Create a simple Start page that contains the LifeWheel component
+const StartPage = () => {
+  const handleComplete = () => {
+    console.log('Life wheel assessment completed');
+    // Could redirect to dashboard or another page after completion
+  };
+  
+  const handleCategoryUpdate = (categoryId: string, newValue: number) => {
+    console.log('Category updated:', categoryId, newValue);
+    // Could save to user profile or database
+  };
+  
+  return (
+    <div style={{ padding: '2rem' }}>
+      <h1 style={{ 
+        fontSize: '2rem', 
+        fontWeight: 'bold', 
+        marginBottom: '1.5rem',
+        textAlign: 'center'
+      }}>
+        Welcome to WeBetter
+      </h1>
+      <p style={{ 
+        fontSize: '1.1rem', 
+        opacity: 0.8,
+        textAlign: 'center',
+        marginBottom: '2rem'
+      }}>
+        Let's start by assessing different areas of your life
+      </p>
+      
+      <LifeWheel 
+        onComplete={handleComplete}
+        onCategoryUpdate={handleCategoryUpdate}
+      />
+    </div>
+  );
+};
 
 const SpotifyCallback = () => {
   useEffect(() => {
@@ -102,6 +142,14 @@ export const router = createBrowserRouter([
         element: <Podcasts />
       }
     ],
+  },
+  {
+    path: '/start',
+    element: (
+      <ProtectedRoute>
+        <StartPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/callback',
