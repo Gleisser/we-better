@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { handleSpotifyCallback } from '@/utils/spotify';
 import App from '@/App';
 import WeBetterApp from '@/pages/WeBetterApp';
@@ -19,9 +19,14 @@ import ForgotPassword from '@/pages/Auth/ForgotPassword';
 import ResetPassword from '@/pages/Auth/ResetPassword';
 import AuthDebugger from '@/components/auth/AuthDebugger';
 import { LifeWheel } from '@/components/LifeWheel';
+import { WelcomeSequence } from '@/components/LifeWheel/WelcomeSequence';
+import { useAuth } from '@/contexts/AuthContext';
 
-// Create a simple Start page that contains the LifeWheel component
+// Create a simple Start page that contains the Life Wheel component
 const StartPage = () => {
+  const { user } = useAuth();
+  const [showWelcome, setShowWelcome] = useState(true);
+  
   const handleComplete = () => {
     console.log('Life wheel assessment completed');
     // Could redirect to dashboard or another page after completion
@@ -32,29 +37,53 @@ const StartPage = () => {
     // Could save to user profile or database
   };
   
+  const handleWelcomeComplete = () => {
+    setShowWelcome(false);
+  };
+  
+  const handleWelcomeSkip = () => {
+    setShowWelcome(false);
+  };
+  
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1 style={{ 
-        fontSize: '2rem', 
-        fontWeight: 'bold', 
-        marginBottom: '1.5rem',
-        textAlign: 'center'
-      }}>
-        Welcome to WeBetter
-      </h1>
-      <p style={{ 
-        fontSize: '1.1rem', 
-        opacity: 0.8,
-        textAlign: 'center',
-        marginBottom: '2rem'
-      }}>
-        Let's start by assessing different areas of your life
-      </p>
-      
-      <LifeWheel 
-        onComplete={handleComplete}
-        onCategoryUpdate={handleCategoryUpdate}
-      />
+    <div style={{ 
+      padding: '2rem',
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #111827 0%, #1F2937 100%)'
+    }}>
+      {showWelcome ? (
+        <WelcomeSequence 
+          onComplete={handleWelcomeComplete}
+          onSkip={handleWelcomeSkip}
+          userName={user?.full_name || ''}
+        />
+      ) : (
+        <>
+          <h1 style={{ 
+            fontSize: '2rem', 
+            fontWeight: 'bold', 
+            marginBottom: '1.5rem',
+            textAlign: 'center',
+            color: 'white'
+          }}>
+            Your Life Wheel Assessment
+          </h1>
+          <p style={{ 
+            fontSize: '1.1rem', 
+            opacity: 0.8,
+            textAlign: 'center',
+            marginBottom: '2rem',
+            color: 'white'
+          }}>
+            Rate each area from 1-10 to see where your life is balanced
+          </p>
+          
+          <LifeWheel 
+            onComplete={handleComplete}
+            onCategoryUpdate={handleCategoryUpdate}
+          />
+        </>
+      )}
     </div>
   );
 };
