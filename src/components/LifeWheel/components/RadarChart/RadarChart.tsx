@@ -4,13 +4,24 @@ import { LifeCategory, RadarChartProps } from '../../types';
 import { MAX_CATEGORY_VALUE } from '../../constants/categories';
 import styles from './RadarChart.module.css';
 
-const RadarChart = ({ 
-  data, 
-  size = 400, 
-  className = '', 
+interface RadarChartProps {
+  data: Array<{
+    name: string;
+    value: number;
+    color: string;
+    id: string;
+  }>;
+  animate?: boolean;
+  onCategoryClick?: (category: any) => void;
+}
+
+const RadarChart: React.FC<RadarChartProps> = ({
+  data,
+  size = 400,
+  className = '',
   animate = true,
-  onCategoryClick 
-}: RadarChartProps) => {
+  onCategoryClick
+}) => {
   const [chartPoints, setChartPoints] = useState<string>('');
   const [gridPolygons, setGridPolygons] = useState<string[]>([]);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -138,32 +149,43 @@ const RadarChart = ({
           const angle = (idx * (360 / data.length)) - 90;
           const radian = (angle * Math.PI) / 180;
           const center = size / 2;
-          const labelRadius = size * 0.45; // Place labels outside the chart
+          const labelRadius = (size * 0.45); // Slightly outside the chart
           const x = center + labelRadius * Math.cos(radian);
           const y = center + labelRadius * Math.sin(radian);
           
-          // Adjust text alignment based on position
-          const textAnchor = 
-            Math.abs(angle) < 10 || Math.abs(angle - 180) < 10 
-              ? 'middle' 
-              : angle > 0 && angle < 180 
-                ? 'start' 
-                : 'end';
+          // Calculate background rectangle position and size
+          const textWidth = cat.name.length * 8;
+          const backgroundPadding = 8;
+          
+          // Determine if text should be flipped based on angle
+          const isFlipped = angle > 90 && angle < 270;
+          const adjustedX = isFlipped ? x - textWidth / 2 : x + textWidth / 2;
           
           return (
-            <motion.text
-              key={`label-${idx}`}
-              initial={animate ? { opacity: 0 } : { opacity: 1 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 + idx * 0.1, duration: 0.5 }}
-              className={styles.categoryLabel}
-              x={x}
-              y={y}
-              dy="0.3em"
-              textAnchor={textAnchor}
-            >
-              {cat.name}
-            </motion.text>
+            <g key={`label-${idx}`}>
+              {/* Background rectangle for better contrast */}
+              <rect
+                className={styles.labelBackground}
+                x={x - (textWidth / 2) - backgroundPadding}
+                y={y - 10}
+                width={textWidth + (backgroundPadding * 2)}
+                height={20}
+              />
+              
+              {/* Text label */}
+              <text
+                className={styles.categoryLabel}
+                x={x}
+                y={y}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                style={{
+                  filter: 'drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.3))'
+                }}
+              >
+                {cat.name}
+              </text>
+            </g>
           );
         })}
         

@@ -43,18 +43,31 @@
 }
 
 .categoryLabel {
-  font-size: 12px;
-  font-weight: 500;
-  fill: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 600;
+  fill: white;
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.2);
   text-anchor: middle;
   user-select: none;
   pointer-events: none;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  padding: 4px 8px;
+  border-radius: 4px;
 }
 
 .valueAxis {
   font-size: 10px;
   fill: rgba(255, 255, 255, 0.5);
   text-anchor: middle;
+}
+
+.labelBackground {
+  fill: rgba(0, 0, 0, 0.3);
+  rx: 4;
+  ry: 4;
 }
 
 @media (max-width: 768px) {

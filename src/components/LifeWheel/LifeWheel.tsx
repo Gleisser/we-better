@@ -85,89 +85,54 @@ const LifeWheel = ({
   }
   
   return (
-    <motion.div 
-      className={`${styles.lifeWheelContainer} ${className}`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className={styles.headerSection}>
-        <h2 className={styles.title}>Your Life Wheel</h2>
-        <p className={styles.description}>
-          Visualize and balance the different areas of your life
-        </p>
-      </div>
+    <div className={styles.fullScreenContainer}>
+      {/* Background image */}
+      <div className={styles.backgroundImage} />
       
-      <div className={styles.chartSection}>
-        <RadarChart 
-          data={categories} 
-          animate={true}
-          onCategoryClick={handleCategorySelect}
-        />
-      </div>
-      
-      <div className={styles.categoriesList}>
-        {categories.map(category => (
-          <motion.div
-            key={category.id}
-            className={styles.categoryCard}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            onClick={() => handleCategorySelect(category)}
-            style={{
-              borderLeft: `3px solid ${category.color}`,
-              boxShadow: selectedCategory === category.id ? `0 0 0 1px ${category.color}` : 'none'
-            }}
-          >
-            <div className={styles.categoryHeader}>
-              <span className={styles.categoryIcon}>{category.icon}</span>
-              <h3 className={styles.categoryName}>{category.name}</h3>
-            </div>
-            
-            <p className={styles.categoryDesc}>{category.description}</p>
-            
-            <div className={styles.categoryValue}>
-              {category.value} / {MAX_CATEGORY_VALUE}
-            </div>
-            
-            {!readOnly && (
-              <div className={styles.sliderContainer}>
+      {/* Main content container */}
+      <div className={styles.contentWrapper}>
+        <div className={styles.glassCard}>
+          <h1 className={styles.title}>Life Wheel Assessment</h1>
+          
+          <div className={styles.radarContainer}>
+            <RadarChart 
+              data={categories.map(category => ({
+                name: category.name,
+                value: category.value,
+                color: category.color,
+                id: category.id
+              }))}
+              animate={true}
+              onCategoryClick={handleCategorySelect}
+            />
+          </div>
+
+          <div className={styles.categoriesList}>
+            {categories.map((category, index) => (
+              <div key={category.id} className={styles.categoryItem}>
+                <div className={styles.categoryHeader}>
+                  <div 
+                    className={styles.categoryColor}
+                    style={{ background: category.color }}
+                  />
+                  <h3 className={styles.categoryName}>{category.name}</h3>
+                </div>
                 <input
                   type="range"
                   min={MIN_CATEGORY_VALUE}
                   max={MAX_CATEGORY_VALUE}
                   value={category.value}
                   onChange={(e) => handleValueChange(category.id, parseInt(e.target.value))}
-                  style={{
-                    width: '100%',
-                    accentColor: category.color
-                  }}
+                  className={styles.slider}
+                  style={{ '--track-color': category.color } as any}
                 />
+                <div className={styles.valueLabel}>{category.value}/{MAX_CATEGORY_VALUE}</div>
               </div>
-            )}
-          </motion.div>
-        ))}
-      </div>
-      
-      {!readOnly && (
-        <div className={styles.actionButtons}>
-          <button 
-            className={`${styles.button} ${styles.secondaryButton}`}
-            onClick={() => setCategories(DEFAULT_LIFE_CATEGORIES)}
-          >
-            Reset
-          </button>
-          
-          <button 
-            className={`${styles.button} ${styles.primaryButton}`}
-            onClick={handleComplete}
-          >
-            Save
-          </button>
+            ))}
+          </div>
         </div>
-      )}
-    </motion.div>
+      </div>
+    </div>
   );
 };
 
