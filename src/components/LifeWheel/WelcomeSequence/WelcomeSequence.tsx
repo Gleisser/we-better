@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { WELCOME_SEQUENCE } from './constants/messages';
 import { WelcomeSequenceProps } from './types';
 import MessageAnimation from './components/MessageAnimation';
-import BackgroundEffects from './components/BackgroundEffects';
 import ContentCard from './components/ContentCard/ContentCard';
 import ButtonGroup from './components/ContentCard/ButtonGroup';
 import AnimatedTitle from './components/AnimatedText/AnimatedTitle';
@@ -67,15 +66,9 @@ const WelcomeSequence = ({
   const currentMessage = WELCOME_SEQUENCE[currentIndex];
   
   return (
-    <motion.div 
-      className={styles.fullScreenContainer}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      {/* Enhanced background effects */}
-      <BackgroundEffects intensity="medium" />
+    <div className={styles.fullScreenContainer}>
+      {/* Login background */}
+      <div className={styles.backgroundImage} />
       
       <div className={styles.contentWrapper}>
         {isLoading ? (
@@ -83,7 +76,7 @@ const WelcomeSequence = ({
             <motion.div 
               className={styles.loadingSpinner}
               animate={{ rotate: 360 }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             />
             <p>Loading your experience...</p>
           </ContentCard>
@@ -143,7 +136,7 @@ const WelcomeSequence = ({
           </AnimatePresence>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

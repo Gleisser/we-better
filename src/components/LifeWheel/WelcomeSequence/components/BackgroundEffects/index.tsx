@@ -7,14 +7,14 @@ interface BackgroundEffectsProps {
   intensity?: 'low' | 'medium' | 'high';
 }
 
-const BackgroundEffects = ({ intensity = 'medium' }: BackgroundEffectsProps) => {
-  // Set particle count based on intensity
-  const particleCount = intensity === 'low' ? 15 : intensity === 'medium' ? 30 : 50;
+const BackgroundEffects = ({ intensity = 'low' }: BackgroundEffectsProps) => {
+  // Reduced particle count to match Login style
+  const particleCount = intensity === 'low' ? 10 : intensity === 'medium' ? 20 : 30;
   
   return (
     <>
       <GradientBackground />
-      <FloatingParticles count={particleCount} />
+      <FloatingParticles count={particleCount} opacity={0.4} />
       <FloatingIcons categories={DEFAULT_LIFE_CATEGORIES} />
     </>
   );
