@@ -54,19 +54,18 @@
       type="image/webp"
     >
 
-    <!-- CSP Meta Tag -->
+    <!-- Temporarily allow all content during development -->
     <meta 
       http-equiv="Content-Security-Policy" 
-      content="default-src 'self';
-               img-src 'self' data: blob: *;
-               media-src 'self' data: blob: https://*.youtube.com;
-               script-src 'self' 'unsafe-inline' 'unsafe-eval' https://sdk.scdn.co https://www.youtube.com https://*.youtube.com;
-               script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://sdk.scdn.co https://www.youtube.com https://*.youtube.com;
-               connect-src 'self' https://accounts.spotify.com https://api.spotify.com https://www.youtube.com https://*.youtube.com http://localhost:1337 http://localhost:3000 https://*.supabase.co;
-               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.googleapis.com;
-               style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.googleapis.com;
-               font-src 'self' data: https://fonts.gstatic.com https://*.gstatic.com https://fonts.googleapis.com https://*.googleapis.com;
-               frame-src 'self' https://open.spotify.com https://sdk.scdn.co https://www.youtube.com https://youtube.com;"
+      content="
+        default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
+        worker-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
+        script-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
+        connect-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
+        img-src * data: blob: 'unsafe-inline';
+        frame-src *;
+        style-src * 'unsafe-inline';
+      "
     >
   </head>
   <body>

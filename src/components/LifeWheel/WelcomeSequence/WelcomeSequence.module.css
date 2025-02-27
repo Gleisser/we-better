@@ -268,7 +268,7 @@
 
 /* Background image from Login component */
 .backgroundImage {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -277,38 +277,47 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: -1;
+  z-index: 0;
+  opacity: 1;
 }
 
 /* Content card - matched with Login panel dimensions */
 .contentCard {
-  background: rgba(26, 26, 36, 0.8);
-  backdrop-filter: blur(16px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
   overflow: hidden;
-  padding: 32px;
+  padding: 48px;
   width: 100%;
-  max-width: 480px; /* Match Login panel width */
+  max-width: 580px;
+  min-height: 580px;
   will-change: transform, opacity;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* Content wrapper */
 .contentWrapper {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  width: 100%;
+  max-width: 90vw;
+  margin: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  padding: 20px;
 }
 
 /* Message Card specific styling */
 .messageCard {
-  min-height: 380px; /* Match Login panel height */
+  min-height: 580px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -328,6 +337,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .subtitle {
@@ -337,17 +347,19 @@
   text-align: center;
   max-width: 600px;
   margin: 0 auto;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Message elements */
 .messageContainer {
   width: 100%;
   text-align: center;
-  margin-bottom: 40px;
-  min-height: 180px;
+  margin: 40px 0;
+  min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-grow: 1;
 }
 
 .messageText {
@@ -355,6 +367,7 @@
   font-weight: 700;
   line-height: 1.4;
   color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .highlight {
@@ -375,80 +388,83 @@
   z-index: -1;
 }
 
-/* Button container */
+/* Update button container styles */
 .buttonContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 20px;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
 }
 
-/* Button elements - matched with Login buttons */
+.buttonWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Primary/Begin Journey button */
 .primaryButton {
+  min-width: 200px;
+  height: 48px;
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
-  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  background: rgba(139, 92, 246, 0.8);
   color: white;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
   transition: all 0.2s ease;
-  width: 100%;
-  height: 48px;
 }
 
 .primaryButton:hover {
+  background: rgba(139, 92, 246, 0.9);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+  box-shadow: 
+    0 6px 20px rgba(139, 92, 246, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
-.secondaryButton {
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-  height: 48px;
-}
-
-.secondaryButton:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.buttons {
-  display: flex;
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.nextButton, .skipButton {
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.nextButton {
-  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-}
-
+/* Skip link styling */
 .skipButton {
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+}
+
+.skipButton:hover {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .buttonContainer {
+    margin-top: 24px;
+  }
+
+  .buttonWrapper {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .primaryButton {
+    width: 100%;
+    min-width: unset;
+  }
 }
 
 /* Controls */
@@ -544,4 +560,198 @@
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* Update visualization container styling */
+.visualizationContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
+  /* Remove debug styles */
+  /* border: 2px solid red; */
+  /* background-color: rgba(0, 0, 255, 0.1); */
+}
+
+/* Ensure background image is visible */
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/assets/images/login/background.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  opacity: 1;
+}
+
+/* Update content wrapper to ensure proper layering */
+.contentWrapper {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 90vw;
+  margin: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Add a subtle gradient overlay to improve text contrast */
+.contentCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.05) 0%,
+    rgba(236, 72, 153, 0.05) 100%
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Ensure message text is visible over visualization */
+.messageContainer {
+  position: relative;
+  z-index: 10;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Highlight words with stronger effect */
+.highlight {
+  color: #ffffff;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.7) 0%, rgba(236, 72, 153, 0.7) 100%);
+  padding: 0 6px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+}
+
+/* Welcome card with enhanced styling */
+.welcomeCard {
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* Position the cards to work with visualization */
+.contentWrapper {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 90vw;
+  margin: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure buttons stand out */
+.nextButton,
+.primaryButton {
+  position: relative;
+  overflow: hidden;
+}
+
+.nextButton::after,
+.primaryButton::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(45deg);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+/* Enhanced animations for messages */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.messageContainer {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Add mobile-specific styling */
+@media (max-width: 768px) {
+  .visualizationContainer {
+    opacity: 0.5; /* Reduce opacity on mobile for better readability */
+  }
+  
+  .contentCard {
+    padding: 32px;
+    min-height: 520px;
+    max-width: 90vw;
+  }
+  
+  .messageCard {
+    min-height: 520px;
+  }
+  
+  .contentWrapper {
+    margin: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentCard {
+    padding: 24px;
+    min-height: 480px;
+  }
+  
+  .messageCard {
+    min-height: 480px;
+  }
+  
+  .messageContainer {
+    min-height: 160px;
+    margin: 20px 0;
+  }
+  
+  .buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .nextButton, .skipButton {
+    width: 100%;
+  }
+  
+  .buttonContainer {
+    flex-direction: column; /* Stack buttons on mobile */
+    gap: 12px;
+  }
+  
+  .primaryButton,
+  .nextButton,
+  .skipButton {
+    width: 100%;
+    min-width: unset;
+  }
 } 

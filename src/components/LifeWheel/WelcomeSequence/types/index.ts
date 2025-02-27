@@ -4,6 +4,7 @@ export interface WelcomeMessage {
   duration: number;
   animation: 'fadeUp' | 'fadeIn' | 'slideIn';
   highlightWords?: string[];
+  visualStage?: 'intro' | 'platform' | 'wheel-intro' | 'segments' | 'completion' | 'benefits-1' | 'benefits-2' | 'benefits-3' | 'finale';
 }
 
 export interface WelcomeSequenceProps {

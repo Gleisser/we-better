@@ -7,6 +7,8 @@ import ContentCard from './components/ContentCard/ContentCard';
 import ButtonGroup from './components/ContentCard/ButtonGroup';
 import AnimatedTitle from './components/AnimatedText/AnimatedTitle';
 import ProgressIndicator from './components/ProgressIndicator';
+import LifeWheelVisualization from './components/Visualization/LifeWheelVisualization';
+import ErrorBoundary from './components/Visualization/ErrorBoundary';
 import styles from './WelcomeSequence.module.css';
 
 const WelcomeSequence = ({ 
@@ -62,13 +64,25 @@ const WelcomeSequence = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isStarted, isFinished, handleNext, handleSkip, handleStart]);
   
+  // Check if current index is valid
+  const isValidIndex = currentIndex >= 0 && currentIndex < WELCOME_SEQUENCE.length;
+  
   // Current message
-  const currentMessage = WELCOME_SEQUENCE[currentIndex];
+  const currentMessage = isValidIndex ? WELCOME_SEQUENCE[currentIndex] : null;
+  const currentVisualStage = currentMessage?.visualStage || 'intro';
   
   return (
     <div className={styles.fullScreenContainer}>
       {/* Login background */}
       <div className={styles.backgroundImage} />
+      
+      {/* 3D Visualization - always present but changes states */}
+      <ErrorBoundary>
+        <LifeWheelVisualization 
+          currentStage={currentVisualStage}
+          currentIndex={currentIndex}
+        />
+      </ErrorBoundary>
       
       <div className={styles.contentWrapper}>
         {isLoading ? (
@@ -84,7 +98,7 @@ const WelcomeSequence = ({
           <ContentCard className={styles.welcomeCard}>
             <AnimatedTitle 
               title={`Welcome${userName ? `, ${userName}` : ''}!`}
-              subtitle="Discover balance and focus in all areas of your life with our interactive assessment"
+              subtitle="Begin your journey to better well-being with our interactive experience"
             />
             <ButtonGroup 
               onBegin={handleStart}
@@ -95,44 +109,46 @@ const WelcomeSequence = ({
           </ContentCard>
         ) : (
           <AnimatePresence mode="wait">
-            <div className={styles.sequenceContainer}>
-              <ContentCard className={styles.messageCard}>
-                <MessageAnimation 
-                  key={currentMessage.id} 
-                  message={currentMessage} 
-                  onComplete={handleNext}
-                  userName={userName}
-                />
-                
-                <div className={styles.controlsContainer}>
-                  <ProgressIndicator 
-                    total={WELCOME_SEQUENCE.length} 
-                    current={currentIndex} 
+            {currentMessage && (
+              <div className={styles.sequenceContainer}>
+                <ContentCard className={styles.messageCard}>
+                  <MessageAnimation 
+                    key={currentMessage.id} 
+                    message={currentMessage} 
+                    onComplete={handleNext}
+                    userName={userName}
                   />
                   
-                  <div className={styles.buttons}>
-                    <motion.button 
-                      className={styles.nextButton}
-                      onClick={handleNext}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      aria-label="Next message"
-                    >
-                      Next
-                    </motion.button>
-                    <motion.button 
-                      className={styles.skipButton}
-                      onClick={handleSkip}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      aria-label="Skip introduction"
-                    >
-                      Skip
-                    </motion.button>
+                  <div className={styles.controlsContainer}>
+                    <ProgressIndicator 
+                      total={WELCOME_SEQUENCE.length} 
+                      current={currentIndex} 
+                    />
+                    
+                    <div className={styles.buttons}>
+                      <motion.button 
+                        className={styles.nextButton}
+                        onClick={handleNext}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        aria-label="Next message"
+                      >
+                        Next
+                      </motion.button>
+                      <motion.button 
+                        className={styles.skipButton}
+                        onClick={handleSkip}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        aria-label="Skip introduction"
+                      >
+                        Skip
+                      </motion.button>
+                    </div>
                   </div>
-                </div>
-              </ContentCard>
-            </div>
+                </ContentCard>
+              </div>
+            )}
           </AnimatePresence>
         )}
       </div>
