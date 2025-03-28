@@ -20,21 +20,34 @@ import ResetPassword from '@/pages/Auth/ResetPassword';
 import AuthDebugger from '@/components/auth/AuthDebugger';
 import { LifeWheel } from '@/components/LifeWheel';
 import { WelcomeSequence } from '@/components/LifeWheel/WelcomeSequence';
+import { VisionBoard } from '@/components/VisionBoard';
+import { VisionBoardData } from '@/components/VisionBoard/types';
+import { LifeCategory } from '@/components/LifeWheel/types';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Create a simple Start page that contains the Life Wheel component
+// Create a simple Start page that contains the Life Wheel component and Vision Board
 const StartPage = () => {
   const { user } = useAuth();
   const [showWelcome, setShowWelcome] = useState(true);
+  const [showVisionBoard, setShowVisionBoard] = useState(false);
+  const [lifeWheelCategories, setLifeWheelCategories] = useState<LifeCategory[]>([]);
   
   const handleComplete = () => {
     console.log('Life wheel assessment completed');
-    // Could redirect to dashboard or another page after completion
+    // Show the Vision Board after completing the Life Wheel assessment
+    setShowVisionBoard(true);
   };
   
   const handleCategoryUpdate = (categoryId: string, newValue: number) => {
     console.log('Category updated:', categoryId, newValue);
-    // Could save to user profile or database
+    // Update the categories for the Vision Board
+    setLifeWheelCategories(prev => 
+      prev.map(cat => 
+        cat.id === categoryId 
+          ? { ...cat, value: newValue } 
+          : cat
+      )
+    );
   };
   
   const handleWelcomeComplete = () => {
@@ -43,6 +56,11 @@ const StartPage = () => {
   
   const handleWelcomeSkip = () => {
     setShowWelcome(false);
+  };
+
+  const handleVisionBoardSave = async (data: VisionBoardData): Promise<boolean> => {
+    console.log('Vision board saved:', data);
+    return true;
   };
   
   return (
@@ -57,6 +75,32 @@ const StartPage = () => {
           onSkip={handleWelcomeSkip}
           userName={user?.full_name || ''}
         />
+      ) : showVisionBoard ? (
+        <>
+          <h1 style={{ 
+            fontSize: '2rem', 
+            fontWeight: 'bold', 
+            marginBottom: '1.5rem',
+            textAlign: 'center',
+            color: 'white'
+          }}>
+            Your Vision Board
+          </h1>
+          <p style={{ 
+            fontSize: '1.1rem', 
+            opacity: 0.8,
+            textAlign: 'center',
+            marginBottom: '2rem',
+            color: 'white'
+          }}>
+            Create a visual representation of your goals and aspirations
+          </p>
+          
+          <VisionBoard 
+            lifeWheelCategories={lifeWheelCategories}
+            onSave={handleVisionBoardSave}
+          />
+        </>
       ) : (
         <>
           <h1 style={{ 

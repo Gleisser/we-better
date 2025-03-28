@@ -1,8 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLocation, Outlet } from 'react-router-dom';
+import { ReactNode } from 'react';
 import styles from './Login.module.css';
 
-const AuthLayout = () => {
+interface AuthLayoutProps {
+  children?: ReactNode;
+}
+
+const AuthLayout = ({ children }: AuthLayoutProps) => {
   const location = useLocation();
 
   return (
@@ -16,7 +21,7 @@ const AuthLayout = () => {
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
           className={styles.loginCard}
         >
-          <Outlet />
+          {children || <Outlet />}
         </motion.div>
       </AnimatePresence>
     </div>
