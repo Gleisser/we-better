@@ -408,4 +408,382 @@
     font-size: 24px;
     margin-bottom: 16px;
   }
+}
+
+/* Tour button */
+.tourButton {
+  display: block;
+  margin: 20px auto 0;
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.tourButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+/* Complete button */
+.completeButton {
+  display: block;
+  margin: 15px auto 0;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 30px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.completeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Tour overlay */
+.tourOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 0;
+  overflow: auto;
+}
+
+/* Tour card */
+.tourCard {
+  background: rgba(255, 255, 255, 1);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 2px #6366F1;
+  color: #1F2937;
+  position: relative;
+  overflow: visible; /* Allow skip button to be visible outside the card */
+}
+
+/* Tour category icon */
+.tourCategoryIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 24px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+/* Tour title */
+.tourTitle {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #111827;
+}
+
+/* Tour description */
+.tourDescription {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: #4B5563;
+  text-align: center;
+}
+
+/* Tour tip */
+.tourTip {
+  font-size: 14px;
+  background: #F3F4F6;
+  padding: 12px;
+  border-radius: 8px;
+  color: #374151;
+  border-left: 4px solid #6366F1;
+  margin-bottom: 20px;
+}
+
+/* Tour navigation - updated layout */
+.tourNavigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  width: 100%;
+  padding-bottom: 10px; /* Add space after buttons */
+}
+
+.tourNavLeft, .tourNavRight {
+  display: flex;
+}
+
+/* Tour navigation button */
+.tourNavButton {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 100px; /* Ensure buttons are easy to tap */
+}
+
+/* Primary tour button */
+.tourNavButtonPrimary {
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.tourNavButtonPrimary:hover {
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Secondary tour button */
+.tourNavButton:not(.tourNavButtonPrimary) {
+  background: #F3F4F6;
+  color: #4B5563;
+  border: 1px solid #E5E7EB;
+}
+
+.tourNavButton:not(.tourNavButtonPrimary):hover {
+  background: #E5E7EB;
+}
+
+/* Skip tour button */
+.skipTourButton {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 6px;
+  z-index: 1003;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.skipTourButton:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Close tour button */
+.closeTourButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  border: none;
+  color: #EF4444;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.closeTourButton:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: scale(1.1);
+}
+
+/* Mobile responsive styling for tour */
+@media (max-width: 480px) {
+  .tourCard {
+    padding: 18px;
+  }
+  
+  .tourTitle {
+    font-size: 20px;
+  }
+  
+  .tourDescription {
+    font-size: 14px;
+  }
+  
+  .tourNavButton {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+/* Highlight overlay */
+.highlightOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+  background: none;
+}
+
+/* Highlight box */
+.highlightBox {
+  position: absolute;
+  background-color: transparent;
+  z-index: 1000;
+  pointer-events: none;
+  box-sizing: content-box;
+  border-radius: 10px;
+  animation: pulse 2s infinite;
+  /* Cutout effect removed to make highlighted area visible */
+  border: 2px solid rgba(99, 102, 241, 0.8);
+  box-shadow: 0 0 15px 5px rgba(99, 102, 241, 0.5);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 15px 3px rgba(99, 102, 241, 0.7);
+    border-color: rgba(99, 102, 241, 0.9);
+  }
+  50% {
+    box-shadow: 0 0 25px 8px rgba(99, 102, 241, 0.5);
+    border-color: rgba(99, 102, 241, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 15px 3px rgba(99, 102, 241, 0.7);
+    border-color: rgba(99, 102, 241, 0.9);
+  }
+}
+
+/* Highlighted category item - increased z-index and improved visibility */
+.highlighted {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 3px solid #6366F1 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px 15px rgba(99, 102, 241, 0.3);
+  z-index: 1001 !important; /* Above the overlay */
+  position: relative;
+  backdrop-filter: blur(0) !important; /* Remove any blur effect */
+  color: #1F2937 !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Make highlighted element text more visible */
+.highlighted .categoryName {
+  color: #1F2937 !important;
+  text-shadow: none !important;
+  font-size: 18px !important;
+  letter-spacing: 0.5px !important;
+}
+
+.highlighted .valueLabel {
+  color: #1F2937 !important;
+  background: rgba(99, 102, 241, 0.3) !important;
+  text-shadow: none !important;
+  font-weight: 600 !important;
+  padding: 4px 10px !important;
+}
+
+/* Highlighted element slider */
+.highlighted .slider::-webkit-slider-thumb {
+  transform: scale(1.2) !important;
+  border: 2px solid #6366F1 !important;
+}
+
+/* Temporarily move highlighted element to increase visibility if needed */
+@keyframes pulse-highlight {
+  0% { transform: translateY(-2px); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(-2px); }
+}
+
+.highlighted {
+  animation: pulse-highlight 2s infinite ease-in-out;
+}
+
+/* Make sure content doesn't overflow when highlighted */
+.categoryItem {
+  position: relative;
+  z-index: 1;
+}
+
+/* Make sure the tour card repositions correctly on small screens */
+@media (max-width: 768px) {
+  .tourCard {
+    max-width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .skipTourButton {
+    bottom: 15px;
+    padding: 8px 16px;
+  }
+  
+  .categoriesList {
+    grid-template-columns: 1fr;
+  }
+  
+  .highlighted {
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+@media (max-height: 600px) {
+  .tourCard {
+    max-height: 85vh;
+    padding: 15px;
+  }
+  
+  .tourTitle {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .tourDescription {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  
+  .tourTip {
+    padding: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .skipTourButton {
+    bottom: 10px;
+  }
 } 
