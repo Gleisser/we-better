@@ -91,41 +91,38 @@ const LifeWheel = ({
     onCategoryUpdate?.(categoryId, newValue);
   }, [onCategoryUpdate, readOnly]);
   
-  // Handle saving all categories
-  const handleSaveAll = useCallback(async () => {
-    if (readOnly) return;
-    
-    try {
-      setIsSaving(true);
-      setSaveSuccess(false);
-      
-      await saveLifeWheelData({ categories });
-      
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000); // Clear success message after 3 seconds
-    } catch (err) {
-      console.error('Error saving life wheel data:', err);
-      setError(new Error('Failed to save your life wheel data. Please try again.'));
-    } finally {
-      setIsSaving(false);
-    }
-  }, [categories, readOnly]);
-  
-  // Handle complete button click
+  // Handle complete button click - saves data and completes assessment
   const handleComplete = useCallback(async () => {
     if (readOnly) return;
     
     // First save the data
     try {
       setIsSaving(true);
-      await saveLifeWheelData({ categories });
-      setIsSaving(false);
+      setSaveSuccess(false);
+      setError(null); // Clear any previous errors
       
-      // Then call the onComplete callback
-      onComplete?.();
-    } catch (err) {
+      console.log('Saving life wheel data:', { categories });
+      
+      // Call API to save data
+      const result = await saveLifeWheelData({ categories });
+      console.log('Save result:', result);
+      
+      // Show success message briefly
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000); // Clear success message after 3 seconds
+      
+      // Then call the onComplete callback if provided
+      if (onComplete) {
+        onComplete();
+      }
+    } catch (err: unknown) {
       console.error('Error saving life wheel data before completion:', err);
-      setError(new Error('Failed to save your life wheel data. Please try again.'));
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save your life wheel data. Please try again.';
+      setError(new Error(errorMessage));
+      
+      // Show error for 5 seconds
+      setTimeout(() => setError(null), 5000);
+    } finally {
       setIsSaving(false);
     }
   }, [categories, onComplete, readOnly]);
@@ -412,27 +409,15 @@ const LifeWheel = ({
               Need Help? Take the Tour
             </button>
             
-            {/* Save button - only shown when not in readOnly mode */}
+            {/* Complete button - saves data and completes assessment */}
             {!readOnly && (
-              <button 
-                onClick={handleSaveAll}
-                className={styles.saveButton}
-                disabled={isSaving}
-                type="button"
-              >
-                {isSaving ? 'Saving...' : 'Save Progress'}
-              </button>
-            )}
-            
-            {/* Complete button - only shown when onComplete is provided */}
-            {onComplete && (
               <button 
                 onClick={handleComplete}
                 className={styles.completeButton}
                 disabled={isSaving}
                 type="button"
               >
-                Complete Assessment
+                {isSaving ? 'Saving...' : 'Complete Assessment'}
               </button>
             )}
           </div>
