@@ -4,6 +4,7 @@ import { LifeWheelProps, LifeCategory } from './types';
 import { DEFAULT_LIFE_CATEGORIES, MAX_CATEGORY_VALUE, MIN_CATEGORY_VALUE } from './constants/categories';
 import RadarChart from './components/RadarChart/RadarChart';
 import styles from './LifeWheel.module.css';
+import { saveLifeWheelData, getLatestLifeWheelData } from './api/lifeWheelApi';
 
 /**
  * Life Wheel component for visualizing and managing different life areas
@@ -18,13 +19,19 @@ import styles from './LifeWheel.module.css';
  */
 const LifeWheel = ({
   data,
-  isLoading = false,
-  error = null,
+  isLoading: externalLoading = false,
+  error: externalError = null,
   onCategoryUpdate,
   onComplete,
   className = '',
   readOnly = false
 }: LifeWheelProps) => {
+  // Internal loading and error states
+  const [isLoading, setIsLoading] = useState(externalLoading);
+  const [error, setError] = useState<Error | null>(externalError);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  
   // Use provided data or default values
   const [categories, setCategories] = useState<LifeCategory[]>(
     data?.categories || DEFAULT_LIFE_CATEGORIES
@@ -41,6 +48,25 @@ const LifeWheel = ({
   const [currentTourStep, setCurrentTourStep] = useState(0);
   const [highlightPosition, setHighlightPosition] = useState({ top: 0, left: 0, width: 0, height: 0 });
   const [windowDimensions, setWindowDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
+  
+  // Load latest life wheel data if no external data is provided
+  useEffect(() => {
+    if (!data && !externalLoading) {
+      setIsLoading(true);
+      getLatestLifeWheelData()
+        .then(response => {
+          if (response.entry) {
+            setCategories(response.entry.categories);
+          }
+          setIsLoading(false);
+        })
+        .catch(err => {
+          console.error('Error loading life wheel data:', err);
+          setError(new Error('Failed to load life wheel data. Please try again.'));
+          setIsLoading(false);
+        });
+    }
+  }, [data, externalLoading]);
   
   // Handle category selection
   const handleCategorySelect = useCallback((category: LifeCategory) => {
@@ -64,6 +90,45 @@ const LifeWheel = ({
     // Call the external handler if provided
     onCategoryUpdate?.(categoryId, newValue);
   }, [onCategoryUpdate, readOnly]);
+  
+  // Handle saving all categories
+  const handleSaveAll = useCallback(async () => {
+    if (readOnly) return;
+    
+    try {
+      setIsSaving(true);
+      setSaveSuccess(false);
+      
+      await saveLifeWheelData({ categories });
+      
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000); // Clear success message after 3 seconds
+    } catch (err) {
+      console.error('Error saving life wheel data:', err);
+      setError(new Error('Failed to save your life wheel data. Please try again.'));
+    } finally {
+      setIsSaving(false);
+    }
+  }, [categories, readOnly]);
+  
+  // Handle complete button click
+  const handleComplete = useCallback(async () => {
+    if (readOnly) return;
+    
+    // First save the data
+    try {
+      setIsSaving(true);
+      await saveLifeWheelData({ categories });
+      setIsSaving(false);
+      
+      // Then call the onComplete callback
+      onComplete?.();
+    } catch (err) {
+      console.error('Error saving life wheel data before completion:', err);
+      setError(new Error('Failed to save your life wheel data. Please try again.'));
+      setIsSaving(false);
+    }
+  }, [categories, onComplete, readOnly]);
   
   // Start the tour
   const startTour = useCallback(() => {
@@ -271,6 +336,12 @@ const LifeWheel = ({
         <div className={styles.errorState}>
           <h3>Something went wrong</h3>
           <p>{error.message || 'Failed to load life wheel data'}</p>
+          <button 
+            onClick={() => setError(null)} 
+            className={styles.retryButton}
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -330,22 +401,47 @@ const LifeWheel = ({
             ))}
           </div>
           
-          {/* Tour guide button */}
-          <button 
-            onClick={startTour}
-            className={styles.tourButton}
-          >
-            Need Help? Take the Tour
-          </button>
-          
-          {/* Complete button */}
-          {onComplete && (
+          {/* Action buttons */}
+          <div className={styles.actionButtons}>
+            {/* Tour guide button */}
             <button 
-              onClick={onComplete}
-              className={styles.completeButton}
+              onClick={startTour}
+              className={styles.tourButton}
+              type="button"
             >
-              Complete Assessment
+              Need Help? Take the Tour
             </button>
+            
+            {/* Save button - only shown when not in readOnly mode */}
+            {!readOnly && (
+              <button 
+                onClick={handleSaveAll}
+                className={styles.saveButton}
+                disabled={isSaving}
+                type="button"
+              >
+                {isSaving ? 'Saving...' : 'Save Progress'}
+              </button>
+            )}
+            
+            {/* Complete button - only shown when onComplete is provided */}
+            {onComplete && (
+              <button 
+                onClick={handleComplete}
+                className={styles.completeButton}
+                disabled={isSaving}
+                type="button"
+              >
+                Complete Assessment
+              </button>
+            )}
+          </div>
+          
+          {/* Success message */}
+          {saveSuccess && (
+            <div className={styles.successMessage}>
+              Your Life Wheel data has been saved successfully!
+            </div>
           )}
         </div>
       </div>
@@ -426,6 +522,7 @@ const LifeWheel = ({
                     <button 
                       onClick={prevTourStep}
                       className={styles.tourNavButton}
+                      type="button"
                     >
                       Previous
                     </button>
@@ -436,6 +533,7 @@ const LifeWheel = ({
                   <button 
                     onClick={currentTourStep > categories.length ? endTour : nextTourStep}
                     className={`${styles.tourNavButton} ${styles.tourNavButtonPrimary}`}
+                    type="button"
                   >
                     {currentTourStep > categories.length ? 'Finish' : 'Next'}
                   </button>
@@ -447,6 +545,7 @@ const LifeWheel = ({
                 className={styles.closeTourButton}
                 onClick={endTour}
                 aria-label="Close tour"
+                type="button"
               >
                 ×
               </button>
@@ -459,6 +558,7 @@ const LifeWheel = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              type="button"
             >
               Skip Tour
             </motion.button>

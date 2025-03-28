@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
   
   // Provide fallback values for required env variables
   const apiUrl = env.VITE_API_URL || 'http://localhost:1337';
+  const userServiceUrl = env.VITE_USER_SERVICE_URL || 'http://localhost:3000';
 
   return {
     plugins: [react()],
@@ -19,6 +20,11 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       proxy: {
+        '/api/life-wheel': {
+          target: userServiceUrl,
+          changeOrigin: true,
+          secure: false,
+        },
         '/api': {
           target: apiUrl,
           changeOrigin: true,
