@@ -27,6 +27,7 @@
   width: 100%;
   height: 100%;
   opacity: 0.8;
+  z-index: 0;
 }
 
 .canvasContainer {
@@ -34,6 +35,8 @@
   position: relative;
   overflow: auto;
   padding: 20px;
+  z-index: 1;
+  pointer-events: auto;
 }
 
 .contentItem {
@@ -48,10 +51,12 @@
   align-items: center;
   padding: 8px;
   transform-origin: center center;
+  z-index: 2;
 }
 
 .contentItem.selected {
   box-shadow: 0 0 0 2px #0066ff, 0 4px 12px rgba(0, 102, 255, 0.2);
+  z-index: 3;
 }
 
 .contentItem.dragging {
@@ -184,6 +189,14 @@
   transition: width 0.3s ease;
 }
 
+.toolbarContainer {
+  width: 100%;
+  position: relative;
+  z-index: 110;
+  pointer-events: auto;
+  background-color: transparent;
+}
+
 .toolbar {
   display: flex;
   align-items: center;
@@ -194,18 +207,26 @@
   border-bottom-right-radius: 12px;
   flex-wrap: wrap;
   gap: 10px;
+  position: relative;
+  z-index: 100;
+  pointer-events: auto;
+  cursor: default;
 }
 
 .toolbarModes {
   display: flex;
   gap: 5px;
   margin-right: 20px;
+  z-index: 101;
+  pointer-events: auto;
 }
 
 .toolbarContent {
   flex: 1;
   display: flex;
   justify-content: flex-start;
+  z-index: 101;
+  pointer-events: auto;
 }
 
 .toolbarButton {
@@ -220,6 +241,8 @@
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s;
+  z-index: 102;
+  pointer-events: auto;
 }
 
 .toolbarButton:hover {
@@ -246,6 +269,8 @@
   display: flex;
   gap: 8px;
   margin-left: auto;
+  z-index: 101;
+  pointer-events: auto;
 }
 
 .saveButton {

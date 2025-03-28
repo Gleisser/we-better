@@ -19,8 +19,10 @@ interface ToolbarProps {
   onToggleThemes: () => void;
   onSave: () => void;
   onShare?: () => void;
-  isSaving: boolean;
-  className?: string;
+  onFilterByCategory?: (categoryId: string | null) => void;
+  categories?: { id: string; name: string }[];
+  selectedCategoryId?: string | null;
+  isSaving?: boolean;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -34,128 +36,131 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onToggleThemes,
   onSave,
   onShare,
-  isSaving,
-  className = ''
+  onFilterByCategory,
+  categories = [],
+  selectedCategoryId = null,
+  isSaving = false
 }) => {
-  return (
-    <div className={`${styles.toolbar} ${className}`}>
-      {/* Mode Switcher */}
-      <div className={styles.toolbarModes}>
-        <button
-          className={`${styles.toolbarButton} ${mode === ToolbarMode.ADD ? styles.active : ''}`}
-          onClick={() => onModeChange(ToolbarMode.ADD)}
-          title="Add Content"
-        >
-          <span className={styles.iconAdd}>+</span>
-          <span className={styles.buttonLabel}>Add</span>
-        </button>
-        
-        <button
-          className={`${styles.toolbarButton} ${mode === ToolbarMode.ARRANGE ? styles.active : ''}`}
-          onClick={() => onModeChange(ToolbarMode.ARRANGE)}
-          title="Arrange Content"
-        >
-          <span className={styles.iconArrange}>⊞</span>
-          <span className={styles.buttonLabel}>Arrange</span>
-        </button>
-        
-        <button
-          className={`${styles.toolbarButton} ${mode === ToolbarMode.FILTER ? styles.active : ''}`}
-          onClick={() => onModeChange(ToolbarMode.FILTER)}
-          title="Filter Content"
-        >
-          <span className={styles.iconFilter}>⊲</span>
-          <span className={styles.buttonLabel}>Filter</span>
-        </button>
-      </div>
-      
-      {/* Mode-specific content */}
-      <div className={styles.toolbarContent}>
-        {mode === ToolbarMode.ADD && (
+  const renderModeButtons = () => (
+    <div className={styles.toolbarModes}>
+      <button 
+        className={`${styles.toolbarButton} ${mode === ToolbarMode.ADD ? styles.active : ''}`}
+        onClick={() => onModeChange(ToolbarMode.ADD)}
+      >
+        Add
+      </button>
+      <button 
+        className={`${styles.toolbarButton} ${mode === ToolbarMode.ARRANGE ? styles.active : ''}`}
+        onClick={() => onModeChange(ToolbarMode.ARRANGE)}
+      >
+        Arrange
+      </button>
+      <button 
+        className={`${styles.toolbarButton} ${mode === ToolbarMode.FILTER ? styles.active : ''}`}
+        onClick={() => onModeChange(ToolbarMode.FILTER)}
+      >
+        Filter
+      </button>
+    </div>
+  );
+  
+  const renderContentArea = () => {
+    switch (mode) {
+      case ToolbarMode.ADD:
+        return (
           <div className={styles.addTools}>
             <button 
-              className={styles.toolbarButton}
-              onClick={onAddImage}
-              title="Add Image"
-            >
-              <span className={styles.iconImage}>🖼️</span>
-              <span className={styles.buttonLabel}>Image</span>
-            </button>
-            
-            <button 
-              className={styles.toolbarButton}
+              className={styles.toolbarButton} 
               onClick={onAddText}
-              title="Add Text"
             >
-              <span className={styles.iconText}>T</span>
-              <span className={styles.buttonLabel}>Text</span>
+              Add Text
             </button>
-            
             <button 
-              className={styles.toolbarButton}
+              className={styles.toolbarButton} 
+              onClick={onAddImage}
+            >
+              Add Image
+            </button>
+            <button 
+              className={styles.toolbarButton} 
               onClick={onGenerateAI}
-              title="AI Generated Image"
             >
-              <span className={styles.iconAI}>🤖</span>
-              <span className={styles.buttonLabel}>AI</span>
+              AI Image
             </button>
-            
             <button 
-              className={styles.toolbarButton}
+              className={styles.toolbarButton} 
               onClick={onAddAudio}
-              title="Add Voice Note"
             >
-              <span className={styles.iconAudio}>🎵</span>
-              <span className={styles.buttonLabel}>Audio</span>
+              Voice Note
             </button>
           </div>
-        )}
+        );
         
-        {mode === ToolbarMode.ARRANGE && (
+      case ToolbarMode.ARRANGE:
+        return (
           <div className={styles.arrangeTools}>
             <button 
               className={styles.toolbarButton}
               onClick={onAutoArrange}
-              title="Auto Arrange"
             >
-              <span className={styles.iconAutoArrange}>📏</span>
-              <span className={styles.buttonLabel}>Auto Arrange</span>
+              Auto Arrange
             </button>
-            
             <button 
               className={styles.toolbarButton}
               onClick={onToggleThemes}
-              title="Change Theme"
             >
-              <span className={styles.iconTheme}>🎨</span>
-              <span className={styles.buttonLabel}>Themes</span>
+              Change Theme
             </button>
           </div>
-        )}
+        );
+        
+      case ToolbarMode.FILTER:
+        return (
+          <div className={styles.filterTools}>
+            <span style={{ marginRight: '10px' }}>Filter by category:</span>
+            <button 
+              className={`${styles.toolbarButton} ${selectedCategoryId === null ? styles.active : ''}`}
+              onClick={() => onFilterByCategory && onFilterByCategory(null)}
+            >
+              All Categories
+            </button>
+            {categories.map(category => (
+              <button
+                key={category.id}
+                className={`${styles.toolbarButton} ${selectedCategoryId === category.id ? styles.active : ''}`}
+                onClick={() => onFilterByCategory && onFilterByCategory(category.id)}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        );
+        
+      default:
+        return null;
+    }
+  };
+  
+  return (
+    <div className={styles.toolbar}>
+      {renderModeButtons()}
+      <div className={styles.toolbarContent}>
+        {renderContentArea()}
       </div>
-      
-      {/* Action Buttons */}
       <div className={styles.toolbarActions}>
         <button 
           className={`${styles.toolbarButton} ${styles.saveButton}`}
           onClick={onSave}
           disabled={isSaving}
-          title="Save Vision Board"
         >
-          <span className={styles.iconSave}>💾</span>
-          <span className={styles.buttonLabel}>
-            {isSaving ? 'Saving...' : 'Save'}
-          </span>
+          {isSaving ? 'Saving...' : 'Save'}
         </button>
-        
         {onShare && (
           <button 
             className={`${styles.toolbarButton} ${styles.shareButton}`}
             onClick={onShare}
-            title="Share Vision Board"
           >
-            <span className={styles.iconShare}>🔗</span>
-            <span className={styles.buttonLabel}>Share</span>
+            Share
           </button>
         )}
       </div>

@@ -1,6 +1,10 @@
 import React from 'react';
-import { motion, useDragControls } from 'framer-motion';
-import { VisionBoardContent, VisionBoardContentType } from '../types';
+import { motion } from 'framer-motion';
+import { 
+  VisionBoardContent, 
+  VisionBoardContentType,
+  Position
+} from '../types';
 import styles from '../VisionBoard.module.css';
 
 interface ContentItemProps {
@@ -8,7 +12,7 @@ interface ContentItemProps {
   isSelected: boolean;
   onSelect: (id: string) => void;
   onUpdate: (content: VisionBoardContent) => void;
-  readOnly: boolean;
+  readOnly?: boolean;
 }
 
 /**
@@ -20,60 +24,46 @@ export const ContentItem: React.FC<ContentItemProps> = ({
   isSelected,
   onSelect,
   onUpdate,
-  readOnly
+  readOnly = false
 }) => {
-  const dragControls = useDragControls();
-  
-  // Handle item drag
   const handleDragEnd = (info: any) => {
     if (readOnly) return;
     
-    const newContent = {
-      ...content,
-      position: {
-        ...content.position,
-        x: content.position.x + info.offset.x,
-        y: content.position.y + info.offset.y
-      }
+    const newPosition: Position = {
+      x: content.position.x + info.offset.x,
+      y: content.position.y + info.offset.y
     };
     
-    onUpdate(newContent);
+    onUpdate({
+      ...content,
+      position: newPosition
+    });
   };
-
-  // Handle click on the content item
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!readOnly) {
-      onSelect(content.id);
-    }
-  };
-
-  // Render content based on type
-  const renderContent = () => {
+  
+  const renderContentBasedOnType = () => {
     switch (content.type) {
       case VisionBoardContentType.TEXT:
         return (
           <div 
             className={styles.textContent}
             style={{
-              fontSize: `${content.fontSize}px`,
-              fontFamily: content.fontFamily,
-              color: content.fontColor,
-              textAlign: content.textAlign as any,
-              fontWeight: content.fontWeight as any
+              fontSize: `${content.fontSize || 16}px`,
+              color: content.fontColor || '#000000',
+              fontFamily: content.fontFamily || 'Arial, sans-serif',
+              textAlign: content.textAlign as any || 'center',
+              fontWeight: content.fontWeight || 'normal'
             }}
           >
-            {content.text}
+            {content.text || 'Text content'}
           </div>
         );
         
       case VisionBoardContentType.IMAGE:
         return (
           <img 
-            src={content.src} 
-            alt={content.alt}
+            src={content.src || 'https://via.placeholder.com/200'}
+            alt={content.alt || 'Vision board image'}
             className={styles.imageContent}
-            draggable={false}
           />
         );
         
@@ -81,26 +71,35 @@ export const ContentItem: React.FC<ContentItemProps> = ({
         return (
           <div className={styles.aiGeneratedContent}>
             <img 
-              src={content.src} 
-              alt={content.alt}
+              src={content.src || 'https://via.placeholder.com/200'}
+              alt={content.alt || 'AI generated image'}
               className={styles.imageContent}
-              draggable={false}
             />
-            <div className={styles.aiPromptOverlay}>
-              <span className={styles.aiPromptLabel}>AI Prompt:</span>
-              <p className={styles.aiPromptText}>{content.prompt}</p>
-            </div>
+            {content.prompt && (
+              <div className={styles.aiPromptOverlay}>
+                <span className={styles.aiPromptLabel}>Prompt:</span>
+                <p className={styles.aiPromptText}>{content.prompt}</p>
+              </div>
+            )}
           </div>
         );
         
       case VisionBoardContentType.AUDIO:
         return (
           <div className={styles.audioContent}>
-            <div className={styles.audioIcon}>🎵</div>
-            <div className={styles.audioTranscription}>
-              {content.transcription || "Voice note"}
-            </div>
-            <audio controls src={content.audioUrl} className={styles.audioPlayer} />
+            <div className={styles.audioIcon}>🔊</div>
+            {content.transcription && (
+              <div className={styles.audioTranscription}>
+                {content.transcription}
+              </div>
+            )}
+            {content.audioUrl && (
+              <audio
+                controls
+                src={content.audioUrl}
+                className={styles.audioPlayer}
+              />
+            )}
           </div>
         );
         
@@ -108,48 +107,55 @@ export const ContentItem: React.FC<ContentItemProps> = ({
         return <div>Unknown content type</div>;
     }
   };
-
+  
+  // Render the goal indicator if this content is marked as a goal
+  const renderGoalIndicator = () => {
+    if (!content.isGoal || !content.goalDetails) return null;
+    
+    const { progress } = content.goalDetails;
+    
+    return (
+      <div className={styles.goalIndicator}>
+        <div className={styles.goalProgressBar}>
+          <div 
+            className={styles.goalProgressFill} 
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+    );
+  };
+  
   return (
     <motion.div
       className={`${styles.contentItem} ${isSelected ? styles.selected : ''}`}
       style={{
-        width: `${content.size.width}px`,
-        height: `${content.size.height}px`,
-        transform: `rotate(${content.rotation}deg)`,
-        zIndex: isSelected ? 10 : 1
-      }}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ 
-        opacity: 1, 
-        scale: 1,
+        width: content.size.width,
+        height: content.size.height,
         x: content.position.x,
         y: content.position.y,
-        rotate: content.rotation
+        rotate: content.rotation || 0,
+        zIndex: isSelected ? 10 : 1
       }}
-      transition={{ duration: 0.3 }}
       drag={!readOnly}
-      dragControls={dragControls}
       dragMomentum={false}
       onDragEnd={handleDragEnd}
-      whileDrag={{ scale: 1.02, zIndex: 20 }}
-      onClick={handleClick}
+      onClick={() => onSelect(content.id)}
+      whileDrag={{ scale: 1.02, opacity: 0.9 }}
+      transition={{ type: 'spring', damping: 15 }}
     >
-      {renderContent()}
+      {renderContentBasedOnType()}
+      {renderGoalIndicator()}
       
       {isSelected && !readOnly && (
         <div className={styles.contentItemControls}>
-          <div className={styles.resizeHandle}></div>
-        </div>
-      )}
-      
-      {content.isGoal && (
-        <div className={styles.goalIndicator}>
-          <div className={styles.goalProgressBar}>
-            <div 
-              className={styles.goalProgressFill}
-              style={{ width: `${content.goalDetails?.progress || 0}%` }}
-            ></div>
-          </div>
+          <div 
+            className={styles.resizeHandle} 
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              // Resize logic would go here in a more complex implementation
+            }}
+          />
         </div>
       )}
     </motion.div>
