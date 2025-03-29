@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Playfair+Display:wght@400;700&display=swap');
 
 .visionBoardContainer {
   position: absolute;
@@ -1085,4 +1085,123 @@
   align-items: center;
   justify-content: center;
   line-height: 1.2;
+}
+
+.visionBoardHeader {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+  animation: fadeIn 1.2s ease-out forwards;
+  padding: 0 20px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.visionBoardTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: min(3.5rem, 10vw);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  text-align: center;
+  text-shadow: 0 2px 15px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.06em;
+  transform: rotate(-1deg);
+  padding: 15px 40px;
+  background-color: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(5px);
+  border-radius: 12px;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  max-width: 95%;
+  width: auto;
+  display: inline-block;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+  transition: all 0.3s ease;
+  position: relative;
+  animation: glow 3s ease-in-out infinite alternate;
+}
+
+@media (max-width: 768px) {
+  .visionBoardTitle {
+    font-size: 2.5rem;
+    padding: 12px 30px;
+  }
+  
+  .visionBoardTitle::before, 
+  .visionBoardTitle::after {
+    width: 30px;
+  }
+  
+  .visionBoardSubtitle {
+    font-size: 1.2rem;
+  }
+}
+
+@keyframes glow {
+  0% {
+    text-shadow: 0 2px 15px rgba(0, 0, 0, 0.6);
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  }
+  100% {
+    text-shadow: 
+      0 2px 15px rgba(0, 0, 0, 0.6),
+      0 0 10px rgba(255, 255, 255, 0.4);
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+      0 0 15px rgba(255, 255, 255, 0.2);
+  }
+}
+
+.visionBoardTitle::before, 
+.visionBoardTitle::after {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.6);
+  top: 50%;
+}
+
+.visionBoardTitle::before {
+  left: 15px;
+  transform: translateY(-50%) rotate(-20deg);
+}
+
+.visionBoardTitle::after {
+  right: 15px;
+  transform: translateY(-50%) rotate(20deg);
+}
+
+.visionBoardSubtitle {
+  font-family: 'Indie Flower', cursive;
+  font-size: 1.6rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  margin-top: 8px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
+  letter-spacing: 0.03em;
 } 

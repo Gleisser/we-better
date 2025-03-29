@@ -34,8 +34,8 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   
   // Board data state
   const [boardData, setBoardData] = useState<VisionBoardData>({
-    title: 'My Vision Board',
-    description: 'Based on my Life Wheel assessment',
+    title: 'My Dream Board',
+    description: 'Visualize • Believe • Achieve',
     themeId: 'light',
     categories: lifeWheelCategories.map(cat => cat.id),
     content: []
@@ -62,7 +62,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     } else {
       setBoardData({
         title: 'My Vision Board',
-        description: 'Based on my Life Wheel assessment',
+        description: 'Visualize • Believe • Achieve',
         themeId: 'light',
         categories: lifeWheelCategories.map(cat => cat.id),
         content: []
@@ -577,6 +577,14 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
           height: '100%' // Cover entire container
         }}
       ></div>
+      
+      {/* Vision Board Title */}
+      <div className={styles.visionBoardHeader}>
+        <h1 className={styles.visionBoardTitle}>{boardData.title || 'Vision Board'}</h1>
+        {boardData.description && (
+          <p className={styles.visionBoardSubtitle}>{boardData.description}</p>
+        )}
+      </div>
       
       {/* Canvas container */}
       <div 
