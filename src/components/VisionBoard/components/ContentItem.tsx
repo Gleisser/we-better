@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   VisionBoardContent, 
-  VisionBoardContentType,
-  Position,
-  Size
+  VisionBoardContentType
 } from '../types';
 import styles from '../VisionBoard.module.css';
 
@@ -29,6 +27,9 @@ export const ContentItem: React.FC<ContentItemProps> = ({
   // State
   const [text, setText] = useState(content.text || '');
   const [isEditing, setIsEditing] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const contentRef = useRef<HTMLDivElement>(null);
   
   // Effect to update text when content changes
   useEffect(() => {
@@ -39,6 +40,7 @@ export const ContentItem: React.FC<ContentItemProps> = ({
   const classNames = [
     styles.contentItem,
     isSelected ? styles.selected : '',
+    isDragging ? styles.dragging : '',
     content.type === VisionBoardContentType.TEXT ? styles.textItem : '',
   ].filter(Boolean).join(' ');
   
@@ -70,7 +72,8 @@ export const ContentItem: React.FC<ContentItemProps> = ({
     left: `${content.position.x}px`,
     top: `${content.position.y}px`,
     transform: `rotate(${content.rotation || 0}deg)`,
-    zIndex: isSelected ? 5 : 2,
+    zIndex: isDragging ? 10 : (isSelected ? 5 : 2),
+    cursor: readOnly ? 'default' : (isDragging ? 'grabbing' : 'grab'),
     ...getAnimationStyle()
   };
   
@@ -110,6 +113,182 @@ export const ContentItem: React.FC<ContentItemProps> = ({
       setIsEditing(true);
     }
   };
+  
+  // Drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (readOnly) return;
+    
+    // Don't initiate drag when clicking on interactive elements
+    const target = e.target as HTMLElement;
+    if (
+      target.tagName === 'TEXTAREA' || 
+      target.tagName === 'BUTTON' || 
+      target.tagName === 'INPUT' ||
+      target.tagName === 'AUDIO' ||
+      target.classList.contains(styles.audioPlayer)
+    ) {
+      return;
+    }
+    
+    // Prevent default browser drag behavior
+    e.preventDefault();
+    
+    // Only initiate drag on main mouse button (left click)
+    if (e.button !== 0) return;
+    
+    // Get the current element position
+    const rect = contentRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    // Calculate the offset of the mouse pointer from the element's top-left corner
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+    
+    // Store the offset for use during drag
+    setDragOffset({ x: offsetX, y: offsetY });
+    
+    // Start dragging
+    setIsDragging(true);
+    
+    // Select this item if not already selected
+    onSelect(content.id);
+  };
+  
+  // Touch handlers for mobile devices
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (readOnly) return;
+    
+    // Don't initiate drag when touching interactive elements
+    const target = e.target as HTMLElement;
+    if (
+      target.tagName === 'TEXTAREA' || 
+      target.tagName === 'BUTTON' || 
+      target.tagName === 'INPUT' ||
+      target.tagName === 'AUDIO' ||
+      target.classList.contains(styles.audioPlayer)
+    ) {
+      return;
+    }
+    
+    // Get the current element position
+    const rect = contentRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    // Get the first touch point
+    const touch = e.touches[0];
+    
+    // Calculate the offset of the touch point from the element's top-left corner
+    const offsetX = touch.clientX - rect.left;
+    const offsetY = touch.clientY - rect.top;
+    
+    // Store the offset for use during drag
+    setDragOffset({ x: offsetX, y: offsetY });
+    
+    // Start dragging
+    setIsDragging(true);
+    
+    // Select this item if not already selected
+    onSelect(content.id);
+  };
+  
+  // Handle touch move for dragging on mobile
+  const handleTouchMove = (e: TouchEvent) => {
+    if (!isDragging) return;
+    
+    // Prevent scrolling while dragging
+    e.preventDefault();
+    
+    // Get the parent container's position
+    const canvasRect = contentRef.current?.parentElement?.getBoundingClientRect();
+    if (!canvasRect) return;
+    
+    // Get the first touch point
+    const touch = e.touches[0];
+    
+    // Calculate new position relative to canvas, accounting for the drag offset
+    const newX = touch.clientX - canvasRect.left - dragOffset.x;
+    const newY = touch.clientY - canvasRect.top - dragOffset.y;
+    
+    // Ensure the element stays within the canvas boundaries
+    const maxX = canvasRect.width - content.size.width;
+    const maxY = canvasRect.height - content.size.height;
+    
+    const boundedX = Math.max(0, Math.min(newX, maxX));
+    const boundedY = Math.max(0, Math.min(newY, maxY));
+    
+    // Update the content position
+    onUpdate({
+      ...content,
+      position: {
+        x: boundedX,
+        y: boundedY
+      }
+    });
+  };
+  
+  // Handle touch end to stop dragging on mobile
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+  
+  // Handle mouse move for dragging
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return;
+    
+    // Get the parent container's position
+    const canvasRect = contentRef.current?.parentElement?.getBoundingClientRect();
+    if (!canvasRect) return;
+    
+    // Calculate new position relative to canvas, accounting for the drag offset
+    const newX = e.clientX - canvasRect.left - dragOffset.x;
+    const newY = e.clientY - canvasRect.top - dragOffset.y;
+    
+    // Ensure the element stays within the canvas boundaries
+    const maxX = canvasRect.width - content.size.width;
+    const maxY = canvasRect.height - content.size.height;
+    
+    const boundedX = Math.max(0, Math.min(newX, maxX));
+    const boundedY = Math.max(0, Math.min(newY, maxY));
+    
+    // Update the content position
+    onUpdate({
+      ...content,
+      position: {
+        x: boundedX,
+        y: boundedY
+      }
+    });
+  };
+  
+  // Handle mouse up to end dragging
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+  
+  // Add and remove event listeners for drag operations
+  useEffect(() => {
+    if (isDragging) {
+      // Mouse events
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      
+      // Touch events
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      window.addEventListener('touchend', handleTouchEnd);
+      window.addEventListener('touchcancel', handleTouchEnd);
+    }
+    
+    return () => {
+      // Clean up mouse events
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      
+      // Clean up touch events
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchEnd);
+    };
+  }, [isDragging, dragOffset]);
   
   // Render different content types
   const renderContent = () => {
@@ -190,10 +369,13 @@ export const ContentItem: React.FC<ContentItemProps> = ({
   
   return (
     <div
+      ref={contentRef}
       className={classNames}
       style={contentStyle}
       onClick={handleSelect}
       onDoubleClick={handleDoubleClick}
+      onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
     >
       {renderContent()}
       
