@@ -228,9 +228,18 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   
   // Handle adding content
   const handleAddContent = (type: VisionBoardContentType, contentData?: Record<string, unknown>) => {
+    // Calculate safe placement area, avoiding the right side where the content panel appears
+    const CONTENT_PANEL_WIDTH = 350; // Width of the edit panel plus some margin
+    const CONTENT_ITEM_WIDTH = type === VisionBoardContentType.TEXT ? 300 : 200;
+    const CONTENT_ITEM_HEIGHT = type === VisionBoardContentType.TEXT ? 100 : 200;
+    
+    // Calculate safe area width, ensuring items don't spawn behind the panel
+    const safeAreaWidth = Math.max(200, canvasSize.width - CONTENT_PANEL_WIDTH);
+    
+    // Calculate random position within safe area
     const newPosition: Position = {
-      x: Math.random() * (canvasSize.width - 200) || 50,
-      y: Math.random() * (canvasSize.height - 200) || 50
+      x: Math.floor(Math.random() * (safeAreaWidth - CONTENT_ITEM_WIDTH)) || 50,
+      y: Math.floor(Math.random() * (canvasSize.height - CONTENT_ITEM_HEIGHT - 100)) || 50
     };
     
     let newContent: VisionBoardContent = {
@@ -238,8 +247,8 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       type,
       position: newPosition,
       size: { 
-        width: type === VisionBoardContentType.TEXT ? 300 : 200, 
-        height: type === VisionBoardContentType.TEXT ? 100 : 200 
+        width: CONTENT_ITEM_WIDTH, 
+        height: CONTENT_ITEM_HEIGHT 
       },
       rotation: 0,
       categoryId: selectedCategoryId || undefined
@@ -489,21 +498,28 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   
   // Handle auto arrange
   const handleAutoArrange = () => {
+    // Define safe area parameters
+    const CONTENT_PANEL_WIDTH = 350; // Width of the edit panel plus some margin
+    const safeAreaWidth = Math.max(300, canvasSize.width - CONTENT_PANEL_WIDTH);
+    
     // Place items in a grid pattern like in the reference design
     const itemWidth = 220;
     const itemHeight = 220;
-    const columns = Math.floor(canvasSize.width / itemWidth) || 3;
+    const columns = Math.floor(safeAreaWidth / (itemWidth + 20)) || 2; // Ensure at least 2 columns
     const gutter = 20;
     
     const arrangedContent = boardData.content.map((item, index) => {
       const row = Math.floor(index / columns);
       const col = index % columns;
       
+      // Ensure items stay within safe area (away from the right edge)
+      const x = Math.min(col * (itemWidth + gutter), safeAreaWidth - itemWidth);
+      
       return {
         ...item,
         position: {
-          x: col * (itemWidth + gutter),
-          y: row * (itemHeight + gutter)
+          x,
+          y: row * (itemHeight + gutter) + 50 // Add some top margin
         }
       };
     });
@@ -516,51 +532,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     // Trigger animation after arranging
     startAnimation();
   };
-  
-  // Handle positioning content away from sidebar
-  useEffect(() => {
-    if (showControls && canvasRef.current) {
-      // Get the current viewport dimensions
-      const sidebarWidth = 340;
-      const viewportWidth = canvasRef.current.clientWidth;
-      const safeAreaWidth = viewportWidth - sidebarWidth;
-      
-      // Check if any content items would be hidden by the sidebar
-      const adjustedContent = boardData.content.map(item => {
-        const itemRight = item.position.x + item.size.width;
-        
-        // If the item extends into the sidebar area
-        if (itemRight > safeAreaWidth) {
-          const newX = Math.max(0, safeAreaWidth - item.size.width - 20); // 20px buffer
-          
-          return {
-            ...item,
-            position: {
-              ...item.position,
-              x: newX
-            }
-          };
-        }
-        
-        return item;
-      });
-      
-      // Only update if changes were made
-      const hasChanges = adjustedContent.some((item, index) => 
-        item.position.x !== boardData.content[index].position.x
-      );
-      
-      if (hasChanges) {
-        setBoardData(prev => ({
-          ...prev,
-          content: adjustedContent
-        }));
-        
-        // Trigger animation when items are repositioned
-        startAnimation();
-      }
-    }
-  }, [showControls, boardData.content, canvasRef.current?.clientWidth]);
   
   // Render loading state
   if (loading) {
@@ -592,10 +563,10 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   
   return (
     <div 
-      className={`${styles.visionBoardContainer} ${className} ${showControls ? styles.withSidebar : ''}`}
+      className={`${styles.visionBoardContainer} ${className}`}
       style={{ fontFamily: activeTheme.fontFamily }}
     >
-      {/* Background layers - apply to canvas area only */}
+      {/* Background layers - apply to entire board */}
       <div 
         className={styles.backgroundLayer}
         style={{ 
@@ -603,14 +574,14 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           opacity: 0.9,
-          height: 'calc(100% - 60px)' // Subtract toolbar height
+          height: '100%' // Cover entire container
         }}
       ></div>
       
       {/* Canvas container */}
       <div 
         ref={canvasRef}
-        className={`${styles.canvasContainer} ${showControls ? styles.withSidebarOpen : ''}`}
+        className={styles.canvasContainer}
         onClick={handleCanvasClick}
       >
         {/* Content items */}
@@ -626,28 +597,21 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
         ))}
       </div>
       
-      {/* Content controls */}
+      {/* Content controls - floating sidebar */}
       {showControls && selectedContent && !readOnly && (
-        <>
-          {/* Push the canvas content to make space for the sidebar */}
-          <div className={styles.sidebarSpacer}></div>
-          <ContentControls
-            selectedContent={selectedContent}
-            onUpdate={handleUpdateContent}
-            onDelete={handleDeleteContent}
-            onClose={() => {
-              setSelectedContentId(null);
-              setShowControls(false);
-            }}
-          />
-        </>
+        <ContentControls
+          selectedContent={selectedContent}
+          onUpdate={handleUpdateContent}
+          onDelete={handleDeleteContent}
+          onClose={() => {
+            setSelectedContentId(null);
+            setShowControls(false);
+          }}
+        />
       )}
       
-      {/* Toolbar container - separate from canvas */}
-      <div 
-        className={styles.toolbarContainer} 
-        onClick={(e) => e.stopPropagation()}
-      >
+      {/* Toolbar container - floating at bottom */}
+      <div className={styles.toolbarContainer}>
         {!readOnly && (
           <Toolbar
             mode={toolbarMode}
