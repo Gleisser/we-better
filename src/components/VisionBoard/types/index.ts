@@ -85,6 +85,14 @@ export interface VisionBoardData {
   userId?: string;
 }
 
+// Toolbar modes
+export enum ToolbarMode {
+  ADD = 'add',
+  FILTER = 'filter',
+  THEME = 'theme',
+  ARRANGE = 'arrange'
+}
+
 // Vision Board Props
 export interface VisionBoardProps {
   lifeWheelCategories: LifeCategory[];

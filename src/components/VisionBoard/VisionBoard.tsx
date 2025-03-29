@@ -6,10 +6,11 @@ import {
   VisionBoardContentType,
   VisionBoardContent,
   Position,
+  ToolbarMode
 } from './types';
 import { ContentItem } from './components/ContentItem';
 import { ContentControls } from './components/ContentControls';
-import { Toolbar, ToolbarMode } from './components/Toolbar';
+import { Toolbar } from './components/Toolbar';
 import { ThemeSelector } from './components/ThemeSelector';
 import { IntroScreen } from './components/IntroScreen';
 import { Toast } from './components/Toast';
@@ -440,15 +441,17 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   
   return (
     <div 
-      className={`${styles.visionBoardContainer} ${className}`}
+      className={`${styles.visionBoardContainer} ${className} ${showControls ? styles.withSidebar : ''}`}
       style={{ fontFamily: activeTheme.fontFamily }}
     >
       {/* Background layers - apply to canvas area only */}
       <div 
         className={styles.backgroundLayer}
         style={{ 
-          background: activeTheme.backgroundGradient,
-          opacity: 0.8,
+          background: `url('https://images.unsplash.com/photo-1531685250784-7569952593d2?crop=entropy&cs=srgb&fm=jpg&ixid=M3wzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2OTMyOTE2OTh8&ixlib=rb-4.0.3&q=100&w=3000')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.9,
           height: 'calc(100% - 60px)' // Subtract toolbar height
         }}
       ></div>
@@ -456,7 +459,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       {/* Canvas container */}
       <div 
         ref={canvasRef}
-        className={styles.canvasContainer}
+        className={`${styles.canvasContainer} ${showControls ? styles.withSidebarOpen : ''}`}
         onClick={handleCanvasClick}
       >
         {/* Content items */}

@@ -1,14 +1,7 @@
 import React from 'react';
 import styles from './Toolbar.module.css';
 import visionBoardStyles from '../VisionBoard.module.css';
-
-// Toolbar modes
-export enum ToolbarMode {
-  ADD = 'add',
-  FILTER = 'filter',
-  THEME = 'theme',
-  ARRANGE = 'arrange'
-}
+import { ToolbarMode } from '../types';
 
 export interface ToolbarProps {
   mode: ToolbarMode;
