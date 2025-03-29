@@ -40,6 +40,7 @@
   z-index: 1;
   overflow: auto;
   perspective: 1000px;
+  transition: width 0.3s ease, padding 0.3s ease;
 }
 
 .animate {
@@ -986,12 +987,23 @@
 
 /* Adjust container when sidebar is open */
 .withSidebar {
-  padding-right: 320px; /* Same width as sidebar */
-  transition: padding-right 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 /* Adjust canvas container when sidebar is open */
 .withSidebarOpen {
-  margin-right: 0;
-  transition: margin-right 0.3s ease;
+  width: calc(100% - 340px);
+  padding-right: 2.5rem;
+  transition: width 0.3s ease, padding 0.3s ease;
+}
+
+/* Sidebar spacer to prevent content from being hidden behind the sidebar */
+.sidebarSpacer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 340px;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
 } 

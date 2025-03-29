@@ -411,6 +411,51 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     startAnimation();
   };
   
+  // Handle positioning content away from sidebar
+  useEffect(() => {
+    if (showControls && canvasRef.current) {
+      // Get the current viewport dimensions
+      const sidebarWidth = 340;
+      const viewportWidth = canvasRef.current.clientWidth;
+      const safeAreaWidth = viewportWidth - sidebarWidth;
+      
+      // Check if any content items would be hidden by the sidebar
+      const adjustedContent = boardData.content.map(item => {
+        const itemRight = item.position.x + item.size.width;
+        
+        // If the item extends into the sidebar area
+        if (itemRight > safeAreaWidth) {
+          const newX = Math.max(0, safeAreaWidth - item.size.width - 20); // 20px buffer
+          
+          return {
+            ...item,
+            position: {
+              ...item.position,
+              x: newX
+            }
+          };
+        }
+        
+        return item;
+      });
+      
+      // Only update if changes were made
+      const hasChanges = adjustedContent.some((item, index) => 
+        item.position.x !== boardData.content[index].position.x
+      );
+      
+      if (hasChanges) {
+        setBoardData(prev => ({
+          ...prev,
+          content: adjustedContent
+        }));
+        
+        // Trigger animation when items are repositioned
+        startAnimation();
+      }
+    }
+  }, [showControls, boardData.content, canvasRef.current?.clientWidth]);
+  
   // Render loading state
   if (loading) {
     return (
@@ -477,15 +522,19 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       
       {/* Content controls */}
       {showControls && selectedContent && !readOnly && (
-        <ContentControls
-          selectedContent={selectedContent}
-          onUpdate={handleUpdateContent}
-          onDelete={handleDeleteContent}
-          onClose={() => {
-            setSelectedContentId(null);
-            setShowControls(false);
-          }}
-        />
+        <>
+          {/* Push the canvas content to make space for the sidebar */}
+          <div className={styles.sidebarSpacer}></div>
+          <ContentControls
+            selectedContent={selectedContent}
+            onUpdate={handleUpdateContent}
+            onDelete={handleDeleteContent}
+            onClose={() => {
+              setSelectedContentId(null);
+              setShowControls(false);
+            }}
+          />
+        </>
       )}
       
       {/* Toolbar container - separate from canvas */}
