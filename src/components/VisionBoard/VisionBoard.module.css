@@ -1204,4 +1204,153 @@
   margin-top: 8px;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
   letter-spacing: 0.03em;
+}
+
+/* 3D Dream Symbols */
+.dreamSymbols {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 350px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.dreamSymbol {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
+  opacity: 0.92;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  z-index: 4;
+  animation: float 10s ease-in-out infinite;
+  transition: all 0.3s ease;
+  border-radius: 15px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.dreamSymbol:hover {
+  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5));
+  transform: scale(1.2) translateY(-5px);
+  z-index: 10;
+  animation-play-state: paused;
+}
+
+.dreamSymbol.cloud {
+  background-image: url('https://freepngimg.com/thumb/cloud/7-cloud-png-image.png');
+  top: 10px;
+  left: 15%;
+  width: 90px;
+  height: 60px;
+  animation-delay: 0s;
+  transform: rotate(-5deg);
+}
+
+.dreamSymbol.money {
+  background-image: url('https://freepngimg.com/thumb/money/5-money-png-image.png');
+  top: 50px;
+  right: 15%;
+  width: 70px;
+  height: 70px;
+  animation-delay: 1s;
+  transform: rotate(8deg);
+}
+
+.dreamSymbol.house {
+  background-image: url('https://freepngimg.com/thumb/house/8-house-png-image.png');
+  top: 120px;
+  left: 25%;
+  width: 80px;
+  height: 65px;
+  animation-delay: 2s;
+  transform: rotate(-3deg);
+}
+
+.dreamSymbol.car {
+  background-image: url('https://freepngimg.com/thumb/car/1-car-png-picture.png');
+  top: 90px;
+  right: 25%;
+  width: 85px;
+  height: 55px;
+  animation-delay: 3s;
+  transform: rotate(5deg);
+}
+
+.dreamSymbol.travel {
+  background-image: url('https://freepngimg.com/thumb/airplane/9-airplane-png-image.png');
+  top: 40px;
+  left: 35%;
+  width: 80px;
+  height: 60px;
+  animation-delay: 4s;
+  transform: rotate(-7deg);
+}
+
+.dreamSymbol.heart {
+  background-image: url('https://freepngimg.com/thumb/heart/20-heart-png-image.png');
+  top: 70px;
+  right: 40%;
+  width: 55px;
+  height: 55px;
+  animation-delay: 5s;
+  transform: rotate(10deg);
+}
+
+.dreamSymbol.trophy {
+  background-image: url('https://freepngimg.com/thumb/trophy/7-trophy-png-image.png');
+  top: 100px;
+  left: 60%;
+  width: 60px;
+  height: 65px;
+  animation-delay: 3.5s;
+  transform: rotate(-5deg);
+}
+
+.dreamSymbol.graduation {
+  background-image: url('https://freepngimg.com/thumb/graduation/6-graduation-png-image.png');
+  top: 30px;
+  right: 60%;
+  width: 70px;
+  height: 70px;
+  animation-delay: 2.5s;
+  transform: rotate(6deg);
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) translateX(0) rotateY(0deg) rotateX(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-15px) translateX(10px) rotateY(10deg) rotateX(5deg) scale(1.05);
+  }
+  50% {
+    transform: translateY(0) translateX(20px) rotateY(0deg) rotateX(0deg) scale(1);
+  }
+  75% {
+    transform: translateY(15px) translateX(10px) rotateY(-10deg) rotateX(-5deg) scale(0.95);
+  }
+  100% {
+    transform: translateY(0) translateX(0) rotateY(0deg) rotateX(0deg) scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .dreamSymbol {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .dreamSymbol.cloud {
+    width: 60px;
+    height: 60px;
+  }
 } 

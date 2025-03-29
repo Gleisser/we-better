@@ -13,8 +13,9 @@ import { ContentControls } from './components/ContentControls';
 import { Toolbar } from './components/Toolbar';
 import { ThemeSelector } from './components/ThemeSelector';
 import { IntroScreen } from './components/IntroScreen';
-import { Toast } from './components/Toast';
-import { themes } from './constants/themes';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { themes, Theme } from './constants/themes';
 import styles from './VisionBoard.module.css';
 
 export const VisionBoard: React.FC<VisionBoardProps> = ({
@@ -47,11 +48,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   const [showControls, setShowControls] = useState(false);
   const [showThemeSelector, setShowThemeSelector] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [toast, setToast] = useState({ 
-    visible: false, 
-    message: '', 
-    type: 'info' as 'success' | 'error' | 'info' | 'warning' 
-  });
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [toolbarMode, setToolbarMode] = useState<ToolbarMode>(ToolbarMode.ADD);
   
@@ -61,7 +57,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       setBoardData(data);
     } else {
       setBoardData({
-        title: 'My Vision Board',
+        title: 'My Dream Board',
         description: 'Visualize • Believe • Achieve',
         themeId: 'light',
         categories: lifeWheelCategories.map(cat => cat.id),
@@ -145,7 +141,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   const selectedContent = boardData.content.find(item => item.id === selectedContentId);
   
   // Get the active theme
-  const activeTheme = themes.find(theme => theme.id === boardData.themeId) || themes[0];
+  const activeTheme: Theme = themes.find(theme => theme.id === boardData.themeId) || themes[0];
   
   // Filter content by selected category
   const filteredContent = selectedCategoryId
@@ -188,25 +184,13 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       const success = await onSave(boardData);
       
       if (success) {
-        setToast({
-          visible: true,
-          message: 'Vision board saved successfully!',
-          type: 'success'
-        });
+        toast.success('Vision board saved successfully!');
       } else {
-        setToast({
-          visible: true,
-          message: 'Failed to save vision board',
-          type: 'error'
-        });
+        toast.error('Failed to save vision board');
       }
     } catch (error) {
       console.error('Error saving vision board:', error);
-      setToast({
-        visible: true,
-        message: 'An error occurred while saving',
-        type: 'error'
-      });
+      toast.error('An error occurred while saving');
     } finally {
       setIsSaving(false);
     }
@@ -341,11 +325,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
         
         // Check file size - if too large, compress or warn
         if (file.size > 5000000) { // 5MB
-          setToast({
-            visible: true,
-            message: 'Large images may impact performance. Compressing...',
-            type: 'info'
-          });
+          toast.info('Large images may impact performance. Compressing...');
         }
         
         try {
@@ -401,11 +381,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
               
               img.onerror = () => {
                 // Fallback for image load error
-                setToast({
-                  visible: true,
-                  message: 'Error processing image. Using original file.',
-                  type: 'warning'
-                });
+                toast.warning('Error processing image. Using original file.');
                 
                 handleAddContent(VisionBoardContentType.IMAGE, { 
                   src: event.target?.result as string || '',
@@ -420,21 +396,13 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
           };
           
           reader.onerror = () => {
-            setToast({
-              visible: true,
-              message: 'Error reading file',
-              type: 'error'
-            });
+            toast.error('Error reading file');
           };
           
           reader.readAsDataURL(file);
         } catch (error) {
           console.error('Error processing image:', error);
-          setToast({
-            visible: true,
-            message: 'Error processing image',
-            type: 'error'
-          });
+          toast.error('Error processing image');
         }
       }
     };
@@ -460,20 +428,12 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
             alt: 'AI generated image: ' + prompt
           });
           
-          setToast({
-            visible: true,
-            message: 'Real AI image generation coming soon!',
-            type: 'info'
-          });
+          toast.info('Real AI image generation coming soon!');
         };
         
         img.onerror = () => {
           // Fallback for image load error
-          setToast({
-            visible: true,
-            message: 'Error creating AI image. Using default placeholder.',
-            type: 'warning'
-          });
+          toast.warning('Error creating AI image. Using default placeholder.');
           
           handleAddContent(VisionBoardContentType.AI_GENERATED, { 
             src: 'https://via.placeholder.com/200?text=AI+Generated',
@@ -487,11 +447,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
         img.src = placeholderUrl;
       } catch (error) {
         console.error('Error generating AI image:', error);
-        setToast({
-          visible: true,
-          message: 'Error generating AI image',
-          type: 'error'
-        });
+        toast.error('Error generating AI image');
       }
     }
   };
@@ -531,6 +487,21 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     
     // Trigger animation after arranging
     startAnimation();
+  };
+  
+  const handleDreamSymbolClick = (symbolType: string) => {
+    const messages: Record<string, string> = {
+      cloud: "Dream big, aim for the sky! Your ideas are limitless.",
+      money: "Financial freedom is your birthright. Keep working towards it!",
+      house: "Your dream home is waiting for you. Visualize it every day.",
+      car: "The journey is as important as the destination. Enjoy the ride!",
+      travel: "The world is waiting for you to explore it. Where to next?",
+      heart: "Love and be loved. It's the greatest treasure of all.",
+      trophy: "Success is the sum of small efforts repeated daily.",
+      graduation: "Knowledge is power. Never stop learning and growing.",
+    };
+
+    toast.info(messages[symbolType] || "Dream it, believe it, achieve it!");
   };
   
   // Render loading state
@@ -577,6 +548,42 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
           height: '100%' // Cover entire container
         }}
       ></div>
+      
+      {/* Floating 3D Dream Symbols */}
+      <div className={styles.dreamSymbols}>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.cloud}`} 
+          onClick={() => handleDreamSymbolClick('cloud')}
+        ></div>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.money}`} 
+          onClick={() => handleDreamSymbolClick('money')}
+        ></div>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.house}`} 
+          onClick={() => handleDreamSymbolClick('house')}
+        ></div>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.car}`} 
+          onClick={() => handleDreamSymbolClick('car')}
+        ></div>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.travel}`} 
+          onClick={() => handleDreamSymbolClick('travel')}
+        ></div>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.heart}`} 
+          onClick={() => handleDreamSymbolClick('heart')}
+        ></div>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.trophy}`} 
+          onClick={() => handleDreamSymbolClick('trophy')}
+        ></div>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.graduation}`} 
+          onClick={() => handleDreamSymbolClick('graduation')}
+        ></div>
+      </div>
       
       {/* Vision Board Title */}
       <div className={styles.visionBoardHeader}>
@@ -652,11 +659,17 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       )}
       
       {/* Toast notifications */}
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        visible={toast.visible}
-        onClose={() => setToast(prev => ({ ...prev, visible: false }))}
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
       />
     </div>
   );
