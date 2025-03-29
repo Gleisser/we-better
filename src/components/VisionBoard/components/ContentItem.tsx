@@ -1,9 +1,9 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import { 
   VisionBoardContent, 
   VisionBoardContentType,
-  Position
+  Position,
+  Size
 } from '../types';
 import styles from '../VisionBoard.module.css';
 
@@ -26,138 +26,170 @@ export const ContentItem: React.FC<ContentItemProps> = ({
   onUpdate,
   readOnly = false
 }) => {
-  const handleDragEnd = (info: any) => {
-    if (readOnly) return;
+  // State
+  const [text, setText] = useState(content.text || '');
+  const [isEditing, setIsEditing] = useState(false);
+  
+  // Effect to update text when content changes
+  useEffect(() => {
+    setText(content.text || '');
+  }, [content.text]);
+  
+  // CSS classes based on state
+  const classNames = [
+    styles.contentItem,
+    isSelected ? styles.selected : '',
+    content.type === VisionBoardContentType.TEXT ? styles.textItem : '',
+  ].filter(Boolean).join(' ');
+  
+  // Define animation delay and properties based on content ID
+  // This ensures different items have slightly different animations
+  const getAnimationStyle = () => {
+    // Use hash of the content ID to create predictable but varied values
+    const hash = content.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     
-    const newPosition: Position = {
-      x: content.position.x + info.offset.x,
-      y: content.position.y + info.offset.y
-    };
+    // Use this to create values in certain ranges
+    const angle = 7 + (hash % 8); // 7-15 degrees
+    const duration = 1.8 + (hash % 10) / 10; // 1.8-2.8 seconds
+    const delay = (hash % 5) / 10; // 0-0.4 seconds
+    const direction = hash % 2 === 0 ? 1 : -1; // 1 or -1
     
-    onUpdate({
-      ...content,
-      position: newPosition
-    });
+    return {
+      '--angle': `${angle}deg`,
+      '--duration': `${duration}s`,
+      '--delay': `${delay}s`,
+      '--direction': direction,
+      '--count': 2 + (hash % 3), // 2-4 iterations
+    } as React.CSSProperties;
   };
   
-  const renderContentBasedOnType = () => {
+  // Content style based on position and size
+  const contentStyle = {
+    width: `${content.size.width}px`,
+    height: `${content.size.height}px`,
+    left: `${content.position.x}px`,
+    top: `${content.position.y}px`,
+    transform: `rotate(${content.rotation || 0}deg)`,
+    zIndex: isSelected ? 5 : 2,
+    ...getAnimationStyle()
+  };
+  
+  // Handle click to select
+  const handleSelect = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Prevent bubbling to avoid canvas click handler
+    e.stopPropagation();
+    
+    // Only allow selection if not in read-only mode
+    if (!readOnly) {
+      onSelect(content.id);
+    }
+  };
+  
+  // Handle text input change
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value;
+    setText(newText);
+  };
+  
+  // Handle blur for saving text changes
+  const handleBlur = () => {
+    setIsEditing(false);
+    
+    // Only update if text has changed
+    if (text !== content.text) {
+      onUpdate({
+        ...content,
+        text
+      });
+    }
+  };
+  
+  // Handle double click for editing text
+  const handleDoubleClick = () => {
+    if (!readOnly && content.type === VisionBoardContentType.TEXT) {
+      setIsEditing(true);
+    }
+  };
+  
+  // Render different content types
+  const renderContent = () => {
     switch (content.type) {
       case VisionBoardContentType.TEXT:
         return (
-          <div 
-            className={styles.textContent}
+          <textarea
+            className={styles.contentText}
+            value={text}
+            onChange={handleTextChange}
+            onBlur={handleBlur}
+            readOnly={readOnly || !isEditing}
+            onDoubleClick={() => !readOnly && setIsEditing(true)}
             style={{
               fontSize: `${content.fontSize || 16}px`,
               color: content.fontColor || '#000000',
               fontFamily: content.fontFamily || 'Arial, sans-serif',
-              textAlign: content.textAlign as any || 'center',
+              textAlign: (content.textAlign || 'center') as 'left' | 'center' | 'right',
               fontWeight: content.fontWeight || 'normal'
             }}
-          >
-            {content.text || 'Text content'}
-          </div>
+          />
         );
         
       case VisionBoardContentType.IMAGE:
         return (
           <img 
-            src={content.src || 'https://via.placeholder.com/200'}
+            src={content.src}
             alt={content.alt || 'Vision board image'}
-            className={styles.imageContent}
+            draggable={false}
           />
         );
         
       case VisionBoardContentType.AI_GENERATED:
         return (
-          <div className={styles.aiGeneratedContent}>
+          <>
             <img 
-              src={content.src || 'https://via.placeholder.com/200'}
+              src={content.src}
               alt={content.alt || 'AI generated image'}
-              className={styles.imageContent}
+              draggable={false}
             />
-            {content.prompt && (
-              <div className={styles.aiPromptOverlay}>
-                <span className={styles.aiPromptLabel}>Prompt:</span>
-                <p className={styles.aiPromptText}>{content.prompt}</p>
-              </div>
-            )}
-          </div>
+            <div className={styles.contentSubtitle}>
+              AI: {content.prompt}
+            </div>
+          </>
         );
         
       case VisionBoardContentType.AUDIO:
         return (
-          <div className={styles.audioContent}>
-            <div className={styles.audioIcon}>🔊</div>
-            {content.transcription && (
-              <div className={styles.audioTranscription}>
-                {content.transcription}
-              </div>
-            )}
-            {content.audioUrl && (
-              <audio
-                controls
-                src={content.audioUrl}
+          <>
+            <div className={styles.audioPlayerWrapper} onClick={(e) => e.stopPropagation()}>
+              <audio 
                 className={styles.audioPlayer}
+                src={content.audioUrl}
+                controls
               />
-            )}
-          </div>
+            </div>
+            <div className={styles.contentSubtitle}>
+              {content.transcription || 'Voice note'}
+            </div>
+          </>
         );
         
       default:
-        return <div>Unknown content type</div>;
+        return null;
     }
   };
   
-  // Render the goal indicator if this content is marked as a goal
-  const renderGoalIndicator = () => {
-    if (!content.isGoal || !content.goalDetails) return null;
-    
-    const { progress } = content.goalDetails;
-    
-    return (
-      <div className={styles.goalIndicator}>
-        <div className={styles.goalProgressBar}>
-          <div 
-            className={styles.goalProgressFill} 
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
-    );
-  };
-  
   return (
-    <motion.div
-      className={`${styles.contentItem} ${isSelected ? styles.selected : ''}`}
-      style={{
-        width: content.size.width,
-        height: content.size.height,
-        x: content.position.x,
-        y: content.position.y,
-        rotate: content.rotation || 0,
-        zIndex: isSelected ? 10 : 1
-      }}
-      drag={!readOnly}
-      dragMomentum={false}
-      onDragEnd={handleDragEnd}
-      onClick={() => onSelect(content.id)}
-      whileDrag={{ scale: 1.02, opacity: 0.9 }}
-      transition={{ type: 'spring', damping: 15 }}
+    <div
+      className={classNames}
+      style={contentStyle}
+      onClick={handleSelect}
+      onDoubleClick={handleDoubleClick}
     >
-      {renderContentBasedOnType()}
-      {renderGoalIndicator()}
+      {renderContent()}
       
-      {isSelected && !readOnly && (
-        <div className={styles.contentItemControls}>
-          <div 
-            className={styles.resizeHandle} 
-            onMouseDown={(e) => {
-              e.stopPropagation();
-              // Resize logic would go here in a more complex implementation
-            }}
-          />
-        </div>
+      {/* Show isGoal indicator if set */}
+      {content.isGoal && (
+        <div className={styles.goalIndicator}>🎯</div>
       )}
-    </motion.div>
+    </div>
   );
 }; 

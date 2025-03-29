@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { 
   VisionBoardProps, 
@@ -28,6 +28,8 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
 }) => {
   // Canvas state
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const [animating, setAnimating] = useState(false);
   
   // Board data state
   const [boardData, setBoardData] = useState<VisionBoardData>({
@@ -70,12 +72,13 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   // Update canvas size on window resize
   useEffect(() => {
     const updateDimensions = () => {
-      const container = document.querySelector(`.${styles.canvasContainer}`);
-      if (container) {
+      if (canvasRef.current) {
         setCanvasSize({
-          width: container.clientWidth,
-          height: container.clientHeight
+          width: canvasRef.current.clientWidth,
+          height: canvasRef.current.clientHeight
         });
+        // Trigger animation on resize
+        startAnimation();
       }
     };
     
@@ -97,6 +100,45 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       setFirstVisit(false);
     }
   }, []);
+  
+  // Handle animation on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      startAnimation();
+    };
+
+    // Initial animation
+    startAnimation();
+    
+    const canvasElement = canvasRef.current;
+    if (canvasElement) {
+      canvasElement.addEventListener('scroll', handleScroll);
+    }
+    
+    document.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      if (canvasElement) {
+        canvasElement.removeEventListener('scroll', handleScroll);
+      }
+      document.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // Trigger animation
+  const startAnimation = () => {
+    if (canvasRef.current && !animating) {
+      setAnimating(true);
+      canvasRef.current.classList.add(styles.animate);
+      
+      setTimeout(() => {
+        if (canvasRef.current) {
+          canvasRef.current.classList.remove(styles.animate);
+          setAnimating(false);
+        }
+      }, 10000); // Animation duration from the original CodePen
+    }
+  };
   
   // Get the selected content
   const selectedContent = boardData.content.find(item => item.id === selectedContentId);
@@ -250,6 +292,9 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     // Select the newly added content
     setSelectedContentId(newContent.id);
     setShowControls(true);
+    
+    // Trigger animation when adding new content
+    startAnimation();
   };
   
   // Handle canvas click (deselect content)
@@ -269,6 +314,9 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   // Handle filter by category
   const handleFilterByCategory = (categoryId: string | null) => {
     setSelectedCategoryId(categoryId);
+    
+    // Trigger animation when filtering
+    startAnimation();
   };
   
   // Handle real image upload
@@ -334,7 +382,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   
   // Handle auto arrange
   const handleAutoArrange = () => {
-    // Place items in a grid
+    // Place items in a grid pattern like in the reference design
     const itemWidth = 220;
     const itemHeight = 220;
     const columns = Math.floor(canvasSize.width / itemWidth) || 3;
@@ -357,6 +405,9 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       ...prev,
       content: arrangedContent
     }));
+    
+    // Trigger animation after arranging
+    startAnimation();
   };
   
   // Render loading state
@@ -404,6 +455,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       
       {/* Canvas container */}
       <div 
+        ref={canvasRef}
         className={styles.canvasContainer}
         onClick={handleCanvasClick}
       >
@@ -418,16 +470,20 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
             readOnly={readOnly}
           />
         ))}
-        
-        {/* Content controls */}
-        {showControls && selectedContent && !readOnly && (
-          <ContentControls
-            selectedContent={selectedContent}
-            onUpdate={handleUpdateContent}
-            onDelete={handleDeleteContent}
-          />
-        )}
       </div>
+      
+      {/* Content controls */}
+      {showControls && selectedContent && !readOnly && (
+        <ContentControls
+          selectedContent={selectedContent}
+          onUpdate={handleUpdateContent}
+          onDelete={handleDeleteContent}
+          onClose={() => {
+            setSelectedContentId(null);
+            setShowControls(false);
+          }}
+        />
+      )}
       
       {/* Toolbar container - separate from canvas */}
       <div 
