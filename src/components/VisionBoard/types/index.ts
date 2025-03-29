@@ -63,6 +63,7 @@ export interface VisionBoardContent {
   // Image specific properties
   src?: string;
   alt?: string;
+  caption?: string;
   
   // AI specific properties
   prompt?: string;

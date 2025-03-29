@@ -320,7 +320,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     startAnimation();
   };
   
-  // Handle real image upload
+  // Handle image upload
   const handleImageUpload = () => {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -328,38 +328,108 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     fileInput.onchange = (e) => {
       const target = e.target as HTMLInputElement;
       if (target.files && target.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          if (event.target && typeof event.target.result === 'string') {
-            handleAddContent(VisionBoardContentType.IMAGE, { 
-              src: event.target.result,
-              alt: target.files ? target.files[0].name : 'Uploaded image'
+        const file = target.files[0];
+        
+        // Check file size - if too large, compress or warn
+        if (file.size > 5000000) { // 5MB
+          setToast({
+            visible: true,
+            message: 'Large images may impact performance. Compressing...',
+            type: 'info'
+          });
+        }
+        
+        try {
+          const reader = new FileReader();
+          
+          reader.onload = (event) => {
+            if (event.target && typeof event.target.result === 'string') {
+              // Create a blob URL from the data URL for better memory management
+              const img = new Image();
+              img.onload = () => {
+                // Create a canvas to potentially resize the image
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 1200; // Max width for the image
+                const MAX_HEIGHT = 1200; // Max height for the image
+                let width = img.width;
+                let height = img.height;
+                
+                // Resize if needed
+                if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+                  if (width > height) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                  } else {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                  }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                
+                if (ctx) {
+                  ctx.drawImage(img, 0, 0, width, height);
+                  // Get the compressed data URL
+                  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                  
+                  // Add to vision board
+                  handleAddContent(VisionBoardContentType.IMAGE, { 
+                    src: dataUrl,
+                    alt: file.name || 'Uploaded image',
+                    caption: '' // Empty caption by default
+                  });
+                } else {
+                  // Fallback if canvas context fails
+                  handleAddContent(VisionBoardContentType.IMAGE, { 
+                    src: event.target?.result as string || '',
+                    alt: file.name || 'Uploaded image',
+                    caption: '' // Empty caption by default
+                  });
+                }
+              };
+              
+              img.onerror = () => {
+                // Fallback for image load error
+                setToast({
+                  visible: true,
+                  message: 'Error processing image. Using original file.',
+                  type: 'warning'
+                });
+                
+                handleAddContent(VisionBoardContentType.IMAGE, { 
+                  src: event.target?.result as string || '',
+                  alt: file.name || 'Uploaded image',
+                  caption: '' // Empty caption by default
+                });
+              };
+              
+              // Start loading the image
+              img.src = event.target.result;
+            }
+          };
+          
+          reader.onerror = () => {
+            setToast({
+              visible: true,
+              message: 'Error reading file',
+              type: 'error'
             });
-          }
-        };
-        reader.readAsDataURL(target.files[0]);
+          };
+          
+          reader.readAsDataURL(file);
+        } catch (error) {
+          console.error('Error processing image:', error);
+          setToast({
+            visible: true,
+            message: 'Error processing image',
+            type: 'error'
+          });
+        }
       }
     };
     fileInput.click();
-  };
-  
-  // Handle audio recording
-  const handleRecordAudio = () => {
-    // Basic check for audio recording support
-    if (navigator.mediaDevices && 'getUserMedia' in navigator.mediaDevices) {
-      // Since full implementation is complex, we'll show a notification for now
-      setToast({
-        visible: true,
-        message: 'Audio recording feature coming soon!',
-        type: 'info'
-      });
-    } else {
-      setToast({
-        visible: true,
-        message: 'Audio recording is not supported in your browser',
-        type: 'error'
-      });
-    }
   };
   
   // Handle AI image generation
@@ -367,17 +437,53 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     // Show dialog to enter prompt
     const prompt = window.prompt('Enter a prompt for AI image generation:', 'A beautiful sunset');
     if (prompt) {
-      // For now, we'll just add a placeholder image with the prompt
-      handleAddContent(VisionBoardContentType.AI_GENERATED, { 
-        src: 'https://via.placeholder.com/200?text=AI+Generated',
-        prompt: prompt
-      });
-      
-      setToast({
-        visible: true,
-        message: 'Real AI image generation coming soon!',
-        type: 'info'
-      });
+      try {
+        // For now, we'll just add a placeholder image with the prompt
+        const placeholderUrl = `https://via.placeholder.com/200?text=${encodeURIComponent(prompt.slice(0, 20))}`;
+        
+        // Create an image element to ensure it loads
+        const img = new Image();
+        img.onload = () => {
+          handleAddContent(VisionBoardContentType.AI_GENERATED, { 
+            src: placeholderUrl,
+            prompt: prompt,
+            caption: '', // Empty caption by default
+            alt: 'AI generated image: ' + prompt
+          });
+          
+          setToast({
+            visible: true,
+            message: 'Real AI image generation coming soon!',
+            type: 'info'
+          });
+        };
+        
+        img.onerror = () => {
+          // Fallback for image load error
+          setToast({
+            visible: true,
+            message: 'Error creating AI image. Using default placeholder.',
+            type: 'warning'
+          });
+          
+          handleAddContent(VisionBoardContentType.AI_GENERATED, { 
+            src: 'https://via.placeholder.com/200?text=AI+Generated',
+            prompt: prompt,
+            caption: '', // Empty caption by default
+            alt: 'AI generated image: ' + prompt
+          });
+        };
+        
+        // Start loading the image
+        img.src = placeholderUrl;
+      } catch (error) {
+        console.error('Error generating AI image:', error);
+        setToast({
+          visible: true,
+          message: 'Error generating AI image',
+          type: 'error'
+        });
+      }
     }
   };
   
@@ -547,9 +653,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
             mode={toolbarMode}
             onModeChange={setToolbarMode}
             onAddImage={handleImageUpload}
-            onAddText={() => handleAddContent(VisionBoardContentType.TEXT)}
             onGenerateAI={handleGenerateAIImage}
-            onAddAudio={handleRecordAudio}
             onAutoArrange={handleAutoArrange}
             onToggleThemes={() => setShowThemeSelector(true)}
             onSave={handleSave}

@@ -6,10 +6,8 @@ import { ToolbarMode } from '../types';
 export interface ToolbarProps {
   mode: ToolbarMode;
   onModeChange: (mode: ToolbarMode) => void;
-  onAddText: () => void;
   onAddImage: () => void;
   onGenerateAI: () => void;
-  onAddAudio: () => void;
   onAutoArrange: () => void;
   onToggleThemes: () => void;
   onSave: () => void;
@@ -23,10 +21,8 @@ export interface ToolbarProps {
 export const Toolbar: React.FC<ToolbarProps> = ({
   mode,
   onModeChange,
-  onAddText,
   onAddImage,
   onGenerateAI,
-  onAddAudio,
   onAutoArrange,
   onToggleThemes,
   onSave,
@@ -81,20 +77,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <div className={styles.toolbarSection}>
           <button
             className={styles.toolbarButton}
-            onClick={onAddText}
-            title="Add Text"
-          >
-            <span className={styles.buttonIcon}>📝</span>
-            <span className={styles.buttonLabel}>Text</span>
-          </button>
-          
-          <button
-            className={styles.toolbarButton}
             onClick={onAddImage}
-            title="Add Image"
+            title="Upload Image"
           >
             <span className={styles.buttonIcon}>🖼️</span>
-            <span className={styles.buttonLabel}>Image</span>
+            <span className={styles.buttonLabel}>Upload Photo</span>
           </button>
           
           <button
@@ -104,15 +91,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           >
             <span className={styles.buttonIcon}>🤖</span>
             <span className={styles.buttonLabel}>AI Image</span>
-          </button>
-          
-          <button
-            className={styles.toolbarButton}
-            onClick={onAddAudio}
-            title="Record Audio"
-          >
-            <span className={styles.buttonIcon}>🎙️</span>
-            <span className={styles.buttonLabel}>Audio</span>
           </button>
         </div>
       )}

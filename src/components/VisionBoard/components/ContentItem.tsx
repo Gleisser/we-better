@@ -135,25 +135,36 @@ export const ContentItem: React.FC<ContentItemProps> = ({
         
       case VisionBoardContentType.IMAGE:
         return (
-          <img 
-            src={content.src}
-            alt={content.alt || 'Vision board image'}
-            draggable={false}
-          />
+          <div className={styles.polaroidContainer}>
+            <div className={styles.imageWrapper}>
+              <img 
+                src={content.src}
+                alt={content.alt || 'Vision board image'}
+                draggable={false}
+                className={styles.polaroidImage}
+              />
+            </div>
+            <div className={styles.polaroidCaption}>
+              {content.caption || content.alt || ''}
+            </div>
+          </div>
         );
         
       case VisionBoardContentType.AI_GENERATED:
         return (
-          <>
-            <img 
-              src={content.src}
-              alt={content.alt || 'AI generated image'}
-              draggable={false}
-            />
-            <div className={styles.contentSubtitle}>
-              AI: {content.prompt}
+          <div className={styles.polaroidContainer}>
+            <div className={styles.imageWrapper}>
+              <img 
+                src={content.src}
+                alt={content.alt || 'AI generated image'}
+                draggable={false}
+                className={styles.polaroidImage}
+              />
             </div>
-          </>
+            <div className={styles.polaroidCaption}>
+              {content.caption || content.prompt || ''}
+            </div>
+          </div>
         );
         
       case VisionBoardContentType.AUDIO:

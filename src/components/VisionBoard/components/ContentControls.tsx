@@ -1,6 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VisionBoardContent, VisionBoardContentType, GoalDetails } from '../types';
 import styles from './ContentControls.module.css';
+
+// Debounce function with proper types
+function debounce<T extends (...args: any[]) => void>(
+  fn: T, 
+  ms = 300
+): (...args: Parameters<T>) => void {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return function(this: void, ...args: Parameters<T>) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), ms);
+  };
+}
 
 interface ContentControlsProps {
   selectedContent: VisionBoardContent;
@@ -23,6 +35,42 @@ interface InputFieldProps<T> {
   options?: {value: string; label: string}[];
   className?: string;
 }
+
+// Caption Input component to handle its own state
+const CaptionInput: React.FC<{
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+}> = ({ value, onChange, placeholder, disabled = false, className = '' }) => {
+  const [localValue, setLocalValue] = useState(value);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Update local value when parent's value changes
+  useEffect(() => {
+    if (!inputRef.current?.matches(':focus')) {
+      setLocalValue(value);
+    }
+  }, [value]);
+  
+  // Only update parent when focus is lost
+  const handleBlur = () => {
+    onChange(localValue);
+  };
+  
+  return (
+    <textarea
+      ref={inputRef}
+      value={localValue}
+      onChange={(e) => setLocalValue(e.target.value)}
+      onBlur={handleBlur}
+      disabled={disabled}
+      placeholder={placeholder}
+      className={`${styles.textarea} ${className}`}
+    />
+  );
+};
 
 export const ContentControls: React.FC<ContentControlsProps> = ({
   selectedContent,
@@ -124,6 +172,21 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
     options,
     className = ''
   }: InputFieldProps<T>) {
+    const [localValue, setLocalValue] = useState<T>(value);
+    
+    // Update local value when prop changes
+    useEffect(() => {
+      setLocalValue(value);
+    }, [value]);
+    
+    // Debounced change handler for textarea
+    const debouncedChange = useCallback(
+      debounce((newValue: T) => {
+        onChange(newValue);
+      }, 500),
+      [onChange]
+    );
+    
     const getInput = () => {
       switch (type) {
         case 'number':
@@ -155,8 +218,12 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         case 'textarea':
           return (
             <textarea
-              value={value as unknown as string}
-              onChange={(e) => onChange(e.target.value as unknown as T)}
+              value={localValue as unknown as string}
+              onChange={(e) => {
+                const newValue = e.target.value as unknown as T;
+                setLocalValue(newValue);
+                debouncedChange(newValue);
+              }}
               disabled={disabled}
               placeholder={placeholder}
               className={`${styles.textarea} ${className}`}
@@ -432,6 +499,15 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
                 placeholder="AI generation prompt..."
               />
             )}
+            
+            <div className={styles.field}>
+              <label className={styles.label}>Caption</label>
+              <CaptionInput
+                value={localContent.caption || ''}
+                onChange={(value) => handleChange({ caption: value })}
+                placeholder="Add a caption for this image..."
+              />
+            </div>
             
             <InputField<string>
               label="Alt Text"
