@@ -48,8 +48,7 @@ export const createNewVisionBoard = (
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
     categories: lifeWheelCategories.map(category => category.id),
-    content,
-    themeId: DEFAULT_VISION_BOARD_THEME_ID
+    content
   };
 };
 
@@ -61,11 +60,8 @@ export const createImageContent = (
   src: string,
   alt: string,
   position: { x: number; y: number; z: number },
-  size: { width: number; height: number },
-  isGoal: boolean = false
-): VisionBoardImageContent => {
-  const now = new Date();
-  
+  size: { width: number; height: number }
+): VisionBoardContent => {
   return {
     id: uuidv4(),
     type: VisionBoardContentType.IMAGE,
@@ -75,14 +71,6 @@ export const createImageContent = (
     position,
     size,
     rotation: 0,
-    createdAt: now.toISOString(),
-    updatedAt: now.toISOString(),
-    isGoal,
-    goalDetails: isGoal ? {
-      title: alt,
-      description: alt,
-      progress: 0
-    } : undefined
   };
 };
 
@@ -94,26 +82,16 @@ export const createTextContent = (
   text: string,
   position: { x: number; y: number; z: number },
   size: { width: number; height: number },
-  fontSize: number = 24,
-  fontColor: string = '#000000'
-): VisionBoardTextContent => {
-  const now = new Date();
-  
+): VisionBoardContent => {
   return {
     id: uuidv4(),
-    type: VisionBoardContentType.TEXT,
+    type: VisionBoardContentType.IMAGE,
     categoryId,
-    text,
-    fontSize,
-    fontFamily: 'Inter, sans-serif',
-    fontColor,
-    textAlign: 'center',
-    fontWeight: 'bold',
+    src: 'text',
+    alt: text,
     position,
     size,
     rotation: 0,
-    createdAt: now.toISOString(),
-    updatedAt: now.toISOString()
   };
 };
 
@@ -127,8 +105,7 @@ export const createAIGeneratedContent = (
   alt: string,
   position: { x: number; y: number; z: number },
   size: { width: number; height: number }
-): VisionBoardAIGeneratedContent => {
-  const now = new Date();
+): VisionBoardContent => {
   
   return {
     id: uuidv4(),
@@ -139,46 +116,8 @@ export const createAIGeneratedContent = (
     alt,
     position,
     size,
-    rotation: 0,
-    createdAt: now.toISOString(),
-    updatedAt: now.toISOString()
+    rotation: 0
   };
-};
-
-/**
- * Creates a new audio content item
- */
-export const createAudioContent = (
-  categoryId: string,
-  audioUrl: string,
-  duration: number,
-  transcription: string,
-  position: { x: number; y: number; z: number },
-  size: { width: number; height: number }
-): VisionBoardAudioContent => {
-  const now = new Date();
-  
-  return {
-    id: uuidv4(),
-    type: VisionBoardContentType.AUDIO,
-    categoryId,
-    audioUrl,
-    duration,
-    transcription,
-    position,
-    size,
-    rotation: 0,
-    createdAt: now.toISOString(),
-    updatedAt: now.toISOString()
-  };
-};
-
-/**
- * Gets theme by ID
- */
-export const getThemeById = (themeId: string) => {
-  return themes.find(theme => theme.id === themeId) || 
-    themes.find(theme => theme.id === DEFAULT_VISION_BOARD_THEME_ID)!;
 };
 
 /**

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { 
   VisionBoardProps, 
@@ -35,7 +35,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   const [boardData, setBoardData] = useState<VisionBoardData>({
     title: 'My Dream Board',
     description: 'Visualize • Believe • Achieve',
-    themeId: 'light',
     categories: lifeWheelCategories.map(cat => cat.id),
     content: []
   });
@@ -62,12 +61,26 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       setBoardData({
         title: 'My Dream Board',
         description: 'Visualize • Believe • Achieve',
-        themeId: 'light',
         categories: lifeWheelCategories.map(cat => cat.id),
         content: []
       });
     }
   }, [data, lifeWheelCategories]);
+
+  // Trigger animation
+  const startAnimation = useCallback(() => {
+    if (canvasRef.current && !animating) {
+      setAnimating(true);
+      canvasRef.current.classList.add(styles.animate);
+      
+      setTimeout(() => {
+        if (canvasRef.current) {
+          canvasRef.current.classList.remove(styles.animate);
+          setAnimating(false);
+        }
+      }, 10000); // Animation duration from the original CodePen
+    }
+  }, [animating]);
   
   // Update canvas size on window resize
   useEffect(() => {
@@ -88,7 +101,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     return () => {
       window.removeEventListener('resize', updateDimensions);
     };
-  }, []);
+  }, [startAnimation]);
   
   // Handle animation on scroll
   useEffect(() => {
@@ -112,22 +125,9 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       }
       document.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [startAnimation]);
 
-  // Trigger animation
-  const startAnimation = () => {
-    if (canvasRef.current && !animating) {
-      setAnimating(true);
-      canvasRef.current.classList.add(styles.animate);
-      
-      setTimeout(() => {
-        if (canvasRef.current) {
-          canvasRef.current.classList.remove(styles.animate);
-          setAnimating(false);
-        }
-      }, 10000); // Animation duration from the original CodePen
-    }
-  };
+  
   
   // Get the selected content
   const selectedContent = boardData.content.find(item => item.id === selectedContentId);
