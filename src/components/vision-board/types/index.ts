@@ -69,6 +69,7 @@ export interface VisionBoardProps {
   error?: string;
   onSave: (data: VisionBoardData) => Promise<boolean>;
   onShare?: (data: VisionBoardData) => void;
+  onComplete?: () => void;
   className?: string;
   readOnly?: boolean;
 } 

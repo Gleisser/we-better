@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { handleSpotifyCallback } from '@/utils/spotify';
 import App from '@/App';
@@ -30,6 +30,7 @@ import { createVisionBoard, updateVisionBoard } from '@/services/visionBoardServ
 // Create a simple Start page that contains the Life Wheel component and Vision Board
 const StartPage = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [showWelcome, setShowWelcome] = useState(true);
   const [showVisionBoard, setShowVisionBoard] = useState(false);
   const [lifeWheelCategories, setLifeWheelCategories] = useState<LifeCategory[]>(DEFAULT_LIFE_CATEGORIES);
@@ -79,6 +80,12 @@ const StartPage = () => {
     }
   };
   
+  // Handle completion of the vision board by redirecting to the dashboard
+  const handleVisionBoardComplete = () => {
+    console.log('Vision board completed, redirecting to dashboard');
+    navigate('/app/dashboard');
+  };
+  
   return (
     <div style={{ 
       padding: '2rem',
@@ -115,6 +122,7 @@ const StartPage = () => {
           <VisionBoard 
             lifeWheelCategories={lifeWheelCategories}
             onSave={handleVisionBoardSave}
+            onComplete={handleVisionBoardComplete}
           />
         </>
       ) : (

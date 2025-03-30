@@ -11,6 +11,7 @@ export interface ToolbarProps {
   onAutoArrange: () => void;
   onSave: () => void;
   onShare?: () => void;
+  onComplete?: () => void;
   onFilterByCategory?: (categoryId: string | null) => void;
   categories?: { id: string; name: string; color: string }[];
   selectedCategoryId?: string | null;
@@ -26,6 +27,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onAutoArrange,
   onSave,
   onShare,
+  onComplete,
   onFilterByCategory,
   categories = [],
   selectedCategoryId = null,
@@ -97,26 +99,26 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </div>
       )}
       
-      {mode === ToolbarMode.FILTER && onFilterByCategory && (
+      {mode === ToolbarMode.FILTER && categories.length > 0 && (
         <div className={styles.toolbarSection}>
           <button
             className={`${styles.toolbarButton} ${styles.categoryButton} ${selectedCategoryId === null ? styles.active : ''}`}
-            onClick={() => onFilterByCategory(null)}
+            onClick={() => onFilterByCategory && onFilterByCategory(null)}
+            title="Show All Categories"
           >
-            <span className={styles.buttonIcon}>🔎</span>
-            <span className={styles.buttonLabel}>All Categories</span>
+            <span className={styles.buttonIcon}>🔄</span>
+            <span className={styles.buttonLabel}>All</span>
           </button>
           
           {categories.map(category => (
             <button
               key={category.id}
               className={`${styles.toolbarButton} ${styles.categoryButton} ${selectedCategoryId === category.id ? styles.active : ''}`}
-              onClick={() => onFilterByCategory(category.id)}
-              style={{ 
-                '--category-color': category.color
-              } as React.CSSProperties}
+              onClick={() => onFilterByCategory && onFilterByCategory(category.id)}
+              title={`Show ${category.name} Items`}
+              style={{ '--category-color': category.color } as React.CSSProperties}
             >
-              <span className={styles.categoryDot} style={{ backgroundColor: category.color }}></span>
+              <span className={styles.categoryDot}></span>
               <span className={styles.buttonLabel}>{category.name}</span>
             </button>
           ))}
@@ -174,6 +176,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           >
             <span className={styles.buttonIcon}>📤</span>
             <span className={styles.buttonLabel}>Share</span>
+          </button>
+        )}
+        
+        {onComplete && (
+          <button
+            className={`${styles.toolbarButton} ${styles.completeButton}`}
+            onClick={onComplete}
+            title="Complete & Go to Dashboard"
+          >
+            <span className={styles.buttonIcon}>✅</span>
+            <span className={styles.buttonLabel}>Complete</span>
           </button>
         )}
       </div>

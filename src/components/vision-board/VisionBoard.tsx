@@ -80,6 +80,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   error,
   onSave,
   onShare,
+  onComplete,
   className = '',
   readOnly = false
 }) => {
@@ -223,6 +224,26 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     }));
     setSelectedContentId(null);
     setShowControls(false);
+  };
+  
+  // Handle save and complete - first save the board, then call onComplete callback
+  const handleComplete = async () => {
+    // First save the current state
+    const saved = await handleSave();
+    
+    if (saved) {
+      toast.success('Vision board completed!');
+      
+      // If the save was successful and we have a completion callback, call it
+      if (onComplete) {
+        // Add a small delay to show the success message
+        setTimeout(() => {
+          onComplete();
+        }, 1000);
+      }
+    } else {
+      toast.error('Please save your vision board before completing');
+    }
   };
   
   // Handle save
@@ -607,6 +628,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
                 onAutoArrange={handleAutoArrange}
                 onSave={handleSave}
                 onShare={shareHandler}
+                onComplete={onComplete ? handleComplete : undefined}
                 onFilterByCategory={handleFilterByCategory}
                 categories={lifeWheelCategories}
                 selectedCategoryId={selectedCategoryId}

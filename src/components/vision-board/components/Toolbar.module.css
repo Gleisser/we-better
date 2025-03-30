@@ -113,24 +113,96 @@
   background-color: #0d8aee;
 }
 
+.completeButton {
+  background-color: #8c239e;
+  color: white;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.completeButton::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 10%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(255, 255, 255, 0) 50%
+  );
+  transform: rotate(30deg);
+  transition: all 0.3s;
+  pointer-events: none;
+}
+
+.completeButton:hover {
+  background-color: #6b1b78;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(140, 35, 158, 0.4);
+}
+
+.completeButton:hover::after {
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-150%) rotate(30deg);
+  }
+  100% {
+    transform: translateX(150%) rotate(30deg);
+  }
+}
+
+.imageLimitIndicator {
+  margin-left: 4px;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.comingSoonBadge {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  background-color: #f44336;
+  color: white;
+  font-size: 8px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transform: rotate(-5deg);
+}
+
+.aiButton {
+  position: relative;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .toolbar {
     flex-direction: column;
-    gap: 12px;
+    padding: 8px;
+    gap: 8px;
   }
   
   .toolbarSection {
-    width: 100%;
+    flex-wrap: wrap;
     justify-content: center;
+    width: 100%;
+    padding: 4px 0;
     border-right: none;
     border-bottom: 1px solid #444;
-    padding-bottom: 12px;
   }
   
   .toolbarSection:last-child {
-    margin-left: 0;
     border-bottom: none;
+  }
+  
+  .buttonLabel {
+    font-size: 10px;
   }
 }
 
@@ -147,37 +219,6 @@
   .buttonLabel {
     font-size: 10px;
   }
-}
-
-/* Coming Soon Badge */
-.comingSoonBadge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
-  color: white;
-  padding: 3px 6px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  white-space: nowrap;
-}
-
-/* AI Button Styles */
-.aiButton {
-  position: relative;
-  overflow: visible !important;
-}
-
-/* Image Limit Indicator */
-.imageLimitIndicator {
-  display: inline-block;
-  font-size: 11px;
-  color: #6b7280;
-  margin-left: 5px;
-  font-weight: normal;
 }
 
 /* Disabled button styles */
