@@ -1,19 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Playfair+Display:wght@400;700&display=swap');
 
-.visionBoardContainer {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  overflow: hidden;
-  background-color: #222;
+.visionBoardWrapper {
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('/assets/images/login/background.webp') no-repeat center center;
+  background-size: cover;
   z-index: 10;
+  overflow: hidden;
+}
+
+.visionBoardContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 85%;
+  height: 85%;
+  min-height: 85vh;
+  overflow: hidden;
+  background-color: rgba(34, 34, 34, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  z-index: 11;
 }
 
 .fullScreenContainer {
@@ -32,20 +45,27 @@
   width: 100%;
   height: 100%;
   z-index: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: rgba(34, 34, 34, 0.7);
+  backdrop-filter: blur(5px);
 }
 
 .canvasContainer {
   position: relative;
   flex: 1;
   width: 100%;
-  height: 100vh;
-  min-height: 500px;
+  height: calc(100% - 160px); /* Account for header and toolbar space */
+  min-height: 300px;
   padding: 3rem;
+  padding-bottom: 4rem;
   box-sizing: border-box;
   z-index: 1;
   overflow: auto;
   perspective: 1000px;
   transition: width 0.3s ease, padding 0.3s ease;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 
 .animate {
@@ -219,7 +239,7 @@
 }
 
 .toolbarContainer {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
@@ -229,6 +249,7 @@
   background-color: transparent;
   display: flex;
   justify-content: center;
+  margin-bottom: 10px;
 }
 
 .loadingContainer, 
@@ -398,14 +419,14 @@
 }
 
 .contentControls {
-  position: fixed;
+  position: absolute;
   top: 20px;
   right: 20px;
   background-color: white !important;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35) !important;
   width: 320px;
-  max-height: 80vh;
+  max-height: 70vh;
   overflow-y: auto;
   z-index: 2000;
   display: block !important;
@@ -1213,10 +1234,12 @@
   left: 0;
   right: 0;
   width: 100%;
-  height: 350px;
+  height: 300px;
   overflow: hidden;
   pointer-events: none;
   z-index: 4;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
 .dreamSymbol {
@@ -1408,7 +1431,7 @@
 }
 
 .attributionFooter {
-  position: fixed;
+  position: absolute;
   bottom: 5px;
   left: 50%;
   transform: translateX(-50%);

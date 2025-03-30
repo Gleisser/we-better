@@ -511,10 +511,12 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   // Render loading state
   if (loading) {
     return (
-      <div className={`${styles.visionBoardContainer} ${className}`}>
-        <div className={styles.loadingContainer}>
-          <div className={styles.spinner}></div>
-          <p>Loading your vision board...</p>
+      <div className={`${styles.visionBoardWrapper} ${className}`}>
+        <div className={styles.visionBoardContainer}>
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner}></div>
+            <p>Loading your vision board...</p>
+          </div>
         </div>
       </div>
     );
@@ -523,14 +525,16 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   // Render error state
   if (error) {
     return (
-      <div className={`${styles.visionBoardContainer} ${className}`}>
-        <div className={styles.errorContainer}>
-          <div className={styles.errorIcon}>⚠️</div>
-          <h3>Something went wrong</h3>
-          <p>{error}</p>
-          <button className={styles.retryButton} onClick={() => window.location.reload()}>
-            Retry
-          </button>
+      <div className={`${styles.visionBoardWrapper} ${className}`}>
+        <div className={styles.visionBoardContainer}>
+          <div className={styles.errorContainer}>
+            <div className={styles.errorIcon}>⚠️</div>
+            <h3>Something went wrong</h3>
+            <p>{error}</p>
+            <button className={styles.retryButton} onClick={() => window.location.reload()}>
+              Retry
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -538,164 +542,159 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   
   return (
     <div 
-      className={`${styles.visionBoardContainer} ${className}`}
-      style={{ fontFamily: activeTheme.fontFamily }}
+      className={`${styles.visionBoardWrapper} ${className}`}
     >
-      {/* Background layers - apply to entire board */}
       <div 
-        className={styles.backgroundLayer}
-        style={{ 
-          background: `url('https://images.unsplash.com/photo-1531685250784-7569952593d2?crop=entropy&cs=srgb&fm=jpg&ixid=M3wzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2OTMyOTE2OTh8&ixlib=rb-4.0.3&q=100&w=3000')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.9,
-          height: '100%' // Cover entire container
-        }}
-      ></div>
-      
-      {/* Floating 3D Dream Symbols */}
-      <div className={styles.dreamSymbols}>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.briefcase}`} 
-          onClick={() => handleDreamSymbolClick('briefcase')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.money}`} 
-          onClick={() => handleDreamSymbolClick('money')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.health}`} 
-          onClick={() => handleDreamSymbolClick('health')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.house}`} 
-          onClick={() => handleDreamSymbolClick('house')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.growth}`} 
-          onClick={() => handleDreamSymbolClick('growth')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.heart}`} 
-          onClick={() => handleDreamSymbolClick('heart')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.recreation}`} 
-          onClick={() => handleDreamSymbolClick('recreation')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.meditation}`} 
-          onClick={() => handleDreamSymbolClick('meditation')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.graduation}`} 
-          onClick={() => handleDreamSymbolClick('graduation')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.travel}`} 
-          onClick={() => handleDreamSymbolClick('travel')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.cloud}`} 
-          onClick={() => handleDreamSymbolClick('cloud')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.trophy}`} 
-          onClick={() => handleDreamSymbolClick('trophy')}
-        ></div>
-      </div>
-      
-      {/* Vision Board Title */}
-      <div className={styles.visionBoardHeader}>
-        <h1 className={styles.visionBoardTitle}>{boardData.title || 'Vision Board'}</h1>
-        {boardData.description && (
-          <p className={styles.visionBoardSubtitle}>{boardData.description}</p>
-        )}
-      </div>
-      
-      {/* Canvas container */}
-      <div 
-        ref={canvasRef}
-        className={styles.canvasContainer}
-        onClick={handleCanvasClick}
+        className={styles.visionBoardContainer}
+        style={{ fontFamily: activeTheme.fontFamily }}
       >
-        {/* Content items */}
-        {filteredContent.map(item => (
-          <ContentItem
-            key={item.id}
-            content={item}
-            isSelected={item.id === selectedContentId}
-            onSelect={handleSelectContent}
+        {/* Background layer */}
+        <div className={styles.backgroundLayer}></div>
+        
+        {/* Floating 3D Dream Symbols */}
+        <div className={styles.dreamSymbols}>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.briefcase}`} 
+            onClick={() => handleDreamSymbolClick('briefcase')}
+          ></div>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.money}`} 
+            onClick={() => handleDreamSymbolClick('money')}
+          ></div>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.health}`} 
+            onClick={() => handleDreamSymbolClick('health')}
+          ></div>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.house}`} 
+            onClick={() => handleDreamSymbolClick('house')}
+          ></div>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.growth}`} 
+            onClick={() => handleDreamSymbolClick('growth')}
+          ></div>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.heart}`} 
+            onClick={() => handleDreamSymbolClick('heart')}
+          ></div>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.recreation}`} 
+            onClick={() => handleDreamSymbolClick('recreation')}
+          ></div>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.meditation}`} 
+            onClick={() => handleDreamSymbolClick('meditation')}
+          ></div>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.graduation}`} 
+            onClick={() => handleDreamSymbolClick('graduation')}
+          ></div>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.travel}`} 
+            onClick={() => handleDreamSymbolClick('travel')}
+          ></div>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.cloud}`} 
+            onClick={() => handleDreamSymbolClick('cloud')}
+          ></div>
+          <div 
+            className={`${styles.dreamSymbol} ${styles.trophy}`} 
+            onClick={() => handleDreamSymbolClick('trophy')}
+          ></div>
+        </div>
+        
+        {/* Vision Board Title */}
+        <div className={styles.visionBoardHeader}>
+          <h1 className={styles.visionBoardTitle}>{boardData.title || 'Vision Board'}</h1>
+          {boardData.description && (
+            <p className={styles.visionBoardSubtitle}>{boardData.description}</p>
+          )}
+        </div>
+        
+        {/* Canvas container */}
+        <div 
+          ref={canvasRef}
+          className={styles.canvasContainer}
+          onClick={handleCanvasClick}
+        >
+          {/* Content items */}
+          {filteredContent.map(item => (
+            <ContentItem
+              key={item.id}
+              content={item}
+              isSelected={item.id === selectedContentId}
+              onSelect={handleSelectContent}
+              onUpdate={handleUpdateContent}
+              readOnly={readOnly}
+            />
+          ))}
+        </div>
+        
+        {/* Content controls - floating sidebar */}
+        {showControls && selectedContent && !readOnly && (
+          <ContentControls
+            selectedContent={selectedContent}
             onUpdate={handleUpdateContent}
-            readOnly={readOnly}
-          />
-        ))}
-      </div>
-      
-      {/* Content controls - floating sidebar */}
-      {showControls && selectedContent && !readOnly && (
-        <ContentControls
-          selectedContent={selectedContent}
-          onUpdate={handleUpdateContent}
-          onDelete={handleDeleteContent}
-          onClose={() => {
-            setSelectedContentId(null);
-            setShowControls(false);
-          }}
-        />
-      )}
-      
-      {/* Toolbar container - floating at bottom */}
-      <div className={styles.toolbarContainer}>
-        {!readOnly && (
-          <Toolbar
-            mode={toolbarMode}
-            onModeChange={setToolbarMode}
-            onAddImage={handleImageUpload}
-            onGenerateAI={handleGenerateAIImage}
-            onAutoArrange={handleAutoArrange}
-            onToggleThemes={() => setShowThemeSelector(true)}
-            onSave={handleSave}
-            onShare={shareHandler}
-            onFilterByCategory={handleFilterByCategory}
-            categories={lifeWheelCategories}
-            selectedCategoryId={selectedCategoryId}
-            isSaving={isSaving}
+            onDelete={handleDeleteContent}
+            onClose={() => {
+              setSelectedContentId(null);
+              setShowControls(false);
+            }}
           />
         )}
+        
+        {/* Toolbar container - floating at bottom */}
+        <div className={styles.toolbarContainer}>
+          {!readOnly && (
+            <Toolbar
+              mode={toolbarMode}
+              onModeChange={setToolbarMode}
+              onAddImage={handleImageUpload}
+              onGenerateAI={handleGenerateAIImage}
+              onAutoArrange={handleAutoArrange}
+              onToggleThemes={() => setShowThemeSelector(true)}
+              onSave={handleSave}
+              onShare={shareHandler}
+              onFilterByCategory={handleFilterByCategory}
+              categories={lifeWheelCategories}
+              selectedCategoryId={selectedCategoryId}
+              isSaving={isSaving}
+            />
+          )}
+        </div>
+        
+        {/* Attribution footer */}
+        <div className={styles.attributionFooter}>
+          <a href="https://icons8.com" target="_blank" rel="noopener noreferrer">3D icons by Icons8</a>
+        </div>
+        
+        {/* Theme selector */}
+        <ThemeSelector
+          currentThemeId={boardData.themeId}
+          onThemeChange={handleThemeChange}
+          visible={showThemeSelector}
+          onClose={() => setShowThemeSelector(false)}
+        />
+        
+        {/* Intro screen */}
+        {firstVisit && !readOnly && (
+          <IntroScreen onClose={() => setFirstVisit(false)} />
+        )}
+        
+        {/* Toast notifications */}
+        <ToastContainer
+          position="bottom-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
-      
-      {/* Attribution footer */}
-      <div className={styles.attributionFooter}>
-        <a href="https://icons8.com" target="_blank" rel="noopener noreferrer">3D icons by Icons8</a>
-      </div>
-      
-      {/* Theme selector */}
-      <ThemeSelector
-        currentThemeId={boardData.themeId}
-        onThemeChange={handleThemeChange}
-        visible={showThemeSelector}
-        onClose={() => setShowThemeSelector(false)}
-      />
-      
-      {/* Intro screen */}
-      {firstVisit && !readOnly && (
-        <IntroScreen onClose={() => setFirstVisit(false)} />
-      )}
-      
-      {/* Toast notifications */}
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     </div>
   );
 };
