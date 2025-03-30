@@ -145,14 +145,10 @@ export const authService = {
 
   async getCurrentUser(): Promise<AuthResponse> {
     try {
-      console.log('Checking current user...');
       const { data, error } = await supabase.auth.getSession();
       
       // Extract user from session if it exists
       const user = data.session?.user || null;
-      
-      console.log('User data from session:', user);
-      console.log('Session data:', data.session);
       
       if (error) throw new Error(error.message);
       

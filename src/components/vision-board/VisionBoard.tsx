@@ -16,6 +16,63 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import styles from './VisionBoard.module.css';
 
+// Add this utility function for image compression
+const compressImage = (base64Image: string, maxSizeKB: number = 100): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+      
+      // Calculate the ratio to maintain aspect ratio while reducing size
+      const MAX_WIDTH = 800;
+      const MAX_HEIGHT = 800;
+      
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height *= MAX_WIDTH / width;
+          width = MAX_WIDTH;
+        }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width *= MAX_HEIGHT / height;
+          height = MAX_HEIGHT;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('Failed to get canvas context'));
+        return;
+      }
+      
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      // Start with a high quality
+      let quality = 0.9;
+      let result = canvas.toDataURL('image/jpeg', quality);
+      
+      // Gradually reduce quality until the size is under the maxSizeKB
+      while (result.length > maxSizeKB * 1024 && quality > 0.1) {
+        quality -= 0.1;
+        result = canvas.toDataURL('image/jpeg', quality);
+      }
+      
+      resolve(result);
+    };
+    
+    img.onerror = (error) => {
+      reject(error);
+    };
+    
+    img.src = base64Image;
+  });
+};
+
 export const VisionBoard: React.FC<VisionBoardProps> = ({
   lifeWheelCategories,
   data,
@@ -169,22 +226,52 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   };
   
   // Handle save
-  const handleSave = async () => {
-    if (isSaving) return;
+  const handleSave = async (): Promise<boolean> => {
+    if (isSaving) return false;
     
     setIsSaving(true);
     
     try {
-      const success = await onSave(boardData);
+      // Compress images in content array before saving
+      const compressedContent = await Promise.all(
+        boardData.content.map(async (item) => {
+          if (
+            item.type === VisionBoardContentType.IMAGE && 
+            item.src && 
+            item.src.startsWith('data:')
+          ) {
+            try {
+              const compressedSrc = await compressImage(item.src, 500); // 500KB max
+              return { ...item, src: compressedSrc };
+            } catch (error) {
+              console.error('Error compressing image:', error);
+              return item; // Return original if compression fails
+            }
+          }
+          return item;
+        })
+      );
       
-      if (success) {
+      const dataToSave: VisionBoardData = {
+        ...boardData,
+        content: compressedContent,
+        updatedAt: new Date().toISOString()
+      };
+      
+      console.log('Saving vision board with compressed images');
+      const result = await onSave(dataToSave);
+      
+      if (result) {
         toast.success('Vision board saved successfully!');
       } else {
         toast.error('Failed to save vision board');
       }
+      
+      return result;
     } catch (error) {
       console.error('Error saving vision board:', error);
       toast.error('An error occurred while saving');
+      return false;
     } finally {
       setIsSaving(false);
     }

@@ -25,6 +25,7 @@ import { VisionBoardData } from '@/components/vision-board/types';
 import { LifeCategory } from '@/components/life-wheel/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { DEFAULT_LIFE_CATEGORIES } from '@/components/life-wheel/constants/categories';
+import { createVisionBoard, updateVisionBoard } from '@/services/visionBoardService';
 
 // Create a simple Start page that contains the Life Wheel component and Vision Board
 const StartPage = () => {
@@ -60,8 +61,22 @@ const StartPage = () => {
   };
 
   const handleVisionBoardSave = async (data: VisionBoardData): Promise<boolean> => {
-    console.log('Vision board saved:', data);
-    return true;
+    console.log('Vision board saving:', data);
+    try {
+      // Use the appropriate service function based on whether it's a new board or update
+      let result;
+      if (data.id) {
+        result = await updateVisionBoard(data);
+      } else {
+        result = await createVisionBoard(data);
+      }
+      
+      console.log('Vision board saved result:', result);
+      return result !== null;
+    } catch (error) {
+      console.error('Error saving vision board:', error);
+      return false;
+    }
   };
   
   return (

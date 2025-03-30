@@ -29,12 +29,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const checkAuth = useCallback(async () => {
-    console.log('Checking authentication...');
     try {
       setIsLoading(true);
-      const { user: currentUser, session, error } = await authService.getCurrentUser();
-      
-      console.log('Auth check results:', { currentUser, session, error });
+      const { user: currentUser, error } = await authService.getCurrentUser();
       
       if (error) {
         console.error('Auth check error:', error);
@@ -43,7 +40,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       
       if (currentUser) {
-        console.log('Setting authenticated user:', currentUser);
         setUser(currentUser);
       } else {
         console.warn('No valid user session found');
