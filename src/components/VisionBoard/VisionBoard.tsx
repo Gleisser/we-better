@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { 
   VisionBoardProps, 
@@ -50,6 +50,12 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [toolbarMode, setToolbarMode] = useState<ToolbarMode>(ToolbarMode.ADD);
+  
+  // Create a mapping of category IDs to their colors for easier access
+  const categoryColors = lifeWheelCategories.reduce((map, category) => {
+    map[category.id] = category.color;
+    return map;
+  }, {} as Record<string, string>);
   
   // Initialize board data
   useEffect(() => {
@@ -143,10 +149,15 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   // Get the active theme
   const activeTheme: Theme = themes.find(theme => theme.id === boardData.themeId) || themes[0];
   
-  // Filter content by selected category
-  const filteredContent = selectedCategoryId
-    ? boardData.content.filter(item => item.categoryId === selectedCategoryId)
-    : boardData.content;
+  // Filter content based on selected category
+  const filteredContent = useMemo(() => {
+    if (!selectedCategoryId) {
+      return boardData.content;
+    }
+    return boardData.content.filter(item => 
+      item.categoryId === selectedCategoryId
+    );
+  }, [boardData.content, selectedCategoryId]);
   
   // Handle content selection
   const handleSelectContent = (id: string) => {
@@ -308,9 +319,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   // Handle filter by category
   const handleFilterByCategory = (categoryId: string | null) => {
     setSelectedCategoryId(categoryId);
-    
-    // Trigger animation when filtering
-    startAnimation();
   };
   
   // Handle image upload
@@ -627,6 +635,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
                 onSelect={handleSelectContent}
                 onUpdate={handleUpdateContent}
                 readOnly={readOnly}
+                categoryColors={categoryColors}
               />
             ))}
           </div>
@@ -668,6 +677,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
             setSelectedContentId(null);
             setShowControls(false);
           }}
+          lifeWheelCategories={lifeWheelCategories}
         />
       )}
       

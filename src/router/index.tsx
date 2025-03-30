@@ -24,13 +24,14 @@ import { VisionBoard } from '@/components/VisionBoard';
 import { VisionBoardData } from '@/components/VisionBoard/types';
 import { LifeCategory } from '@/components/LifeWheel/types';
 import { useAuth } from '@/contexts/AuthContext';
+import { DEFAULT_LIFE_CATEGORIES } from '@/components/LifeWheel/constants/categories';
 
 // Create a simple Start page that contains the Life Wheel component and Vision Board
 const StartPage = () => {
   const { user } = useAuth();
   const [showWelcome, setShowWelcome] = useState(true);
   const [showVisionBoard, setShowVisionBoard] = useState(false);
-  const [lifeWheelCategories, setLifeWheelCategories] = useState<LifeCategory[]>([]);
+  const [lifeWheelCategories, setLifeWheelCategories] = useState<LifeCategory[]>(DEFAULT_LIFE_CATEGORIES);
   
   const handleComplete = () => {
     console.log('Life wheel assessment completed');

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VisionBoardContent, VisionBoardContentType, GoalDetails } from '../types';
+import { LifeCategory } from '@/components/LifeWheel/types';
 import styles from './ContentControls.module.css';
 
 // Debounce function with proper types
-function debounce<T extends (...args: any[]) => void>(
+function debounce<T extends (...args: any[]) => any>(
   fn: T, 
   ms = 300
 ): (...args: Parameters<T>) => void {
@@ -19,6 +20,7 @@ interface ContentControlsProps {
   onUpdate: (content: VisionBoardContent) => void;
   onDelete: (id: string) => void;
   onClose?: () => void;
+  lifeWheelCategories: LifeCategory[];
 }
 
 // Define the InputField props with generics for better type safety
@@ -76,13 +78,17 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   selectedContent,
   onUpdate,
   onDelete,
-  onClose
+  onClose,
+  lifeWheelCategories = []
 }) => {
   // Local state to manage form values
   const [localContent, setLocalContent] = useState<VisionBoardContent>(selectedContent);
   const [activeTab, setActiveTab] = useState<string>('position');
   const [isDeleting, setIsDeleting] = useState(false);
   const controlsRef = useRef<HTMLDivElement>(null);
+  
+  // Debug lifecategories - remove after testing
+  console.log('lifeWheelCategories:', lifeWheelCategories);
   
   // Update local state when selected content changes
   useEffect(() => {
@@ -158,6 +164,20 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
     }
   };
   
+  // Function to get category color by id
+  const getCategoryColor = (categoryId?: string) => {
+    if (!categoryId) return '#999999';
+    const category = lifeWheelCategories.find(cat => cat.id === categoryId);
+    return category?.color || '#999999';
+  };
+  
+  // Function to get category name by id
+  const getCategoryName = (categoryId?: string) => {
+    if (!categoryId) return 'None';
+    const category = lifeWheelCategories.find(cat => cat.id === categoryId);
+    return category?.name || 'None';
+  };
+  
   // Create a reusable input field component with generic typing
   function InputField<T>({ 
     label, 
@@ -194,7 +214,11 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
             <input
               type="number"
               value={value as unknown as number}
-              onChange={(e) => onChange(parseInt(e.target.value) || 0 as unknown as T)}
+              onChange={(e) => {
+                const numericValue = parseInt(e.target.value) || 0;
+                // Use unknown as intermediate type to avoid direct type conversion errors
+                onChange(numericValue as unknown as T);
+              }}
               min={min}
               max={max}
               step={step}
@@ -515,6 +539,40 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
               onChange={(value) => handleChange({ alt: value })}
               placeholder="Image description for accessibility"
             />
+            
+            <div className={styles.controlGroup}>
+              <label className={styles.controlLabel}>Category</label>
+              <div className={styles.categoryDropdown}>
+                <select
+                  value={localContent.categoryId || ''}
+                  onChange={(e) => handleChange({ categoryId: e.target.value })}
+                  className={styles.select}
+                >
+                  <option value="">None</option>
+                  {lifeWheelCategories.map(cat => (
+                    <option 
+                      key={cat.id} 
+                      value={cat.id}
+                      style={{ 
+                        background: `linear-gradient(to right, ${cat.color}22, transparent 10%)`,
+                        padding: '8px 4px'
+                      }}
+                    >
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              {localContent.categoryId && (
+                <div className={styles.categoryPreview}>
+                  <div className={styles.categoryDot} style={{ 
+                    backgroundColor: getCategoryColor(localContent.categoryId)
+                  }}></div>
+                  <span>{getCategoryName(localContent.categoryId)}</span>
+                </div>
+              )}
+            </div>
           </div>
         );
         

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   VisionBoardContent, 
-  VisionBoardContentType
+  VisionBoardContentType, 
+  TextAlign
 } from '../types';
 import styles from '../VisionBoard.module.css';
 
@@ -11,7 +12,30 @@ interface ContentItemProps {
   onSelect: (id: string) => void;
   onUpdate: (content: VisionBoardContent) => void;
   readOnly?: boolean;
+  categoryColors?: Record<string, string>;
 }
+
+// Add a new CategoryIndicator component
+interface CategoryIndicatorProps {
+  categoryId?: string;
+  categoryColors?: Record<string, string>;
+}
+
+const CategoryIndicator: React.FC<CategoryIndicatorProps> = ({ categoryId, categoryColors = {} }) => {
+  if (!categoryId) return null;
+  
+  const color = categoryColors[categoryId] || '#999999';
+  
+  return (
+    <div 
+      className={styles.categoryIndicator}
+      style={{ backgroundColor: color }}
+      title="Category Indicator"
+    >
+      <span className={styles.categoryIcon}>🏷️</span>
+    </div>
+  );
+};
 
 /**
  * ContentItem component displays a single item on the vision board
@@ -22,7 +46,8 @@ export const ContentItem: React.FC<ContentItemProps> = ({
   isSelected,
   onSelect,
   onUpdate,
-  readOnly = false
+  readOnly = false,
+  categoryColors = {}
 }) => {
   // State
   const [text, setText] = useState(content.text || '');
@@ -290,80 +315,90 @@ export const ContentItem: React.FC<ContentItemProps> = ({
     };
   }, [isDragging, dragOffset]);
   
-  // Render different content types
+  // Add render logic for content based on type
   const renderContent = () => {
     switch (content.type) {
       case VisionBoardContentType.TEXT:
         return (
-          <textarea
-            className={styles.contentText}
-            value={text}
-            onChange={handleTextChange}
-            onBlur={handleBlur}
-            readOnly={readOnly || !isEditing}
-            onDoubleClick={() => !readOnly && setIsEditing(true)}
-            style={{
-              fontSize: `${content.fontSize || 16}px`,
-              color: content.fontColor || '#000000',
-              fontFamily: content.fontFamily || 'Arial, sans-serif',
-              textAlign: (content.textAlign || 'center') as 'left' | 'center' | 'right',
-              fontWeight: content.fontWeight || 'normal'
-            }}
-          />
+          <div className={styles.textContent}>
+            {isEditing ? (
+              <textarea
+                value={text}
+                onChange={handleTextChange}
+                onBlur={handleBlur}
+                autoFocus
+                className={styles.contentText}
+              />
+            ) : (
+              <div 
+                className={styles.contentText} 
+                style={{
+                  color: content.fontColor,
+                  fontSize: `${content.fontSize || 16}px`,
+                  fontFamily: content.fontFamily,
+                  textAlign: (content.textAlign || 'center') as TextAlign,
+                  fontWeight: content.fontWeight
+                }}
+              >
+                {content.text}
+              </div>
+            )}
+          </div>
         );
-        
+      
       case VisionBoardContentType.IMAGE:
         return (
           <div className={styles.polaroidContainer}>
             <div className={styles.imageWrapper}>
               <img 
-                src={content.src}
-                alt={content.alt || 'Vision board image'}
-                draggable={false}
+                src={content.src} 
+                alt={content.alt || 'Vision board image'} 
                 className={styles.polaroidImage}
               />
             </div>
-            <div className={styles.polaroidCaption}>
-              {content.caption || content.alt || ''}
-            </div>
+            {content.caption && (
+              <div className={styles.polaroidCaption}>{content.caption}</div>
+            )}
           </div>
         );
-        
+      
       case VisionBoardContentType.AI_GENERATED:
         return (
-          <div className={styles.polaroidContainer}>
-            <div className={styles.imageWrapper}>
-              <img 
-                src={content.src}
-                alt={content.alt || 'AI generated image'}
-                draggable={false}
-                className={styles.polaroidImage}
+          <div className={styles.aiGeneratedContent}>
+            <img 
+              src={content.src} 
+              alt={content.alt || 'AI generated image'} 
+              className={styles.imageContent}
+            />
+            {content.prompt && (
+              <div className={styles.aiPromptOverlay}>
+                <span className={styles.aiPromptLabel}>Prompt:</span>
+                <p className={styles.aiPromptText}>{content.prompt}</p>
+              </div>
+            )}
+          </div>
+        );
+      
+      case VisionBoardContentType.AUDIO:
+        return (
+          <div className={styles.audioContent}>
+            <div className={styles.audioIcon}>🎵</div>
+            {content.transcription && (
+              <div className={styles.audioTranscription}>{content.transcription}</div>
+            )}
+            <div className={styles.audioPlayerWrapper}>
+              <audio 
+                controls 
+                src={content.audioUrl} 
+                className={styles.audioPlayer}
+                preload="metadata"
               />
-            </div>
-            <div className={styles.polaroidCaption}>
-              {content.caption || content.prompt || ''}
             </div>
           </div>
         );
-        
-      case VisionBoardContentType.AUDIO:
-        return (
-          <>
-            <div className={styles.audioPlayerWrapper} onClick={(e) => e.stopPropagation()}>
-              <audio 
-                className={styles.audioPlayer}
-                src={content.audioUrl}
-                controls
-              />
-            </div>
-            <div className={styles.contentSubtitle}>
-              {content.transcription || 'Voice note'}
-            </div>
-          </>
-        );
-        
+      
       default:
-        return null;
+        return <div>Unknown content type</div>;
     }
   };
   
@@ -373,15 +408,29 @@ export const ContentItem: React.FC<ContentItemProps> = ({
       className={classNames}
       style={contentStyle}
       onClick={handleSelect}
-      onDoubleClick={handleDoubleClick}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
+      onDoubleClick={handleDoubleClick}
     >
+      {/* Render content based on type */}
       {renderContent()}
       
-      {/* Show isGoal indicator if set */}
+      {/* Show goal indicator if this is a goal */}
       {content.isGoal && (
-        <div className={styles.goalIndicator}>🎯</div>
+        <div className={styles.goalIndicator} title="Goal">🎯</div>
+      )}
+      
+      {/* Show category indicator if a category is assigned */}
+      {content.categoryId && (
+        <CategoryIndicator 
+          categoryId={content.categoryId} 
+          categoryColors={categoryColors}
+        />
+      )}
+      
+      {/* Resize handle for selected items, only if not read-only */}
+      {isSelected && !readOnly && (
+        <div className={styles.resizeHandle}></div>
       )}
     </div>
   );
