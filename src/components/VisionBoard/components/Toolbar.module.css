@@ -147,4 +147,49 @@
   .buttonLabel {
     font-size: 10px;
   }
+}
+
+/* Coming Soon Badge */
+.comingSoonBadge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+  color: white;
+  padding: 3px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+/* AI Button Styles */
+.aiButton {
+  position: relative;
+  overflow: visible !important;
+}
+
+/* Image Limit Indicator */
+.imageLimitIndicator {
+  display: inline-block;
+  font-size: 11px;
+  color: #6b7280;
+  margin-left: 5px;
+  font-weight: normal;
+}
+
+/* Disabled button styles */
+.toolbarButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  box-shadow: none;
+}
+
+.toolbarButton:disabled:hover {
+  transform: none;
+  background-color: #e5e7eb;
 } 

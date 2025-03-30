@@ -321,143 +321,50 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     setSelectedCategoryId(categoryId);
   };
   
-  // Handle image upload
+  // Modify the handleImageUpload function to use correct handleAddContent call
   const handleImageUpload = () => {
+    // Count the number of image and AI-generated content items
+    const imageCount = boardData.content.filter(item => 
+      item.type === VisionBoardContentType.IMAGE || 
+      item.type === VisionBoardContentType.AI_GENERATED
+    ).length;
+    
+    // Check if the limit has been reached
+    if (imageCount >= 7) {
+      toast.warning('You can only add up to 7 images to your vision board.');
+      return;
+    }
+    
+    // Rest of the existing upload logic
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.onchange = (e) => {
-      const target = e.target as HTMLInputElement;
-      if (target.files && target.files[0]) {
-        const file = target.files[0];
+      if (e.target && (e.target as HTMLInputElement).files && (e.target as HTMLInputElement).files?.length) {
+        const file = (e.target as HTMLInputElement).files![0];
+        const reader = new FileReader();
         
-        // Check file size - if too large, compress or warn
-        if (file.size > 5000000) { // 5MB
-          toast.info('Large images may impact performance. Compressing...');
-        }
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            // Use handleAddContent correctly with type first, then content details
+            handleAddContent(VisionBoardContentType.IMAGE, { 
+              src: event.target.result as string,
+              alt: file.name,
+              caption: ''
+            });
+          }
+        };
         
-        try {
-          const reader = new FileReader();
-          
-          reader.onload = (event) => {
-            if (event.target && typeof event.target.result === 'string') {
-              // Create a blob URL from the data URL for better memory management
-              const img = new Image();
-              img.onload = () => {
-                // Create a canvas to potentially resize the image
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 1200; // Max width for the image
-                const MAX_HEIGHT = 1200; // Max height for the image
-                let width = img.width;
-                let height = img.height;
-                
-                // Resize if needed
-                if (width > MAX_WIDTH || height > MAX_HEIGHT) {
-                  if (width > height) {
-                    height *= MAX_WIDTH / width;
-                    width = MAX_WIDTH;
-                  } else {
-                    width *= MAX_HEIGHT / height;
-                    height = MAX_HEIGHT;
-                  }
-                }
-                
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                
-                if (ctx) {
-                  ctx.drawImage(img, 0, 0, width, height);
-                  // Get the compressed data URL
-                  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-                  
-                  // Add to vision board
-                  handleAddContent(VisionBoardContentType.IMAGE, { 
-                    src: dataUrl,
-                    alt: file.name || 'Uploaded image',
-                    caption: '' // Empty caption by default
-                  });
-                } else {
-                  // Fallback if canvas context fails
-                  handleAddContent(VisionBoardContentType.IMAGE, { 
-                    src: event.target?.result as string || '',
-                    alt: file.name || 'Uploaded image',
-                    caption: '' // Empty caption by default
-                  });
-                }
-              };
-              
-              img.onerror = () => {
-                // Fallback for image load error
-                toast.warning('Error processing image. Using original file.');
-                
-                handleAddContent(VisionBoardContentType.IMAGE, { 
-                  src: event.target?.result as string || '',
-                  alt: file.name || 'Uploaded image',
-                  caption: '' // Empty caption by default
-                });
-              };
-              
-              // Start loading the image
-              img.src = event.target.result;
-            }
-          };
-          
-          reader.onerror = () => {
-            toast.error('Error reading file');
-          };
-          
-          reader.readAsDataURL(file);
-        } catch (error) {
-          console.error('Error processing image:', error);
-          toast.error('Error processing image');
-        }
+        reader.readAsDataURL(file);
       }
     };
+    
     fileInput.click();
   };
   
   // Handle AI image generation
   const handleGenerateAIImage = () => {
-    // Show dialog to enter prompt
-    const prompt = window.prompt('Enter a prompt for AI image generation:', 'A beautiful sunset');
-    if (prompt) {
-      try {
-        // For now, we'll just add a placeholder image with the prompt
-        const placeholderUrl = `https://via.placeholder.com/200?text=${encodeURIComponent(prompt.slice(0, 20))}`;
-        
-        // Create an image element to ensure it loads
-        const img = new Image();
-        img.onload = () => {
-          handleAddContent(VisionBoardContentType.AI_GENERATED, { 
-            src: placeholderUrl,
-            prompt: prompt,
-            caption: '', // Empty caption by default
-            alt: 'AI generated image: ' + prompt
-          });
-          
-          toast.info('Real AI image generation coming soon!');
-        };
-        
-        img.onerror = () => {
-          // Fallback for image load error
-          toast.warning('Error creating AI image. Using default placeholder.');
-          
-          handleAddContent(VisionBoardContentType.AI_GENERATED, { 
-            src: 'https://via.placeholder.com/200?text=AI+Generated',
-            prompt: prompt,
-            caption: '', // Empty caption by default
-            alt: 'AI generated image: ' + prompt
-          });
-        };
-        
-        // Start loading the image
-        img.src = placeholderUrl;
-      } catch (error) {
-        console.error('Error generating AI image:', error);
-        toast.error('Error generating AI image');
-      }
-    }
+    toast.info('AI image generation is coming soon! Stay tuned for updates.');
   };
   
   // Handle auto arrange
@@ -515,6 +422,14 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
 
     toast.info(messages[symbolType] || "Dream it, believe it, achieve it!");
   };
+  
+  // Inside the VisionBoard component, add a useMemo to calculate the image count
+  const imageCount = useMemo(() => {
+    return boardData.content.filter(item => 
+      item.type === VisionBoardContentType.IMAGE || 
+      item.type === VisionBoardContentType.AI_GENERATED
+    ).length;
+  }, [boardData.content]);
   
   // Render loading state
   if (loading) {
@@ -656,6 +571,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
                 categories={lifeWheelCategories}
                 selectedCategoryId={selectedCategoryId}
                 isSaving={isSaving}
+                imageCount={imageCount}
               />
             )}
           </div>

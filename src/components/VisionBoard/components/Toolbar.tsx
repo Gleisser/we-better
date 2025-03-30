@@ -16,6 +16,7 @@ export interface ToolbarProps {
   categories?: { id: string; name: string; color: string }[];
   selectedCategoryId?: string | null;
   isSaving?: boolean;
+  imageCount?: number;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -30,8 +31,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onFilterByCategory,
   categories = [],
   selectedCategoryId = null,
-  isSaving = false
+  isSaving = false,
+  imageCount = 0
 }) => {
+  const imageLimit = 7;
+  
   return (
     <div className={styles.toolbar}>
       <div className={styles.toolbarSection}>
@@ -79,18 +83,27 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             className={styles.toolbarButton}
             onClick={onAddImage}
             title="Upload Image"
+            disabled={imageCount >= imageLimit}
           >
             <span className={styles.buttonIcon}>🖼️</span>
-            <span className={styles.buttonLabel}>Upload Photo</span>
+            <span className={styles.buttonLabel}>
+              Upload Photo
+              {imageCount > 0 && (
+                <span className={styles.imageLimitIndicator}>
+                  {imageCount}/{imageLimit}
+                </span>
+              )}
+            </span>
           </button>
           
           <button
-            className={styles.toolbarButton}
+            className={`${styles.toolbarButton} ${styles.aiButton}`}
             onClick={onGenerateAI}
             title="Generate AI Image"
           >
             <span className={styles.buttonIcon}>🤖</span>
             <span className={styles.buttonLabel}>AI Image</span>
+            <span className={styles.comingSoonBadge}>Coming Soon</span>
           </button>
         </div>
       )}
