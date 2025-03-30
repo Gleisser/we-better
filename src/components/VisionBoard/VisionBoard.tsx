@@ -491,14 +491,18 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   
   const handleDreamSymbolClick = (symbolType: string) => {
     const messages: Record<string, string> = {
-      cloud: "Dream big, aim for the sky! Your ideas are limitless.",
-      money: "Financial freedom is your birthright. Keep working towards it!",
-      house: "Your dream home is waiting for you. Visualize it every day.",
-      car: "The journey is as important as the destination. Enjoy the ride!",
-      travel: "The world is waiting for you to explore it. Where to next?",
-      heart: "Love and be loved. It's the greatest treasure of all.",
-      trophy: "Success is the sum of small efforts repeated daily.",
-      graduation: "Knowledge is power. Never stop learning and growing.",
+      briefcase: "Your career is a path to greatness. Keep striving for excellence!",
+      money: "Financial abundance is flowing into your life. Embrace wealth mindfully!",
+      health: "Health is true wealth. Nurture your body, mind, and spirit daily.",
+      house: "Your ideal home awaits. Create your perfect sanctuary and living space.",
+      growth: "Growth happens outside your comfort zone. Embrace change and challenges!",
+      heart: "Love deeply and authentically. Meaningful connections bring true joy.",
+      recreation: "Balance work with play. Leisure time recharges your creative energy!",
+      meditation: "Inner peace creates outer harmony. Take time for spiritual reflection.",
+      graduation: "Knowledge empowers. Continue learning throughout your entire life.",
+      travel: "Adventure awaits! New places bring fresh perspectives and memories.",
+      cloud: "Dream without limits. Your imagination creates your future reality!",
+      trophy: "Success is a journey of small wins. Celebrate each victory along the way!"
     };
 
     toast.info(messages[symbolType] || "Dream it, believe it, achieve it!");
@@ -552,36 +556,52 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       {/* Floating 3D Dream Symbols */}
       <div className={styles.dreamSymbols}>
         <div 
-          className={`${styles.dreamSymbol} ${styles.cloud}`} 
-          onClick={() => handleDreamSymbolClick('cloud')}
+          className={`${styles.dreamSymbol} ${styles.briefcase}`} 
+          onClick={() => handleDreamSymbolClick('briefcase')}
         ></div>
         <div 
           className={`${styles.dreamSymbol} ${styles.money}`} 
           onClick={() => handleDreamSymbolClick('money')}
         ></div>
         <div 
+          className={`${styles.dreamSymbol} ${styles.health}`} 
+          onClick={() => handleDreamSymbolClick('health')}
+        ></div>
+        <div 
           className={`${styles.dreamSymbol} ${styles.house}`} 
           onClick={() => handleDreamSymbolClick('house')}
         ></div>
         <div 
-          className={`${styles.dreamSymbol} ${styles.car}`} 
-          onClick={() => handleDreamSymbolClick('car')}
-        ></div>
-        <div 
-          className={`${styles.dreamSymbol} ${styles.travel}`} 
-          onClick={() => handleDreamSymbolClick('travel')}
+          className={`${styles.dreamSymbol} ${styles.growth}`} 
+          onClick={() => handleDreamSymbolClick('growth')}
         ></div>
         <div 
           className={`${styles.dreamSymbol} ${styles.heart}`} 
           onClick={() => handleDreamSymbolClick('heart')}
         ></div>
         <div 
-          className={`${styles.dreamSymbol} ${styles.trophy}`} 
-          onClick={() => handleDreamSymbolClick('trophy')}
+          className={`${styles.dreamSymbol} ${styles.recreation}`} 
+          onClick={() => handleDreamSymbolClick('recreation')}
+        ></div>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.meditation}`} 
+          onClick={() => handleDreamSymbolClick('meditation')}
         ></div>
         <div 
           className={`${styles.dreamSymbol} ${styles.graduation}`} 
           onClick={() => handleDreamSymbolClick('graduation')}
+        ></div>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.travel}`} 
+          onClick={() => handleDreamSymbolClick('travel')}
+        ></div>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.cloud}`} 
+          onClick={() => handleDreamSymbolClick('cloud')}
+        ></div>
+        <div 
+          className={`${styles.dreamSymbol} ${styles.trophy}`} 
+          onClick={() => handleDreamSymbolClick('trophy')}
         ></div>
       </div>
       
@@ -643,6 +663,11 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
             isSaving={isSaving}
           />
         )}
+      </div>
+      
+      {/* Attribution footer */}
+      <div className={styles.attributionFooter}>
+        <a href="https://icons8.com" target="_blank" rel="noopener noreferrer">3D icons by Icons8</a>
       </div>
       
       {/* Theme selector */}

@@ -1221,13 +1221,13 @@
 
 .dreamSymbol {
   position: absolute;
-  width: 60px;
-  height: 60px;
+  width: 65px;
+  height: 65px;
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
-  opacity: 0.92;
+  filter: drop-shadow(0 12px 25px rgba(0,0,0,0.5));
+  opacity: 0.95;
   transform-style: preserve-3d;
   perspective: 1000px;
   z-index: 4;
@@ -1239,25 +1239,27 @@
 }
 
 .dreamSymbol:hover {
-  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5));
-  transform: scale(1.2) translateY(-5px);
+  filter: drop-shadow(0 20px 35px rgba(0,0,0,0.6));
+  transform: scale(1.3) translateY(-10px) rotateY(10deg);
   z-index: 10;
   animation-play-state: paused;
 }
 
-.dreamSymbol.cloud {
-  background-image: url('https://freepngimg.com/thumb/cloud/7-cloud-png-image.png');
-  top: 10px;
-  left: 15%;
-  width: 90px;
-  height: 60px;
+/* Career/Work */
+.dreamSymbol.briefcase {
+  background-image: url('https://img.icons8.com/3d-fluency/94/briefcase.png');
+  top: 15px;
+  left: 12%;
+  width: 75px;
+  height: 75px;
   animation-delay: 0s;
   transform: rotate(-5deg);
 }
 
+/* Finance */
 .dreamSymbol.money {
-  background-image: url('https://freepngimg.com/thumb/money/5-money-png-image.png');
-  top: 50px;
+  background-image: url('https://img.icons8.com/3d-fluency/94/money-bag.png');
+  top: 60px;
   right: 15%;
   width: 70px;
   height: 70px;
@@ -1265,64 +1267,114 @@
   transform: rotate(8deg);
 }
 
-.dreamSymbol.house {
-  background-image: url('https://freepngimg.com/thumb/house/8-house-png-image.png');
+/* Health */
+.dreamSymbol.health {
+  background-image: url('https://img.icons8.com/3d-fluency/94/heart-with-pulse.png');
   top: 120px;
-  left: 25%;
+  left: 30%;
   width: 80px;
-  height: 65px;
+  height: 70px;
   animation-delay: 2s;
   transform: rotate(-3deg);
 }
 
-.dreamSymbol.car {
-  background-image: url('https://freepngimg.com/thumb/car/1-car-png-picture.png');
-  top: 90px;
-  right: 25%;
-  width: 85px;
-  height: 55px;
-  animation-delay: 3s;
+/* Home/Environment */
+.dreamSymbol.house {
+  background-image: url('https://img.icons8.com/3d-fluency/94/home.png');
+  top: 40px;
+  left: 45%;
+  width: 80px;
+  height: 80px;
+  animation-delay: 3.5s;
+  transform: rotate(-2deg);
+}
+
+/* Personal Growth */
+.dreamSymbol.growth {
+  background-image: url('https://img.icons8.com/3d-fluency/94/sprout.png');
+  top: 85px;
+  right: 32%;
+  width: 75px;
+  height: 75px;
+  animation-delay: 2.5s;
   transform: rotate(5deg);
 }
 
-.dreamSymbol.travel {
-  background-image: url('https://freepngimg.com/thumb/airplane/9-airplane-png-image.png');
-  top: 40px;
-  left: 35%;
-  width: 80px;
-  height: 60px;
-  animation-delay: 4s;
-  transform: rotate(-7deg);
-}
-
+/* Relationships */
 .dreamSymbol.heart {
-  background-image: url('https://freepngimg.com/thumb/heart/20-heart-png-image.png');
-  top: 70px;
-  right: 40%;
-  width: 55px;
-  height: 55px;
+  background-image: url('https://img.icons8.com/3d-fluency/94/hearts.png');
+  top: 30px;
+  right: 25%;
+  width: 60px;
+  height: 60px;
   animation-delay: 5s;
   transform: rotate(10deg);
 }
 
-.dreamSymbol.trophy {
-  background-image: url('https://freepngimg.com/thumb/trophy/7-trophy-png-image.png');
-  top: 100px;
-  left: 60%;
-  width: 60px;
-  height: 65px;
-  animation-delay: 3.5s;
-  transform: rotate(-5deg);
+/* Recreation/Leisure */
+.dreamSymbol.recreation {
+  background-image: url('https://img.icons8.com/3d-fluency/94/beach.png');
+  top: 140px;
+  right: 48%;
+  width: 85px;
+  height: 85px;
+  animation-delay: 1.5s;
+  transform: rotate(4deg);
 }
 
+/* Spirituality */
+.dreamSymbol.meditation {
+  background-image: url('https://img.icons8.com/3d-fluency/94/meditation.png');
+  top: 75px;
+  left: 18%;
+  width: 80px;
+  height: 80px;
+  animation-delay: 4s;
+  transform: rotate(-6deg);
+}
+
+/* Education */
 .dreamSymbol.graduation {
-  background-image: url('https://freepngimg.com/thumb/graduation/6-graduation-png-image.png');
-  top: 30px;
-  right: 60%;
+  background-image: url('https://img.icons8.com/3d-fluency/94/graduation-cap.png');
+  top: 35px;
+  right: 45%;
   width: 70px;
   height: 70px;
-  animation-delay: 2.5s;
+  animation-delay: 3s;
   transform: rotate(6deg);
+}
+
+/* Travel */
+.dreamSymbol.travel {
+  background-image: url('https://img.icons8.com/3d-fluency/94/air-travel.png');
+  top: 20px;
+  left: 65%;
+  width: 80px;
+  height: 60px;
+  animation-delay: 4.5s;
+  transform: rotate(-7deg);
+}
+
+/* Dreams/Inspiration */
+.dreamSymbol.cloud {
+  background-image: url('https://img.icons8.com/3d-fluency/94/partly-cloudy-day.png');
+  top: 15px;
+  left: 28%;
+  width: 95px;
+  height: 65px;
+  animation-delay: 2.8s;
+  transform: rotate(-3deg);
+}
+
+/* Success */
+.dreamSymbol.trophy {
+  background-image: url('https://img.icons8.com/3d-fluency/94/trophy.png');
+  top: 110px;
+  left: 55%;
+  width: 70px;
+  height: 70px;
+  animation-delay: 3.2s;
+  transform: rotate(-5deg);
 }
 
 @keyframes float {
@@ -1330,13 +1382,13 @@
     transform: translateY(0) translateX(0) rotateY(0deg) rotateX(0deg) scale(1);
   }
   25% {
-    transform: translateY(-15px) translateX(10px) rotateY(10deg) rotateX(5deg) scale(1.05);
+    transform: translateY(-18px) translateX(10px) rotateY(15deg) rotateX(8deg) scale(1.05);
   }
   50% {
-    transform: translateY(0) translateX(20px) rotateY(0deg) rotateX(0deg) scale(1);
+    transform: translateY(0) translateX(25px) rotateY(0deg) rotateX(0deg) scale(1);
   }
   75% {
-    transform: translateY(15px) translateX(10px) rotateY(-10deg) rotateX(-5deg) scale(0.95);
+    transform: translateY(18px) translateX(10px) rotateY(-15deg) rotateX(-8deg) scale(0.95);
   }
   100% {
     transform: translateY(0) translateX(0) rotateY(0deg) rotateX(0deg) scale(1);
@@ -1353,4 +1405,29 @@
     width: 60px;
     height: 60px;
   }
+}
+
+.attributionFooter {
+  position: fixed;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  z-index: 100;
+  padding: 5px 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+}
+
+.attributionFooter a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.attributionFooter a:hover {
+  color: rgba(255, 255, 255, 1);
+  text-decoration: underline;
 } 
