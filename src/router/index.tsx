@@ -17,7 +17,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { PublicRoute } from '@/components/auth/PublicRoute';
 import ForgotPassword from '@/pages/Auth/ForgotPassword';
 import ResetPassword from '@/pages/Auth/ResetPassword';
-import AuthDebugger from '@/components/auth/AuthDebugger';
+//import AuthDebugger from '@/components/auth/AuthDebugger';
 import { LifeWheel } from '@/components/life-wheel';
 import { WelcomeSequence } from '@/components/life-wheel/WelcomeSequence';
 import { VisionBoard } from '@/components/vision-board';
@@ -207,7 +207,7 @@ export const router = createBrowserRouter([
     path: '/app',
     element: (
       <ProtectedRoute>
-        <AuthDebugger />
+        {/* <AuthDebugger /> */}
         <BottomSheetProvider>
           <WeBetterApp />
         </BottomSheetProvider>
