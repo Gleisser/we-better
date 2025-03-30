@@ -42,7 +42,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   
   // UI state
   const [selectedContentId, setSelectedContentId] = useState<string | null>(null);
-  const [firstVisit, setFirstVisit] = useState(true);
+  const [showIntro, setShowIntro] = useState(true);
   const [showControls, setShowControls] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
@@ -88,17 +88,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     return () => {
       window.removeEventListener('resize', updateDimensions);
     };
-  }, []);
-  
-  // Check if it's the first visit
-  useEffect(() => {
-    const hasVisitedBefore = localStorage.getItem('visionBoardVisited');
-    if (!hasVisitedBefore) {
-      setFirstVisit(true);
-      localStorage.setItem('visionBoardVisited', 'true');
-    } else {
-      setFirstVisit(false);
-    }
   }, []);
   
   // Handle animation on scroll
@@ -582,8 +571,8 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       )}
       
       {/* Intro screen */}
-      {firstVisit && !readOnly && (
-        <IntroScreen onClose={() => setFirstVisit(false)} />
+      {showIntro && !readOnly && (
+        <IntroScreen onClose={() => setShowIntro(false)} />
       )}
       
       {/* Toast notifications */}
