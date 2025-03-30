@@ -199,8 +199,8 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   const handleAddContent = (type: VisionBoardContentType, contentData?: Record<string, unknown>) => {
     // Calculate safe placement area, avoiding the right side where the content panel appears
     const CONTENT_PANEL_WIDTH = 350; // Width of the edit panel plus some margin
-    const CONTENT_ITEM_WIDTH = type === VisionBoardContentType.TEXT ? 300 : 200;
-    const CONTENT_ITEM_HEIGHT = type === VisionBoardContentType.TEXT ? 100 : 200;
+    const CONTENT_ITEM_WIDTH = 200;
+    const CONTENT_ITEM_HEIGHT = 200;
     
     // Calculate safe area width, ensuring items don't spawn behind the panel
     const safeAreaWidth = Math.max(200, canvasSize.width - CONTENT_PANEL_WIDTH);
@@ -224,19 +224,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     };
     
     // Set default properties based on type
-    switch (type) {
-      case VisionBoardContentType.TEXT:
-        newContent = {
-          ...newContent,
-          text: 'Click to edit this text',
-          fontSize: 16,
-          fontColor: '#000000',
-          fontFamily: 'Arial, sans-serif',
-          textAlign: 'center',
-          fontWeight: 'normal'
-        };
-        break;
-        
+    switch (type) {      
       case VisionBoardContentType.IMAGE:
         newContent = {
           ...newContent,
@@ -251,14 +239,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
           src: contentData?.src as string || 'https://via.placeholder.com/200',
           alt: contentData?.alt as string || 'AI generated image',
           prompt: contentData?.prompt as string || 'AI generated image'
-        };
-        break;
-        
-      case VisionBoardContentType.AUDIO:
-        newContent = {
-          ...newContent,
-          audioUrl: contentData?.audioUrl as string || '',
-          transcription: contentData?.transcription as string || 'Voice note'
         };
         break;
     }
