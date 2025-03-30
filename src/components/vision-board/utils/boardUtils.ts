@@ -4,7 +4,7 @@ import {
   VisionBoardContentType,
   VisionBoardData,
 } from '../types';
-import { LifeCategory } from '../../LifeWheel/types';
+import { LifeCategory } from '../../life-wheel/types';
 
 /**
  * Creates a new Vision Board with default content based on Life Wheel categories

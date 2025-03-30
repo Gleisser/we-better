@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VisionBoardContent, VisionBoardContentType } from '../types';
-import { LifeCategory } from '@/components/LifeWheel/types';
+import { LifeCategory } from '@/components/life-wheel/types';
 import styles from './ContentControls.module.css';
 
 interface ContentControlsProps {
