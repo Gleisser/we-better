@@ -49,7 +49,10 @@ export interface VisionBoardContent {
   size: Size;
   rotation: number;
   categoryId?: string;
+  
+  /** @deprecated Goal feature has been removed */
   isGoal?: boolean;
+  /** @deprecated Goal feature has been removed */
   goalDetails?: GoalDetails;
   
   // Text specific properties
@@ -90,7 +93,6 @@ export interface VisionBoardData {
 export enum ToolbarMode {
   ADD = 'add',
   FILTER = 'filter',
-  THEME = 'theme',
   ARRANGE = 'arrange'
 }
 
@@ -104,15 +106,4 @@ export interface VisionBoardProps {
   onShare?: (data: VisionBoardData) => void;
   className?: string;
   readOnly?: boolean;
-}
-
-// Theme for vision board
-export interface VisionBoardTheme {
-  id: string;
-  name: string;
-  backgroundGradient: string;
-  backgroundPattern?: string;
-  fontFamily: string;
-  accentColor: string;
-  isDark: boolean;
 } 

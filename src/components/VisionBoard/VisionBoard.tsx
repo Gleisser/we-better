@@ -11,11 +11,9 @@ import {
 import { ContentItem } from './components/ContentItem';
 import { ContentControls } from './components/ContentControls';
 import { Toolbar } from './components/Toolbar';
-import { ThemeSelector } from './components/ThemeSelector';
 import { IntroScreen } from './components/IntroScreen';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { themes, Theme } from './constants/themes';
 import styles from './VisionBoard.module.css';
 
 export const VisionBoard: React.FC<VisionBoardProps> = ({
@@ -46,7 +44,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   const [selectedContentId, setSelectedContentId] = useState<string | null>(null);
   const [firstVisit, setFirstVisit] = useState(true);
   const [showControls, setShowControls] = useState(false);
-  const [showThemeSelector, setShowThemeSelector] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [toolbarMode, setToolbarMode] = useState<ToolbarMode>(ToolbarMode.ADD);
@@ -146,9 +143,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   // Get the selected content
   const selectedContent = boardData.content.find(item => item.id === selectedContentId);
   
-  // Get the active theme
-  const activeTheme: Theme = themes.find(theme => theme.id === boardData.themeId) || themes[0];
-  
   // Filter content based on selected category
   const filteredContent = useMemo(() => {
     if (!selectedCategoryId) {
@@ -211,15 +205,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   const shareHandler = onShare 
     ? () => onShare(boardData) 
     : undefined;
-  
-  // Handle theme change
-  const handleThemeChange = (themeId: string) => {
-    setBoardData(prev => ({
-      ...prev,
-      themeId
-    }));
-    setShowThemeSelector(false);
-  };
   
   // Handle adding content
   const handleAddContent = (type: VisionBoardContentType, contentData?: Record<string, unknown>) => {
@@ -476,7 +461,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       
       {/* Main content container */}
       <div className={styles.contentWrapper}>
-        <div className={styles.glassCard} style={{ fontFamily: activeTheme.fontFamily }}>
+        <div className={styles.glassCard}>
           {/* Vision Board Title */}
           <h1 className={styles.visionBoardTitle}>{boardData.title || 'Vision Board'}</h1>
           {boardData.description && (
@@ -564,7 +549,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
                 onAddImage={handleImageUpload}
                 onGenerateAI={handleGenerateAIImage}
                 onAutoArrange={handleAutoArrange}
-                onToggleThemes={() => setShowThemeSelector(true)}
                 onSave={handleSave}
                 onShare={shareHandler}
                 onFilterByCategory={handleFilterByCategory}
@@ -596,14 +580,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
           lifeWheelCategories={lifeWheelCategories}
         />
       )}
-      
-      {/* Theme selector */}
-      <ThemeSelector
-        currentThemeId={boardData.themeId}
-        onThemeChange={handleThemeChange}
-        visible={showThemeSelector}
-        onClose={() => setShowThemeSelector(false)}
-      />
       
       {/* Intro screen */}
       {firstVisit && !readOnly && (

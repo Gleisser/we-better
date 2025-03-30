@@ -415,11 +415,6 @@ export const ContentItem: React.FC<ContentItemProps> = ({
       {/* Render content based on type */}
       {renderContent()}
       
-      {/* Show goal indicator if this is a goal */}
-      {content.isGoal && (
-        <div className={styles.goalIndicator} title="Goal">🎯</div>
-      )}
-      
       {/* Show category indicator if a category is assigned */}
       {content.categoryId && (
         <CategoryIndicator 

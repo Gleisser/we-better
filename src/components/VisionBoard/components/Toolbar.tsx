@@ -9,7 +9,6 @@ export interface ToolbarProps {
   onAddImage: () => void;
   onGenerateAI: () => void;
   onAutoArrange: () => void;
-  onToggleThemes: () => void;
   onSave: () => void;
   onShare?: () => void;
   onFilterByCategory?: (categoryId: string | null) => void;
@@ -25,7 +24,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onAddImage,
   onGenerateAI,
   onAutoArrange,
-  onToggleThemes,
   onSave,
   onShare,
   onFilterByCategory,
@@ -64,15 +62,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         >
           <span className={styles.buttonIcon}>📋</span>
           <span className={styles.buttonLabel}>Arrange</span>
-        </button>
-        
-        <button
-          className={`${styles.toolbarButton} ${styles.modeButton} ${mode === ToolbarMode.THEME ? styles.active : ''}`}
-          onClick={() => onModeChange(ToolbarMode.THEME)}
-          title="Change Theme"
-        >
-          <span className={styles.buttonIcon}>🎨</span>
-          <span className={styles.buttonLabel}>Theme</span>
         </button>
       </div>
       
@@ -161,19 +150,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           >
             <span className={styles.buttonIcon}>🎬</span>
             <span className={styles.buttonLabel}>Animate</span>
-          </button>
-        </div>
-      )}
-      
-      {mode === ToolbarMode.THEME && (
-        <div className={styles.toolbarSection}>
-          <button
-            className={styles.toolbarButton}
-            onClick={onToggleThemes}
-            title="Choose Theme"
-          >
-            <span className={styles.buttonIcon}>🎭</span>
-            <span className={styles.buttonLabel}>Change Theme</span>
           </button>
         </div>
       )}

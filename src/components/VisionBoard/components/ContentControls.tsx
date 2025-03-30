@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { VisionBoardContent, VisionBoardContentType, GoalDetails } from '../types';
+import { VisionBoardContent, VisionBoardContentType } from '../types';
 import { LifeCategory } from '@/components/LifeWheel/types';
 import styles from './ContentControls.module.css';
 
@@ -100,22 +100,6 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
     const updatedContent = { ...localContent, ...changes };
     setLocalContent(updatedContent);
     onUpdate(updatedContent);
-  };
-  
-  // Toggle goal state
-  const handleToggleGoal = () => {
-    const isCurrentlyGoal = !!localContent.isGoal;
-    
-    const newGoalDetails: GoalDetails = { 
-      title: localContent.text || "New Goal", 
-      description: "", 
-      progress: 0 
-    };
-    
-    handleChange({
-      isGoal: !isCurrentlyGoal,
-      goalDetails: !isCurrentlyGoal ? newGoalDetails : undefined
-    });
   };
   
   // Handle color scheme based on content type
@@ -326,15 +310,6 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         <span className={styles.tabIcon}>🎨</span>
         <span className={styles.tabText}>Style</span>
       </button>
-      
-      <button 
-        className={`${styles.tab} ${activeTab === 'goal' ? styles.activeTab : ''}`}
-        onClick={() => setActiveTab('goal')}
-        style={activeTab === 'goal' ? {borderColor: getAccentColor()} : undefined}
-      >
-        <span className={styles.tabIcon}>🎯</span>
-        <span className={styles.tabText}>Goal</span>
-      </button>
     </div>
   );
 
@@ -486,33 +461,33 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
               )}
             </div>
             
-            <button
+              <button
               className={styles.uploadButton}
-              onClick={() => {
-                const fileInput = document.createElement('input');
-                fileInput.type = 'file';
-                fileInput.accept = 'image/*';
-                fileInput.onchange = (e) => {
-                  const target = e.target as HTMLInputElement;
-                  if (target.files && target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                      if (event.target && typeof event.target.result === 'string') {
-                        handleChange({ 
-                          src: event.target.result,
+                onClick={() => {
+                  const fileInput = document.createElement('input');
+                  fileInput.type = 'file';
+                  fileInput.accept = 'image/*';
+                  fileInput.onchange = (e) => {
+                    const target = e.target as HTMLInputElement;
+                    if (target.files && target.files[0]) {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        if (event.target && typeof event.target.result === 'string') {
+                          handleChange({
+                            src: event.target.result,
                           alt: target.files ? target.files[0].name : 'Replaced image'
-                        });
-                      }
-                    };
-                    reader.readAsDataURL(target.files[0]);
-                  }
-                };
-                fileInput.click();
-              }}
+                          });
+                        }
+                      };
+                      reader.readAsDataURL(target.files[0]);
+                    }
+                  };
+                  fileInput.click();
+                }}
               style={{ backgroundColor: getAccentColor() }}
-            >
-              Replace Image
-            </button>
+              >
+                Replace Image
+              </button>
             
             {localContent.type === VisionBoardContentType.AI_GENERATED && (
               <InputField<string>
@@ -593,116 +568,26 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
                   src={localContent.audioUrl} 
                   controls 
                   className={styles.audioPlayer}
-                />
-              </div>
+            />
+          </div>
             )}
             
-            <button
+              <button
               className={styles.uploadButton}
-              onClick={() => {
+                onClick={() => {
                 // For now, just show a message about the future feature
                 alert("Audio recording feature coming soon!");
               }}
               style={{ backgroundColor: getAccentColor() }}
             >
               Record New Audio
-            </button>
+              </button>
           </div>
         );
         
       default:
         return <div className={styles.tabContent}>No styling options available</div>;
     }
-  };
-  
-  // Goal tab content
-  const GoalTab = () => (
-    <div className={styles.tabContent}>
-      <div className={styles.goalToggle}>
-        <span className={styles.goalLabel}>Set as Goal</span>
-        <label className={styles.switch}>
-          <input 
-            type="checkbox"
-            checked={!!localContent.isGoal}
-            onChange={handleToggleGoal}
-          />
-          <span className={styles.slider}></span>
-        </label>
-      </div>
-      
-      {localContent.isGoal && localContent.goalDetails && (
-        <div className={styles.goalSettings}>
-          <InputField<string>
-            label="Goal Title"
-            value={localContent.goalDetails.title}
-            onChange={(value) => {
-              if (localContent.goalDetails) {
-                handleChange({
-                  goalDetails: {
-                    ...localContent.goalDetails,
-                    title: value || "Goal"
-                  }
-                });
-              }
-            }}
-            placeholder="Enter goal title..."
-          />
-          
-          <InputField<string>
-            label="Description"
-            value={localContent.goalDetails.description}
-            onChange={(value) => {
-              if (localContent.goalDetails) {
-                handleChange({
-                  goalDetails: {
-                    ...localContent.goalDetails,
-                    description: value
-                  }
-                });
-              }
-            }}
-            type="textarea"
-            placeholder="Describe your goal..."
-          />
-          
-          <InputField<number>
-            label="Progress"
-            value={localContent.goalDetails.progress}
-            onChange={(value) => {
-              if (localContent.goalDetails) {
-                handleChange({
-                  goalDetails: {
-                    ...localContent.goalDetails,
-                    progress: value
-                  }
-                });
-              }
-            }}
-            type="range"
-            min={0}
-            max={100}
-            step={5}
-          />
-          
-          <div className={styles.progressIndicator}>
-            <div 
-              className={styles.progressBar} 
-              style={{ 
-                width: `${localContent.goalDetails.progress}%`,
-                backgroundColor: getProgressColor(localContent.goalDetails.progress)
-              }}
-            ></div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-  
-  // Helper function to get progress color based on percentage
-  const getProgressColor = (progress: number) => {
-    if (progress < 30) return '#ef4444'; // Red
-    if (progress < 70) return '#f59e0b'; // Amber
-    return '#10b981'; // Green
   };
   
   // Delete confirmation modal
@@ -719,7 +604,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
           >
             Cancel
           </button>
-          <button 
+          <button
             className={styles.confirmDeleteButton}
             onClick={() => {
               onDelete(localContent.id);
@@ -754,11 +639,10 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         <div className={styles.content}>
           {activeTab === 'position' && <PositionTab />}
           {activeTab === 'style' && <StyleTab />}
-          {activeTab === 'goal' && <GoalTab />}
-        </div>
-        
+      </div>
+      
         <div className={styles.footer}>
-          <button 
+        <button
             className={styles.deleteButton}
             onClick={() => setIsDeleting(true)}
           >
@@ -768,10 +652,10 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
               <line x1="10" y1="11" x2="10" y2="17"></line>
               <line x1="14" y1="11" x2="14" y2="17"></line>
             </svg>
-            Delete
-          </button>
-        </div>
+          Delete
+        </button>
       </div>
+    </div>
       
       {isDeleting && <DeleteConfirmation />}
     </>
