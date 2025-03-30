@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   VisionBoardContent, 
-  VisionBoardContentType, 
-  TextAlign
+  VisionBoardContentType,
 } from '../types';
 import styles from '../VisionBoard.module.css';
 
@@ -50,23 +49,16 @@ export const ContentItem: React.FC<ContentItemProps> = ({
   categoryColors = {}
 }) => {
   // State
-  const [text, setText] = useState(content.text || '');
-  const [isEditing, setIsEditing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const contentRef = useRef<HTMLDivElement>(null);
-  
-  // Effect to update text when content changes
-  useEffect(() => {
-    setText(content.text || '');
-  }, [content.text]);
   
   // CSS classes based on state
   const classNames = [
     styles.contentItem,
     isSelected ? styles.selected : '',
     isDragging ? styles.dragging : '',
-    content.type === VisionBoardContentType.TEXT ? styles.textItem : '',
+    '',
   ].filter(Boolean).join(' ');
   
   // Define animation delay and properties based on content ID
@@ -113,32 +105,6 @@ export const ContentItem: React.FC<ContentItemProps> = ({
     }
   };
   
-  // Handle text input change
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newText = e.target.value;
-    setText(newText);
-  };
-  
-  // Handle blur for saving text changes
-  const handleBlur = () => {
-    setIsEditing(false);
-    
-    // Only update if text has changed
-    if (text !== content.text) {
-      onUpdate({
-        ...content,
-        text
-      });
-    }
-  };
-  
-  // Handle double click for editing text
-  const handleDoubleClick = () => {
-    if (!readOnly && content.type === VisionBoardContentType.TEXT) {
-      setIsEditing(true);
-    }
-  };
-  
   // Drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
     if (readOnly) return;
@@ -148,9 +114,7 @@ export const ContentItem: React.FC<ContentItemProps> = ({
     if (
       target.tagName === 'TEXTAREA' || 
       target.tagName === 'BUTTON' || 
-      target.tagName === 'INPUT' ||
-      target.tagName === 'AUDIO' ||
-      target.classList.contains(styles.audioPlayer)
+      target.tagName === 'INPUT'
     ) {
       return;
     }
@@ -188,9 +152,7 @@ export const ContentItem: React.FC<ContentItemProps> = ({
     if (
       target.tagName === 'TEXTAREA' || 
       target.tagName === 'BUTTON' || 
-      target.tagName === 'INPUT' ||
-      target.tagName === 'AUDIO' ||
-      target.classList.contains(styles.audioPlayer)
+      target.tagName === 'INPUT'
     ) {
       return;
     }
@@ -217,7 +179,7 @@ export const ContentItem: React.FC<ContentItemProps> = ({
   };
   
   // Handle touch move for dragging on mobile
-  const handleTouchMove = (e: TouchEvent) => {
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!isDragging) return;
     
     // Prevent scrolling while dragging
@@ -249,15 +211,15 @@ export const ContentItem: React.FC<ContentItemProps> = ({
         y: boundedY
       }
     });
-  };
+  }, [isDragging, dragOffset, content, onUpdate, contentRef]);
   
   // Handle touch end to stop dragging on mobile
-  const handleTouchEnd = () => {
+  const handleTouchEnd = useCallback(() => {
     setIsDragging(false);
-  };
+  }, []);
   
   // Handle mouse move for dragging
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging) return;
     
     // Get the parent container's position
@@ -283,12 +245,12 @@ export const ContentItem: React.FC<ContentItemProps> = ({
         y: boundedY
       }
     });
-  };
+  }, [isDragging, dragOffset, content, onUpdate, contentRef]);
   
   // Handle mouse up to end dragging
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-  };
+  }, []);
   
   // Add and remove event listeners for drag operations
   useEffect(() => {
@@ -313,39 +275,11 @@ export const ContentItem: React.FC<ContentItemProps> = ({
       window.removeEventListener('touchend', handleTouchEnd);
       window.removeEventListener('touchcancel', handleTouchEnd);
     };
-  }, [isDragging, dragOffset]);
+  }, [isDragging, dragOffset, handleMouseMove, handleTouchMove, handleMouseUp, handleTouchEnd]);
   
   // Add render logic for content based on type
   const renderContent = () => {
-    switch (content.type) {
-      case VisionBoardContentType.TEXT:
-        return (
-          <div className={styles.textContent}>
-            {isEditing ? (
-              <textarea
-                value={text}
-                onChange={handleTextChange}
-                onBlur={handleBlur}
-                autoFocus
-                className={styles.contentText}
-              />
-            ) : (
-              <div 
-                className={styles.contentText} 
-                style={{
-                  color: content.fontColor,
-                  fontSize: `${content.fontSize || 16}px`,
-                  fontFamily: content.fontFamily,
-                  textAlign: (content.textAlign || 'center') as TextAlign,
-                  fontWeight: content.fontWeight
-                }}
-              >
-                {content.text}
-              </div>
-            )}
-          </div>
-        );
-      
+    switch (content.type) {    
       case VisionBoardContentType.IMAGE:
         return (
           <div className={styles.polaroidContainer}>
@@ -378,25 +312,6 @@ export const ContentItem: React.FC<ContentItemProps> = ({
             )}
           </div>
         );
-      
-      case VisionBoardContentType.AUDIO:
-        return (
-          <div className={styles.audioContent}>
-            <div className={styles.audioIcon}>🎵</div>
-            {content.transcription && (
-              <div className={styles.audioTranscription}>{content.transcription}</div>
-            )}
-            <div className={styles.audioPlayerWrapper}>
-              <audio 
-                controls 
-                src={content.audioUrl} 
-                className={styles.audioPlayer}
-                preload="metadata"
-              />
-            </div>
-          </div>
-        );
-      
       default:
         return <div>Unknown content type</div>;
     }
@@ -410,7 +325,6 @@ export const ContentItem: React.FC<ContentItemProps> = ({
       onClick={handleSelect}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
-      onDoubleClick={handleDoubleClick}
     >
       {/* Render content based on type */}
       {renderContent()}

@@ -3,18 +3,6 @@ import { VisionBoardContent, VisionBoardContentType } from '../types';
 import { LifeCategory } from '@/components/LifeWheel/types';
 import styles from './ContentControls.module.css';
 
-// Debounce function with proper types
-function debounce<T extends (...args: any[]) => any>(
-  fn: T, 
-  ms = 300
-): (...args: Parameters<T>) => void {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  return function(this: void, ...args: Parameters<T>) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), ms);
-  };
-}
-
 interface ContentControlsProps {
   selectedContent: VisionBoardContent;
   onUpdate: (content: VisionBoardContent) => void;
@@ -86,9 +74,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   const [activeTab, setActiveTab] = useState<string>('position');
   const [isDeleting, setIsDeleting] = useState(false);
   const controlsRef = useRef<HTMLDivElement>(null);
-  
-  // Debug lifecategories - remove after testing
-  console.log('lifeWheelCategories:', lifeWheelCategories);
+
   
   // Update local state when selected content changes
   useEffect(() => {
@@ -105,14 +91,10 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   // Handle color scheme based on content type
   const getAccentColor = () => {
     switch (localContent.type) {
-      case VisionBoardContentType.TEXT:
-        return '#3b82f6'; // Blue
       case VisionBoardContentType.IMAGE:
         return '#10b981'; // Green
       case VisionBoardContentType.AI_GENERATED:
         return '#8b5cf6'; // Purple
-      case VisionBoardContentType.AUDIO:
-        return '#f59e0b'; // Amber
       default:
         return '#3b82f6';
     }
@@ -120,14 +102,10 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   
   const getContentTypeIcon = () => {
     switch (localContent.type) {
-      case VisionBoardContentType.TEXT:
-        return '📝';
       case VisionBoardContentType.IMAGE:
         return '🖼️';
       case VisionBoardContentType.AI_GENERATED:
         return '🤖';
-      case VisionBoardContentType.AUDIO:
-        return '🎙️';
       default:
         return '📌';
     }
@@ -135,14 +113,10 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
 
   const getContentTypeName = () => {
     switch (localContent.type) {
-      case VisionBoardContentType.TEXT:
-        return 'Text';
       case VisionBoardContentType.IMAGE:
         return 'Image';
       case VisionBoardContentType.AI_GENERATED:
         return 'AI Image';
-      case VisionBoardContentType.AUDIO:
-        return 'Audio';
       default:
         return 'Item';
     }
@@ -184,12 +158,18 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
     }, [value]);
     
     // Debounced change handler for textarea
-    const debouncedChange = useCallback(
-      debounce((newValue: T) => {
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    
+    const debouncedChange = useCallback((newValue: T) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      
+      timeoutRef.current = setTimeout(() => {
         onChange(newValue);
-      }, 500),
-      [onChange]
-    );
+        timeoutRef.current = null;
+      }, 500);
+    }, [onChange]);
     
     const getInput = () => {
       switch (type) {
@@ -378,79 +358,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   
   // Style tab content based on content type
   const StyleTab = () => {
-    switch (localContent.type) {
-      case VisionBoardContentType.TEXT:
-        return (
-          <div className={styles.tabContent}>
-            <InputField<string>
-              label="Text Content"
-              value={localContent.text || ''}
-              onChange={(value) => handleChange({ text: value })}
-              type="textarea"
-              placeholder="Enter your text here..."
-            />
-            
-            <div className={styles.gridLayout}>
-              <InputField<string>
-                label="Font Color"
-                value={localContent.fontColor || '#000000'}
-                onChange={(value) => handleChange({ fontColor: value })}
-                type="color"
-              />
-              
-              <InputField<number>
-                label="Font Size"
-                value={localContent.fontSize || 16}
-                onChange={(value) => handleChange({ fontSize: value })}
-                type="number"
-                min={8}
-                max={72}
-              />
-            </div>
-            
-            <div className={styles.gridLayout}>
-              <InputField<string>
-                label="Font Family"
-                value={localContent.fontFamily || 'Arial, sans-serif'}
-                onChange={(value) => handleChange({ fontFamily: value })}
-                type="select"
-                options={[
-                  { value: 'Arial, sans-serif', label: 'Arial' },
-                  { value: 'Times New Roman, serif', label: 'Times New Roman' },
-                  { value: 'Courier New, monospace', label: 'Courier New' },
-                  { value: 'Georgia, serif', label: 'Georgia' },
-                  { value: 'Verdana, sans-serif', label: 'Verdana' },
-                  { value: 'Impact, sans-serif', label: 'Impact' }
-                ]}
-              />
-              
-              <InputField<string>
-                label="Text Align"
-                value={localContent.textAlign || 'center'}
-                onChange={(value) => handleChange({ textAlign: value })}
-                type="select"
-                options={[
-                  { value: 'left', label: 'Left' },
-                  { value: 'center', label: 'Center' },
-                  { value: 'right', label: 'Right' }
-                ]}
-              />
-            </div>
-            
-            <InputField<string>
-              label="Font Weight"
-              value={localContent.fontWeight || 'normal'}
-              onChange={(value) => handleChange({ fontWeight: value })}
-              type="select"
-              options={[
-                { value: 'normal', label: 'Normal' },
-                { value: 'bold', label: 'Bold' },
-                { value: 'lighter', label: 'Light' }
-              ]}
-            />
-          </div>
-        );
-        
+    switch (localContent.type) {      
       case VisionBoardContentType.IMAGE:
       case VisionBoardContentType.AI_GENERATED:
         return (
@@ -550,41 +458,6 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
             </div>
           </div>
         );
-        
-      case VisionBoardContentType.AUDIO:
-        return (
-          <div className={styles.tabContent}>
-            <InputField<string>
-              label="Transcription"
-              value={localContent.transcription || ''}
-              onChange={(value) => handleChange({ transcription: value })}
-              type="textarea"
-              placeholder="Audio transcription or notes..."
-            />
-            
-            {localContent.audioUrl && (
-              <div className={styles.audioPreview}>
-                <audio 
-                  src={localContent.audioUrl} 
-                  controls 
-                  className={styles.audioPlayer}
-            />
-          </div>
-            )}
-            
-              <button
-              className={styles.uploadButton}
-                onClick={() => {
-                // For now, just show a message about the future feature
-                alert("Audio recording feature coming soon!");
-              }}
-              style={{ backgroundColor: getAccentColor() }}
-            >
-              Record New Audio
-              </button>
-          </div>
-        );
-        
       default:
         return <div className={styles.tabContent}>No styling options available</div>;
     }

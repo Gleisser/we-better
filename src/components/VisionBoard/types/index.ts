@@ -2,24 +2,10 @@ import { LifeCategory } from "@/components/LifeWheel/types";
 
 // Content types
 export enum VisionBoardContentType {
-  TEXT = 'text',
   IMAGE = 'image',
-  AUDIO = 'audio',
   AI_GENERATED = 'ai_generated'
 }
 
-// Text alignment options
-export enum TextAlign {
-  LEFT = 'left',
-  CENTER = 'center',
-  RIGHT = 'right'
-}
-
-// Font weight options
-export enum FontWeight {
-  NORMAL = 'normal',
-  BOLD = 'bold'
-}
 
 // Position interface
 export interface Position {
@@ -33,13 +19,7 @@ export interface Size {
   height: number;
 }
 
-// Goal details interface
-export interface GoalDetails {
-  title: string;
-  description: string;
-  dueDate?: Date | null;
-  progress: number;
-}
+
 
 // Board Content interface
 export interface VisionBoardContent {
@@ -50,18 +30,8 @@ export interface VisionBoardContent {
   rotation: number;
   categoryId?: string;
   
-  /** @deprecated Goal feature has been removed */
-  isGoal?: boolean;
-  /** @deprecated Goal feature has been removed */
-  goalDetails?: GoalDetails;
   
-  // Text specific properties
-  text?: string;
-  fontColor?: string;
-  fontSize?: number;
-  fontFamily?: string;
-  textAlign?: string;
-  fontWeight?: string;
+
   
   // Image specific properties
   src?: string;
@@ -71,17 +41,12 @@ export interface VisionBoardContent {
   // AI specific properties
   prompt?: string;
   
-  // Audio specific properties
-  audioUrl?: string;
-  transcription?: string;
 }
-
 // Vision Board Data interface
 export interface VisionBoardData {
   id?: string;
   title: string;
   description?: string;
-  themeId: string;
   categories: string[];
   content: VisionBoardContent[];
   createdAt?: string;

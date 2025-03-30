@@ -3,13 +3,8 @@ import {
   VisionBoardContent, 
   VisionBoardContentType,
   VisionBoardData,
-  VisionBoardImageContent,
-  VisionBoardTextContent,
-  VisionBoardAIGeneratedContent,
-  VisionBoardAudioContent
 } from '../types';
 import { LifeCategory } from '../../LifeWheel/types';
-import { themes, DEFAULT_VISION_BOARD_THEME_ID } from '../constants/themes';
 
 /**
  * Creates a new Vision Board with default content based on Life Wheel categories
@@ -50,12 +45,11 @@ export const createNewVisionBoard = (
     id: uuidv4(),
     userId,
     title: 'My Vision Board',
-    createdAt: now,
-    updatedAt: now,
-    categories: lifeWheelCategories,
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString(),
+    categories: lifeWheelCategories.map(category => category.id),
     content,
-    theme: DEFAULT_VISION_BOARD_THEME_ID,
-    isPublic: false
+    themeId: DEFAULT_VISION_BOARD_THEME_ID
   };
 };
 
