@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WELCOME_SEQUENCE } from './constants/messages';
-import { WelcomeSequenceProps } from './types';
+import { WelcomeSequenceProps, UserProfileData } from './types';
 import MessageAnimation from './components/MessageAnimation';
 import ContentCard from './components/ContentCard/ContentCard';
 import ButtonGroup from './components/ContentCard/ButtonGroup';
@@ -9,6 +9,8 @@ import AnimatedTitle from './components/AnimatedText/AnimatedTitle';
 import ProgressIndicator from './components/ProgressIndicator';
 import LifeWheelVisualization from './components/Visualization/LifeWheelVisualization';
 import ErrorBoundary from './components/Visualization/ErrorBoundary';
+import Modal from './components/Modal';
+import UserProfileForm from './components/UserProfileForm';
 import styles from './WelcomeSequence.module.css';
 
 const WelcomeSequence = ({ 
@@ -20,17 +22,18 @@ const WelcomeSequence = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfileData>({});
   
   // Handle advancement to next message
   const handleNext = useCallback(() => {
     if (currentIndex < WELCOME_SEQUENCE.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
-      setIsFinished(true);
-      // Small delay before calling onComplete for exit animation
-      setTimeout(onComplete, 500);
+      // Instead of completing immediately, show the profile modal
+      setShowProfileModal(true);
     }
-  }, [currentIndex, onComplete]);
+  }, [currentIndex]);
   
   // Start sequence
   const handleStart = useCallback(() => {
@@ -43,10 +46,29 @@ const WelcomeSequence = ({
     // Small delay before calling onSkip for exit animation
     setTimeout(onSkip, 300);
   }, [onSkip]);
+
+  // Handle form submission
+  const handleProfileSubmit = useCallback((profileData: UserProfileData) => {
+    setUserProfile(profileData);
+    setShowProfileModal(false);
+    setIsFinished(true);
+    // Small delay before calling onComplete for exit animation
+    setTimeout(() => onComplete(profileData), 500);
+  }, [onComplete]);
+
+  // Skip profile form
+  const handleSkipProfile = useCallback(() => {
+    setShowProfileModal(false);
+    setIsFinished(true);
+    // Complete without profile data
+    setTimeout(() => onComplete(), 500);
+  }, [onComplete]);
   
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (showProfileModal) return; // Don't handle keyboard events when modal is open
+      
       if (!isStarted || isFinished) {
         if (e.key === 'Enter' && !isStarted) handleStart();
         if (e.key === 'Escape' && !isStarted) handleSkip();
@@ -62,7 +84,7 @@ const WelcomeSequence = ({
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isStarted, isFinished, handleNext, handleSkip, handleStart]);
+  }, [isStarted, isFinished, handleNext, handleSkip, handleStart, showProfileModal]);
   
   // Check if current index is valid
   const isValidIndex = currentIndex >= 0 && currentIndex < WELCOME_SEQUENCE.length;
@@ -152,6 +174,15 @@ const WelcomeSequence = ({
           </AnimatePresence>
         )}
       </div>
+
+      {/* User Profile Modal */}
+      <Modal isOpen={showProfileModal} onClose={handleSkipProfile}>
+        <UserProfileForm 
+          onSubmit={handleProfileSubmit}
+          onCancel={handleSkipProfile}
+          initialData={userProfile}
+        />
+      </Modal>
     </div>
   );
 };

@@ -469,7 +469,7 @@ const TestScene = () => {
 };
 
 // Simplified test component
-const LifeWheelVisualization = () => {
+const LifeWheelVisualization = ({ currentStage, currentIndex }: LifeWheelVisualizationProps) => {
   return (
     <div className={styles.visualizationContainer}>
       <Suspense fallback={
@@ -498,7 +498,7 @@ const LifeWheelVisualization = () => {
             pointerEvents: 'none'
           }}
         >
-          <TestScene />
+          <VisualizationScene currentStage={currentStage} currentIndex={currentIndex} />
           <OrbitControls 
             enableZoom={false}
             enablePan={false}
