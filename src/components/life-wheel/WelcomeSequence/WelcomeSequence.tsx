@@ -25,15 +25,40 @@ const WelcomeSequence = ({
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfileData>({});
   
+  // Check if current index is valid
+  const isValidIndex = currentIndex >= 0 && currentIndex < WELCOME_SEQUENCE.length;
+  
+  // Current message
+  const currentMessage = isValidIndex ? WELCOME_SEQUENCE[currentIndex] : null;
+  const currentVisualStage = currentMessage?.visualStage || 'intro';
+  
+  // Handle special platform-2 stage to show profile form
+  useEffect(() => {
+    if (currentVisualStage === 'platform-2' && !showProfileModal) {
+      // Small delay to ensure the message is displayed first
+      const timer = setTimeout(() => {
+        setShowProfileModal(true);
+      }, 2000); // Wait 2 seconds after the message appears
+      
+      return () => clearTimeout(timer);
+    }
+  }, [currentVisualStage, showProfileModal]);
+  
   // Handle advancement to next message
   const handleNext = useCallback(() => {
+    if (currentVisualStage === 'platform-2' && !showProfileModal) {
+      setShowProfileModal(true);
+      return;
+    }
+    
     if (currentIndex < WELCOME_SEQUENCE.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
-      // Instead of completing immediately, show the profile modal
-      setShowProfileModal(true);
+      setIsFinished(true);
+      // Small delay before calling onComplete for exit animation
+      setTimeout(() => onComplete(userProfile), 500);
     }
-  }, [currentIndex]);
+  }, [currentIndex, currentVisualStage, onComplete, showProfileModal, userProfile]);
   
   // Start sequence
   const handleStart = useCallback(() => {
@@ -51,18 +76,14 @@ const WelcomeSequence = ({
   const handleProfileSubmit = useCallback((profileData: UserProfileData) => {
     setUserProfile(profileData);
     setShowProfileModal(false);
-    setIsFinished(true);
-    // Small delay before calling onComplete for exit animation
-    setTimeout(() => onComplete(profileData), 500);
-  }, [onComplete]);
+    // Continue with the sequence
+  }, []);
 
-  // Skip profile form
+  // Skip profile form - but still continue with sequence
   const handleSkipProfile = useCallback(() => {
     setShowProfileModal(false);
-    setIsFinished(true);
-    // Complete without profile data
-    setTimeout(() => onComplete(), 500);
-  }, [onComplete]);
+    // Continue with the sequence (don't save profile data)
+  }, []);
   
   // Keyboard navigation
   useEffect(() => {
@@ -85,13 +106,6 @@ const WelcomeSequence = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isStarted, isFinished, handleNext, handleSkip, handleStart, showProfileModal]);
-  
-  // Check if current index is valid
-  const isValidIndex = currentIndex >= 0 && currentIndex < WELCOME_SEQUENCE.length;
-  
-  // Current message
-  const currentMessage = isValidIndex ? WELCOME_SEQUENCE[currentIndex] : null;
-  const currentVisualStage = currentMessage?.visualStage || 'intro';
   
   return (
     <div className={styles.fullScreenContainer}>
