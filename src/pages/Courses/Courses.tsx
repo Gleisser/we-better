@@ -1,24 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Courses.module.css';
 import { ChevronDownIcon, SettingsIcon } from '@/components/common/icons';
 import FeedSettingsModal from '@/components/common/FeedSettingsModal/FeedSettingsModal';
 import CourseCard from '@/components/widgets/CourseCard/CourseCard';
-import { mockCourses } from './mockCourses';
+import { courseService, Course } from '@/services/courseService';
 
 const Courses = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [showFeedSettings, setShowFeedSettings] = useState(false);
   const [showOrderBy, setShowOrderBy] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState('Recommended');
 
   const orderOptions = [
     { label: 'Recommended', value: 'recommended' },
-    { label: 'Most Popular', value: 'popular' },
-    { label: 'Highest Rated', value: 'rated' },
-    { label: 'Newest', value: 'newest' },
-    { label: 'Price: Low to High', value: 'price_asc' },
-    { label: 'Price: High to Low', value: 'price_desc' },
+    { label: 'Most Popular', value: 'studentsCount:desc' },
+    { label: 'Highest Rated', value: 'rating:desc' },
+    { label: 'Newest', value: 'createdAt:desc' },
   ];
+
+  useEffect(() => {
+    fetchCourses();
+  }, [selectedOrder]);
+
+  const fetchCourses = async () => {
+    setLoading(true);
+    try {
+      const orderValue = orderOptions.find(opt => opt.label === selectedOrder)?.value;
+      const params: any = {
+        pagination: { page: 1, pageSize: 20 }
+      };
+      
+      if (orderValue && orderValue !== 'recommended') {
+        params.sort = orderValue;
+      }
+
+      const response = await courseService.getCourses(params);
+      setCourses(response.data.map(item => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        instructor: item.instructor,
+        rating: item.rating,
+        studentsCount: item.studentsCount,
+        thumbnail: item.thumbnail,
+        url: item.url,
+        documentId: item.documentId,
+        categories: item.categories,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        duration: item.duration,
+        level: item.level,
+        language: item.language,
+        publishedAt: item.publishedAt,
+        price: item.price,
+        platform: item.platform
+      })));
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleOrderSelect = (option: string) => {
     setSelectedOrder(option);
@@ -75,7 +118,7 @@ const Courses = () => {
         <p className="text-white/70">Loading courses...</p>
       ) : (
         <div className={styles.courseGrid}>
-          {mockCourses.map(course => (
+          {courses.map(course => (
             <CourseCard key={course.id} course={course} />
           ))}
         </div>

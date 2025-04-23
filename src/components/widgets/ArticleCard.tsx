@@ -10,40 +10,65 @@ import {
   MoreVerticalIcon,
   EyeOffIcon,
   HashtagIcon,
-  FlagIcon
+  FlagIcon,
+  ClockIcon,
+  CalendarIcon
 } from '@/components/common/icons';
 import { Tooltip } from '@/components/common/Tooltip';
 import { useBookmarkedArticles } from '@/hooks/useBookmarkedArticles';
 import ArticlePopup from './ArticlePopup';
+import { formatRelativeDate } from '@/utils/dateUtils';
 
 interface ArticleCardProps {
   article: {
     title: string;
     image: string;
     tldr: string;
-    tags?: string[];
+    tags?: Array<{
+      id: number;
+      name: string;
+      slug: string;
+    }>;
     id?: string;
     description?: string;
     url?: string;
     thumbnail?: string;
     readTime?: number;
+    postDate: string;
     publishedAt?: string;
     category?: string;
+    tableOfContents?: Array<{
+      id: string;
+      title: string;
+      level: number;
+    }>;
   };
+  onTagClick?: (tag: { id: number; name: string }) => void;
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
+const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick }) => {
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedArticles();
   const [votes, setVotes] = useState(0);
   const [userVote, setUserVote] = useState<'up' | 'down' | null>(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const category = CATEGORY_CONFIG[article.category] || {
+  const category = CATEGORY_CONFIG[formatSlug(article.category)] || {
     icon: '📚',
     label: 'General',
     color: 'rgba(255, 255, 255, 0.5)',
   };
+
+  function formatSlug(slug: string | undefined) {
+    if (slug) {
+      if(slug === '12-minute-meditation') {
+        return 'meditation';
+      }
+      //replace trace with underscore
+      return slug.replace(/-/g, '_');
+    }
+    return 'general';
+  }
 
   const handleVote = (voteType: 'up' | 'down') => {
     if (userVote === voteType) {
@@ -81,7 +106,25 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
     setShowMoreMenu(!showMoreMenu);
   };
 
-  const handleOptionClick = (action: string) => {
+  const renderNotInterestedOptions = () => {
+    if (!article.tags || article.tags.length === 0) return null;
+
+    return article.tags.slice(0, 3).map((tag) => (
+      <button 
+        key={tag.id}
+        className={styles.moreOption}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleOptionClick('notInterested', tag);
+        }}
+      >
+        <HashtagIcon className={styles.optionIcon} />
+        <span>Not interested in #{tag.name}</span>
+      </button>
+    ));
+  };
+
+  const handleOptionClick = (action: string, tag?: { id: number; name: string }) => {
     switch (action) {
       case 'share':
         handleShare();
@@ -96,10 +139,22 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
         // Handle block
         break;
       case 'notInterested':
-        // Handle not interested
+        if (tag) {
+          // Handle not interested in specific tag
+          console.log(`Not interested in tag: ${tag.name}`);
+        }
+        break;
+      case 'report':
+        // Handle report
         break;
     }
     setShowMoreMenu(false);
+  };
+
+  const handleTagClick = (tag: { id: number; name: string }) => {
+    if (onTagClick) {
+      onTagClick(tag);
+    }
   };
 
   return (
@@ -183,62 +238,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
                         <span>Hide</span>
                       </button>
 
-                      <button 
-                        className={styles.moreOption}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOptionClick('follow');
-                        }}
-                      >
-                        <BookmarkIcon className={styles.optionIcon} />
-                        <span>Follow It's Foss</span>
-                      </button>
-
                       <div className={styles.menuDivider} />
-
-                      <button 
-                        className={styles.moreOption}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOptionClick('block');
-                        }}
-                      >
-                        <EyeOffIcon className={styles.optionIcon} />
-                        <span>Don't show posts from It's Foss</span>
-                      </button>
-
-                      <button 
-                        className={styles.moreOption}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOptionClick('notInterested');
-                        }}
-                      >
-                        <HashtagIcon className={styles.optionIcon} />
-                        <span>Not interested in #security</span>
-                      </button>
-
-                      <button 
-                        className={styles.moreOption}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOptionClick('notInterested');
-                        }}
-                      >
-                        <HashtagIcon className={styles.optionIcon} />
-                        <span>Not interested in #tools</span>
-                      </button>
-
-                      <button 
-                        className={styles.moreOption}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOptionClick('notInterested');
-                        }}
-                      >
-                        <HashtagIcon className={styles.optionIcon} />
-                        <span>Not interested in #linux</span>
-                      </button>
+                      {/* Dynamic Not Interested Options */}
+                      {renderNotInterestedOptions()}
 
                       <div className={styles.menuDivider} />
 
@@ -265,14 +267,26 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
 
           <div className={styles.content}>
             <h2 className={styles.title}>{article.title}</h2>
-            <p className={styles.description}>{article.description}</p>
+            <div className={styles.description}>
+              {article.description}
+            </div>
 
             <div className={styles.footer}>
               <div className={styles.metadata}>
-                <span className={styles.readTime}>⏱️ {article.readTime} min read</span>
-                <span className={styles.publishDate}>
-                  {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
-                </span>
+                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                  {article.readTime && (
+                    <span className="flex items-center gap-1">
+                      <ClockIcon className="w-4 h-4" />
+                      {article.readTime} min read
+                    </span>
+                  )}
+                  {article.postDate && (
+                    <span className="flex items-center gap-1">
+                      <CalendarIcon className="w-4 h-4" />
+                      {formatRelativeDate(article.postDate)}
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className={styles.actions}>
@@ -327,6 +341,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
       <ArticlePopup 
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
+        onTagClick={onTagClick}
         article={article}
       />
     </>

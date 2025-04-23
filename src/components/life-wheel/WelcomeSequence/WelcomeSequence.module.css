@@ -1,0 +1,1137 @@
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  background: rgba(17, 17, 25, 0.7);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 24px;
+}
+
+.backgroundContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.gradientOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  opacity: 0.15;
+  mix-blend-mode: overlay;
+}
+
+.particleCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.messageContainer {
+  width: 100%;
+  text-align: center;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 40px;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.messageText {
+  line-height: 1.4;
+}
+
+.highlight {
+  color: #8B5CF6;
+  position: relative;
+  display: inline-block;
+}
+
+.highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.3) 0%, rgba(236, 72, 153, 0.3) 100%);
+  border-radius: 3px;
+  z-index: -1;
+}
+
+.progressContainer {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.progressDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.progressActive {
+  background-color: #8B5CF6;
+}
+
+.controlsContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.nextButton, .skipButton, .primaryButton, .secondaryButton {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.nextButton, .primaryButton {
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  color: white;
+}
+
+.nextButton:hover, .primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+}
+
+.skipButton, .secondaryButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.skipButton:hover, .secondaryButton:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.startContainer {
+  text-align: center;
+  padding: 32px;
+  max-width: 500px;
+}
+
+.startTitle {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.startText {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 32px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.secondaryButton {
+  margin-top: 12px;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #8B5CF6;
+  border-radius: 50%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .messageContainer {
+    font-size: 24px;
+  }
+  
+  .startTitle {
+    font-size: 28px;
+  }
+  
+  .startText {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  
+  .messageContainer {
+    font-size: 20px;
+    min-height: 80px;
+  }
+  
+  .startTitle {
+    font-size: 24px;
+  }
+  
+  .buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .nextButton, .skipButton, .primaryButton, .secondaryButton {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+/* Animation for loading spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.sequenceContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+  min-height: 300px;
+}
+
+/* Full screen container with Login background */
+.fullScreenContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  overflow: hidden;
+}
+
+/* Background image from Login component */
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/assets/images/login/background.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  opacity: 1;
+}
+
+/* Content card - matched with Login panel dimensions */
+.contentCard {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  overflow: hidden;
+  padding: 48px;
+  width: 100%;
+  max-width: 580px;
+  min-height: 580px;
+  will-change: transform, opacity;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Content wrapper */
+.contentWrapper {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 90vw;
+  margin: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Message Card specific styling */
+.messageCard {
+  min-height: 580px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Typography */
+.titleContainer {
+  margin-bottom: 40px;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+  font-size: 18px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Message elements */
+.messageContainer {
+  width: 100%;
+  text-align: center;
+  margin: 40px 0;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.messageText {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.highlight {
+  color: #8B5CF6;
+  position: relative;
+  display: inline-block;
+}
+
+.highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.3) 0%, rgba(236, 72, 153, 0.3) 100%);
+  border-radius: 3px;
+  z-index: -1;
+}
+
+/* Update button container styles */
+.buttonContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.buttonWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Primary/Begin Journey button */
+.primaryButton {
+  min-width: 200px;
+  height: 48px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  background: rgba(139, 92, 246, 0.8);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primaryButton:hover {
+  background: rgba(139, 92, 246, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 20px rgba(139, 92, 246, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Skip link styling */
+.skipButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+}
+
+.skipButton:hover {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .buttonContainer {
+    margin-top: 24px;
+  }
+
+  .buttonWrapper {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .primaryButton {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+/* Controls */
+.controlsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: auto;
+}
+
+.progressContainer {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.progressDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.progressActive {
+  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+/* Responsive styles */
+@media (min-width: 768px) {
+  .contentCard {
+    padding: 50px;
+  }
+  
+  .buttonContainer {
+    flex-direction: row;
+    max-width: 500px;
+  }
+  
+  .title {
+    font-size: 44px;
+  }
+  
+  .subtitle {
+    font-size: 20px;
+  }
+  
+  .messageText {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .contentCard {
+    padding: 24px;
+    border-radius: 24px;
+  }
+  
+  .title {
+    font-size: 28px;
+  }
+  
+  .subtitle {
+    font-size: 16px;
+  }
+  
+  .messageText {
+    font-size: 24px;
+  }
+  
+  .buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .nextButton, .skipButton {
+    width: 100%;
+  }
+  
+  .messageContainer {
+    min-height: 140px;
+  }
+}
+
+/* Animation for loading spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Animation for background gradient */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Update visualization container styling */
+.visualizationContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
+  /* Remove debug styles */
+  /* border: 2px solid red; */
+  /* background-color: rgba(0, 0, 255, 0.1); */
+}
+
+/* Ensure background image is visible */
+.backgroundImage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/assets/images/login/background.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  opacity: 1;
+}
+
+/* Update content wrapper to ensure proper layering */
+.contentWrapper {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 90vw;
+  margin: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Add a subtle gradient overlay to improve text contrast */
+.contentCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.05) 0%,
+    rgba(236, 72, 153, 0.05) 100%
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Ensure message text is visible over visualization */
+.messageContainer {
+  position: relative;
+  z-index: 10;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Highlight words with stronger effect */
+.highlight {
+  color: #ffffff;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.7) 0%, rgba(236, 72, 153, 0.7) 100%);
+  padding: 0 6px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+}
+
+/* Welcome card with enhanced styling */
+.welcomeCard {
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* Position the cards to work with visualization */
+.contentWrapper {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 90vw;
+  margin: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure buttons stand out */
+.nextButton,
+.primaryButton {
+  position: relative;
+  overflow: hidden;
+}
+
+.nextButton::after,
+.primaryButton::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(45deg);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+/* Enhanced animations for messages */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.messageContainer {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Add mobile-specific styling */
+@media (max-width: 768px) {
+  .visualizationContainer {
+    opacity: 0.5; /* Reduce opacity on mobile for better readability */
+  }
+  
+  .contentCard {
+    padding: 32px;
+    min-height: 520px;
+    max-width: 90vw;
+  }
+  
+  .messageCard {
+    min-height: 520px;
+  }
+  
+  .contentWrapper {
+    margin: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentCard {
+    padding: 24px;
+    min-height: 480px;
+  }
+  
+  .messageCard {
+    min-height: 480px;
+  }
+  
+  .messageContainer {
+    min-height: 160px;
+    margin: 20px 0;
+  }
+  
+  .buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .nextButton, .skipButton {
+    width: 100%;
+  }
+  
+  .buttonContainer {
+    flex-direction: column; /* Stack buttons on mobile */
+    gap: 12px;
+  }
+  
+  .primaryButton,
+  .nextButton,
+  .skipButton {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+/* Enhanced Profile Form Styles */
+.profileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 600px;
+  width: 100%;
+  padding: 10px;
+}
+
+.formTitle {
+  font-size: 1.5rem;
+  margin: 0;
+  text-align: center;
+  margin-bottom: 0px;
+  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+  letter-spacing: -0.5px;
+}
+
+.formDescription {
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formGroup label {
+  font-weight: 500;
+  color: #ffffff;
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+  margin-left: 4px;
+}
+
+.formRow {
+  display: flex;
+  gap: 20px;
+}
+
+.formRow .formGroup {
+  flex: 1;
+}
+
+.formSelect,
+.formTextarea,
+.formInput {
+  background: rgba(20, 20, 40, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  color: #fff;
+  padding: 16px;
+  font-size: 1.05rem;
+  width: 100%;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+.formSelect:focus,
+.formTextarea:focus,
+.formInput:focus {
+  outline: none;
+  border-color: rgba(139, 92, 246, 0.7);
+  background: rgba(30, 30, 60, 0.7);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.formSelect option {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 10px;
+}
+
+.interestGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 5px;
+}
+
+.interestTag {
+  background: rgba(20, 20, 40, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 30px;
+  padding: 12px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.interestTag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: white;
+}
+
+.interestTag.selected {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.7) 0%, rgba(236, 72, 153, 0.7) 100%);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
+}
+
+.interestTag.selected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: -1;
+}
+
+.formActions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+  align-items: center; /* Ensure vertical alignment */
+}
+
+.primaryButton,
+.secondaryButton {
+  padding: 16px 28px;
+  border-radius: 40px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  min-width: 130px;
+  min-height: 56px; /* Ensure consistent height */
+  font-size: 1.05rem;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  height: 56px; /* Fixed height for both buttons */
+}
+
+/* Ensure the text within buttons is properly aligned */
+.primaryButton span,
+.secondaryButton span {
+  display: inline-block;
+  line-height: 1;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  color: white;
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4), 0 2px 5px rgba(236, 72, 153, 0.4);
+}
+
+.primaryButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(139, 92, 246, 0.5), 0 3px 8px rgba(236, 72, 153, 0.5);
+}
+
+.primaryButton::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.1) 100%);
+  transition: all 0.3s ease;
+}
+
+.primaryButton:hover::after {
+  transform: translateX(100%);
+}
+
+.secondaryButton {
+  background: rgba(20, 20, 40, 0.6);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.secondaryButton:hover {
+  background: rgba(30, 30, 60, 0.7);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+}
+
+.modalContent {
+  background: linear-gradient(135deg, rgba(30, 30, 60, 0.95) 0%, rgba(20, 20, 40, 0.95) 100%);
+  border-radius: 24px;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(139, 92, 246, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 40px;
+  position: relative;
+  z-index: 1001;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 92, 246, 0.5) rgba(30, 30, 60, 0.5);
+}
+
+.modalContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modalContent::-webkit-scrollbar-track {
+  background: rgba(30, 30, 60, 0.5);
+  border-radius: 10px;
+}
+
+.modalContent::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.5);
+  border-radius: 10px;
+}
+
+/* Modal glow effects */
+.modalContent::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.5) 0%, rgba(236, 72, 153, 0.5) 100%);
+  z-index: -1;
+  border-radius: 25px;
+  filter: blur(20px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Form field animations */
+.formSelect,
+.formTextarea,
+.formInput,
+.interestTag {
+  animation: fadeInUp 0.5s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger animations for form elements */
+.formGroup:nth-child(2) .formSelect {
+  animation-delay: 0.1s;
+}
+
+.formGroup:nth-child(3) .interestGrid {
+  animation-delay: 0.2s;
+}
+
+.interestTag:nth-child(3n+1) {
+  animation-delay: 0.3s;
+}
+
+.interestTag:nth-child(3n+2) {
+  animation-delay: 0.4s;
+}
+
+.interestTag:nth-child(3n+3) {
+  animation-delay: 0.5s;
+}
+
+.formGroup:nth-child(4) .formTextarea {
+  animation-delay: 0.6s;
+}
+
+.formRow .formGroup:first-child .formSelect {
+  animation-delay: 0.7s;
+}
+
+.formRow .formGroup:last-child .formSelect {
+  animation-delay: 0.8s;
+}
+
+.formActions {
+  animation: fadeInUp 0.5s ease forwards;
+  animation-delay: 0.9s;
+  opacity: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modalContent {
+    padding: 30px;
+    width: 95%;
+  }
+  
+  .formTitle {
+    font-size: 2rem;
+  }
+  
+  .formRow {
+    flex-direction: column;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modalContent {
+    padding: 25px 20px;
+    border-radius: 20px;
+  }
+  
+  .formTitle {
+    font-size: 1.8rem;
+  }
+  
+  .interestGrid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+  }
+  
+  .formActions {
+    flex-direction: column-reverse;
+    gap: 15px;
+  }
+  
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    padding: 14px;
+  }
+} 

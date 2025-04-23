@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   HomeIcon, VideoIcon, ArticleIcon, 
   CourseIcon, PodcastIcon, SettingsIcon, 
@@ -39,6 +40,16 @@ const menuItems = [
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Failed to sign out:', error);
+    }
+  };
 
   const isActiveRoute = (path: string) => {
     // Check if we're at /app or /app/ and the path is dashboard
@@ -92,7 +103,10 @@ const Sidebar = () => {
             <SettingsIcon className={styles.icon} />
             {!isCollapsed && <span className={styles.label}>Settings</span>}
           </Link>
-          <button className={styles.navItem}>
+          <button 
+            className={styles.navItem}
+            onClick={handleSignOut}
+          >
             <LogoutIcon className={styles.icon} />
             {!isCollapsed && <span className={styles.label}>Logout</span>}
           </button>

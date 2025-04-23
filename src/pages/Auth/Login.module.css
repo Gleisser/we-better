@@ -1,0 +1,211 @@
+.container {
+  @apply min-h-screen flex items-center justify-center p-6;
+  background-image: url('/assets/images/login/background.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+.loginCard {
+  @apply flex w-full max-w-6xl bg-white/80 backdrop-blur-md rounded-3xl overflow-hidden shadow-2xl;
+  height: 85vh;
+}
+
+.quotePanel {
+  @apply lg:flex lg:w-[45%] relative hidden;
+  background-image: url('/assets/images/login/background.webp');
+  background-size: cover;
+  background-position: center;
+  border-radius: 24px 0 0 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.quoteContent {
+  @apply relative h-full flex flex-col p-12;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.1));
+}
+
+.quoteLabel {
+  @apply flex items-center text-sm font-medium tracking-wider uppercase text-white/90;
+  letter-spacing: 0.15em;
+}
+
+.quoteLabel::after {
+  content: '';
+  @apply ml-4 h-[1px] w-16 bg-white/40;
+}
+
+.quoteTextContainer {
+  @apply mt-auto;
+}
+
+.quoteTitle {
+  @apply text-[3.5rem] font-serif leading-[1.1] mb-6;
+  color: rgba(255, 255, 255, 0.95);
+  font-family: 'Playfair Display', serif;
+}
+
+.quoteText {
+  @apply text-base font-light;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 460px;
+  line-height: 1.6;
+}
+
+.formPanel {
+  @apply flex-1 flex items-center justify-center bg-white/95 backdrop-blur-sm;
+}
+
+.formWrapper {
+  @apply w-[360px] flex flex-col;
+}
+
+.logoSection {
+  @apply flex justify-center items-center;
+}
+
+.logo {
+  @apply h-8;
+}
+
+.formSection {
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.form {
+  @apply w-full space-y-6;
+}
+
+.inputGroup {
+  @apply space-y-2;
+}
+
+.inputGroup label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+.inputGroup input {
+  @apply w-full px-4 py-3 rounded-lg border border-gray-300
+         focus:ring-2 focus:ring-blue-500 focus:border-transparent
+         placeholder:text-gray-400;
+}
+
+.passwordInput {
+  @apply relative;
+}
+
+.passwordToggle {
+  @apply absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 
+         hover:text-gray-600 transition-colors;
+}
+
+.options {
+  @apply flex items-center justify-between;
+}
+
+.rememberMe {
+  @apply flex items-center space-x-2 text-sm text-gray-600;
+}
+
+.rememberMe input[type="checkbox"] {
+  @apply rounded border-gray-300 text-blue-600 
+         focus:ring-blue-500;
+}
+
+.forgotPassword {
+  @apply text-sm text-blue-600 hover:text-blue-700;
+}
+
+.submitButton {
+  @apply w-full py-3 px-4 bg-black text-white font-medium rounded-lg
+         hover:bg-gray-900 transition-colors
+         focus:ring-2 focus:ring-offset-2 focus:ring-gray-900
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.googleButton {
+  @apply w-full py-3 px-4 bg-white border border-gray-300 rounded-lg
+         text-gray-700 font-medium flex items-center justify-center space-x-2
+         hover:bg-gray-50 transition-colors
+         focus:ring-2 focus:ring-offset-2 focus:ring-gray-300;
+}
+
+.googleIcon {
+  @apply w-5 h-5;
+}
+
+.signupPrompt {
+  @apply mt-8 text-center text-sm text-gray-600;
+}
+
+.signupLink {
+  @apply ml-1 text-blue-600 hover:text-blue-700 font-medium;
+}
+
+.error {
+  background-color: var(--error-light);
+  color: var(--error);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.inputGroup input,
+.submitButton,
+.googleButton {
+  @apply w-full;
+}
+
+.emailHighlight {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: var(--background-light);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.confirmationActions {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.resendPrompt {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.success {
+  @apply bg-green-50 text-green-800 p-4 rounded-md mb-4;
+}
+
+.backToLogin {
+  @apply text-sm text-blue-600 hover:text-blue-700;
+}
+
+.formFooter {
+  @apply mt-6 text-center;
+} 

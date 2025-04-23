@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   PlayIcon, 
@@ -9,17 +9,25 @@ import {
   SpotifyIcon,
   VolumeIcon
 } from '@/components/common/icons';
-import { PodcastEpisode, SpotifyPlayerState } from './types';
-import { MOCK_EPISODES, SPOTIFY_CONFIG } from './config';
+import { CircularProgress } from './CircularProgress';
+import { podcastService, type Podcast } from '@/services/podcastService';
 import styles from './PodcastWidget.module.css';
 import { getSpotifyAuthToken } from '@/utils/spotify';
-import { CircularProgress } from './CircularProgress';
+
+interface SpotifyPlayerState {
+  isPlaying: boolean;
+  currentTime: number;
+  duration: number;
+  volume: number;
+  spotifyPlayer?: Spotify.Player;
+}
 
 const PodcastWidget = () => {
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return window.innerWidth <= 768;
   });
-  const [currentEpisode, setCurrentEpisode] = useState<PodcastEpisode>(MOCK_EPISODES[0]);
+  const [currentEpisode, setCurrentEpisode] = useState<Podcast | null>(null);
+  const [episodes, setEpisodes] = useState<Podcast[]>([]);
   const [playerState, setPlayerState] = useState<SpotifyPlayerState>({
     isPlaying: false,
     currentTime: 0,
@@ -40,8 +48,37 @@ const PodcastWidget = () => {
   const [isVolumeSliderVisible, setIsVolumeSliderVisible] = useState(false);
   const volumeSliderRef = useRef<HTMLDivElement>(null);
 
+  // Fetch podcasts from API
+  const fetchPodcasts = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await podcastService.getPodcasts({
+        sort: 'publishedAt:desc',
+        pagination: {
+          page: 1,
+          pageSize: 5 // Get latest 5 episodes
+        }
+      });
+      
+      const mappedPodcasts = podcastService.mapPodcastResponse(response);
+      setEpisodes(mappedPodcasts);
+      if (!currentEpisode && mappedPodcasts.length > 0) {
+        setCurrentEpisode(mappedPodcasts[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching podcasts:', error);
+      setError('Failed to load podcasts');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentEpisode]);
+
   useEffect(() => {
-    if (!isSpotifyConnected) return;
+    fetchPodcasts();
+  }, [fetchPodcasts]);
+
+  useEffect(() => {
+    if (!isSpotifyConnected || !currentEpisode) return;
 
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
@@ -60,20 +97,16 @@ const PodcastWidget = () => {
         volume: 0.5
       });
 
-      // Store the player instance
       setPlayer(player);
 
-      // Ready event must be handled first
       player.addListener('ready', ({ device_id }) => {
         console.log('Ready with Device ID', device_id);
         setDeviceId(device_id);
         setIsLoading(false);
       });
 
-      // Handle state changes
       player.addListener('player_state_changed', state => {
         if (state) {
-          // Update our state with the current player state
           setPlayerState(prev => ({
             ...prev,
             isPlaying: !state.paused,
@@ -105,7 +138,6 @@ const PodcastWidget = () => {
         setError('Playback failed');
       });
 
-      // Connect to the player
       player.connect().then(success => {
         if (success) {
           console.log('Successfully connected to Spotify');
@@ -120,7 +152,7 @@ const PodcastWidget = () => {
     return () => {
       script.remove();
     };
-  }, [isSpotifyConnected]);
+  }, [isSpotifyConnected, currentEpisode]);
 
   useEffect(() => {
     if (!player) return;
@@ -170,9 +202,33 @@ const PodcastWidget = () => {
     }
   };
 
+  // Add this helper function to get Spotify URI
+  const getSpotifyUri = (podcast: Podcast): string => {
+    // If we have a spotifyId, use it to create the URI
+    if (podcast.spotifyId) {
+      return `spotify:episode:${podcast.spotifyId}`;
+    }
+    
+    // If we only have the external URL, extract the ID from it
+    if (podcast.externalUrl) {
+      const match = podcast.externalUrl.match(/episode\/([a-zA-Z0-9]+)/);
+      if (match && match[1]) {
+        return `spotify:episode:${match[1]}`;
+      }
+    }
+    
+    return '';
+  };
+
   const togglePlay = async () => {
-    if (!deviceId || !currentEpisode.spotifyUri) {
+    if (!deviceId || !currentEpisode) {
       setError('Playback device not ready');
+      return;
+    }
+
+    const spotifyUri = getSpotifyUri(currentEpisode);
+    if (!spotifyUri) {
+      setError('Invalid podcast URI');
       return;
     }
 
@@ -191,7 +247,7 @@ const PodcastWidget = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            uris: [currentEpisode.spotifyUri]
+            uris: [spotifyUri]
           })
         });
 
@@ -343,7 +399,7 @@ const PodcastWidget = () => {
         <div className={styles.headerMain}>
           <div className={styles.headerLeft}>
             <span className={styles.headerIcon}>🎙️</span>
-            <span className={styles.headerText}>Podcast of the Day</span>
+            <span className={styles.headerText}>Featured Podcast</span>
           </div>
 
           <button
@@ -356,9 +412,19 @@ const PodcastWidget = () => {
         </div>
       </div>
 
-      <div className={styles.contentWrapper}>
-        <motion.div className={`${styles.collapsibleContent} ${!isSpotifyConnected ? styles.blurred : ''}`}>
-          <div className={styles.episodeCard}>
+      <motion.div
+        className={styles.collapsibleContent}
+        animate={{
+          height: isCollapsed ? 0 : "auto",
+          opacity: isCollapsed ? 0 : 1
+        }}
+      >
+        <div className={styles.content}>
+          {isLoading ? (
+            <div className={styles.loading}>Loading podcast...</div>
+          ) : error ? (
+            <div className={styles.error}>{error}</div>
+          ) : currentEpisode ? (
             <div className={styles.playerSection}>
               <button 
                 className={styles.skipButton}
@@ -391,7 +457,7 @@ const PodcastWidget = () => {
                       </div>
                     </div>
                     <img 
-                      src={currentEpisode.artwork}
+                      src={currentEpisode.thumbnailUrl}
                       alt={currentEpisode.title}
                       className={styles.artworkImage}
                     />
@@ -407,59 +473,56 @@ const PodcastWidget = () => {
                 <SkipForward15Icon className={styles.skipIcon} />
               </button>
             </div>
+          ) : null}
 
-            <div className={styles.episodeInfo}>
-              <h3 className={styles.episodeTitle}>{currentEpisode.title}</h3>
-              <div className={styles.episodeMeta}>
-                <span className={styles.episodeAuthor}>{currentEpisode.author}</span>
-                <span className={styles.metaDivider}>•</span>
-                <span className={styles.episodeDuration}>{currentEpisode.duration}</span>
-              </div>
-              <div className={styles.episodeCategory}>
-                <span className={styles.categoryTag}>Self Improvement</span>
-              </div>
-            </div>
-
-            <div className={styles.waveformSection}>
-              <span className={styles.timeInfo}>{formatTime(playerState.currentTime)}</span>
-              <div className={styles.waveform}>
-                {[...Array(40)].map((_, i) => {
-                  const isCenter = i > 15 && i < 25;
-                  return (
-                    <div 
-                      key={i}
-                      className={styles.waveformBar}
-                      data-playing={playerState.isPlaying}
-                      data-center={isCenter}
-                      style={{
-                        height: `${20 + Math.sin(i * 0.3) * 60}%`,
-                        animationDelay: `${i * 0.05}s`,
-                        opacity: isCenter ? 0.3 : 0.8
-                      }}
-                    />
-                  );
-                })}
-              </div>
-              <span className={styles.timeInfo}>{formatTime(playerState.duration)}</span>
+          <div className={styles.episodeInfo}>
+            <h3 className={styles.episodeTitle}>{currentEpisode?.title}</h3>
+            <div className={styles.episodeMeta}>
+              <span className={styles.episodeAuthor}>{currentEpisode?.author}</span>
+              <span className={styles.metaDivider}>•</span>
+              <span className={styles.episodeDuration}>{currentEpisode?.duration}</span>
             </div>
           </div>
-        </motion.div>
 
-        {!isSpotifyConnected && (
-          <div className={styles.spotifyOverlay}>
-            <button 
-              className={styles.spotifyConnectButton}
-              onClick={handleSpotifyConnect}
-            >
-              <SpotifyIcon className={styles.spotifyIcon} />
-              Connect to Spotify
-            </button>
-            <p className={styles.spotifyHint}>
-              Connect to Spotify to listen to podcast episodes
-            </p>
+          <div className={styles.waveformSection}>
+            <span className={styles.timeInfo}>{formatTime(playerState.currentTime)}</span>
+            <div className={styles.waveform}>
+              {[...Array(40)].map((_, i) => {
+                const isCenter = i > 15 && i < 25;
+                return (
+                  <div 
+                    key={i}
+                    className={styles.waveformBar}
+                    data-playing={playerState.isPlaying}
+                    data-center={isCenter}
+                    style={{
+                      height: `${20 + Math.sin(i * 0.3) * 60}%`,
+                      animationDelay: `${i * 0.05}s`,
+                      opacity: isCenter ? 0.3 : 0.8
+                    }}
+                  />
+                );
+              })}
+            </div>
+            <span className={styles.timeInfo}>{formatTime(playerState.duration)}</span>
           </div>
-        )}
-      </div>
+        </div>
+      </motion.div>
+
+      {!isSpotifyConnected && (
+        <div className={styles.spotifyOverlay}>
+          <button 
+            className={styles.spotifyConnectButton}
+            onClick={handleSpotifyConnect}
+          >
+            <SpotifyIcon className={styles.spotifyIcon} />
+            Connect to Spotify
+          </button>
+          <p className={styles.spotifyHint}>
+            Connect to Spotify to listen to podcast episodes
+          </p>
+        </div>
+      )}
     </div>
   );
 };

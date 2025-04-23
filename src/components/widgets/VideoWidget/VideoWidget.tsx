@@ -1,20 +1,22 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDownIcon, PlayIcon, StarIcon, ChevronLeftIcon, ChevronRightIcon, StarFilledIcon, StarEmptyIcon } from '@/components/common/icons';
+import { ChevronDownIcon, PlayIcon, ChevronLeftIcon, ChevronRightIcon, StarFilledIcon, StarEmptyIcon } from '@/components/common/icons';
 import styles from './VideoWidget.module.css';
-import { MOCK_VIDEOS } from './config';
 import { Video, WatchProgress } from './types';
 import { YoutubeModal } from './YoutubeModal';
 import { useTiltEffect } from '@/hooks/useTiltEffect';
 import ViewCounter from './ViewCounter';
+import { videoService } from '@/services/videoService';
 
 const VideoWidget = () => {
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return window.innerWidth <= 768;
   });
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const videosPerPage = 3;
-  const totalPages = Math.ceil(MOCK_VIDEOS.length / videosPerPage);
+  const [totalPages, setTotalPages] = useState(0);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [hoveredVideoId, setHoveredVideoId] = useState<string | null>(null);
@@ -34,6 +36,32 @@ const VideoWidget = () => {
     gradientEnd: 'rgba(147, 51, 234, 0.04)',
     accentRGB: '147, 51, 234'
   };
+
+  // Fetch videos from API
+  const fetchVideos = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await videoService.getVideos({
+        sort: 'publishedAt:desc',
+        pagination: {
+          page: 1,
+          pageSize: 9 // Fetch enough for 3 pages
+        }
+      });
+      
+      const mappedVideos = videoService.mapVideoResponse(response);
+      setVideos(mappedVideos);
+      setTotalPages(Math.ceil(mappedVideos.length / videosPerPage));
+    } catch (error) {
+      console.error('Error fetching videos:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchVideos();
+  }, [fetchVideos]);
 
   const handleNextPage = useCallback(() => {
     setDirection(1);
@@ -270,120 +298,124 @@ const VideoWidget = () => {
                 animate="center"
                 exit="exit"
               >
-                {MOCK_VIDEOS.slice(
-                  currentPage * videosPerPage,
-                  (currentPage + 1) * videosPerPage
-                ).map((video, index) => (
-                  <motion.div 
-                    key={video.id}
-                    className={styles.videoCard}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ 
-                      opacity: 1, 
-                      y: 0,
-                      transition: {
-                        delay: index * 0.1 // Stagger effect
-                      }
-                    }}
-                    whileHover={{ 
-                      scale: 1.05,
-                      y: -5,
-                      transition: { duration: 0.2 }
-                    }}
-                    style={{
-                      // Add perspective transform for depth
-                      perspective: 1000,
-                      translateZ: index * -20
-                    }}
-                    onHoverStart={() => setHoveredVideoId(video.id)}
-                    onHoverEnd={() => setHoveredVideoId(null)}
-                  >
-                    <div className={`${styles.thumbnailContainer} ${loadingPreviews.has(video.youtubeId) ? styles.loading : ''}`}>
-                      <motion.img 
-                        src={hoveredVideoId === video.id && !previewLoadError.has(video.youtubeId)
-                          ? getVideoPreviewUrl(video.youtubeId)
-                          : `https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`
+                {loading ? (
+                  <div className={styles.loading}>Loading videos...</div>
+                ) : (
+                  videos.slice(
+                    currentPage * videosPerPage,
+                    (currentPage + 1) * videosPerPage
+                  ).map((video, index) => (
+                    <motion.div 
+                      key={video.id}
+                      className={styles.videoCard}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ 
+                        opacity: 1, 
+                        y: 0,
+                        transition: {
+                          delay: index * 0.1 // Stagger effect
                         }
-                        alt={video.title}
-                        className={styles.thumbnail}
-                        animate={{
-                          scale: hoveredVideoId === video.id ? 1.05 : 1
-                        }}
-                        transition={{ duration: 0.3 }}
-                        onError={() => handlePreviewError(video.youtubeId)}
-                        onLoadStart={() => hoveredVideoId === video.id && startPreviewLoad(video.youtubeId)}
-                      />
-                      
-                      {watchedVideos[video.id] && (
-                        <div className={styles.progressIndicator}>
-                          <div 
-                            className={styles.progressBar}
-                            style={{ width: `${watchedVideos[video.id].progress}%` }}
-                          />
-                          <span className={styles.watchedBadge}>
-                            {watchedVideos[video.id].progress === 100 ? (
-                              'Watched'
-                            ) : (
-                              `${Math.round(watchedVideos[video.id].progress)}%`
-                            )}
-                          </span>
-                        </div>
-                      )}
-                      <motion.div 
-                        className={styles.overlay}
-                        animate={{
-                          background: hoveredVideoId === video.id 
-                            ? 'linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.3))'
-                            : 'linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2))'
-                        }}
-                      >
-                        <button 
-                          className={styles.playButton}
-                          onClick={() => handleVideoClick(video)}
+                      }}
+                      whileHover={{ 
+                        scale: 1.05,
+                        y: -5,
+                        transition: { duration: 0.2 }
+                      }}
+                      style={{
+                        // Add perspective transform for depth
+                        perspective: 1000,
+                        translateZ: index * -20
+                      }}
+                      onHoverStart={() => setHoveredVideoId(video.id)}
+                      onHoverEnd={() => setHoveredVideoId(null)}
+                    >
+                      <div className={`${styles.thumbnailContainer} ${loadingPreviews.has(video.youtubeId) ? styles.loading : ''}`}>
+                        <motion.img 
+                          src={hoveredVideoId === video.id && !previewLoadError.has(video.youtubeId)
+                            ? getVideoPreviewUrl(video.youtubeId)
+                            : `https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`
+                          }
+                          alt={video.title}
+                          className={styles.thumbnail}
+                          animate={{
+                            scale: hoveredVideoId === video.id ? 1.05 : 1
+                          }}
+                          transition={{ duration: 0.3 }}
+                          onError={() => handlePreviewError(video.youtubeId)}
+                          onLoadStart={() => hoveredVideoId === video.id && startPreviewLoad(video.youtubeId)}
+                        />
+                        
+                        {watchedVideos[video.id] && (
+                          <div className={styles.progressIndicator}>
+                            <div 
+                              className={styles.progressBar}
+                              style={{ width: `${watchedVideos[video.id].progress}%` }}
+                            />
+                            <span className={styles.watchedBadge}>
+                              {watchedVideos[video.id].progress === 100 ? (
+                                'Watched'
+                              ) : (
+                                `${Math.round(watchedVideos[video.id].progress)}%`
+                              )}
+                            </span>
+                          </div>
+                        )}
+                        <motion.div 
+                          className={styles.overlay}
+                          animate={{
+                            background: hoveredVideoId === video.id 
+                              ? 'linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.3))'
+                              : 'linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2))'
+                          }}
                         >
-                          <PlayIcon className={styles.playIcon} />
-                        </button>
-                        <div className={styles.videoInfo}>
-                          <div className={styles.titleSection}>
-                            <h3 className={styles.videoTitle}>{video.title}</h3>
-                            <motion.div 
-                              className={styles.videoMetadata}
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ 
-                                opacity: hoveredVideoId === video.id ? 1 : 0,
-                                height: hoveredVideoId === video.id ? 'auto' : 0
-                              }}
-                            >
-                              <div className={styles.metaRow}>
-                                <span className={styles.duration}>{video.duration}</span>
-                                <ViewCounter value={video.views} className={styles.views} />
+                          <button 
+                            className={styles.playButton}
+                            onClick={() => handleVideoClick(video)}
+                          >
+                            <PlayIcon className={styles.playIcon} />
+                          </button>
+                          <div className={styles.videoInfo}>
+                            <div className={styles.titleSection}>
+                              <h3 className={styles.videoTitle}>{video.title}</h3>
+                              <motion.div 
+                                className={styles.videoMetadata}
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ 
+                                  opacity: hoveredVideoId === video.id ? 1 : 0,
+                                  height: hoveredVideoId === video.id ? 'auto' : 0
+                                }}
+                              >
+                                <div className={styles.metaRow}>
+                                  <span className={styles.duration}>{video.duration}</span>
+                                  <ViewCounter value={video.views} className={styles.views} />
+                                </div>
+                                <div className={styles.authorInfo}>
+                                  <span className={styles.authorName}>{video.author}</span>
+                                </div>
+                              </motion.div>
+                              <div className={styles.categoryBadge}>
+                                {video.category} / {video.subCategory || video.tags[video.tags.length - 1]}
                               </div>
-                              <div className={styles.authorInfo}>
-                                <span className={styles.authorName}>{video.author}</span>
-                              </div>
-                            </motion.div>
-                            <div className={styles.categoryBadge}>
-                              {video.category} / {video.subCategory}
+                            </div>
+                            <div className={styles.rating}>
+                              {renderStars(video)}
                             </div>
                           </div>
-                          <div className={styles.rating}>
-                            {renderStars(video)}
-                          </div>
-                        </div>
-                      </motion.div>
-                      {video.badge && (
-                        <motion.div 
-                          className={`${styles.badge} ${video.badge === 'trending' ? styles.trendingBadge : styles.newBadge}`}
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.2 }}
-                        >
-                          {video.badge === 'trending' ? 'Trending' : 'New'}
                         </motion.div>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
+                        {video.badge && (
+                          <motion.div 
+                            className={`${styles.badge} ${video.badge === 'trending' ? styles.trendingBadge : styles.newBadge}`}
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                          >
+                            {video.badge === 'trending' ? 'Trending' : 'New'}
+                          </motion.div>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))
+                )}
               </motion.div>
             </AnimatePresence>
 

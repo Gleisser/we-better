@@ -8,7 +8,7 @@ import { HEADER_CONSTANTS, MEGA_MENU_CONFIG, MenuType } from '@/constants/fallba
 import NavItem from './NavItem';
 import HamburgerButton from './HamburgerButton';
 import MobileMenu from './MobileMenu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useMenu } from '@/hooks/useMenu';
 
 const Header = () => {
@@ -19,6 +19,7 @@ const Header = () => {
   const { scrollY } = useScroll();
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const megamenus = data?.data.megamenus || MEGA_MENU_CONFIG;
 
@@ -33,8 +34,6 @@ const Header = () => {
   scrollY.on("change",(latest) => {
     setHasScrolled(latest > 10);
   });
-
-
 
   const getMegaMenuState = (menuType: MenuType) => {
     switch (menuType) {
@@ -61,6 +60,17 @@ const Header = () => {
         };
       default:
         return null;
+    }
+  };
+
+  const handleLaunchApp = () => {
+    // TODO: Check authentication status
+    const isAuthenticated = false; // This will be replaced with actual auth check
+    
+    if (isAuthenticated) {
+      navigate('/app');
+    } else {
+      navigate('/auth/login');
     }
   };
 
@@ -165,12 +175,12 @@ const Header = () => {
               className={styles.mobileControls}
               aria-label="Mobile navigation controls"
             >
-              <Link 
-                to="/app" 
+              <button 
+                onClick={handleLaunchApp}
                 className={styles.headerCta}
               >
                 {HEADER_CONSTANTS.Cta.title}
-              </Link>
+              </button>
               <HamburgerButton 
                 isOpen={isMobileMenuOpen} 
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

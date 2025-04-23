@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './QuoteWidget.module.css';
-import { MoreVerticalIcon } from '../../common/icons';
+import { MoreVerticalIcon, RefreshIcon } from '../../common/icons';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/hooks/useTiltEffect';
+import { quoteService, type Quote } from '@/services/quoteService';
 
 type QuoteTheme = 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom';
 
@@ -138,9 +139,30 @@ type Reaction = '❤️' | '👏' | '💡' | '💪' | '🙏';
 
 const REACTIONS: Reaction[] = ['❤️', '👏', '💡', '💪', '🙏'];
 
+const LoadingSkeleton = () => (
+  <div className={styles.skeletonContent}>
+    <div className={styles.skeletonTag} />
+    <div className={styles.skeletonQuote}>
+      <div className={styles.skeletonLine} style={{ width: '90%' }} />
+      <div className={styles.skeletonLine} style={{ width: '85%' }} />
+      <div className={styles.skeletonLine} style={{ width: '40%' }} />
+    </div>
+    <div className={styles.skeletonFooter}>
+      <div className={styles.skeletonAuthor} />
+      <div className={styles.skeletonActions} />
+    </div>
+  </div>
+);
+
 const QuoteWidget = () => {
   const { theme } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5);
+  
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [quotePool, setQuotePool] = useState<Quote[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [showSuccess, setShowSuccess] = useState<{
@@ -198,6 +220,33 @@ const QuoteWidget = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const fetchQuotes = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await quoteService.getQuotes({
+        sort: 'publishedAt:desc',
+        pagination: {
+          page: 1,
+          pageSize: 15 // Fetch 15 quotes at once
+        }
+      });
+      
+      const mappedQuotes = quoteService.mapQuoteResponse(response);
+      setQuotePool(mappedQuotes);
+      // Set the first quote as current
+      setQuote(mappedQuotes[0]);
+    } catch (error) {
+      console.error('Error fetching quotes:', error);
+      setError('Failed to load quotes');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchQuotes();
+  }, [fetchQuotes]);
 
   const handleBookmark = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -291,6 +340,29 @@ const QuoteWidget = () => {
   const handleSubmitQuote = () => {
     console.log('Open submit quote form');
     setShowMoreOptions(false);
+  };
+
+  const handleNewQuote = () => {
+    if (quotePool.length === 0) {
+      // If we've used all quotes, fetch new ones
+      fetchQuotes();
+      return;
+    }
+
+    // Get current quote index
+    const currentIndex = quote ? quotePool.findIndex(q => q.id === quote.id) : -1;
+    
+    // Get next quote (randomly from the pool, excluding current quote)
+    const availableQuotes = quotePool.filter((_, index) => index !== currentIndex);
+    const randomIndex = Math.floor(Math.random() * availableQuotes.length);
+    const nextQuote = availableQuotes[randomIndex];
+    
+    // If we're running low on quotes (e.g., only 5 left), fetch more
+    if (availableQuotes.length <= 5) {
+      fetchQuotes();
+    }
+
+    setQuote(nextQuote);
   };
 
   return (
@@ -480,114 +552,140 @@ const QuoteWidget = () => {
           </div>
         </div>
 
-        <motion.div 
-          className={styles.quoteContent}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <motion.div
-            className={`${styles.themeTag} hover:${THEME_CONFIG[QUOTE.theme].bgClass} hover:${THEME_CONFIG[QUOTE.theme].borderClass}`}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <span className={styles.themeIcon}>
-              {THEME_CONFIG[QUOTE.theme].icon}
-            </span>
-            <span className={`${styles.themeText} hover:${THEME_CONFIG[QUOTE.theme].hoverClass}`}>
-              {QUOTE.theme.charAt(0).toUpperCase() + QUOTE.theme.slice(1)}
-            </span>
-          </motion.div>
-
-          <motion.div 
-            className={styles.quoteText}
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: {},
-              visible: {
-                transition: {
-                  staggerChildren: 0.03
-                }
-              }
-            }}
-          >
-            {QUOTE.text.split(" ").map((word, i) => (
-              <motion.span
-                key={i}
-                className={styles.word}
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 }
-                }}
-              >
-                {word}
-              </motion.span>
-            ))}
-          </motion.div>
-
-          <div className={styles.quoteFooter}>
-            <motion.div 
-              className={styles.author}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1.5 }}
+        {loading ? (
+          <LoadingSkeleton />
+        ) : error ? (
+          <div className={styles.error}>
+            <span className={styles.errorIcon}>⚠️</span>
+            <span className={styles.errorMessage}>{error}</span>
+            <button 
+              onClick={fetchQuotes} 
+              className={styles.retryButton}
             >
-              - {QUOTE.author}
+              Try Again
+            </button>
+          </div>
+        ) : quote ? (
+          <motion.div 
+            className={styles.quoteContent}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <motion.div
+              className={`${styles.themeTag} hover:${THEME_CONFIG[quoteService.determineQuoteTheme(quote.categories)].bgClass} hover:${THEME_CONFIG[quoteService.determineQuoteTheme(quote.categories)].borderClass}`}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <span className={styles.themeIcon}>
+                {THEME_CONFIG[quoteService.determineQuoteTheme(quote.categories)].icon}
+              </span>
+              <span className={`${styles.themeText} hover:${THEME_CONFIG[quoteService.determineQuoteTheme(quote.categories)].hoverClass}`}>
+                {quoteService.determineQuoteTheme(quote.categories).charAt(0).toUpperCase() + 
+                 quoteService.determineQuoteTheme(quote.categories).slice(1)}
+              </span>
             </motion.div>
 
-            <div className={styles.bottomActions}>
-              <div className={styles.reactionsWrapper}>
+            <motion.div 
+              className={styles.quoteText}
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: {
+                  transition: {
+                    staggerChildren: 0.03
+                  }
+                }
+              }}
+            >
+              {quote.text.split(" ").map((word, i) => (
+                <motion.span
+                  key={i}
+                  className={styles.word}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 }
+                  }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </motion.div>
+
+            <div className={styles.quoteFooter}>
+              <motion.div 
+                className={styles.author}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.5 }}
+              >
+                - {quote.author}
+              </motion.div>
+
+              <div className={styles.bottomActions}>
+                <div className={styles.reactionsWrapper}>
+                  <button
+                    type="button"
+                    className={`${styles.actionButton} ${userReaction ? styles.hasReaction : ''}`}
+                    onClick={() => setShowReactions(!showReactions)}
+                    aria-label="React to quote"
+                  >
+                    <span className={styles.reactionIcon}>
+                      {userReaction || '🤍'}
+                    </span>
+                  </button>
+
+                  <AnimatePresence>
+                    {showReactions && (
+                      <motion.div
+                        className={styles.reactionsMenu}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                      >
+                        {REACTIONS.map((reaction) => (
+                          <button
+                            key={reaction}
+                            onClick={() => handleReaction(reaction)}
+                            className={`${styles.reactionOption} ${
+                              userReaction === reaction ? styles.selectedReaction : ''
+                            }`}
+                          >
+                            <span className={styles.reactionEmoji}>{reaction}</span>
+                            <span className={styles.reactionCount}>
+                              {reactions[reaction]}
+                            </span>
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
                 <button
                   type="button"
-                  className={`${styles.actionButton} ${userReaction ? styles.hasReaction : ''}`}
-                  onClick={() => setShowReactions(!showReactions)}
-                  aria-label="React to quote"
+                  className={`${styles.actionButton} ${styles.newQuoteButton}`}
+                  onClick={handleNewQuote}
+                  aria-label="Get new quote"
+                  disabled={loading}
                 >
-                  <span className={styles.reactionIcon}>
-                    {userReaction || '🤍'}
-                  </span>
+                  <RefreshIcon className={`${styles.actionIcon} ${loading ? styles.spinning : ''}`} />
                 </button>
 
-                <AnimatePresence>
-                  {showReactions && (
-                    <motion.div
-                      className={styles.reactionsMenu}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 8 }}
-                    >
-                      {REACTIONS.map((reaction) => (
-                        <button
-                          key={reaction}
-                          onClick={() => handleReaction(reaction)}
-                          className={`${styles.reactionOption} ${
-                            userReaction === reaction ? styles.selectedReaction : ''
-                          }`}
-                        >
-                          <span className={styles.reactionEmoji}>{reaction}</span>
-                          <span className={styles.reactionCount}>
-                            {reactions[reaction]}
-                          </span>
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                <button
+                  type="button"
+                  className={styles.actionButton}
+                  onClick={handleCopyQuote}
+                  aria-label="Copy quote"
+                >
+                  <CopyIcon className={styles.actionIcon} />
+                </button>
               </div>
-
-              <button
-                type="button"
-                className={styles.actionButton}
-                onClick={handleCopyQuote}
-                aria-label="Copy quote"
-              >
-                <CopyIcon className={styles.actionIcon} />
-              </button>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        ) : null}
       </div>
     </div>
   );

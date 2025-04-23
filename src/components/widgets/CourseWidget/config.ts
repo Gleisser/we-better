@@ -1,33 +1,41 @@
-import { Platform, PlatformConfig, Course } from './types';
+import { UdemyIcon, CourseraIcon, EdxIcon, SkillshareIcon, PluralsightIcon, LinkedInIcon } from '@/components/common/icons';
 
-export const PLATFORM_CONFIG: Record<Platform, PlatformConfig> = {
+export const PLATFORM_CONFIG = {
   udemy: {
     name: 'Udemy',
-    icon: '🎓',
-    color: '#A435F0',
-    bgColor: 'rgba(164, 53, 240, 0.1)'
+    bgColor: 'rgba(183, 37, 85, 0.15)',
+    color: '#b72555'
   },
   coursera: {
     name: 'Coursera',
-    icon: '📚',
-    color: '#0056D2',
-    bgColor: 'rgba(0, 86, 210, 0.1)'
+    bgColor: 'rgba(51, 121, 194, 0.15)',
+    color: '#3379c2'
   },
   edx: {
     name: 'edX',
-    icon: '🎯',
-    color: '#02262B',
-    bgColor: 'rgba(2, 38, 43, 0.1)'
+    bgColor: 'rgba(2, 0, 36, 0.15)',
+    color: '#020024'
   },
-  youtube: {
-    name: 'YouTube',
-    icon: '🎥',
-    color: '#FF0000',
-    bgColor: 'rgba(255, 0, 0, 0.1)'
+  skillshare: {
+    name: 'Skillshare',
+    bgColor: 'rgba(0, 0, 0, 0.15)',
+    color: '#000000'
+  },
+  pluralsight: {
+    name: 'Pluralsight',
+    bgColor: 'rgba(236, 0, 140, 0.15)',
+    color: '#ec008c'
+  },
+  linkedin: {
+    name: 'LinkedIn Learning',
+    bgColor: 'rgba(0, 119, 181, 0.15)',
+    color: '#0077b5'
   }
-};
+} as const;
 
-export const MOCK_COURSES: Course[] = [
+export type PlatformType = keyof typeof PLATFORM_CONFIG;
+
+export const MOCK_COURSES = [
   {
     id: 'course_1',
     title: 'Productivity & Time Management for the Overwhelmed',

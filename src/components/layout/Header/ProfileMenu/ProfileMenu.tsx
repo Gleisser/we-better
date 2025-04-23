@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { SettingsIcon, LogoutIcon, BookmarkIcon } from '@/components/common/icons';
 import styles from './ProfileMenu.module.css';
 
@@ -7,6 +9,18 @@ interface ProfileMenuProps {
 }
 
 const ProfileMenu = ({ onClose }: ProfileMenuProps) => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      onClose();
+    } catch (error) {
+      console.error('Failed to sign out:', error);
+    }
+  };
+
   return (
     <motion.div 
       className={styles.profileMenu}
@@ -16,8 +30,8 @@ const ProfileMenu = ({ onClose }: ProfileMenuProps) => {
       transition={{ duration: 0.2 }}
     >
       <div className={styles.menuHeader}>
-        <p className={styles.userName}>Gleisser</p>
-        <p className={styles.userEmail}>gleisser@example.com</p>
+        <p className={styles.userName}>{user?.full_name || 'User'}</p>
+        <p className={styles.userEmail}>{user?.email}</p>
       </div>
 
       <div className={styles.menuDivider} />
@@ -42,7 +56,10 @@ const ProfileMenu = ({ onClose }: ProfileMenuProps) => {
 
       <div className={styles.menuDivider} />
 
-      <button className={styles.menuItem}>
+      <button 
+        className={styles.menuItem}
+        onClick={handleSignOut}
+      >
         <LogoutIcon className={styles.menuItemIcon} />
         <span>Sign out</span>
       </button>

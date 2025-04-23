@@ -7,9 +7,15 @@ import VideoWidget from '@/components/widgets/VideoWidget/VideoWidget';
 import CourseWidget from '@/components/widgets/CourseWidget/CourseWidget';
 import BookWidget from '@/components/widgets/BookWidget/BookWidget';
 import ArticleWidget from '@/components/widgets/ArticleWidget/ArticleWidget';
+import { Article } from '@/services/articleService';
 import styles from './DashboardGrid.module.css';
 
-const DashboardGrid = () => {
+interface DashboardGridProps {
+  featuredArticle: Article | null;
+  isLoading?: boolean;
+}
+
+const DashboardGrid: React.FC<DashboardGridProps> = ({ featuredArticle, isLoading }) => {
   return (
     <div className={styles.container}>
       <div className={styles.bentoGrid}>
@@ -25,7 +31,7 @@ const DashboardGrid = () => {
 
         {/* Article Widget */}
         <div className={`${styles.widget} ${styles.article}`}>
-          <ArticleWidget />
+          <ArticleWidget article={featuredArticle} isLoading={isLoading} />
         </div>
 
         {/* Habits Widget */}
