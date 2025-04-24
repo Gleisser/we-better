@@ -19,9 +19,11 @@ class ApiClient {
       baseURL: ENV_CONFIG.API.URL,
       headers: {
         Authorization: `Bearer ${ENV_CONFIG.API.TOKEN}`,
+        'Content-Type': 'application/json',
       },
       timeout: ENV_CONFIG.API.TIMEOUT,
-      withCredentials: true,
+      // For public APIs that don't require credentials
+      withCredentials: false,
     });
 
     this.rateLimiter = new RateLimiter({
