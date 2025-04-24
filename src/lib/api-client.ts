@@ -21,6 +21,7 @@ class ApiClient {
         Authorization: `Bearer ${ENV_CONFIG.API.TOKEN}`,
       },
       timeout: ENV_CONFIG.API.TIMEOUT,
+      withCredentials: true,
     });
 
     this.rateLimiter = new RateLimiter({
