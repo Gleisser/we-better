@@ -1,6 +1,7 @@
-import '@testing-library/jest-dom';
-import { beforeAll } from 'vitest';
+import { expect, beforeAll } from 'vitest';
+import matchers from '@testing-library/jest-dom/matchers';
 
+expect.extend(matchers);
 // Mock Vite's import.meta.env
 beforeAll(() => {
   const viteMock = {
