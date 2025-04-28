@@ -2,7 +2,7 @@
 import toast from 'react-hot-toast';
 
 export const showToast = {
-  success: (message: string, options = {}) => 
+  success: (message: string, options = {}) =>
     toast.success(message, {
       duration: 4000,
       position: 'top-right',
@@ -16,10 +16,10 @@ export const showToast = {
         maxWidth: '400px',
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
       },
-      ...options
+      ...options,
     }),
-  
-  error: (message: string, options = {}) => 
+
+  error: (message: string, options = {}) =>
     toast.error(message, {
       duration: 4000,
       position: 'top-right',
@@ -33,7 +33,7 @@ export const showToast = {
         maxWidth: '400px',
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
       },
-      ...options
+      ...options,
     }),
   info: (message: string, options = {}) =>
     toast.custom(message, {
@@ -49,7 +49,7 @@ export const showToast = {
         maxWidth: '400px',
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
       },
-      ...options
+      ...options,
     }),
   warning: (message: string, options = {}) =>
     toast.custom(message, {
@@ -65,7 +65,7 @@ export const showToast = {
         maxWidth: '400px',
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
       },
-      ...options
+      ...options,
     }),
   loading: (message: string, options = {}) =>
     toast.loading(message, {
@@ -81,9 +81,13 @@ export const showToast = {
         maxWidth: '400px',
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
       },
-      ...options
+      ...options,
     }),
-  promise: (promise: Promise<any>, msgs: { loading: string, success: string, error: string }, options = {}) =>
+  promise: <T>(
+    promise: Promise<T>,
+    msgs: { loading: string; success: string; error: string },
+    options = {}
+  ) =>
     toast.promise(promise, msgs, {
       duration: 4000,
       position: 'top-right',
@@ -97,7 +101,7 @@ export const showToast = {
         maxWidth: '400px',
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
       },
-      ...options
+      ...options,
     }),
   // Add more as needed: loading, promise, etc.
 };
