@@ -12,10 +12,9 @@ import { ContentItem } from './components/ContentItem';
 import { ContentControls } from './components/ContentControls';
 import { Toolbar } from './components/Toolbar';
 import { IntroScreen } from './components/IntroScreen';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import showToast from '@/utils/toast';
 import styles from './VisionBoard.module.css';
-
+  
 // Add this utility function for image compression
 const compressImage = (base64Image: string, maxSizeKB: number = 100): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -232,7 +231,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     const saved = await handleSave();
     
     if (saved) {
-      toast.success('Vision board completed!');
+      showToast.success('Vision board completed!');
       
       // If the save was successful and we have a completion callback, call it
       if (onComplete) {
@@ -242,7 +241,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
         }, 1000);
       }
     } else {
-      toast.error('Please save your vision board before completing');
+      showToast.error('Please save your vision board before completing');
     }
   };
   
@@ -283,15 +282,15 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       const result = await onSave(dataToSave);
       
       if (result) {
-        toast.success('Vision board saved successfully!');
+        showToast.success('Vision board saved successfully!');
       } else {
-        toast.error('Failed to save vision board');
+        showToast.error('Failed to save vision board');
       }
       
       return result;
     } catch (error) {
       console.error('Error saving vision board:', error);
-      toast.error('An error occurred while saving');
+      showToast.error('An error occurred while saving');
       return false;
     } finally {
       setIsSaving(false);
@@ -393,7 +392,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
     
     // Check if the limit has been reached
     if (imageCount >= 7) {
-      toast.warning('You can only add up to 7 images to your vision board.');
+      showToast.error('You can only add up to 7 images to your vision board.');
       return;
     }
     
@@ -426,7 +425,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
   
   // Handle AI image generation
   const handleGenerateAIImage = () => {
-    toast.info('AI image generation is coming soon! Stay tuned for updates.');
+    showToast.info('AI image generation is coming soon! Stay tuned for updates.');
   };
   
   // Handle auto arrange
@@ -482,7 +481,7 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       trophy: "Success is a journey of small wins. Celebrate each victory along the way!"
     };
 
-    toast.info(messages[symbolType] || "Dream it, believe it, achieve it!");
+    showToast.info(messages[symbolType] || "Dream it, believe it, achieve it!");
   };
   
   // Inside the VisionBoard component, add a useMemo to calculate the image count
@@ -663,20 +662,6 @@ export const VisionBoard: React.FC<VisionBoardProps> = ({
       {showIntro && !readOnly && (
         <IntroScreen onClose={() => setShowIntro(false)} />
       )}
-      
-      {/* Toast notifications */}
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     </div>
   );
 };
