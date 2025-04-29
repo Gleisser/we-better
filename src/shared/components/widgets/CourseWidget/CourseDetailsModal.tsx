@@ -4,6 +4,15 @@ import styles from './CourseDetailsModal.module.css';
 import { XIcon } from '@/shared/components/common/icons';
 import { Modal } from '@/shared/components/common/Modal';
 
+/**
+ * Props interface for the CourseDetailsModal component.
+ * @interface CourseDetailsModalProps
+ * @property {Course} course - The course object containing details to display
+ * @property {boolean} isOpen - Controls the visibility of the modal
+ * @property {() => void} onClose - Callback function to close the modal
+ * @property {'skills' | 'why'} activeTab - Currently active tab in the modal
+ * @property {(tab: 'skills' | 'why') => void} onTabChange - Callback function when tab is changed
+ */
 interface CourseDetailsModalProps {
   course: Course;
   isOpen: boolean;
@@ -12,6 +21,50 @@ interface CourseDetailsModalProps {
   onTabChange: (tab: 'skills' | 'why') => void;
 }
 
+/**
+ * A modal component that displays detailed information about a course.
+ * Features:
+ * - Tabbed interface for skills and course benefits
+ * - Animated skill tags using Framer Motion
+ * - Visual match score representation
+ * - Dynamic match description based on score
+ * - Animated benefit points
+ * 
+ * The modal has two main sections:
+ * 1. Skills Tab: Displays animated tags of skills gained from the course
+ * 2. Why Tab: Shows match score, course relevance, and key benefits
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Course} props.course - Course data to display
+ * @param {boolean} props.isOpen - Controls modal visibility
+ * @param {() => void} props.onClose - Handler for closing the modal
+ * @param {'skills' | 'why'} props.activeTab - Active tab selection
+ * @param {(tab: 'skills' | 'why') => void} props.onTabChange - Tab change handler
+ * 
+ * @example
+ * ```tsx
+ * function CourseView({ course }) {
+ *   const [isModalOpen, setIsModalOpen] = useState(false);
+ *   const [activeTab, setActiveTab] = useState<'skills' | 'why'>('skills');
+ * 
+ *   return (
+ *     <>
+ *       <button onClick={() => setIsModalOpen(true)}>
+ *         View Course Details
+ *       </button>
+ *       <CourseDetailsModal
+ *         course={course}
+ *         isOpen={isModalOpen}
+ *         onClose={() => setIsModalOpen(false)}
+ *         activeTab={activeTab}
+ *         onTabChange={setActiveTab}
+ *       />
+ *     </>
+ *   );
+ * }
+ * ```
+ */
 export const CourseDetailsModal = ({ 
   course, 
   isOpen, 
@@ -19,6 +72,13 @@ export const CourseDetailsModal = ({
   activeTab,
   onTabChange 
 }: CourseDetailsModalProps) => {
+  /**
+   * Generates a descriptive message based on the course match score.
+   * Higher scores result in more enthusiastic recommendations.
+   * 
+   * @param {number} matchScore - The course match score (0-100)
+   * @returns {string} A descriptive message about the course match
+   */
   const getMatchDescription = (matchScore: number): string => {
     if (matchScore >= 90) return "Perfect match for your interests!";
     if (matchScore >= 80) return "Highly relevant to your goals";

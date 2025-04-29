@@ -6,6 +6,14 @@ import { Goal, GoalCategory } from './types';
 import { CATEGORY_CONFIG } from './config';
 import styles from './GoalFormModal.module.css';
 
+/**
+ * Props interface for the GoalFormModal component.
+ * @interface GoalFormModalProps
+ * @property {boolean} isOpen - Controls the visibility of the modal
+ * @property {() => void} onClose - Callback function to close the modal
+ * @property {(goal: Omit<Goal, 'id'>) => void} onSave - Callback function when form is submitted
+ * @property {Goal | null | undefined} initialGoal - Optional initial goal data for editing mode
+ */
 interface GoalFormModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -13,12 +21,68 @@ interface GoalFormModalProps {
   initialGoal: Goal | null | undefined;
 }
 
+/**
+ * A modal form component for creating and editing goals with milestone tracking.
+ * Features:
+ * - Animated entrance and exit using Framer Motion
+ * - Portal-based rendering
+ * - Category selection with icons
+ * - Date picker integration
+ * - Dynamic milestone management
+ * - Form validation
+ * - Responsive design
+ * 
+ * The form handles:
+ * - Goal title and category
+ * - Target date selection
+ * - Milestone creation and deletion
+ * - Progress tracking
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Controls modal visibility
+ * @param {() => void} props.onClose - Handler for closing the modal
+ * @param {(goal: Omit<Goal, 'id'>) => void} props.onSave - Handler for form submission
+ * @param {Goal | null | undefined} props.initialGoal - Initial goal data for editing
+ * 
+ * @example
+ * ```tsx
+ * // Creating a new goal
+ * function GoalManager() {
+ *   const [isModalOpen, setIsModalOpen] = useState(false);
+ * 
+ *   const handleSave = (goalData: Omit<Goal, 'id'>) => {
+ *     // Handle goal creation
+ *     console.log('New goal:', goalData);
+ *     setIsModalOpen(false);
+ *   };
+ * 
+ *   return (
+ *     <>
+ *       <button onClick={() => setIsModalOpen(true)}>
+ *         Add New Goal
+ *       </button>
+ *       <GoalFormModal
+ *         isOpen={isModalOpen}
+ *         onClose={() => setIsModalOpen(false)}
+ *         onSave={handleSave}
+ *         initialGoal={null}
+ *       />
+ *     </>
+ *   );
+ * }
+ * ```
+ */
 export const GoalFormModal = ({ 
   isOpen, 
   onClose, 
   onSave,
   initialGoal 
 }: GoalFormModalProps) => {
+  /**
+   * Form state containing all goal data except the ID.
+   * Initialized with initial goal data or default values.
+   */
   const [formData, setFormData] = useState<Omit<Goal, 'id'>>({
     title: initialGoal?.title || '',
     category: initialGoal?.category || 'personal',
@@ -27,8 +91,15 @@ export const GoalFormModal = ({
     milestones: initialGoal?.milestones || []
   });
 
+  /**
+   * State for managing new milestone input.
+   */
   const [newMilestone, setNewMilestone] = useState('');
 
+  /**
+   * Adds a new milestone to the goal if the input is not empty.
+   * Generates a unique ID using timestamp and resets the input field.
+   */
   const handleAddMilestone = () => {
     if (newMilestone.trim()) {
       setFormData(prev => ({
@@ -42,6 +113,10 @@ export const GoalFormModal = ({
     }
   };
 
+  /**
+   * Removes a milestone from the goal by its ID.
+   * @param {string} id - The ID of the milestone to remove
+   */
   const handleRemoveMilestone = (id: string) => {
     setFormData(prev => ({
       ...prev,
@@ -49,6 +124,12 @@ export const GoalFormModal = ({
     }));
   };
 
+  /**
+   * Handles form submission by preventing default behavior,
+   * calling the onSave callback with form data, and closing the modal.
+   * 
+   * @param {React.FormEvent} e - The form submission event
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);

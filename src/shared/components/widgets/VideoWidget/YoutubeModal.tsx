@@ -6,13 +6,25 @@ import styles from './VideoWidget.module.css';
 import { Video } from './types';
 import { loadYouTubeAPI } from './youtubeApi';
 
+/**
+ * Extends the Window interface to include YouTube IFrame API types.
+ * @global
+ */
 declare global {
   interface Window {
-    YT: any;
+    YT: any; // YouTube API namespace
     onYouTubeIframeAPIReady: () => void;
   }
 }
 
+/**
+ * Props interface for the YoutubeModal component.
+ * @interface YoutubeModalProps
+ * @property {boolean} isOpen - Controls the visibility of the modal
+ * @property {() => void} onClose - Callback function to close the modal
+ * @property {Video} video - Video object containing details and YouTube ID
+ * @property {(videoId: string, progress: number) => void} onProgress - Callback for video progress updates
+ */
 interface YoutubeModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -20,15 +32,76 @@ interface YoutubeModalProps {
   onProgress: (videoId: string, progress: number) => void;
 }
 
+/**
+ * A modal component for playing YouTube videos with progress tracking.
+ * Features:
+ * - Animated entrance and exit using Framer Motion
+ * - YouTube IFrame API integration
+ * - Progress tracking and reporting
+ * - Loading state management
+ * - Video metadata overlay
+ * - Memoized to prevent unnecessary re-renders
+ * 
+ * The component handles:
+ * - YouTube player initialization and cleanup
+ * - Progress tracking with interval-based updates
+ * - Player state management (playing, paused, ended)
+ * - Error handling and loading states
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Controls modal visibility
+ * @param {() => void} props.onClose - Handler for closing the modal
+ * @param {Video} props.video - Video data to play
+ * @param {(videoId: string, progress: number) => void} props.onProgress - Progress update handler
+ * 
+ * @example
+ * ```tsx
+ * function VideoPlayer({ video }) {
+ *   const [isModalOpen, setIsModalOpen] = useState(false);
+ * 
+ *   const handleProgress = (videoId: string, progress: number) => {
+ *     console.log(`Video ${videoId} progress: ${progress}%`);
+ *   };
+ * 
+ *   return (
+ *     <>
+ *       <button onClick={() => setIsModalOpen(true)}>
+ *         Play Video
+ *       </button>
+ *       <YoutubeModal
+ *         isOpen={isModalOpen}
+ *         onClose={() => setIsModalOpen(false)}
+ *         video={video}
+ *         onProgress={handleProgress}
+ *       />
+ *     </>
+ *   );
+ * }
+ * ```
+ */
 export const YoutubeModal = memo(({ isOpen, onClose, video, onProgress }: YoutubeModalProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const playerRef = useRef<any>(null);
   const progressIntervalRef = useRef<number>();
   const containerIdRef = useRef(`youtube-player-${video.id}`);
 
+  /**
+   * Effect hook to initialize and manage the YouTube player lifecycle.
+   * Handles:
+   * - YouTube API loading
+   * - Player initialization
+   * - Event listeners setup
+   * - Progress tracking
+   * - Cleanup on unmount
+   */
   useEffect(() => {
     let isMounted = true;
 
+    /**
+     * Initializes the YouTube player and sets up event handlers.
+     * Includes error handling and loading state management.
+     */
     const initializePlayer = async () => {
       if (!isOpen || !isMounted || playerRef.current) return;
 
@@ -195,7 +268,7 @@ export const YoutubeModal = memo(({ isOpen, onClose, video, onProgress }: Youtub
     </AnimatePresence>
   );
 
-  return createPortal(portalContent, document.getElementById('portal-root')!);
+  return createPortal(portalContent, document.getElementById('portal-root') ?? document.body);
 }, (prevProps, nextProps) => {
   // Only re-render if these props change
   return (
