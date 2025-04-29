@@ -3,7 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import Sidebar from '@/shared/components/layout/Sidebar/Sidebar';
 import HeaderActions from '@/shared/components/layout/Header/HeaderActions';
 import SearchBar from '@/shared/components/layout/SearchBar/SearchBar';
-import { HeaderProvider } from '@/contexts/HeaderContext';
+import { HeaderProvider } from '@/shared/contexts/HeaderContext';
 import { MobileNav } from '@/shared/components/navigation/MobileNav/MobileNav';
 import styles from './WeBetterApp.module.css';
 

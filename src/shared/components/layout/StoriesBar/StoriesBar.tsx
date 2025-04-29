@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import LifeStories from '../Stories/LifeStories';
 import { XIcon, PlayIcon } from '@/shared/components/common/icons';
 import styles from './StoriesBar.module.css';
-import { useBottomSheet } from '@/contexts/BottomSheetContext';
+import { useBottomSheet } from '@/shared/contexts/BottomSheetContext';
 
 interface StoryCategory {
   id: string;

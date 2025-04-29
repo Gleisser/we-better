@@ -4,7 +4,7 @@ import { SettingsIcon, LogoutIcon, BellIcon } from '@/shared/components/common/i
 import NotificationsPopup from '../NotificationsPopup/NotificationsPopup';
 import { MobileNotifications } from '../NotificationsPanel/MobileNotifications';
 import ProfileMenu from './ProfileMenu/ProfileMenu';
-import { useHeader } from '@/contexts/HeaderContext';
+import { useHeader } from '@/shared/contexts/HeaderContext';
 import styles from './HeaderActions.module.css';
 
 const HeaderActions = () => {

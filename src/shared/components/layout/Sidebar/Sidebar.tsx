@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/shared/contexts/AuthContext';
 import { 
   HomeIcon, VideoIcon, ArticleIcon, 
   CourseIcon, PodcastIcon, SettingsIcon, 

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/shared/contexts/AuthContext';
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading, checkAuth } = useAuth();

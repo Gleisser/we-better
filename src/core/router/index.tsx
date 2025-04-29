@@ -10,7 +10,7 @@ import Courses from '@/features/courses/pages/Courses';
 import Podcasts from '@/features/podcasts/pages';
 import Login from '@/features/auth/pages/Login';
 import SignUp from '@/features/auth/pages/SignUp';
-import { BottomSheetProvider } from '@/contexts/BottomSheetContext';
+import { BottomSheetProvider } from '@/shared/contexts/BottomSheetContext';
 import AuthLayout from '@/features/auth/pages/AuthLayout';
 import EmailConfirmation from '@/features/auth/pages/EmailConfirmation';
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute';
@@ -23,7 +23,7 @@ import { WelcomeSequence } from '@/features/life-wheel/WelcomeSequence';
 import { VisionBoard } from '@/features/vision-board';
 import { VisionBoardData } from '@/features/vision-board/types';
 import { LifeCategory } from '@/features/life-wheel/types';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/shared/contexts/AuthContext';
 import { DEFAULT_LIFE_CATEGORIES } from '@/features/life-wheel/constants/categories';
 import { createVisionBoard, updateVisionBoard } from '@/core/services/visionBoardService';
 
