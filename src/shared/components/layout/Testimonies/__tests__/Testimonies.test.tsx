@@ -7,7 +7,7 @@ import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { TESTIMONY_FALLBACK } from '@/utils/constants/fallback';
 import styles from '../Testimonies.module.css';
-import { API_CONFIG } from '@/lib/api-config';
+import { API_CONFIG } from '@/core/config/api-config';
 
 // Mock the hooks
 vi.mock('@/hooks/useTestimony');

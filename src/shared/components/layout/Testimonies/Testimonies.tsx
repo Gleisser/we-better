@@ -1,7 +1,7 @@
 import styles from './Testimonies.module.css';
 import { useTestimony } from '@/shared/hooks/useTestimony';
 import { TESTIMONY_FALLBACK } from '@/utils/constants/fallback';
-import { API_CONFIG } from '@/lib/api-config';
+import { API_CONFIG } from '@/core/config/api-config';
 import { TestimonyItem } from '@/types/testimony';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';

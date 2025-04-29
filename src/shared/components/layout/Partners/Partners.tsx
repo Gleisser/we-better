@@ -1,6 +1,6 @@
 import { usePartner } from '@/shared/hooks/usePartner';
 import styles from './Partners.module.css';
-import { API_CONFIG } from '@/lib/api-config';
+import { API_CONFIG } from '@/core/config/api-config';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { PARTNERS_FALLBACK } from '@/utils/constants/fallback';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';

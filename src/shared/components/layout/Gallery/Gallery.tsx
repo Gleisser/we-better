@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Gallery.module.css';
 import { useGallery } from '@/shared/hooks/useGallery';
-import { API_CONFIG } from '@/lib/api-config';
+import { API_CONFIG } from '@/core/config/api-config';
 import { GalleryIcon, MobileNavIcon, MobileNavNextIcon } from '@/shared/components/common/icons';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';

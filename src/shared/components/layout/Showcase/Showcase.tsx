@@ -3,7 +3,7 @@ import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import styles from './Showcase.module.css';
 import { SHOWCASE_FALLBACK } from '@/utils/constants/fallback';
 import { useShowcase } from '@/shared/hooks/useShowcase';
-import { API_CONFIG } from '@/lib/api-config';
+import { API_CONFIG } from '@/core/config/api-config';
 import { ShowcaseArrowIcon, ShowcaseArrowRightIcon, ShowcaseMobileArrowIcon, ShowcaseMobileArrowRightIcon } from '@/shared/components/common/icons';
 import ShowcaseSkeleton from './ShowcaseSkeleton';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';

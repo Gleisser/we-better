@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api-client';
+import { apiClient } from '@/core/services/api-client';
 import { HeroResponse } from '@/types/hero';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 

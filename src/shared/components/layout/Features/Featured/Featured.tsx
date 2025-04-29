@@ -1,4 +1,4 @@
-import { API_CONFIG } from '@/lib/api-config';
+import { API_CONFIG } from '@/core/config/api-config';
 import { Brand } from '@/types/features-response';
 
 interface FeaturedProps extends React.HTMLAttributes<HTMLDivElement> {

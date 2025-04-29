@@ -3,7 +3,7 @@ import styles from './Tools.module.css';
 import { TOOLS_FALLBACK } from '@/utils/constants/fallback';
 import { useTool } from '@/shared/hooks/useTool';
 import { ToolTab } from '@/types/tool';
-import { API_CONFIG } from '@/lib/api-config';
+import { API_CONFIG } from '@/core/config/api-config';
 import { ToolIcon } from '@/shared/components/common/icons';
 import ToolsSkeleton from './ToolsSkeleton';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';

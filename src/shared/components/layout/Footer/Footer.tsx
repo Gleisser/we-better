@@ -1,6 +1,6 @@
 import { useFooter } from '@/shared/hooks/useFooter';
 import styles from './Footer.module.css';
-import { API_CONFIG } from '@/lib/api-config';
+import { API_CONFIG } from '@/core/config/api-config';
 import { FOOTER_FALLBACK } from '@/utils/constants/fallback';
 import { AppStore, MenuList } from '@/types/footer';
 import { TopLevelImage } from '@/types/common/image';

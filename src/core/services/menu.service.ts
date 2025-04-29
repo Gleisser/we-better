@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/api-client';
+import { apiClient } from '@/core/services/api-client';
 import { MenuResponse } from '@/types/menu';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 export const menuService = {
