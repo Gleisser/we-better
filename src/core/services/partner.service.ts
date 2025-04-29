@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { PartnerResponse } from '@/types/partner';
-import { handleServiceError } from '@/utils/service-utils';
+import { handleServiceError } from '@/utils/helpers/service-utils';
 
 export const partnerService = {
   async getPartners(): Promise<PartnerResponse> {

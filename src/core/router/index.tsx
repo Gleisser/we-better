@@ -1,6 +1,6 @@
 import { createBrowserRouter, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { handleSpotifyCallback } from '@/utils/spotify';
+import { handleSpotifyCallback } from '@/utils/helpers/spotify';
 import App from '@/App';
 import WeBetterApp from '@/pages/WeBetterApp';
 import Dashboard from '@/features/dashboard/Dashboard';

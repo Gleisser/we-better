@@ -5,7 +5,7 @@ import { useTool } from '@/shared/hooks/useTool';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
-import { TOOLS_FALLBACK } from '@/constants/fallback';
+import { TOOLS_FALLBACK } from '@/utils/constants/fallback';
 import styles from '../Tools.module.css';
 
 // Mock the hooks

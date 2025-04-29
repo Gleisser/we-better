@@ -5,7 +5,7 @@ import { useTestimony } from '@/shared/hooks/useTestimony';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { TESTIMONY_FALLBACK } from '@/constants/fallback';
+import { TESTIMONY_FALLBACK } from '@/utils/constants/fallback';
 import styles from '../Testimonies.module.css';
 import { API_CONFIG } from '@/lib/api-config';
 

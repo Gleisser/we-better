@@ -5,7 +5,7 @@ import { useHero } from '@/shared/hooks/useHero';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { HERO_FALLBACK } from '@/constants/fallback';
+import { HERO_FALLBACK } from '@/utils/constants/fallback';
 import styles from '../Hero.module.css';
 import type { Hero as HeroType } from '@/types/hero';
 

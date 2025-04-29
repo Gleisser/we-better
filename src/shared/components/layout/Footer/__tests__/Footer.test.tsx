@@ -6,7 +6,7 @@ import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import styles from '../Footer.module.css';
-import { FOOTER_FALLBACK } from '@/constants/fallback';
+import { FOOTER_FALLBACK } from '@/utils/constants/fallback';
 
 // Mock the hooks
 vi.mock('@/hooks/useFooter');

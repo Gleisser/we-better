@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { HighlightResponse } from '@/types/highlight';
-import { handleServiceError } from '@/utils/service-utils';
+import { handleServiceError } from '@/utils/helpers/service-utils';
 
 export const highlightService = {
   async getHighlight(): Promise<HighlightResponse> {

@@ -12,7 +12,7 @@ import {
 import { CircularProgress } from './CircularProgress';
 import { podcastService, type Podcast } from '@/core/services/podcastService';
 import styles from './PodcastWidget.module.css';
-import { getSpotifyAuthToken } from '@/utils/spotify';
+import { getSpotifyAuthToken } from '@/utils/helpers/spotify';
 
 interface SpotifyPlayerState {
   isPlaying: boolean;

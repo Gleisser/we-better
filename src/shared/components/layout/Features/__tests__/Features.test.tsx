@@ -5,7 +5,7 @@ import { useFeature } from '@/shared/hooks/useFeature';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { FEATURES_CONSTANTS } from '@/constants/fallback';
+import { FEATURES_CONSTANTS } from '@/utils/constants/fallback';
 import styles from '../Features.module.css';
 
 // Mock the hooks

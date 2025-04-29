@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { PrefooterResponse } from '@/types/prefooter';
-import { handleServiceError } from '@/utils/service-utils';
+import { handleServiceError } from '@/utils/helpers/service-utils';
 
 export const prefooterService = {
   async getPrefooter(): Promise<PrefooterResponse> {

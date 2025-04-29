@@ -12,7 +12,7 @@ import { ContentItem } from './components/ContentItem';
 import { ContentControls } from './components/ContentControls';
 import { Toolbar } from './components/Toolbar';
 import { IntroScreen } from './components/IntroScreen';
-import showToast from '@/utils/toast';
+import showToast from '@/utils/helpers/toast';
 import styles from './VisionBoard.module.css';
 
 // Add this utility function for image compression

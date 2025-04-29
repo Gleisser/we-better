@@ -1,4 +1,4 @@
-import { MenuType } from "@/constants/fallback/header";
+import { MenuType } from "@/utils/constants/fallback/header";
 import { MenuLink } from "./common/menulink";
 import { APIResponse } from "./common/meta";
 

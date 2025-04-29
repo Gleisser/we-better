@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { TestimonyResponse } from '@/types/testimony';
-import { handleServiceError } from '@/utils/service-utils';
+import { handleServiceError } from '@/utils/helpers/service-utils';
 
 export const testimonyService = {
     async getTestimony(): Promise<TestimonyResponse> {

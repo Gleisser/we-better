@@ -4,7 +4,7 @@ import styles from './ArticleWidget.module.css';
 import { Tooltip } from '@/shared/components/common/Tooltip';
 import { useBookmarkedArticles } from '@/shared/hooks/useBookmarkedArticles';
 import { Article } from '@/core/services/articleService';
-import { formatRelativeDate } from '@/utils/dateUtils';
+import { formatRelativeDate } from '@/utils/helpers/dateUtils';
 
 interface ArticleWidgetProps {
   article: Article | null;

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './Tools.module.css';
-import { TOOLS_FALLBACK } from '@/constants/fallback';
+import { TOOLS_FALLBACK } from '@/utils/constants/fallback';
 import { useTool } from '@/shared/hooks/useTool';
 import { ToolTab } from '@/types/tool';
 import { API_CONFIG } from '@/lib/api-config';

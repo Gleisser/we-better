@@ -5,7 +5,7 @@ import { usePrefooter } from '@/shared/hooks/usePrefooter';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { PREFOOTER_FALLBACK } from '@/constants/fallback';
+import { PREFOOTER_FALLBACK } from '@/utils/constants/fallback';
 import styles from '../PreFooter.module.css';
 
 // Mock the hooks

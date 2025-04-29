@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { isRateLimitError, shouldRetry, getRetryDelay } from '@/utils/error-handling';
+import { isRateLimitError, shouldRetry, getRetryDelay } from '@/utils/helpers/error-handling';
 
 export const queryClient = new QueryClient({
   defaultOptions: {

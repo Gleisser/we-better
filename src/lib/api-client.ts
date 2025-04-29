@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { RateLimiter } from './rate-limiter';
 import { ENV_CONFIG } from '@/core/config/env.config';
-import { shouldRetry, getRetryDelay, getErrorMessage } from '@/utils/error-handling';
+import { shouldRetry, getRetryDelay, getErrorMessage } from '@/utils/helpers/error-handling';
 import { APIError, Meta } from '@/types/common/meta';
 
 // Wrapper to maintain backward compatibility

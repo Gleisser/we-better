@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { MenuResponse } from '@/types/menu';
-import { handleServiceError } from '@/utils/service-utils';
+import { handleServiceError } from '@/utils/helpers/service-utils';
 export const menuService = {
   async getMenu(): Promise<MenuResponse> {
     try {

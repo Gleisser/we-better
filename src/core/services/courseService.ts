@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import { handleServiceError } from '@/utils/service-utils';
+import { handleServiceError } from '@/utils/helpers/service-utils';
 import { PlatformType } from '@/shared/components/widgets/CourseWidget/config';
 
 export interface CourseCategory {

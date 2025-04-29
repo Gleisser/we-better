@@ -1,8 +1,8 @@
 import { usePartner } from '@/shared/hooks/usePartner';
 import styles from './Partners.module.css';
 import { API_CONFIG } from '@/lib/api-config';
-import { renderHighlightedText } from '@/utils/textFormatting';
-import { PARTNERS_FALLBACK } from '@/constants/fallback';
+import { renderHighlightedText } from '@/utils/helpers/textFormatting';
+import { PARTNERS_FALLBACK } from '@/utils/constants/fallback';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';

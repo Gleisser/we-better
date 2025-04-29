@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { getDetailedErrorMessage, getErrorCode } from '@/utils/error-handling';
+import { getDetailedErrorMessage, getErrorCode } from '@/utils/helpers/error-handling';
 
 interface ErrorState {
   hasError: boolean;

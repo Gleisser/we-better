@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import styles from './Community.module.css';
 import { useCommunity } from '@/shared/hooks/useCommunity';
-import { renderHighlightedText } from '@/utils/textFormatting';
+import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { DiscordIcon } from '@/shared/components/common/icons';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';

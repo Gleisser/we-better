@@ -5,7 +5,7 @@ import { useHighlight } from '@/shared/hooks/useHighlight';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
-import { HIGHLIGHTS_FALLBACK } from '@/constants/fallback';
+import { HIGHLIGHTS_FALLBACK } from '@/utils/constants/fallback';
 import styles from '../Highlights.module.css';
 
 // Mock the hooks

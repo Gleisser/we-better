@@ -2,7 +2,7 @@ import Featured from './Featured/Featured';
 import styles from './Features.module.css';
 import FeaturesCard from './Card/FeaturesCard';
 import { useFeature } from '@/shared/hooks/useFeature';
-import { FEATURES_CONSTANTS } from '@/constants/fallback';
+import { FEATURES_CONSTANTS } from '@/utils/constants/fallback';
 import { useEffect, useState, useCallback } from 'react';
 import FeaturesSkeleton from './FeaturesSkeleton';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';

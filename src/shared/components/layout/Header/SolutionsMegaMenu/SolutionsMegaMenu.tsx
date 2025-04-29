@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { SolutionsMegaMenuProps } from './types';
 import { API_CONFIG } from '@/lib/api-config';
-import { SOLUTIONS_MEGA_MENU_FALLBACK } from '@/constants/fallback/megamenu';
+import { SOLUTIONS_MEGA_MENU_FALLBACK } from '@/utils/constants/fallback/megamenu';
 
 const SolutionsMegaMenu = ({ isOpen, onClose, menuData }: SolutionsMegaMenuProps) => {
   const menuItems = menuData?.menu_links || SOLUTIONS_MEGA_MENU_FALLBACK;

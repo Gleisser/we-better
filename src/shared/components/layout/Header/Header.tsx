@@ -4,7 +4,7 @@ import MegaMenu from './MegaMenu';
 import SolutionsMegaMenu from './SolutionsMegaMenu';
 import ResourcesMegaMenu from './ResourcesMegaMenu';
 import styles from './Header.module.css';
-import { HEADER_CONSTANTS, MEGA_MENU_CONFIG, MenuType } from '@/constants/fallback/header';
+import { HEADER_CONSTANTS, MEGA_MENU_CONFIG, MenuType } from '@/utils/constants/fallback/header';
 import NavItem from './NavItem';
 import HamburgerButton from './HamburgerButton';
 import MobileMenu from './MobileMenu';

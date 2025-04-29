@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { CommunityResponse } from '@/types/community';
-import { handleServiceError } from '@/utils/service-utils';
+import { handleServiceError } from '@/utils/helpers/service-utils';
 export const communityService = {
   async getCommunity(): Promise<CommunityResponse> {
     try {

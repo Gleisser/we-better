@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { FooterResponse } from '@/types/footer';
-import { handleServiceError } from '@/utils/service-utils';
+import { handleServiceError } from '@/utils/helpers/service-utils';
 export const footerService = {
   async getFooter(): Promise<FooterResponse> {
     try {

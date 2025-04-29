@@ -1,9 +1,9 @@
 import styles from './Testimonies.module.css';
 import { useTestimony } from '@/shared/hooks/useTestimony';
-import { TESTIMONY_FALLBACK } from '@/constants/fallback';
+import { TESTIMONY_FALLBACK } from '@/utils/constants/fallback';
 import { API_CONFIG } from '@/lib/api-config';
 import { TestimonyItem } from '@/types/testimony';
-import { renderHighlightedText } from '@/utils/textFormatting';
+import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';

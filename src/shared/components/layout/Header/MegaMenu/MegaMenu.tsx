@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { MegaMenuProps } from './types';
 import { API_CONFIG } from '@/lib/api-config';
-import { SOLUTIONS_MEGA_MENU_FALLBACK } from '@/constants/fallback/megamenu';
+import { SOLUTIONS_MEGA_MENU_FALLBACK } from '@/utils/constants/fallback/megamenu';
 
 
 

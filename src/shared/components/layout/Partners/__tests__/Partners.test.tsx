@@ -6,7 +6,7 @@ import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import styles from '../Partners.module.css';
-import { PARTNERS_FALLBACK } from '@/constants/fallback';
+import { PARTNERS_FALLBACK } from '@/utils/constants/fallback';
 
 // Mock the hooks
 vi.mock('@/hooks/usePartner');

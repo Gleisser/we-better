@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { ShowcaseResponse } from '@/types/showcase';
-import { handleServiceError } from '@/utils/service-utils';
+import { handleServiceError } from '@/utils/helpers/service-utils';
 export const showcaseService = {
   async getShowcase(): Promise<ShowcaseResponse> {
     try {

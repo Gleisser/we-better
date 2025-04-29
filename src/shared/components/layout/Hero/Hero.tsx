@@ -1,4 +1,4 @@
-import { HERO_FALLBACK } from "@/constants/fallback";
+import { HERO_FALLBACK } from "@/utils/constants/fallback";
 import styles from "./Hero.module.css";
 import DashboardPreview from "./DashboardPreview";
 import FloatingImage from './FloatingImage';

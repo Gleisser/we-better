@@ -17,7 +17,7 @@ import {
 } from '../common/icons';
 import { usePreventScroll } from '../../hooks/usePreventScroll';
 import { articleService, Article } from '@/core/services/articleService';
-import { formatRelativeDate } from '@/utils/dateUtils';
+import { formatRelativeDate } from '@/utils/helpers/dateUtils';
 
 interface ArticlePopupProps {
   isOpen: boolean;

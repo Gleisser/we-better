@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { HeroResponse } from '@/types/hero';
-import { handleServiceError } from '@/utils/service-utils';
+import { handleServiceError } from '@/utils/helpers/service-utils';
 
 export const heroService = {
   async getHero(): Promise<HeroResponse> {

@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { ToolResponse } from '@/types/tool';
-import { handleServiceError } from '@/utils/service-utils';
+import { handleServiceError } from '@/utils/helpers/service-utils';
 
 export const toolService = {
   async getTools(): Promise<ToolResponse> {
