@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { XIcon, TrashIcon } from '@/components/common/icons';
+import { XIcon, TrashIcon } from '@/shared/components/common/icons';
 import styles from './NotificationsPopup.module.css';
-import UserAvatar from '@/components/common/UserAvatar/UserAvatar';
+import UserAvatar from '@/shared/components/common/UserAvatar/UserAvatar';
 
 type Tab = 'all' | 'following' | 'archive';
 

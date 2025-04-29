@@ -1,12 +1,12 @@
-import QuoteWidget from '@/components/widgets/QuoteWidget/QuoteWidget';
-import { AffirmationWidget } from '@/components/widgets/AffirmationWidget';
-import HabitsWidget from '@/components/widgets/HabitsWidget/HabitsWidget';
-import GoalsWidget from '@/components/widgets/GoalsWidget/GoalsWidget';
-import PodcastWidget from '@/components/widgets/PodcastWidget/PodcastWidget';
-import VideoWidget from '@/components/widgets/VideoWidget/VideoWidget';
-import CourseWidget from '@/components/widgets/CourseWidget/CourseWidget';
-import BookWidget from '@/components/widgets/BookWidget/BookWidget';
-import ArticleWidget from '@/components/widgets/ArticleWidget/ArticleWidget';
+import QuoteWidget from '@/shared/components/widgets/QuoteWidget/QuoteWidget';
+import { AffirmationWidget } from '@/shared/components/widgets/AffirmationWidget';
+import HabitsWidget from '@/shared/components/widgets/HabitsWidget/HabitsWidget';
+import GoalsWidget from '@/shared/components/widgets/GoalsWidget/GoalsWidget';
+import PodcastWidget from '@/shared/components/widgets/PodcastWidget/PodcastWidget';
+import VideoWidget from '@/shared/components/widgets/VideoWidget/VideoWidget';
+import CourseWidget from '@/shared/components/widgets/CourseWidget/CourseWidget';
+import BookWidget from '@/shared/components/widgets/BookWidget/BookWidget';
+import ArticleWidget from '@/shared/components/widgets/ArticleWidget/ArticleWidget';
 import { Article } from '@/services/articleService';
 import styles from './DashboardGrid.module.css';
 

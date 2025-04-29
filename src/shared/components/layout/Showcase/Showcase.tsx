@@ -4,7 +4,7 @@ import styles from './Showcase.module.css';
 import { SHOWCASE_FALLBACK } from '@/constants/fallback';
 import { useShowcase } from '@/hooks/useShowcase';
 import { API_CONFIG } from '@/lib/api-config';
-import { ShowcaseArrowIcon, ShowcaseArrowRightIcon, ShowcaseMobileArrowIcon, ShowcaseMobileArrowRightIcon } from '@/components/common/icons';
+import { ShowcaseArrowIcon, ShowcaseArrowRightIcon, ShowcaseMobileArrowIcon, ShowcaseMobileArrowRightIcon } from '@/shared/components/common/icons';
 import ShowcaseSkeleton from './ShowcaseSkeleton';
 import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/hooks/utils/useErrorHandler';

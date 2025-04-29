@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LifeStories from '../Stories/LifeStories';
-import { XIcon, PlayIcon } from '@/components/common/icons';
+import { XIcon, PlayIcon } from '@/shared/components/common/icons';
 import styles from './StoriesBar.module.css';
 import { useBottomSheet } from '@/contexts/BottomSheetContext';
 

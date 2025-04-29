@@ -10,7 +10,7 @@ import {
   WikiIcon,
   FAQIcon,
   MobileMenuArrowIcon 
-} from '@/components/common/icons';
+} from '@/shared/components/common/icons';
 
 interface MobileMenuProps {
   isOpen: boolean;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Courses.module.css';
-import { ChevronDownIcon, SettingsIcon } from '@/components/common/icons';
-import FeedSettingsModal from '@/components/common/FeedSettingsModal/FeedSettingsModal';
-import CourseCard from '@/components/widgets/CourseCard/CourseCard';
+import { ChevronDownIcon, SettingsIcon } from '@/shared/components/common/icons';
+import FeedSettingsModal from '@/shared/components/common/FeedSettingsModal/FeedSettingsModal';
+import CourseCard from '@/shared/components/widgets/CourseCard/CourseCard';
 import { courseService, Course } from '@/services/courseService';
 
 const Courses = () => {

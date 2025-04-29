@@ -3,7 +3,7 @@ import { usePrefooter } from '@/hooks/usePrefooter';
 import { PREFOOTER_FALLBACK } from '@/constants/fallback';
 import { renderHighlightedText } from '@/utils/textFormatting';
 import { API_CONFIG } from '@/lib/api-config';
-import { ButtonArrowIcon } from '@/components/common/icons';
+import { ButtonArrowIcon } from '@/shared/components/common/icons';
 import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/hooks/utils/useLoadingState';

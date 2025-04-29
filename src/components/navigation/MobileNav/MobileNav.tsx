@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { HomeIcon, VideoIcon, ArticleIcon, CourseIcon, PodcastIcon } from '@/components/common/icons';
+import { HomeIcon, VideoIcon, ArticleIcon, CourseIcon, PodcastIcon } from '@/shared/components/common/icons';
 import styles from './MobileNav.module.css';
 
 const NAV_ITEMS = [

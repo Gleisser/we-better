@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Course } from '@/components/widgets/CourseWidget/types';
+import { Course } from '@/shared/components/widgets/CourseWidget/types';
 
 interface BookmarkedCourse extends Course {
   bookmarkedAt: number;

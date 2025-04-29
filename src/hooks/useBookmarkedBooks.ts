@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Book } from '@/components/widgets/BookWidget/types';
+import { Book } from '@/shared/components/widgets/BookWidget/types';
 
 interface BookmarkedBook extends Book {
   bookmarkedAt: number;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SearchIcon, XIcon } from '@/components/common/icons';
+import { SearchIcon, XIcon } from '@/shared/components/common/icons';
 import styles from './MobileSearch.module.css';
 
 export const MobileSearch = () => {

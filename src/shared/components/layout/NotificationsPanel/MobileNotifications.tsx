@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { XIcon, TrashIcon } from '@/components/common/icons';
-import UserAvatar from '@/components/common/UserAvatar/UserAvatar';
+import { XIcon, TrashIcon } from '@/shared/components/common/icons';
+import UserAvatar from '@/shared/components/common/UserAvatar/UserAvatar';
 import styles from './MobileNotifications.module.css';
 
 type NotificationType = 'follow' | 'reply' | 'mention' | 'task' | 'like' | 'achievement';

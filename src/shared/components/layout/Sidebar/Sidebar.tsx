@@ -6,7 +6,7 @@ import {
   HomeIcon, VideoIcon, ArticleIcon, 
   CourseIcon, PodcastIcon, SettingsIcon, 
   LogoutIcon, CollapseIcon 
-} from '@/components/common/icons';
+} from '@/shared/components/common/icons';
 import styles from './Sidebar.module.css';
 
 const menuItems = [

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Gallery.module.css';
 import { useGallery } from '@/hooks/useGallery';
 import { API_CONFIG } from '@/lib/api-config';
-import { GalleryIcon, MobileNavIcon, MobileNavNextIcon } from '@/components/common/icons';
+import { GalleryIcon, MobileNavIcon, MobileNavNextIcon } from '@/shared/components/common/icons';
 import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/hooks/utils/useLoadingState';

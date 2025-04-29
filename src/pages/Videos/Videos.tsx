@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './Videos.module.css';
-import { ChevronDownIcon, SettingsIcon } from '@/components/common/icons';
-import { YoutubeModal } from '@/components/widgets/VideoWidget/YoutubeModal';
-import VideoCard from '@/components/widgets/VideoCard/VideoCard';
-import FeedSettingsModal from '@/components/common/FeedSettingsModal/FeedSettingsModal';
+import { ChevronDownIcon, SettingsIcon } from '@/shared/components/common/icons';
+import { YoutubeModal } from '@/shared/components/widgets/VideoWidget/YoutubeModal';
+import VideoCard from '@/shared/components/widgets/VideoCard/VideoCard';
+import FeedSettingsModal from '@/shared/components/common/FeedSettingsModal/FeedSettingsModal';
 import { videoService, Video } from '@/services/videoService';
 
 const Videos = () => {

@@ -4,7 +4,7 @@ import { TOOLS_FALLBACK } from '@/constants/fallback';
 import { useTool } from '@/hooks/useTool';
 import { ToolTab } from '@/types/tool';
 import { API_CONFIG } from '@/lib/api-config';
-import { ToolIcon } from '@/components/common/icons';
+import { ToolIcon } from '@/shared/components/common/icons';
 import ToolsSkeleton from './ToolsSkeleton';
 import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/hooks/utils/useErrorHandler';

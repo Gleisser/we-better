@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { handleServiceError } from '@/utils/service-utils';
-import { PlatformType } from '@/components/widgets/CourseWidget/config';
+import { PlatformType } from '@/shared/components/widgets/CourseWidget/config';
 
 export interface CourseCategory {
   id: number;

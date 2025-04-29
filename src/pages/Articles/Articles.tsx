@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import ArticleCard from '@/components/widgets/ArticleCard';
+import ArticleCard from '@/shared/components/widgets/ArticleCard';
 import styles from './Articles.module.css';
-import { ChevronDownIcon, SettingsIcon, TagIcon, UsersIcon, SparklesIcon, BlockIcon, XIcon } from '@/components/common/icons';
-import FeedSettingsModal from '@/components/common/FeedSettingsModal/FeedSettingsModal';
+import { ChevronDownIcon, SettingsIcon, TagIcon, UsersIcon, SparklesIcon, BlockIcon, XIcon } from '@/shared/components/common/icons';
+import FeedSettingsModal from '@/shared/components/common/FeedSettingsModal/FeedSettingsModal';
 import { articleService, Article } from '@/services/articleService';
 
 const Articles = () => {

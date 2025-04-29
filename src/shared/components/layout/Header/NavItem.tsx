@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { ArrowDown } from '@/components/common';
+import { ArrowDown } from '@/shared/components/common';
 import styles from './Header.module.css';
 
 interface NavItemProps {

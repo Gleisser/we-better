@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './Podcasts.module.css';
-import { ChevronDownIcon, SettingsIcon } from '@/components/common/icons';
-import FeedSettingsModal from '@/components/common/FeedSettingsModal/FeedSettingsModal';
-import PodcastCard from '@/components/widgets/PodcastCard/PodcastCard';
-import PodcastPlayer from '@/components/widgets/PodcastPlayer/PodcastPlayer';
+import { ChevronDownIcon, SettingsIcon } from '@/shared/components/common/icons';
+import FeedSettingsModal from '@/shared/components/common/FeedSettingsModal/FeedSettingsModal';
+import PodcastCard from '@/shared/components/widgets/PodcastCard/PodcastCard';
+import PodcastPlayer from '@/shared/components/widgets/PodcastPlayer/PodcastPlayer';
 import { podcastService, Podcast } from '@/services/podcastService';
 
 const Podcasts = () => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SettingsIcon, LogoutIcon, BellIcon } from '@/components/common/icons';
+import { SettingsIcon, LogoutIcon, BellIcon } from '@/shared/components/common/icons';
 import NotificationsPopup from '../NotificationsPopup/NotificationsPopup';
 import { MobileNotifications } from '../NotificationsPanel/MobileNotifications';
 import ProfileMenu from './ProfileMenu/ProfileMenu';

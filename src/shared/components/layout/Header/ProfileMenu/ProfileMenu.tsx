@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { SettingsIcon, LogoutIcon, BookmarkIcon } from '@/components/common/icons';
+import { SettingsIcon, LogoutIcon, BookmarkIcon } from '@/shared/components/common/icons';
 import styles from './ProfileMenu.module.css';
 
 interface ProfileMenuProps {

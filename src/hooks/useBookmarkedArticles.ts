@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Article } from '@/components/widgets/ArticleWidget/types';
+import { Article } from '@/shared/components/widgets/ArticleWidget/types';
 
 interface BookmarkedArticle extends Article {
   bookmarkedAt: number;
