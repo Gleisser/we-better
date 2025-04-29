@@ -7,7 +7,7 @@ import Dashboard from '@/features/dashboard/Dashboard';
 import Videos from '@/pages/Videos';
 import Articles from '@/pages/Articles';
 import Courses from '@/features/courses/Courses';
-import Podcasts from '@/pages/Podcasts';
+import Podcasts from '@/features/podcasts/pages';
 import Login from '@/features/auth/pages/Login';
 import SignUp from '@/features/auth/pages/SignUp';
 import { BottomSheetProvider } from '@/contexts/BottomSheetContext';

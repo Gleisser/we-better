@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Podcast } from '@/pages/Podcasts/mockPodcasts';
+import type { Podcast } from '@/features/podcasts/pages/mockPodcasts';
 
 export const useBookmarkedPodcasts = () => {
   const [bookmarkedPodcasts, setBookmarkedPodcasts] = useState<Podcast[]>(() => {
