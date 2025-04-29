@@ -1,6 +1,6 @@
 {
   "*.{js,jsx,ts,tsx}": [
-    "eslint --fix",
+    "pnpm lint:staged",
     "prettier --write"
   ],
   "*.{css,scss,md,json}": [
