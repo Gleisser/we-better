@@ -1,5 +1,5 @@
 import { createQueryHook } from './utils/createQueryHook';
-import { communityService } from '@/services/community.service';
+import { communityService } from '@/core/services/community.service';
 import { CommunityResponse } from '@/types/community';
 
 export const COMMUNITY_QUERY_KEY = ['community'] as const;

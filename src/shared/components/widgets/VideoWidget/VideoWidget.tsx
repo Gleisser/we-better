@@ -6,7 +6,7 @@ import { Video, WatchProgress } from './types';
 import { YoutubeModal } from './YoutubeModal';
 import { useTiltEffect } from '@/hooks/useTiltEffect';
 import ViewCounter from './ViewCounter';
-import { videoService } from '@/services/videoService';
+import { videoService } from '@/core/services/videoService';
 
 const VideoWidget = () => {
   const [isCollapsed, setIsCollapsed] = useState(() => {

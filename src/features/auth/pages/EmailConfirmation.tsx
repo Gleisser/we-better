@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { authService } from '@/services/authService';
+import { authService } from '@/core/services/authService';
 import styles from './Login.module.css';
 
 const EmailConfirmation = () => {

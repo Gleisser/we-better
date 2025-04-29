@@ -7,7 +7,7 @@ import VideoWidget from '@/shared/components/widgets/VideoWidget/VideoWidget';
 import CourseWidget from '@/shared/components/widgets/CourseWidget/CourseWidget';
 import BookWidget from '@/shared/components/widgets/BookWidget/BookWidget';
 import ArticleWidget from '@/shared/components/widgets/ArticleWidget/ArticleWidget';
-import { Article } from '@/services/articleService';
+import { Article } from '@/core/services/articleService';
 import styles from './DashboardGrid.module.css';
 
 interface DashboardGridProps {

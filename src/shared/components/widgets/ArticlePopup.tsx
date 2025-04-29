@@ -16,7 +16,7 @@ import {
   ArrowTopRight
 } from '../common/icons';
 import { usePreventScroll } from '../../../hooks/usePreventScroll';
-import { articleService, Article } from '@/services/articleService';
+import { articleService, Article } from '@/core/services/articleService';
 import { formatRelativeDate } from '@/utils/dateUtils';
 
 interface ArticlePopupProps {

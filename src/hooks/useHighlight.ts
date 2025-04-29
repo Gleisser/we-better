@@ -1,5 +1,5 @@
 import { createQueryHook } from './utils/createQueryHook';
-import { highlightService } from '@/services/highlight.service';
+import { highlightService } from '@/core/services/highlight.service';
 import { HighlightResponse } from '@/types/highlight';
 
 export const HIGHLIGHT_QUERY_KEY = ['highlight'] as const;

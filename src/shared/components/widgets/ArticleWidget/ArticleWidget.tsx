@@ -3,7 +3,7 @@ import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import styles from './ArticleWidget.module.css';
 import { Tooltip } from '@/shared/components/common/Tooltip';
 import { useBookmarkedArticles } from '@/hooks/useBookmarkedArticles';
-import { Article } from '@/services/articleService';
+import { Article } from '@/core/services/articleService';
 import { formatRelativeDate } from '@/utils/dateUtils';
 
 interface ArticleWidgetProps {

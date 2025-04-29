@@ -4,9 +4,9 @@ import { handleSpotifyCallback } from '@/utils/spotify';
 import App from '@/App';
 import WeBetterApp from '@/pages/WeBetterApp';
 import Dashboard from '@/features/dashboard/Dashboard';
-import Videos from '@/pages/Videos';
-import Articles from '@/pages/Articles';
-import Courses from '@/features/courses/Courses';
+import Videos from '@/features/videos/pages';
+import Articles from '@/features/articles/pages';
+import Courses from '@/features/courses/pages/Courses';
 import Podcasts from '@/features/podcasts/pages';
 import Login from '@/features/auth/pages/Login';
 import SignUp from '@/features/auth/pages/SignUp';
@@ -25,7 +25,7 @@ import { VisionBoardData } from '@/features/vision-board/types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { DEFAULT_LIFE_CATEGORIES } from '@/features/life-wheel/constants/categories';
-import { createVisionBoard, updateVisionBoard } from '@/services/visionBoardService';
+import { createVisionBoard, updateVisionBoard } from '@/core/services/visionBoardService';
 
 // Create a simple Start page that contains the Life Wheel component and Vision Board
 const StartPage = () => {
@@ -36,7 +36,6 @@ const StartPage = () => {
   const [lifeWheelCategories, setLifeWheelCategories] = useState<LifeCategory[]>(DEFAULT_LIFE_CATEGORIES);
   
   const handleComplete = () => {
-    console.log('Life wheel assessment completed');
     // Show the Vision Board after completing the Life Wheel assessment
     setShowVisionBoard(true);
   };

@@ -1,5 +1,5 @@
 import { createQueryHook } from './utils/createQueryHook';
-import { showcaseService } from '@/services/showcase.service';
+import { showcaseService } from '@/core/services/showcase.service';
 import { ShowcaseResponse } from '@/types/showcase';
 
 export const SHOWCASE_QUERY_KEY = ['showcase'] as const;

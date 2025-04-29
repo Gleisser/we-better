@@ -4,7 +4,7 @@ import { ChevronDownIcon, SettingsIcon } from '@/shared/components/common/icons'
 import FeedSettingsModal from '@/shared/components/common/FeedSettingsModal/FeedSettingsModal';
 import PodcastCard from '@/shared/components/widgets/PodcastCard/PodcastCard';
 import PodcastPlayer from '@/shared/components/widgets/PodcastPlayer/PodcastPlayer';
-import { podcastService, Podcast } from '@/services/podcastService';
+import { podcastService, Podcast } from '@/core/services/podcastService';
 
 const Podcasts = () => {
   const [loading, setLoading] = useState(true);

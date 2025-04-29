@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { authService } from '@/services/authService';
-import { supabase } from '@/services/supabaseClient';
+import { authService } from '@/core/services/authService';
+import { supabase } from '@/core/services/supabaseClient';
 
 interface User {
   id: string;

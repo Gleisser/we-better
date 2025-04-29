@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import StoriesBar from '@/shared/components/layout/StoriesBar/StoriesBar';
 import DashboardGrid from '@/shared/components/layout/DashboardGrid/DashboardGrid';
 import AIAssistantButton from '@/shared/components/common/AIAssistantButton/AIAssistantButton';
-import { articleService, Article } from '@/services/articleService';
+import { articleService, Article } from '@/core/services/articleService';
 import styles from './Dashboard.module.css';
 
 const Dashboard = () => {

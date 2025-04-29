@@ -10,7 +10,7 @@ import {
   VolumeIcon
 } from '@/shared/components/common/icons';
 import { CircularProgress } from './CircularProgress';
-import { podcastService, type Podcast } from '@/services/podcastService';
+import { podcastService, type Podcast } from '@/core/services/podcastService';
 import styles from './PodcastWidget.module.css';
 import { getSpotifyAuthToken } from '@/utils/spotify';
 

@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { RateLimiter } from './rate-limiter';
-import { ENV_CONFIG } from '@/config/env.config';
+import { ENV_CONFIG } from '@/core/config/env.config';
 import { shouldRetry, getRetryDelay, getErrorMessage } from '@/utils/error-handling';
 import { APIError, Meta } from '@/types/common/meta';
 

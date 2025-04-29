@@ -1,5 +1,5 @@
 import { createQueryHook } from './utils/createQueryHook';
-import { footerService } from '@/services/footer.services';
+import { footerService } from '@/core/services/footer.services';
 import { FooterResponse } from '@/types/footer';
 
 export const FOOTER_QUERY_KEY = ['footer'] as const;

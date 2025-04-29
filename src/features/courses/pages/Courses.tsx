@@ -3,7 +3,7 @@ import styles from './Courses.module.css';
 import { ChevronDownIcon, SettingsIcon } from '@/shared/components/common/icons';
 import FeedSettingsModal from '@/shared/components/common/FeedSettingsModal/FeedSettingsModal';
 import CourseCard from '@/shared/components/widgets/CourseCard/CourseCard';
-import { courseService, Course } from '@/services/courseService';
+import { courseService, Course } from '@/core/services/courseService';
 
 const Courses = () => {
   const [loading, setLoading] = useState(true);

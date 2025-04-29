@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
-import { authService } from '@/services/authService';
+import { authService } from '@/core/services/authService';
 import styles from './Login.module.css'; // We'll reuse the login styles for now
 
 const SignUp = () => {

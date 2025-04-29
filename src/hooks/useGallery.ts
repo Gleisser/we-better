@@ -1,5 +1,5 @@
 import { createQueryHook } from './utils/createQueryHook';
-import { galleryService } from '@/services/gallery.service';
+import { galleryService } from '@/core/services/gallery.service';
 import { GalleryResponse } from '@/types/gallery';
 
 export const GALLERY_QUERY_KEY = ['gallery'] as const;

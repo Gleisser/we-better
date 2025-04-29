@@ -15,7 +15,7 @@ import { usePersonalAffirmation } from '@/hooks/usePersonalAffirmation';
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog/ConfirmDialog';
 import { Toast } from '@/shared/components/common/Toast/Toast';
 import { useBookmarkedAffirmations } from '@/hooks/useBookmarkedAffirmations';
-import { affirmationService, type Affirmation } from '@/services/affirmationService';
+import { affirmationService, type Affirmation } from '@/core/services/affirmationService';
 
 type AffirmationCategory = 
   | 'personal' 

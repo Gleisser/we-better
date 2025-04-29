@@ -3,7 +3,7 @@ import ArticleCard from '@/shared/components/widgets/ArticleCard';
 import styles from './Articles.module.css';
 import { ChevronDownIcon, SettingsIcon, TagIcon, UsersIcon, SparklesIcon, BlockIcon, XIcon } from '@/shared/components/common/icons';
 import FeedSettingsModal from '@/shared/components/common/FeedSettingsModal/FeedSettingsModal';
-import { articleService, Article } from '@/services/articleService';
+import { articleService, Article } from '@/core/services/articleService';
 
 const Articles = () => {
   const [loading, setLoading] = useState(true);

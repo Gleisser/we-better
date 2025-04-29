@@ -1,5 +1,5 @@
 import { createQueryHook } from './utils/createQueryHook';
-import { toolService } from '@/services/tool.service';
+import { toolService } from '@/core/services/tool.service';
 import { ToolResponse } from '@/types/tool';
 
 export const TOOL_QUERY_KEY = ['tool'] as const;

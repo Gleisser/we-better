@@ -4,7 +4,7 @@ import {
   VolumeIcon, VolumeOffIcon, ChevronLeftIcon, ChevronRightIcon,
   ChevronUpIcon, ChevronDownIcon, CloseIcon 
 } from '@/shared/components/common/icons';
-import type { Podcast } from '@/services/podcastService';
+import type { Podcast } from '@/core/services/podcastService';
 import styles from './PodcastPlayer.module.css';
 
 interface PodcastPlayerProps {

@@ -4,7 +4,7 @@ import styles from './QuoteWidget.module.css';
 import { MoreVerticalIcon, RefreshIcon } from '../../common/icons';
 import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/hooks/useTiltEffect';
-import { quoteService, type Quote } from '@/services/quoteService';
+import { quoteService, type Quote } from '@/core/services/quoteService';
 
 type QuoteTheme = 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom';
 

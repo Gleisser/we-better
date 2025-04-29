@@ -1,5 +1,5 @@
 import { createQueryHook } from './utils/createQueryHook';
-import { heroService } from '@/services/hero.service';
+import { heroService } from '@/core/services/hero.service';
 import { HeroResponse } from '@/types/hero';
 
 export const HERO_QUERY_KEY = ['hero'] as const;
