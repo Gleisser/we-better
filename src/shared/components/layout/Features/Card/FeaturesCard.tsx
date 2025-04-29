@@ -1,5 +1,5 @@
 import styles from '../Features.module.css'
-import { Card } from '../../../../types/features-response'
+import { Card } from '../../../../../types/features-response'
 import { motion } from 'framer-motion'
 import { ArrowRight, ArrowTopRight } from '@/components/common/icons';
 import { FEATURES_CONSTANTS } from '@/constants/fallback';

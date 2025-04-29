@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import StoriesBar from '@/components/layout/StoriesBar/StoriesBar';
-import DashboardGrid from '@/components/layout/DashboardGrid/DashboardGrid';
+import StoriesBar from '@/shared/components/layout/StoriesBar/StoriesBar';
+import DashboardGrid from '@/shared/components/layout/DashboardGrid/DashboardGrid';
 import AIAssistantButton from '@/components/common/AIAssistantButton/AIAssistantButton';
 import { articleService, Article } from '@/services/articleService';
 import styles from './Dashboard.module.css';

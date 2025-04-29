@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import Sidebar from '@/components/layout/Sidebar/Sidebar';
-import HeaderActions from '@/components/layout/Header/HeaderActions';
-import SearchBar from '@/components/layout/SearchBar/SearchBar';
+import Sidebar from '@/shared/components/layout/Sidebar/Sidebar';
+import HeaderActions from '@/shared/components/layout/Header/HeaderActions';
+import SearchBar from '@/shared/components/layout/SearchBar/SearchBar';
 import { HeaderProvider } from '@/contexts/HeaderContext';
 import { MobileNav } from '@/components/navigation/MobileNav/MobileNav';
 import styles from './WeBetterApp.module.css';
