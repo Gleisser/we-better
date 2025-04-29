@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { prefetchHero } from '@/hooks/useHero';
+import { prefetchHero } from '@/shared/hooks/useHero';
 import ErrorBoundary from './shared/components/common/ErrorBoundary/ErrorBoundary';
 import { Header, Hero, Footer } from './shared/components/layout';
 import Features from './shared/components/layout/Features/Features';

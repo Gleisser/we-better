@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Footer from '../Footer';
-import { useFooter } from '@/hooks/useFooter';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useFooter } from '@/shared/hooks/useFooter';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import styles from '../Footer.module.css';
 import { FOOTER_FALLBACK } from '@/constants/fallback';
 

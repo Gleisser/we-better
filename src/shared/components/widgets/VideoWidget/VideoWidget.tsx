@@ -4,7 +4,7 @@ import { ChevronDownIcon, PlayIcon, ChevronLeftIcon, ChevronRightIcon, StarFille
 import styles from './VideoWidget.module.css';
 import { Video, WatchProgress } from './types';
 import { YoutubeModal } from './YoutubeModal';
-import { useTiltEffect } from '@/hooks/useTiltEffect';
+import { useTiltEffect } from '@/shared/hooks/useTiltEffect';
 import ViewCounter from './ViewCounter';
 import { videoService } from '@/core/services/videoService';
 

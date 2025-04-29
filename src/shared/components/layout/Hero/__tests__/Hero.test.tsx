@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { Hero } from '../Hero';
-import { useHero } from '@/hooks/useHero';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useHero } from '@/shared/hooks/useHero';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { HERO_FALLBACK } from '@/constants/fallback';
 import styles from '../Hero.module.css';
 import type { Hero as HeroType } from '@/types/hero';

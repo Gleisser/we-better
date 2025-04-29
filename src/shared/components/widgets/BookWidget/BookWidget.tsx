@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { BookmarkIcon, ShareIcon, ArrowTopRight, InfoIcon, StarIcon } from '@/shared/components/common/icons';
-import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
+import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { Book } from './types';
 import { MOCK_BOOKS } from './config';
 import styles from './BookWidget.module.css';
 import { Tooltip } from '@/shared/components/common/Tooltip';
-import { useBookmarkedBooks } from '@/hooks/useBookmarkedBooks';
+import { useBookmarkedBooks } from '@/shared/hooks/useBookmarkedBooks';
 import { BookDetailsModal } from './BookDetailsModal';
 
 const BookWidget = () => {

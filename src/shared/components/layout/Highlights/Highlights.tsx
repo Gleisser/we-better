@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import styles from './Highlights.module.css';
 import { HIGHLIGHTS_FALLBACK } from '@/constants/fallback';
-import { useHighlight } from '@/hooks/useHighlight';
+import { useHighlight } from '@/shared/hooks/useHighlight';
 import { API_CONFIG } from '@/lib/api-config';
 import HighlightsSkeleton from './HighlightsSkeleton';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
 const Highlights = () => {
   // Initialize hooks

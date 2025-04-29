@@ -2,13 +2,13 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import styles from './Showcase.module.css';
 import { SHOWCASE_FALLBACK } from '@/constants/fallback';
-import { useShowcase } from '@/hooks/useShowcase';
+import { useShowcase } from '@/shared/hooks/useShowcase';
 import { API_CONFIG } from '@/lib/api-config';
 import { ShowcaseArrowIcon, ShowcaseArrowRightIcon, ShowcaseMobileArrowIcon, ShowcaseMobileArrowRightIcon } from '@/shared/components/common/icons';
 import ShowcaseSkeleton from './ShowcaseSkeleton';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
 const Showcase = () => {
   // State management

@@ -9,7 +9,7 @@ import NavItem from './NavItem';
 import HamburgerButton from './HamburgerButton';
 import MobileMenu from './MobileMenu';
 import { Link, useNavigate } from 'react-router-dom';
-import { useMenu } from '@/hooks/useMenu';
+import { useMenu } from '@/shared/hooks/useMenu';
 
 const Header = () => {
   const { data } = useMenu();

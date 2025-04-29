@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Showcase from '../Showcase';
-import { useShowcase } from '@/hooks/useShowcase';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useShowcase } from '@/shared/hooks/useShowcase';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import styles from '../Showcase.module.css';
 
 // Mock the hooks

@@ -1,12 +1,12 @@
 import styles from './Testimonies.module.css';
-import { useTestimony } from '@/hooks/useTestimony';
+import { useTestimony } from '@/shared/hooks/useTestimony';
 import { TESTIMONY_FALLBACK } from '@/constants/fallback';
 import { API_CONFIG } from '@/lib/api-config';
 import { TestimonyItem } from '@/types/testimony';
 import { renderHighlightedText } from '@/utils/textFormatting';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { useCallback, useEffect } from 'react';
 
 const Testimonies = () => {

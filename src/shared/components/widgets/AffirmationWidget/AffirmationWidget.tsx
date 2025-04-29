@@ -3,18 +3,18 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './AffirmationWidget.module.css';
 import { ChevronLeftIcon, ChevronRightIcon, MicrophoneIcon, StopIcon, XIcon, BellIcon, PlusIcon, PencilIcon, TrashIcon, BookmarkIcon } from '@/shared/components/common/icons';
 import ParticleEffect from './ParticleEffect';
-import { useAffirmationStreak } from '@/hooks/useAffirmationStreak';
-import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
+import { useAffirmationStreak } from '@/shared/hooks/useAffirmationStreak';
+import { useVoiceRecorder } from '@/shared/hooks/useVoiceRecorder';
 import { Tooltip } from '@/shared/components/common/Tooltip';
-import { useAffirmationReminder } from '@/hooks/useAffirmationReminder';
+import { useAffirmationReminder } from '@/shared/hooks/useAffirmationReminder';
 import { ReminderSettings } from './ReminderSettings';
-import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
-import { useTiltEffect } from '@/hooks/useTiltEffect';
+import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
+import { useTiltEffect } from '@/shared/hooks/useTiltEffect';
 import { CreateAffirmationModal } from './CreateAffirmationModal';
-import { usePersonalAffirmation } from '@/hooks/usePersonalAffirmation';
+import { usePersonalAffirmation } from '@/shared/hooks/usePersonalAffirmation';
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog/ConfirmDialog';
 import { Toast } from '@/shared/components/common/Toast/Toast';
-import { useBookmarkedAffirmations } from '@/hooks/useBookmarkedAffirmations';
+import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
 import { affirmationService, type Affirmation } from '@/core/services/affirmationService';
 
 type AffirmationCategory = 

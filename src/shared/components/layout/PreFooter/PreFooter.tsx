@@ -1,12 +1,12 @@
 import styles from './PreFooter.module.css';
-import { usePrefooter } from '@/hooks/usePrefooter';
+import { usePrefooter } from '@/shared/hooks/usePrefooter';
 import { PREFOOTER_FALLBACK } from '@/constants/fallback';
 import { renderHighlightedText } from '@/utils/textFormatting';
 import { API_CONFIG } from '@/lib/api-config';
 import { ButtonArrowIcon } from '@/shared/components/common/icons';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { useEffect, useCallback } from 'react';
 
 const PreFooter = () => {

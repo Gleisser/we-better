@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SearchIcon, XIcon, ChevronDownIcon } from '@/shared/components/common/icons';
 import styles from './SearchBar.module.css';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { MobileSearch } from './MobileSearch';
 
 const categories = [

@@ -1,12 +1,12 @@
-import { useFooter } from '@/hooks/useFooter';
+import { useFooter } from '@/shared/hooks/useFooter';
 import styles from './Footer.module.css';
 import { API_CONFIG } from '@/lib/api-config';
 import { FOOTER_FALLBACK } from '@/constants/fallback';
 import { AppStore, MenuList } from '@/types/footer';
 import { TopLevelImage } from '@/types/common/image';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { useEffect, useCallback } from 'react';
 
 const Footer = () => {

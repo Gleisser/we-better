@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Testimonies from '../Testimonies';
-import { useTestimony } from '@/hooks/useTestimony';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useTestimony } from '@/shared/hooks/useTestimony';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { TESTIMONY_FALLBACK } from '@/constants/fallback';
 import styles from '../Testimonies.module.css';
 import { API_CONFIG } from '@/lib/api-config';

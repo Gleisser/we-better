@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import styles from './HabitsWidget.module.css';
-import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
+import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { format, startOfWeek, addDays } from 'date-fns';
 import { MonthlyView } from './MonthlyView';
 import { ChartIcon, CheckmarkIcon, PlusIcon, DotsHorizontalIcon, ChevronDownIcon } from '@/shared/components/common/icons';

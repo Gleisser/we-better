@@ -1,13 +1,13 @@
 import Featured from './Featured/Featured';
 import styles from './Features.module.css';
 import FeaturesCard from './Card/FeaturesCard';
-import { useFeature } from '@/hooks/useFeature';
+import { useFeature } from '@/shared/hooks/useFeature';
 import { FEATURES_CONSTANTS } from '@/constants/fallback';
 import { useEffect, useState, useCallback } from 'react';
 import FeaturesSkeleton from './FeaturesSkeleton';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
 const Features = () => {
   // Initialize hooks

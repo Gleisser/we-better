@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { PlusIcon, ChevronDownIcon, SettingsIcon, DotsHorizontalIcon, ProgressUpIcon, ProgressDownIcon } from '@/shared/components/common/icons';
 import styles from './GoalsWidget.module.css';
-import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
+import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { Goal, GoalCategory, ReviewSettings } from './types.js';
 import { CATEGORY_CONFIG } from './config.js';
 import { ReviewSettingsModal } from './ReviewSettings.js';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { PlayIcon, BookmarkIcon, ChevronUpIcon, ChevronDownIcon } from '@/shared/components/common/icons';
 import { Tooltip } from '@/shared/components/common/Tooltip';
-import { useBookmarkedPodcasts } from '@/hooks/useBookmarkedPodcasts';
+import { useBookmarkedPodcasts } from '@/shared/hooks/useBookmarkedPodcasts';
 import type { Podcast } from '@/features/podcasts/pages/mockPodcasts';
 import styles from './PodcastCard.module.css';
 

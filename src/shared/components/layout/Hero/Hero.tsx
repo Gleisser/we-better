@@ -7,11 +7,11 @@ import CtaButton from "./Buttons/CtaButton";
 import SecondaryCtaButton from "./Buttons/SecondaryCtaButton";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useHero } from '@/hooks/useHero';
+import { useHero } from '@/shared/hooks/useHero';
 import HeroSkeleton from './HeroSkeleton';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
   
 
 

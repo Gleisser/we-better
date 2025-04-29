@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Gallery.module.css';
-import { useGallery } from '@/hooks/useGallery';
+import { useGallery } from '@/shared/hooks/useGallery';
 import { API_CONFIG } from '@/lib/api-config';
 import { GalleryIcon, MobileNavIcon, MobileNavNextIcon } from '@/shared/components/common/icons';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
 const INITIAL_LOAD = 12;
 const LOAD_MORE_COUNT = 8;

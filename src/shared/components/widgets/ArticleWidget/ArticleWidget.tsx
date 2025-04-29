@@ -1,8 +1,8 @@
 import { BookmarkIcon, ShareIcon, ArrowTopRight } from '@/shared/components/common/icons';
-import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
+import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import styles from './ArticleWidget.module.css';
 import { Tooltip } from '@/shared/components/common/Tooltip';
-import { useBookmarkedArticles } from '@/hooks/useBookmarkedArticles';
+import { useBookmarkedArticles } from '@/shared/hooks/useBookmarkedArticles';
 import { Article } from '@/core/services/articleService';
 import { formatRelativeDate } from '@/utils/dateUtils';
 

@@ -15,7 +15,7 @@ import {
   CalendarIcon
 } from '@/shared/components/common/icons';
 import { Tooltip } from '@/shared/components/common/Tooltip';
-import { useBookmarkedArticles } from '@/hooks/useBookmarkedArticles';
+import { useBookmarkedArticles } from '@/shared/hooks/useBookmarkedArticles';
 import ArticlePopup from './ArticlePopup';
 import { formatRelativeDate } from '@/utils/dateUtils';
 

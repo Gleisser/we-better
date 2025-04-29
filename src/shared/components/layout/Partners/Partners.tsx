@@ -1,11 +1,11 @@
-import { usePartner } from '@/hooks/usePartner';
+import { usePartner } from '@/shared/hooks/usePartner';
 import styles from './Partners.module.css';
 import { API_CONFIG } from '@/lib/api-config';
 import { renderHighlightedText } from '@/utils/textFormatting';
 import { PARTNERS_FALLBACK } from '@/constants/fallback';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { useCallback, useEffect } from 'react';
 
 const defaultTitle = (

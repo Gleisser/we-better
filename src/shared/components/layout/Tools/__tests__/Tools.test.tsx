@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Tools from '../Tools';
-import { useTool } from '@/hooks/useTool';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
+import { useTool } from '@/shared/hooks/useTool';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { TOOLS_FALLBACK } from '@/constants/fallback';
 import styles from '../Tools.module.css';
 

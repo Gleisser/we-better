@@ -1,11 +1,11 @@
 import { useEffect, useRef, useCallback } from 'react';
 import styles from './Community.module.css';
-import { useCommunity } from '@/hooks/useCommunity';
+import { useCommunity } from '@/shared/hooks/useCommunity';
 import { renderHighlightedText } from '@/utils/textFormatting';
 import { DiscordIcon } from '@/shared/components/common/icons';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
 const INITIAL_PROFILES = [
   {

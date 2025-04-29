@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Header from '../Header';
-import { useMenu } from '@/hooks/useMenu';
+import { useMenu } from '@/shared/hooks/useMenu';
 import { HEADER_CONSTANTS, MEGA_MENU_CONFIG } from '@/constants/fallback/header';
 import styles from '../Header.module.css';
 

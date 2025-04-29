@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowTopRight, BookmarkIcon, ChevronUpIcon, ChevronDownIcon } from '@/shared/components/common/icons';
 import { Tooltip } from '@/shared/components/common/Tooltip';
-import { useBookmarkedCourses } from '@/hooks/useBookmarkedCourses';
+import { useBookmarkedCourses } from '@/shared/hooks/useBookmarkedCourses';
 import { PLATFORM_CONFIG } from '../CourseWidget/config';
 import styles from './CourseCard.module.css';
 import type { Course } from '@/core/services/courseService';

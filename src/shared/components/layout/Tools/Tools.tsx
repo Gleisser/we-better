@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './Tools.module.css';
 import { TOOLS_FALLBACK } from '@/constants/fallback';
-import { useTool } from '@/hooks/useTool';
+import { useTool } from '@/shared/hooks/useTool';
 import { ToolTab } from '@/types/tool';
 import { API_CONFIG } from '@/lib/api-config';
 import { ToolIcon } from '@/shared/components/common/icons';
 import ToolsSkeleton from './ToolsSkeleton';
-import { useImagePreloader } from '@/hooks/utils/useImagePreloader';
-import { useErrorHandler } from '@/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/hooks/utils/useLoadingState';
+import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
 const Tools = () => {
   // Initialize hooks

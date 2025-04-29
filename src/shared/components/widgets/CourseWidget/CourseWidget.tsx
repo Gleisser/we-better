@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { InfoIcon, SkillsIcon, ArrowTopRight, BookmarkIcon } from '@/shared/components/common/icons';
-import { useTimeBasedTheme } from '@/hooks/useTimeBasedTheme';
+import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { Course } from './types';
 import { MOCK_COURSES, PLATFORM_CONFIG } from './config';
 import styles from './CourseWidget.module.css';
 import { CourseDetailsModal } from './CourseDetailsModal';
 import { Tooltip } from '@/shared/components/common/Tooltip';
-import { useBookmarkedCourses } from '@/hooks/useBookmarkedCourses';
+import { useBookmarkedCourses } from '@/shared/hooks/useBookmarkedCourses';
 
 const CourseWidget = () => {
   const [currentCourse] = useState<Course>(MOCK_COURSES[0]);
