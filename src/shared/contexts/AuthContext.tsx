@@ -2,12 +2,28 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { authService } from '@/core/services/authService';
 import { supabase } from '@/core/services/supabaseClient';
 
+/**
+ * Represents an authenticated user in the application.
+ * @interface User
+ * @property {string} id - The unique identifier of the user
+ * @property {string} email - The user's email address
+ * @property {string} [full_name] - The user's full name (optional)
+ */
 interface User {
   id: string;
   email: string;
   full_name?: string;
 }
 
+/**
+ * Authentication context type definition containing user state and auth methods.
+ * @interface AuthContextType
+ * @property {User | null} user - The current authenticated user or null if not authenticated
+ * @property {boolean} isLoading - Indicates if auth operations are in progress
+ * @property {boolean} isAuthenticated - Indicates if a user is currently authenticated
+ * @property {() => Promise<void>} checkAuth - Function to verify current authentication status
+ * @property {() => Promise<void>} logout - Function to sign out the current user
+ */
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
@@ -16,6 +32,10 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
+/**
+ * Context object for managing authentication state across the application.
+ * Provides default values when accessed outside of AuthProvider.
+ */
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
@@ -24,10 +44,39 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
 });
 
+/**
+ * Authentication Provider component that manages user authentication state.
+ * Handles user session persistence, auth state changes, and provides auth-related functions.
+ * 
+ * Features:
+ * - Automatic session persistence
+ * - Real-time auth state synchronization
+ * - Loading state management
+ * - Centralized auth error handling
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components that will have access to auth context
+ * 
+ * @example
+ * ```tsx
+ * function App() {
+ *   return (
+ *     <AuthProvider>
+ *       <YourApp />
+ *     </AuthProvider>
+ *   );
+ * }
+ * ```
+ */
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  /**
+   * Verifies the current authentication status and updates the user state.
+   * Handles error cases and updates loading state appropriately.
+   */
   const checkAuth = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -53,6 +102,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
+  /**
+   * Signs out the current user and redirects to the login page.
+   * Handles the complete logout flow including state cleanup.
+   * 
+   * @throws {Error} If the sign-out operation fails
+   */
   const logout = async () => {
     try {
       setIsLoading(true);
@@ -66,6 +121,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  /**
+   * Effect hook to initialize auth state and set up real-time auth listeners.
+   * Subscribes to Supabase auth state changes and keeps local state in sync.
+   */
   useEffect(() => {
     checkAuth();
     
@@ -98,4 +157,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+/**
+ * Custom hook to access the authentication context.
+ * Provides type-safe access to auth state and methods.
+ * 
+ * @returns {AuthContextType} The authentication context value
+ * 
+ * @example
+ * ```tsx
+ * function UserProfile() {
+ *   const { user, logout, isLoading } = useAuth();
+ * 
+ *   if (isLoading) return <Loading />;
+ *   if (!user) return <Navigate to="/login" />;
+ * 
+ *   return (
+ *     <div>
+ *       <h1>Welcome {user.full_name}</h1>
+ *       <button onClick={logout}>Logout</button>
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
 export const useAuth = () => useContext(AuthContext); 
