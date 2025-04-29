@@ -20,8 +20,8 @@ import ResetPassword from '@/pages/Auth/ResetPassword';
 //import AuthDebugger from '@/features/auth/AuthDebugger';
 import { LifeWheel } from '@/components/life-wheel';
 import { WelcomeSequence } from '@/components/life-wheel/WelcomeSequence';
-import { VisionBoard } from '@/components/vision-board';
-import { VisionBoardData } from '@/components/vision-board/types';
+import { VisionBoard } from '@/features/vision-board';
+import { VisionBoardData } from '@/features/vision-board/types';
 import { LifeCategory } from '@/components/life-wheel/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { DEFAULT_LIFE_CATEGORIES } from '@/components/life-wheel/constants/categories';
@@ -42,7 +42,6 @@ const StartPage = () => {
   };
   
   const handleCategoryUpdate = (categoryId: string, newValue: number) => {
-    console.log('Category updated:', categoryId, newValue);
     // Update the categories for the Vision Board
     setLifeWheelCategories(prev => 
       prev.map(cat => 
@@ -62,7 +61,6 @@ const StartPage = () => {
   };
 
   const handleVisionBoardSave = async (data: VisionBoardData): Promise<boolean> => {
-    console.log('Vision board saving:', data);
     try {
       // Use the appropriate service function based on whether it's a new board or update
       let result;
@@ -71,8 +69,6 @@ const StartPage = () => {
       } else {
         result = await createVisionBoard(data);
       }
-      
-      console.log('Vision board saved result:', result);
       return result !== null;
     } catch (error) {
       console.error('Error saving vision board:', error);

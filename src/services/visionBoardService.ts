@@ -1,4 +1,4 @@
-import { VisionBoardData } from '@/components/vision-board/types';
+import { VisionBoardData } from '@/features/vision-board/types';
 import { supabase } from './supabaseClient';
 
 // Update the API URL to point to the actual backend server
