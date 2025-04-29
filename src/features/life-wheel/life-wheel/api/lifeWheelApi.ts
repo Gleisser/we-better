@@ -1,5 +1,5 @@
 import { LifeCategory } from '../types';
-import { supabase } from '../../../services/supabaseClient';
+import { supabase } from '../../../../services/supabaseClient';
 
 interface SaveLifeWheelDataParams {
   categories: LifeCategory[];

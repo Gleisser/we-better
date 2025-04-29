@@ -18,13 +18,13 @@ import { PublicRoute } from '@/features/auth/PublicRoute';
 import ForgotPassword from '@/pages/Auth/ForgotPassword';
 import ResetPassword from '@/pages/Auth/ResetPassword';
 //import AuthDebugger from '@/features/auth/AuthDebugger';
-import { LifeWheel } from '@/components/life-wheel';
-import { WelcomeSequence } from '@/components/life-wheel/WelcomeSequence';
+import { LifeWheel } from '@/features/life-wheel/life-wheel';
+import { WelcomeSequence } from '@/features/life-wheel/life-wheel/WelcomeSequence';
 import { VisionBoard } from '@/features/vision-board';
 import { VisionBoardData } from '@/features/vision-board/types';
-import { LifeCategory } from '@/components/life-wheel/types';
+import { LifeCategory } from '@/features/life-wheel/life-wheel/types';
 import { useAuth } from '@/contexts/AuthContext';
-import { DEFAULT_LIFE_CATEGORIES } from '@/components/life-wheel/constants/categories';
+import { DEFAULT_LIFE_CATEGORIES } from '@/features/life-wheel/life-wheel/constants/categories';
 import { createVisionBoard, updateVisionBoard } from '@/services/visionBoardService';
 
 // Create a simple Start page that contains the Life Wheel component and Vision Board

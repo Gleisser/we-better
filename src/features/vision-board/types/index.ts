@@ -1,4 +1,4 @@
-import { LifeCategory } from "@/components/life-wheel/types";
+import { LifeCategory } from "@/features/life-wheel/life-wheel/types";
 
 // Content types
 export enum VisionBoardContentType {
