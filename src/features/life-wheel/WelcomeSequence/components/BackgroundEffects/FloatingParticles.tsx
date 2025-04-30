@@ -20,30 +20,30 @@ interface Particle {
 const FloatingParticles = ({
   count = 30,
   speed = 0.5,
-  opacity = 0.6
-}: FloatingParticlesProps) => {
+  opacity = 0.6,
+}: FloatingParticlesProps): JSX.Element => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
+
     // Set canvas dimensions
-    const resizeCanvas = () => {
+    const resizeCanvas = (): void => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
-    
+
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-    
+
     // Create particles
     const particles: Particle[] = [];
     const colors = ['#8B5CF6', '#EC4899', '#6366F1', '#3B82F6', '#10B981'];
-    
+
     for (let i = 0; i < count; i++) {
       particles.push({
         x: Math.random() * canvas.width,
@@ -55,51 +55,55 @@ const FloatingParticles = ({
         alpha: Math.random() * opacity + 0.2,
       });
     }
-    
+
     // Animation loop
-    const animate = () => {
+    const animate = (): void => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach((particle) => {
+
+      particles.forEach(particle => {
         // Update position
         particle.x += particle.speedX;
         particle.y += particle.speedY;
-        
+
         // Wrap around edges
         if (particle.x < 0) particle.x = canvas.width;
         if (particle.x > canvas.width) particle.x = 0;
         if (particle.y < 0) particle.y = canvas.height;
         if (particle.y > canvas.height) particle.y = 0;
-        
+
         // Draw particle
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        
+
         // Apply gradient to each particle
         const gradient = ctx.createRadialGradient(
-          particle.x, particle.y, 0,
-          particle.x, particle.y, particle.radius
+          particle.x,
+          particle.y,
+          0,
+          particle.x,
+          particle.y,
+          particle.radius
         );
         gradient.addColorStop(0, `${particle.color}FF`);
         gradient.addColorStop(1, `${particle.color}00`);
-        
+
         ctx.fillStyle = gradient;
         ctx.fill();
       });
-      
+
       requestAnimationFrame(animate);
     };
-    
+
     const animationId = requestAnimationFrame(animate);
-    
+
     // Cleanup
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationId);
     };
   }, [count, speed, opacity]);
-  
+
   return <canvas ref={canvasRef} className={styles.particleCanvas} />;
 };
 
-export default FloatingParticles; 
+export default FloatingParticles;

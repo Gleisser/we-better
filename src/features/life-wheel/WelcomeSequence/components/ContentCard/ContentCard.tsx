@@ -7,32 +7,32 @@ interface ContentCardProps {
 }
 
 const cardVariants = {
-  hidden: { 
-    opacity: 0, 
-    y: 20, 
-    scale: 0.95 
+  hidden: {
+    opacity: 0,
+    y: 20,
+    scale: 0.95,
   },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
+  visible: {
+    opacity: 1,
+    y: 0,
     scale: 1,
     transition: {
       duration: 0.6,
       ease: [0.22, 1, 0.36, 1],
-      staggerChildren: 0.1
-    }
+      staggerChildren: 0.1,
+    },
   },
-  exit: { 
-    opacity: 0, 
-    y: -20, 
+  exit: {
+    opacity: 0,
+    y: -20,
     scale: 0.95,
     transition: {
-      duration: 0.4
-    }
-  }
+      duration: 0.4,
+    },
+  },
 };
 
-const ContentCard = ({ children, className = '' }: ContentCardProps) => {
+const ContentCard = ({ children, className = '' }: ContentCardProps): JSX.Element => {
   return (
     <motion.div
       className={`${styles.contentCard} ${className}`}
@@ -46,4 +46,4 @@ const ContentCard = ({ children, className = '' }: ContentCardProps) => {
   );
 };
 
-export default ContentCard; 
+export default ContentCard;

@@ -6,10 +6,10 @@ interface AnimatedTitleProps {
   subtitle?: string;
 }
 
-const AnimatedTitle = ({ title, subtitle }: AnimatedTitleProps) => {
+const AnimatedTitle = ({ title, subtitle }: AnimatedTitleProps): JSX.Element => {
   return (
     <div className={styles.titleContainer}>
-      <motion.h1 
+      <motion.h1
         className={styles.title}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -18,7 +18,7 @@ const AnimatedTitle = ({ title, subtitle }: AnimatedTitleProps) => {
         {title}
       </motion.h1>
       {subtitle && (
-        <motion.p 
+        <motion.p
           className={styles.subtitle}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -31,4 +31,4 @@ const AnimatedTitle = ({ title, subtitle }: AnimatedTitleProps) => {
   );
 };
 
-export default AnimatedTitle; 
+export default AnimatedTitle;

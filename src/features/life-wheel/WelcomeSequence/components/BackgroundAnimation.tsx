@@ -3,30 +3,30 @@ import { motion } from 'framer-motion';
 import { BackgroundAnimationProps } from '../types';
 import styles from '../WelcomeSequence.module.css';
 
-const BackgroundAnimation = ({ intensity = 'medium' }: BackgroundAnimationProps) => {
+const BackgroundAnimation = ({ intensity = 'medium' }: BackgroundAnimationProps): JSX.Element => {
   // Set number of particles based on intensity
   const particleCount = intensity === 'low' ? 15 : intensity === 'medium' ? 25 : 40;
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    
+
     // Set canvas dimensions
-    const resizeCanvas = () => {
+    const resizeCanvas = (): void => {
       const parent = canvas.parentElement;
       if (parent) {
         canvas.width = parent.offsetWidth;
         canvas.height = parent.offsetHeight;
       }
     };
-    
+
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-    
+
     // Create particles
     const particles: {
       x: number;
@@ -37,9 +37,9 @@ const BackgroundAnimation = ({ intensity = 'medium' }: BackgroundAnimationProps)
       speedY: number;
       alpha: number;
     }[] = [];
-    
+
     const colors = ['#8B5CF6', '#EC4899', '#6366F1', '#3B82F6'];
-    
+
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
@@ -51,44 +51,48 @@ const BackgroundAnimation = ({ intensity = 'medium' }: BackgroundAnimationProps)
         alpha: Math.random() * 0.5 + 0.2,
       });
     }
-    
+
     // Animation loop
-    const animate = () => {
+    const animate = (): void => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach((particle) => {
+
+      particles.forEach(particle => {
         // Update position
         particle.x += particle.speedX;
         particle.y += particle.speedY;
-        
+
         // Wrap around edges
         if (particle.x < 0) particle.x = canvas.width;
         if (particle.x > canvas.width) particle.x = 0;
         if (particle.y < 0) particle.y = canvas.height;
         if (particle.y > canvas.height) particle.y = 0;
-        
+
         // Draw particle
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        ctx.fillStyle = particle.color + Math.floor(particle.alpha * 255).toString(16).padStart(2, '0');
+        ctx.fillStyle =
+          particle.color +
+          Math.floor(particle.alpha * 255)
+            .toString(16)
+            .padStart(2, '0');
         ctx.fill();
       });
-      
+
       requestAnimationFrame(animate);
     };
-    
+
     const animationId = requestAnimationFrame(animate);
-    
+
     // Cleanup
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationId);
     };
   }, [intensity, particleCount]);
-  
+
   return (
     <div className={styles.backgroundContainer}>
-      <motion.div 
+      <motion.div
         className={styles.gradientOverlay}
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.7 }}
@@ -99,4 +103,4 @@ const BackgroundAnimation = ({ intensity = 'medium' }: BackgroundAnimationProps)
   );
 };
 
-export default BackgroundAnimation; 
+export default BackgroundAnimation;

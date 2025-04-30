@@ -5,17 +5,26 @@ import styles from '../WelcomeSequence.module.css';
 
 // Predefined interest options
 const INTEREST_OPTIONS = [
-  'Physical Fitness', 'Mental Health', 'Sleep',
-  'Career Growth', 'Relationships', 'Finance', 'Good Habits', 'Learning',
-  'Self-Care', 'Stress', 'Health', 'Other'
+  'Physical Fitness',
+  'Mental Health',
+  'Sleep',
+  'Career Growth',
+  'Relationships',
+  'Finance',
+  'Good Habits',
+  'Learning',
+  'Self-Care',
+  'Stress',
+  'Health',
+  'Other',
 ];
 
 // Checkmark icon component for selected interests
-const CheckmarkIcon = () => (
-  <svg 
-    width="16" 
-    height="16" 
-    viewBox="0 0 24 24" 
+const CheckmarkIcon = (): JSX.Element => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
     fill="none"
     style={{
       position: 'absolute',
@@ -37,43 +46,30 @@ const CheckmarkIcon = () => (
 );
 
 // Arrow icon for continue button
-const ArrowIcon = () => (
-  <svg 
-    width="18" 
-    height="18" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    style={{ marginLeft: '8px' }}
-  >
-    <path 
-      d="M5 12H19M19 12L12 5M19 12L12 19" 
-      stroke="white" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
+const ArrowIcon = (): JSX.Element => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginLeft: '8px' }}>
+    <path
+      d="M5 12H19M19 12L12 5M19 12L12 19"
+      stroke="white"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );
 
 // Skip icon for the skip button
-const SkipIcon = () => (
-  <svg 
-    width="18" 
-    height="18" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    style={{ marginRight: '8px' }}
-  >
-    <path 
-      d="M19 5L5 19M5 5L19 19" 
-      stroke="white" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-    />
+const SkipIcon = (): JSX.Element => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: '8px' }}>
+    <path d="M19 5L5 19M5 5L19 19" stroke="white" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
-const UserProfileForm = ({ onSubmit, onCancel, initialData = {} }: UserProfileFormProps) => {
+const UserProfileForm = ({
+  onSubmit,
+  onCancel,
+  initialData = {},
+}: UserProfileFormProps): JSX.Element => {
   const [formData, setFormData] = useState<UserProfileData>({
     gender: initialData.gender,
     ageRange: initialData.ageRange,
@@ -83,12 +79,14 @@ const UserProfileForm = ({ onSubmit, onCancel, initialData = {} }: UserProfileFo
     stressLevel: initialData.stressLevel,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ): void => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleInterestToggle = (interest: string) => {
+  const handleInterestToggle = (interest: string): void => {
     setFormData(prev => {
       const interests = [...(prev.interests || [])];
       if (interests.includes(interest)) {
@@ -99,13 +97,13 @@ const UserProfileForm = ({ onSubmit, onCancel, initialData = {} }: UserProfileFo
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     onSubmit(formData);
   };
 
   return (
-    <motion.form 
+    <motion.form
       className={styles.profileForm}
       onSubmit={handleSubmit}
       initial={{ opacity: 0, y: 20 }}
@@ -113,7 +111,7 @@ const UserProfileForm = ({ onSubmit, onCancel, initialData = {} }: UserProfileFo
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.4 }}
     >
-      <motion.h2 
+      <motion.h2
         className={styles.formTitle}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -121,7 +119,7 @@ const UserProfileForm = ({ onSubmit, onCancel, initialData = {} }: UserProfileFo
       >
         Customize Your Experience
       </motion.h2>
-      <motion.p 
+      <motion.p
         className={styles.formDescription}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -132,10 +130,10 @@ const UserProfileForm = ({ onSubmit, onCancel, initialData = {} }: UserProfileFo
 
       <div className={styles.formGroup}>
         <label htmlFor="gender">Gender (Optional)</label>
-        <select 
-          id="gender" 
-          name="gender" 
-          value={formData.gender || ''} 
+        <select
+          id="gender"
+          name="gender"
+          value={formData.gender || ''}
           onChange={handleChange}
           className={styles.formSelect}
         >
@@ -148,10 +146,10 @@ const UserProfileForm = ({ onSubmit, onCancel, initialData = {} }: UserProfileFo
 
       <div className={styles.formGroup}>
         <label htmlFor="ageRange">Age Range (Optional)</label>
-        <select 
-          id="ageRange" 
-          name="ageRange" 
-          value={formData.ageRange || ''} 
+        <select
+          id="ageRange"
+          name="ageRange"
+          value={formData.ageRange || ''}
           onChange={handleChange}
           className={styles.formSelect}
         >
@@ -170,7 +168,7 @@ const UserProfileForm = ({ onSubmit, onCancel, initialData = {} }: UserProfileFo
         <label>Areas of Interest (Select all that apply)</label>
         <div className={styles.interestGrid}>
           {INTEREST_OPTIONS.map(interest => (
-            <motion.div 
+            <motion.div
               key={interest}
               className={`${styles.interestTag} ${formData.interests?.includes(interest) ? styles.selected : ''}`}
               onClick={() => handleInterestToggle(interest)}
@@ -187,8 +185,8 @@ const UserProfileForm = ({ onSubmit, onCancel, initialData = {} }: UserProfileFo
 
       <div className={styles.formActions}>
         {onCancel && (
-          <motion.button 
-            type="button" 
+          <motion.button
+            type="button"
             onClick={onCancel}
             className={styles.secondaryButton}
             whileHover={{ scale: 1.05 }}
@@ -197,8 +195,8 @@ const UserProfileForm = ({ onSubmit, onCancel, initialData = {} }: UserProfileFo
             <SkipIcon /> <span>Skip</span>
           </motion.button>
         )}
-        <motion.button 
-          type="submit" 
+        <motion.button
+          type="submit"
           className={styles.primaryButton}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -210,4 +208,4 @@ const UserProfileForm = ({ onSubmit, onCancel, initialData = {} }: UserProfileFo
   );
 };
 
-export default UserProfileForm; 
+export default UserProfileForm;

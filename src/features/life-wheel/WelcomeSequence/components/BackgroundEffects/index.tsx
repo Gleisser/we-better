@@ -7,10 +7,10 @@ interface BackgroundEffectsProps {
   intensity?: 'low' | 'medium' | 'high';
 }
 
-const BackgroundEffects = ({ intensity = 'low' }: BackgroundEffectsProps) => {
+const BackgroundEffects = ({ intensity = 'low' }: BackgroundEffectsProps): JSX.Element => {
   // Reduced particle count to match Login style
   const particleCount = intensity === 'low' ? 10 : intensity === 'medium' ? 20 : 30;
-  
+
   return (
     <>
       <GradientBackground />
@@ -20,4 +20,4 @@ const BackgroundEffects = ({ intensity = 'low' }: BackgroundEffectsProps) => {
   );
 };
 
-export default BackgroundEffects; 
+export default BackgroundEffects;

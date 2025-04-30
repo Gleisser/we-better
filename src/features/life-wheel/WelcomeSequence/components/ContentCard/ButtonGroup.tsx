@@ -8,12 +8,12 @@ interface ButtonGroupProps {
   skipLabel?: string;
 }
 
-const ButtonGroup = ({ 
-  onBegin, 
-  onSkip, 
-  beginLabel = "Begin Journey",
-  skipLabel = "Skip Intro"
-}: ButtonGroupProps) => {
+const ButtonGroup = ({
+  onBegin,
+  onSkip,
+  beginLabel = 'Begin Journey',
+  skipLabel = 'Skip Intro',
+}: ButtonGroupProps): JSX.Element => {
   return (
     <div className={styles.buttonContainer}>
       <div className={styles.buttonWrapper}>
@@ -25,12 +25,8 @@ const ButtonGroup = ({
         >
           {beginLabel}
         </motion.button>
-        
-        <motion.button
-          className={styles.skipButton}
-          onClick={onSkip}
-          whileHover={{ opacity: 0.9 }}
-        >
+
+        <motion.button className={styles.skipButton} onClick={onSkip} whileHover={{ opacity: 0.9 }}>
           {skipLabel}
         </motion.button>
       </div>
@@ -38,4 +34,4 @@ const ButtonGroup = ({
   );
 };
 
-export default ButtonGroup; 
+export default ButtonGroup;
