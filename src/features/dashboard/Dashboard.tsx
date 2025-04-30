@@ -5,19 +5,19 @@ import AIAssistantButton from '@/shared/components/common/AIAssistantButton/AIAs
 import { articleService, Article } from '@/core/services/articleService';
 import styles from './Dashboard.module.css';
 
-const Dashboard = () => {
+const Dashboard = (): JSX.Element => {
   const [featuredArticle, setFeaturedArticle] = useState<Article | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchFeaturedArticle = async () => {
+    const fetchFeaturedArticle = async (): Promise<void> => {
       try {
         const response = await articleService.getArticles({
           sort: 'publishedAt:desc',
           pagination: {
             page: 1,
-            pageSize: 1
-          }
+            pageSize: 1,
+          },
         });
 
         if (response.data.length > 0) {
@@ -42,4 +42,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

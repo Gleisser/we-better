@@ -28,19 +28,21 @@ interface LifeWheelHistoryResponse {
 const API_BASE_URL = '/api/life-wheel';
 
 // Helper function to get auth headers
-async function getAuthHeaders() {
-  const { data: { session } } = await supabase.auth.getSession();
-  
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
-  
+
   if (session?.access_token) {
     headers['Authorization'] = `Bearer ${session.access_token}`;
   } else {
     console.warn('No authenticated session found, API calls may fail due to auth requirements');
   }
-  
+
   return headers;
 }
 
@@ -50,20 +52,17 @@ async function getAuthHeaders() {
 export async function saveLifeWheelData(data: SaveLifeWheelDataParams): Promise<LifeWheelEntry> {
   try {
     const headers = await getAuthHeaders();
-    
+
     const response = await fetch(API_BASE_URL, {
       method: 'POST',
       headers,
       body: JSON.stringify(data),
     });
 
-    console.log('Response status:', response.status);
-    console.log('Response headers:', Object.fromEntries([...response.headers.entries()]));
-    
     // Check if the response is empty
     const contentType = response.headers.get('content-type');
     const hasContent = Number(response.headers.get('content-length')) > 0;
-    
+
     if (!response.ok) {
       // Handle error response
       if (contentType?.includes('application/json') && hasContent) {
@@ -87,7 +86,7 @@ export async function saveLifeWheelData(data: SaveLifeWheelDataParams): Promise<
         user_id: 'temp-user',
         categories: data.categories,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
     }
   } catch (error) {
@@ -102,19 +101,16 @@ export async function saveLifeWheelData(data: SaveLifeWheelDataParams): Promise<
 export async function getLatestLifeWheelData(): Promise<LifeWheelResponse> {
   try {
     const headers = await getAuthHeaders();
-    
+
     const response = await fetch(API_BASE_URL, {
       method: 'GET',
       headers,
     });
 
-    console.log('GET response status:', response.status);
-    console.log('GET response headers:', Object.fromEntries([...response.headers.entries()]));
-    
     // Check if the response is empty
     const contentType = response.headers.get('content-type');
     const hasContent = Number(response.headers.get('content-length') || '0') > 0;
-    
+
     if (!response.ok) {
       // Handle error response
       if (contentType?.includes('application/json') && hasContent) {
@@ -151,21 +147,21 @@ export async function getLifeWheelHistory(
 ): Promise<LifeWheelHistoryResponse> {
   try {
     const headers = await getAuthHeaders();
-    
+
     // Construct URL with query parameters
     const url = new URL(API_BASE_URL, window.location.origin);
     url.searchParams.append('history', 'true');
     url.searchParams.append('limit', limit.toString());
     url.searchParams.append('offset', offset.toString());
-    
+
     if (startDate) {
       url.searchParams.append('start_date', startDate);
     }
-    
+
     if (endDate) {
       url.searchParams.append('end_date', endDate);
     }
-    
+
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers,
@@ -192,7 +188,7 @@ export async function updateLifeWheelEntry(
 ): Promise<LifeWheelEntry> {
   try {
     const headers = await getAuthHeaders();
-    
+
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: 'PATCH',
       headers,
@@ -218,7 +214,7 @@ export async function updateLifeWheelEntry(
 export async function deleteLifeWheelEntry(id: string): Promise<void> {
   try {
     const headers = await getAuthHeaders();
-    
+
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: 'DELETE',
       headers,
@@ -240,7 +236,7 @@ export async function deleteLifeWheelEntry(id: string): Promise<void> {
 export async function getLifeWheelProgress(
   startEntryId: string,
   endEntryId: string
-): Promise<{ 
+): Promise<{
   startDate: string;
   endDate: string;
   categories: {
@@ -253,12 +249,12 @@ export async function getLifeWheelProgress(
 }> {
   try {
     const headers = await getAuthHeaders();
-    
+
     // Construct URL with query parameters
     const url = new URL(`${API_BASE_URL}/progress`, window.location.origin);
     url.searchParams.append('start_entry_id', startEntryId);
     url.searchParams.append('end_entry_id', endEntryId);
-    
+
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers,
@@ -274,4 +270,4 @@ export async function getLifeWheelProgress(
     console.error('Error getting life wheel progress:', error);
     throw error;
   }
-} 
+}
