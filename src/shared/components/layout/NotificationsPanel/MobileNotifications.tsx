@@ -1,3 +1,82 @@
+/**
+ * MobileNotifications Component
+ * 
+ * A mobile-optimized notifications panel that displays user notifications with animations
+ * and interactive features. Provides a sliding panel interface with notification management
+ * capabilities.
+ * 
+ * Features:
+ * - Animated entrance/exit using Framer Motion
+ * - Support for multiple notification types
+ * - User avatar integration
+ * - Read/unread state handling
+ * - Interactive actions based on notification type
+ * - Batch actions (mark all as read)
+ * - Individual notification deletion
+ * 
+ * The component handles:
+ * - Notification display and formatting
+ * - Animation states and transitions
+ * - User interaction with notifications
+ * - Conditional rendering of action buttons
+ * - Responsive layout for mobile devices
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {boolean} props.isOpen - Controls the visibility of the notifications panel
+ * @param {() => void} props.onClose - Callback function to close the panel
+ * @param {NotificationItem[]} props.notifications - Array of notification items to display
+ * 
+ * @example
+ * ```tsx
+ * function App() {
+ *   const [isOpen, setIsOpen] = useState(false);
+ *   const notifications = [
+ *     {
+ *       id: '1',
+ *       type: 'follow',
+ *       user: {
+ *         name: 'John Doe',
+ *         image: '/avatar.jpg',
+ *         isOnline: true
+ *       },
+ *       content: 'started following you',
+ *       timestamp: '2m ago',
+ *       isRead: false
+ *     }
+ *   ];
+ * 
+ *   return (
+ *     <MobileNotifications
+ *       isOpen={isOpen}
+ *       onClose={() => setIsOpen(false)}
+ *       notifications={notifications}
+ *     />
+ *   );
+ * }
+ * ```
+ */
+
+/**
+ * Represents the possible types of notifications in the system.
+ * @typedef {'follow' | 'reply' | 'mention' | 'task' | 'like' | 'achievement'} NotificationType
+ */
+
+/**
+ * Represents a single notification item with all its properties.
+ * @interface NotificationItem
+ * @property {string} id - Unique identifier for the notification
+ * @property {NotificationType} type - The type of notification
+ * @property {Object} user - Information about the user who triggered the notification
+ * @property {string} user.name - The name of the user
+ * @property {string} user.image - URL to the user's avatar image
+ * @property {boolean} user.isOnline - Whether the user is currently online
+ * @property {string} content - The main content/message of the notification
+ * @property {string} [target] - Optional target reference (e.g., post title, task name)
+ * @property {string} timestamp - Human-readable timestamp for the notification
+ * @property {boolean} isRead - Whether the notification has been read
+ */
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { XIcon, TrashIcon } from '@/shared/components/common/icons';
 import UserAvatar from '@/shared/components/common/UserAvatar/UserAvatar';

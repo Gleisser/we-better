@@ -1,3 +1,43 @@
+/**
+ * PublicRoute Component
+ * 
+ * A route wrapper component that handles authentication-based routing logic for public routes.
+ * It prevents authenticated users from accessing public pages (like login/register) while
+ * allowing unauthenticated access.
+ * 
+ * Features:
+ * - Authentication state checking
+ * - Automatic redirection for authenticated users
+ * - Loading state handling
+ * - Special case handling for reset password routes
+ * - React Router integration
+ * 
+ * The component handles:
+ * - Protection of public routes from authenticated users
+ * - Loading states during authentication checks
+ * - Special access rules for password reset flows
+ * - Preservation of route children when access is granted
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to render when access is granted
+ * 
+ * @example
+ * ```tsx
+ * function App() {
+ *   return (
+ *     <Routes>
+ *       <Route path="/auth" element={
+ *         <PublicRoute>
+ *           <LoginPage />
+ *         </PublicRoute>
+ *       } />
+ *     </Routes>
+ *   );
+ * }
+ * ```
+ */
+
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/shared/contexts/AuthContext';
 
