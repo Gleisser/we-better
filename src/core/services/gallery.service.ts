@@ -1,5 +1,5 @@
 import { apiClient } from '@/core/services/api-client';
-import { GalleryResponse } from '@/types/gallery';
+import { GalleryResponse } from '@/utils/types/gallery';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 export const galleryService = {
   async getGallery(): Promise<GalleryResponse> {
@@ -11,4 +11,4 @@ export const galleryService = {
       return handleServiceError(error, 'Gallery');
     }
   },
-}; 
+};

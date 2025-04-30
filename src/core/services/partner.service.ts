@@ -1,5 +1,5 @@
 import { apiClient } from '@/core/services/api-client';
-import { PartnerResponse } from '@/types/partner';
+import { PartnerResponse } from '@/utils/types/partner';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 
 export const partnerService = {
@@ -12,4 +12,4 @@ export const partnerService = {
       return handleServiceError(error, 'Partner');
     }
   },
-}; 
+};

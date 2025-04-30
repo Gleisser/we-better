@@ -13,34 +13,33 @@ export interface Article {
   publishedAt: string;
   readTime: number;
   url: string;
-  thumbnail: string;    
+  thumbnail: string;
   tldr: string;
   category?: {
-      id: number;
-      slug: string;
-      name: string;
-      createdAt: string;
-      updatedAt: string;
-      publishedAt: string;
-        documentId: string;
-    };
-    tags?: Array<{
-      id: number;
-      documentId: string;
-      slug: string;
-      name: string;
-      createdAt: string;
-      updatedAt: string;
-      publishedAt: string;
-    }>;
-    postDate: string;
-    tableOfContents: Array<{
-      id: string;
-      title: string;
-      level: number;
-    }>;
-  }; 
-
+    id: number;
+    slug: string;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+    documentId: string;
+  };
+  tags?: Array<{
+    id: number;
+    documentId: string;
+    slug: string;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+  }>;
+  postDate: string;
+  tableOfContents: Array<{
+    id: string;
+    title: string;
+    level: number;
+  }>;
+}
 
 export interface ArticleResponse {
   data: Article[];
@@ -54,25 +53,37 @@ export interface ArticleResponse {
   };
 }
 
+interface CategoryFilter {
+  id: {
+    $eq: number;
+  };
+}
+
+interface TagsFilter {
+  id: {
+    $in: number[];
+  };
+}
+
+interface OrCondition {
+  category?: CategoryFilter;
+  tags?: TagsFilter;
+}
+
 interface ArticleFilters {
-  title?: {
-    $contains?: string;
+  id?: {
+    $ne: number;
   };
-  description?: {
-    $contains?: string;
-  };
-  category?: {
-    $eq?: string;
-  };
+  $or?: OrCondition[];
 }
 
 interface ArticleParams {
   sort?: string;
-  pagination?: { 
-    page: number; 
-    pageSize: number; 
+  pagination?: {
+    page: number;
+    pageSize: number;
   };
-  filters?: any;
+  filters?: ArticleFilters;
   populate?: string[] | string;
 }
 
@@ -80,11 +91,11 @@ export const articleService = {
   async getArticles(params?: ArticleParams): Promise<ArticleResponse> {
     try {
       const queryParams = new URLSearchParams();
-      
+
       // Handle populate parameter
       const defaultPopulate = ['category', 'tags'];
       const populateParams = params?.populate || defaultPopulate;
-      
+
       if (Array.isArray(populateParams)) {
         populateParams.forEach(item => {
           queryParams.append('populate', item);
@@ -92,37 +103,34 @@ export const articleService = {
       } else {
         queryParams.append('populate', populateParams);
       }
-      
+
       // Handle sorting
       if (params?.sort) {
         queryParams.append('sort', params.sort);
       }
-      
+
       // Handle filters in Strapi's format
       if (params?.filters) {
         // Handle $ne operator for id
         if (params.filters.id?.$ne) {
-          queryParams.append('filters[id][$ne]', params.filters.id.$ne);
+          queryParams.append('filters[id][$ne]', params.filters.id.$ne.toString());
         }
 
         // Handle $or conditions
         if (params.filters.$or) {
-          params.filters.$or.forEach((condition: any, index: number) => {
+          params.filters.$or.forEach((condition, index) => {
             // Handle category condition
             if (condition.category?.id?.$eq) {
               queryParams.append(
-                `filters[$or][${index}][category][id][$eq]`, 
+                `filters[$or][${index}][category][id][$eq]`,
                 condition.category.id.$eq.toString()
               );
             }
-            
+
             // Handle tags condition
             if (condition.tags?.id?.$in) {
-              condition.tags.id.$in.forEach((tagId: number) => {
-                queryParams.append(
-                  `filters[$or][${index}][tags][id][$in][]`, 
-                  tagId.toString()
-                );
+              condition.tags.id.$in.forEach(tagId => {
+                queryParams.append(`filters[$or][${index}][tags][id][$in][]`, tagId.toString());
               });
             }
           });
@@ -147,7 +155,9 @@ export const articleService = {
 
   async getArticle(documentId: string): Promise<{ data: Article }> {
     try {
-      const { data } = await apiClient.get<{ data: Article }>(`/api/articles/${documentId}?populate=category&populate=tags`);
+      const { data } = await apiClient.get<{ data: Article }>(
+        `/api/articles/${documentId}?populate=category&populate=tags`
+      );
       return data;
     } catch (error) {
       return handleServiceError(error, 'Article');
@@ -155,16 +165,16 @@ export const articleService = {
   },
 
   async getArticlesByTag(
-    tagId: number, 
+    tagId: number,
     params?: Omit<ArticleParams, 'filters'>
   ): Promise<ArticleResponse> {
     try {
       const queryParams = new URLSearchParams();
-      
+
       // Handle populate parameter
       const defaultPopulate = ['category', 'tags'];
       const populateParams = params?.populate || defaultPopulate;
-      
+
       if (Array.isArray(populateParams)) {
         populateParams.forEach(item => {
           queryParams.append('populate', item);
@@ -172,12 +182,12 @@ export const articleService = {
       } else {
         queryParams.append('populate', populateParams);
       }
-      
+
       // Handle sorting
       if (params?.sort) {
         queryParams.append('sort', params.sort);
       }
-      
+
       // Add tag filter
       queryParams.append('filters[tags][id][$eq]', tagId.toString());
 
@@ -193,4 +203,4 @@ export const articleService = {
       return handleServiceError(error, 'Articles');
     }
   },
-}; 
+};

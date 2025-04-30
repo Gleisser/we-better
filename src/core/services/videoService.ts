@@ -73,18 +73,18 @@ export interface VideoParams {
     pageSize: number;
   };
   populate?: string[] | string;
-  filters?: Record<string, any>;
+  filters?: Record<string, string | number>;
 }
 
 export const videoService = {
   async getVideos(params?: VideoParams): Promise<VideoResponse> {
     try {
       const queryParams = new URLSearchParams();
-      
+
       // Handle populate parameter
       const defaultPopulate = ['source'];
       const populateParams = params?.populate || defaultPopulate;
-      
+
       if (Array.isArray(populateParams)) {
         populateParams.forEach(item => {
           queryParams.append('populate', item);
@@ -92,7 +92,7 @@ export const videoService = {
       } else {
         queryParams.append('populate', populateParams);
       }
-      
+
       // Handle sorting
       if (params?.sort) {
         queryParams.append('sort', params.sort);
@@ -131,10 +131,10 @@ export const videoService = {
       category: item.category,
       subCategory: item.subCategory,
       rating: item.rating,
-      badge: item.badge,
+      badge: item.badge as 'trending' | 'new' | undefined,
       publishedAt: item.publishedAt,
       tags: item.tags,
       thumbnail: item.thumbnail,
     }));
-  }
-}; 
+  },
+};

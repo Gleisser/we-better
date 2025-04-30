@@ -30,59 +30,46 @@ const getAuthToken = async (): Promise<string | null> => {
   } catch (error) {
     console.error('Error getting session from Supabase:', error);
   }
-  
+
   // Use the correct storage key as defined in supabaseClient.ts
   const SUPABASE_AUTH_TOKEN_KEY = 'we-better-auth-token';
-  
+
   // Try to get the token from localStorage
-  const token = localStorage.getItem(SUPABASE_AUTH_TOKEN_KEY) || 
-                sessionStorage.getItem(SUPABASE_AUTH_TOKEN_KEY);
-  
-  console.log('Auth token sources:', {
-    localStorageKey: SUPABASE_AUTH_TOKEN_KEY,
-    localStorageValue: localStorage.getItem(SUPABASE_AUTH_TOKEN_KEY)?.substring(0, 20) + '...',
-    sessionStorageValue: sessionStorage.getItem(SUPABASE_AUTH_TOKEN_KEY)?.substring(0, 20) + '...',
-    cookiesAvailable: document.cookie.length > 0
-  });
-                
+  const token =
+    localStorage.getItem(SUPABASE_AUTH_TOKEN_KEY) ||
+    sessionStorage.getItem(SUPABASE_AUTH_TOKEN_KEY);
+
   if (token) {
     try {
       // Parse the token if it's in JSON format
       const parsedToken = JSON.parse(token);
-      console.log('Parsed token structure:', Object.keys(parsedToken));
-      
+
       // Access the session data which contains the access token
       if (parsedToken.session?.access_token) {
-        console.log('Using access_token from session in parsed token');
         return parsedToken.session.access_token;
       }
-      
+
       // Fallback to direct access_token if structure is different
       if (parsedToken.access_token) {
-        console.log('Using access_token from parsed token');
         return parsedToken.access_token;
       }
     } catch {
       // If not in JSON format, return the token as is
-      console.log('Token is not in JSON format, using as-is');
       return token;
     }
   }
-  
+
   // If no token found, check for cookies
   const cookies = document.cookie.split(';');
-  console.log('Available cookies:', cookies);
   for (const cookie of cookies) {
     const [name, value] = cookie.trim().split('=');
     if (name === 'sb:token' || name.startsWith('sb-')) {
-      console.log('Found token in cookies');
       return value;
     }
   }
-  
+
   // Check for the supabase auth cookie directly
   if (document.cookie.includes('sb-')) {
-    console.log('Found supabase cookie starting with sb-');
     // Extract the cookie that starts with sb-
     const supabaseCookie = cookies.find(cookie => cookie.trim().startsWith('sb-'));
     if (supabaseCookie) {
@@ -91,7 +78,6 @@ const getAuthToken = async (): Promise<string | null> => {
         const decodedValue = decodeURIComponent(value);
         const parsedCookie = JSON.parse(decodedValue);
         if (parsedCookie.access_token) {
-          console.log('Using access_token from supabase cookie');
           return parsedCookie.access_token;
         }
       } catch (error) {
@@ -99,8 +85,7 @@ const getAuthToken = async (): Promise<string | null> => {
       }
     }
   }
-  
-  console.log('No auth token found');
+
   return null;
 };
 
@@ -114,21 +99,21 @@ export const getLatestVisionBoard = async (): Promise<VisionBoardData | null> =>
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     const response = await fetch(API_URL, {
       method: 'GET',
       headers,
-      credentials: 'include'
+      credentials: 'include',
     });
-    
+
     if (!response.ok) {
       throw new Error(`Error getting latest vision board: ${response.statusText}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Error getting latest vision board:', error);
@@ -147,21 +132,21 @@ export const getVisionBoardById = async (id: string): Promise<VisionBoardData | 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     const response = await fetch(`${API_URL}?id=${id}`, {
       method: 'GET',
       headers,
-      credentials: 'include'
+      credentials: 'include',
     });
-    
+
     if (!response.ok) {
       throw new Error(`Error getting vision board with ID ${id}: ${response.statusText}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error(`Error getting vision board with ID ${id}:`, error);
@@ -180,34 +165,34 @@ export const getVisionBoardHistory = async (
   try {
     const { limit = 10, offset = 0, startDate, endDate } = params;
     let url = `${API_URL}/history?limit=${limit}&offset=${offset}`;
-    
+
     if (startDate) {
       url += `&startDate=${startDate}`;
     }
-    
+
     if (endDate) {
       url += `&endDate=${endDate}`;
     }
-    
+
     const token = await getAuthToken();
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     const response = await fetch(url, {
       method: 'GET',
       headers,
-      credentials: 'include'
+      credentials: 'include',
     });
-    
+
     if (!response.ok) {
       throw new Error(`Error getting vision board history: ${response.statusText}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Error getting vision board history:', error);
@@ -226,25 +211,25 @@ export const createVisionBoard = async (data: VisionBoardData): Promise<VisionBo
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     const response = await fetch(API_URL, {
       method: 'POST',
       headers,
       credentials: 'include',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
-    
+
     if (!response.ok) {
       console.error(`Error status: ${response.status}`);
       const errorText = await response.text();
       console.error(`Error response: ${errorText}`);
       throw new Error(`Error creating vision board: ${response.statusText}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Error creating vision board:', error);
@@ -262,30 +247,30 @@ export const updateVisionBoard = async (data: VisionBoardData): Promise<VisionBo
     if (!data.id) {
       throw new Error('Vision board ID is required for updates');
     }
-    
+
     const token = await getAuthToken();
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     const response = await fetch(API_URL, {
       method: 'PUT',
       headers,
       credentials: 'include',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
-    
+
     if (!response.ok) {
       console.error(`Error status: ${response.status}`);
       const errorText = await response.text();
       console.error(`Error response: ${errorText}`);
       throw new Error(`Error updating vision board: ${response.statusText}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Error updating vision board:', error);
@@ -304,24 +289,24 @@ export const deleteVisionBoard = async (id: string): Promise<boolean> => {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
-    
+
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    
+
     const response = await fetch(`${API_URL}?id=${id}`, {
       method: 'DELETE',
       headers,
-      credentials: 'include'
+      credentials: 'include',
     });
-    
+
     if (!response.ok) {
       throw new Error(`Error deleting vision board with ID ${id}: ${response.statusText}`);
     }
-    
+
     return true;
   } catch (error) {
     console.error(`Error deleting vision board with ID ${id}:`, error);
     return false;
   }
-}; 
+};

@@ -48,18 +48,18 @@ export interface PodcastParams {
     pageSize: number;
   };
   populate?: string[] | string;
-  filters?: Record<string, any>;
+  filters?: Record<string, string | number>;
 }
 
 export const podcastService = {
   async getPodcasts(params?: PodcastParams): Promise<PodcastResponse> {
     try {
       const queryParams = new URLSearchParams();
-      
+
       // Handle populate parameter
       const defaultPopulate = ['*'];
       const populateParams = params?.populate || defaultPopulate;
-      
+
       if (Array.isArray(populateParams)) {
         populateParams.forEach(item => {
           queryParams.append('populate', item);
@@ -67,7 +67,7 @@ export const podcastService = {
       } else {
         queryParams.append('populate', populateParams);
       }
-      
+
       // Handle sorting
       if (params?.sort) {
         queryParams.append('sort', params.sort);
@@ -106,5 +106,5 @@ export const podcastService = {
       spotifyId: item.spotifyId,
       publishedAt: item.publishedAt,
     }));
-  }
-}; 
+  },
+};

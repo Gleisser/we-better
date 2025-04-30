@@ -50,18 +50,18 @@ export interface QuoteParams {
     pageSize: number;
   };
   populate?: string[] | string;
-  filters?: Record<string, any>;
+  filters?: Record<string, string | number>;
 }
 
 export const quoteService = {
   async getQuotes(params?: QuoteParams): Promise<QuoteResponse> {
     try {
       const queryParams = new URLSearchParams();
-      
+
       // Handle populate parameter
       const defaultPopulate = ['*'];
       const populateParams = params?.populate || defaultPopulate;
-      
+
       if (Array.isArray(populateParams)) {
         populateParams.forEach(item => {
           queryParams.append('populate', item);
@@ -69,7 +69,7 @@ export const quoteService = {
       } else {
         queryParams.append('populate', populateParams);
       }
-      
+
       // Handle sorting
       if (params?.sort) {
         queryParams.append('sort', params.sort);
@@ -104,14 +104,16 @@ export const quoteService = {
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
       publishedAt: item.publishedAt,
-      categories: item.categories
+      categories: item.categories,
     }));
   },
 
   // Helper function to determine quote theme based on categories
-  determineQuoteTheme(categories: QuoteCategory[]): 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom' {
+  determineQuoteTheme(
+    categories: QuoteCategory[]
+  ): 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom' {
     const categoryMap = new Set(categories.map(cat => cat.slug));
-    
+
     if (categoryMap.has('success') || categoryMap.has('achievement')) {
       return 'success';
     }
@@ -125,5 +127,5 @@ export const quoteService = {
       return 'growth';
     }
     return 'wisdom'; // default theme
-  }
-}; 
+  },
+};

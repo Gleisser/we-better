@@ -2,7 +2,7 @@ import { supabase } from './supabaseClient';
 
 interface User {
   id: string;
-  email: string;
+  email?: string;
   full_name?: string;
   // Add other user properties as needed
 }
@@ -79,11 +79,11 @@ export const authService = {
 
   async signInWithGoogle(): Promise<AuthResponse> {
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: REDIRECT_URL,
-        }
+        },
       });
 
       if (error) throw new Error(error.message);
@@ -103,9 +103,9 @@ export const authService = {
   async signOut(): Promise<{ error: Error | null }> {
     try {
       const { error } = await supabase.auth.signOut();
-      
+
       if (error) throw new Error(error.message);
-      
+
       return { error: null };
     } catch (error) {
       return {
@@ -114,7 +114,7 @@ export const authService = {
     }
   },
 
-  async confirmEmail(token: string): Promise<{ error: Error | null }> {
+  async confirmEmail(): Promise<{ error: Error | null }> {
     try {
       // The link from the email will be handled automatically by Supabase
       // This method would only be needed for manual verification
@@ -132,9 +132,9 @@ export const authService = {
         type: 'signup',
         email,
       });
-      
+
       if (error) throw new Error(error.message);
-      
+
       return { error: null };
     } catch (error) {
       return {
@@ -146,12 +146,12 @@ export const authService = {
   async getCurrentUser(): Promise<AuthResponse> {
     try {
       const { data, error } = await supabase.auth.getSession();
-      
+
       // Extract user from session if it exists
       const user = data.session?.user || null;
-      
+
       if (error) throw new Error(error.message);
-      
+
       return {
         user,
         session: data.session,
@@ -171,9 +171,9 @@ export const authService = {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
       });
-      
+
       if (error) throw new Error(error.message);
-      
+
       return { error: null };
     } catch (error) {
       return {
@@ -189,9 +189,9 @@ export const authService = {
       const { error } = await supabase.auth.updateUser({
         password,
       });
-      
+
       if (error) throw new Error(error.message);
-      
+
       return { error: null };
     } catch (error) {
       console.error('Reset password error:', error);
@@ -199,5 +199,5 @@ export const authService = {
         error: error instanceof Error ? error : new Error('An unknown error occurred'),
       };
     }
-  }
-}; 
+  },
+};

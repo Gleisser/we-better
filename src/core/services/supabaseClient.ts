@@ -8,18 +8,19 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Determine if we're on a reset-password route
-const isResetPasswordFlow = window.location.pathname.includes('/auth/reset-password');
+//const isResetPasswordFlow = window.location.pathname.includes('/auth/reset-password');
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     // Only redirect to app if NOT in password reset flow
-    redirectTo: isResetPasswordFlow ? undefined : `${window.location.origin}/app`,
+    //redirectTo: isResetPasswordFlow ? undefined : `${window.location.origin}/app`, uncomment this to redirect to app if something goes wrong
+    flowType: 'pkce',
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
     storageKey: 'we-better-auth-token',
     storage: {
-      getItem: (key) => {
+      getItem: key => {
         try {
           return localStorage.getItem(key);
         } catch (error) {
@@ -39,7 +40,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
           }
         }
       },
-      removeItem: (key) => {
+      removeItem: key => {
         try {
           localStorage.removeItem(key);
         } catch (error) {
@@ -50,7 +51,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
             console.error('sessionStorage access error:', innerError);
           }
         }
-      }
-    }
-  }
-}); 
+      },
+    },
+  },
+});

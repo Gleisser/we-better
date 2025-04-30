@@ -48,18 +48,18 @@ export interface AffirmationParams {
     pageSize: number;
   };
   populate?: string[] | string;
-  filters?: Record<string, any>;
+  filters?: Record<string, string | number | boolean>;
 }
 
 export const affirmationService = {
   async getAffirmations(params?: AffirmationParams): Promise<AffirmationResponse> {
     try {
       const queryParams = new URLSearchParams();
-      
+
       // Handle populate parameter
       const defaultPopulate = ['*'];
       const populateParams = params?.populate || defaultPopulate;
-      
+
       if (Array.isArray(populateParams)) {
         populateParams.forEach(item => {
           queryParams.append('populate', item);
@@ -67,7 +67,7 @@ export const affirmationService = {
       } else {
         queryParams.append('populate', populateParams);
       }
-      
+
       // Handle sorting
       if (params?.sort) {
         queryParams.append('sort', params.sort);
@@ -101,14 +101,26 @@ export const affirmationService = {
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
       publishedAt: item.publishedAt,
-      categories: item.categories
+      categories: item.categories,
     }));
   },
 
   // Helper function to determine affirmation category based on categories
-  determineAffirmationType(categories: AffirmationCategory[]): 'personal' | 'beauty' | 'blessing' | 'gratitude' | 'happiness' | 'health' | 'love' | 'money' | 'sleep' | 'spiritual' {
+  determineAffirmationType(
+    categories: AffirmationCategory[]
+  ):
+    | 'personal'
+    | 'beauty'
+    | 'blessing'
+    | 'gratitude'
+    | 'happiness'
+    | 'health'
+    | 'love'
+    | 'money'
+    | 'sleep'
+    | 'spiritual' {
     const categoryMap = new Set(categories.map(cat => cat.slug));
-    
+
     if (categoryMap.has('affirmation-personal')) return 'personal';
     if (categoryMap.has('affirmation-beauty')) return 'beauty';
     if (categoryMap.has('affirmation-blessing')) return 'blessing';
@@ -119,30 +131,33 @@ export const affirmationService = {
     if (categoryMap.has('affirmation-money')) return 'money';
     if (categoryMap.has('affirmation-sleep')) return 'sleep';
     if (categoryMap.has('affirmation-spiritual')) return 'spiritual';
-    
+
     return 'personal'; // default category
   },
 
   // Helper function to determine affirmation intensity
   determineIntensity(categories: AffirmationCategory[]): 1 | 2 | 3 {
     const categoryMap = new Set(categories.map(cat => cat.slug));
-    
+
     if (categoryMap.has('intensity-high')) return 3;
     if (categoryMap.has('intensity-medium')) return 2;
     return 1; // default to gentle intensity
   },
 
-  async getAffirmationsByCategory(category: string, params?: Omit<AffirmationParams, 'filters'>): Promise<AffirmationResponse> {
+  async getAffirmationsByCategory(
+    category: string,
+    params?: Omit<AffirmationParams, 'filters'>
+  ): Promise<AffirmationResponse> {
     try {
       const queryParams = new URLSearchParams();
-      
+
       // Add category filter
       queryParams.append('filters[categories][slug][$eq]', `affirmation-${category}`);
-      
+
       // Handle populate parameter
       const defaultPopulate = ['*'];
       const populateParams = params?.populate || defaultPopulate;
-      
+
       if (Array.isArray(populateParams)) {
         populateParams.forEach(item => {
           queryParams.append('populate', item);
@@ -150,7 +165,7 @@ export const affirmationService = {
       } else {
         queryParams.append('populate', populateParams);
       }
-      
+
       // Handle sorting
       if (params?.sort) {
         queryParams.append('sort', params.sort);
@@ -167,5 +182,5 @@ export const affirmationService = {
     } catch (error) {
       return handleServiceError(error, 'Affirmations');
     }
-  }
-}; 
+  },
+};

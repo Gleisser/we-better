@@ -1,5 +1,5 @@
 import { apiClient } from '@/core/services/api-client';
-import { ShowcaseResponse } from '@/types/showcase';
+import { ShowcaseResponse } from '@/utils/types/showcase';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 export const showcaseService = {
   async getShowcase(): Promise<ShowcaseResponse> {
@@ -11,4 +11,4 @@ export const showcaseService = {
       return handleServiceError(error, 'Showcase');
     }
   },
-}; 
+};

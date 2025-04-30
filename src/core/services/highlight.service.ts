@@ -1,5 +1,5 @@
 import { apiClient } from '@/core/services/api-client';
-import { HighlightResponse } from '@/types/highlight';
+import { HighlightResponse } from '@/utils/types/highlight';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 
 export const highlightService = {
@@ -12,4 +12,4 @@ export const highlightService = {
       return handleServiceError(error, 'Highlight');
     }
   },
-}; 
+};

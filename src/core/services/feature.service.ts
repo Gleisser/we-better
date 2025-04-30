@@ -1,5 +1,5 @@
 import { apiClient } from '@/core/services/api-client';
-import { FeaturesResponse } from '@/types/features-response';
+import { FeaturesResponse } from '@/utils/types/features-response';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 
 export const featureService = {
@@ -12,4 +12,4 @@ export const featureService = {
       return handleServiceError(error, 'Feature');
     }
   },
-}; 
+};

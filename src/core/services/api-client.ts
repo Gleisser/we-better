@@ -1,8 +1,8 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 import { RateLimiter } from './rate-limiter';
 import { ENV_CONFIG } from '@/core/config/env.config';
 import { shouldRetry, getRetryDelay, getErrorMessage } from '@/utils/helpers/error-handling';
-import { APIError, Meta } from '@/types/common/meta';
+import { APIError, Meta } from '@/utils/types/common/meta';
 
 // Wrapper to maintain backward compatibility
 interface ApiResponse<T> {
@@ -34,20 +34,22 @@ class ApiClient {
     this.setupInterceptors();
   }
 
-  private setupInterceptors() {
-    this.client.interceptors.request.use(async (config) => {
-      const canMakeRequest = await this.rateLimiter.checkLimit();
-      
-      if (!canMakeRequest) {
-        throw new Error('Rate limit exceeded');
-      }
+  private setupInterceptors(): void {
+    this.client.interceptors.request.use(
+      async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
+        const canMakeRequest = await this.rateLimiter.checkLimit();
 
-      return config;
-    });
+        if (!canMakeRequest) {
+          throw new Error('Rate limit exceeded');
+        }
+
+        return config;
+      }
+    );
 
     this.client.interceptors.response.use(
-      (response) => response,
-      async (error) => {
+      response => response,
+      async error => {
         const originalRequest = error.config;
 
         if (originalRequest._retry || !shouldRetry(error)) {
@@ -87,4 +89,4 @@ class ApiClient {
   }
 }
 
-export const apiClient = new ApiClient(); 
+export const apiClient = new ApiClient();

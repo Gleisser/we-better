@@ -1,5 +1,5 @@
 import { apiClient } from '@/core/services/api-client';
-import { ToolResponse } from '@/types/tool';
+import { ToolResponse } from '@/utils/types/tool';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 
 export const toolService = {
@@ -12,4 +12,4 @@ export const toolService = {
       return handleServiceError(error, 'Tool');
     }
   },
-}; 
+};

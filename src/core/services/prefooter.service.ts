@@ -1,5 +1,5 @@
 import { apiClient } from '@/core/services/api-client';
-import { PrefooterResponse } from '@/types/prefooter';
+import { PrefooterResponse } from '@/utils/types/prefooter';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 
 export const prefooterService = {
@@ -12,4 +12,4 @@ export const prefooterService = {
       return handleServiceError(error, 'Prefooter');
     }
   },
-}; 
+};

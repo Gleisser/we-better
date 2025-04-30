@@ -74,23 +74,23 @@ interface CourseResponse {
 export const courseService = {
   async getCourses(params?: {
     sort?: string;
-    filters?: Record<string, any>;
+    filters?: Record<string, string | number>;
     pagination?: { page: number; pageSize: number };
   }): Promise<CourseResponse> {
     try {
       const queryParams = new URLSearchParams();
       queryParams.append('populate', '*');
-      
+
       if (params?.sort) {
         queryParams.append('sort', params.sort);
       }
-      
+
       if (params?.filters) {
         Object.entries(params.filters).forEach(([key, value]) => {
-          queryParams.append(`filters[${key}]`, value);
+          queryParams.append(`filters[${key}]`, value.toString());
         });
       }
-      
+
       if (params?.pagination) {
         queryParams.append('pagination[page]', params.pagination.page.toString());
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
@@ -102,4 +102,4 @@ export const courseService = {
       return handleServiceError(error, 'Courses');
     }
   },
-}; 
+};
