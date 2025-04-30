@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { authService } from '@/core/services/authService';
 import styles from './Login.module.css';
 
-const ForgotPassword = () => {
+const ForgotPassword = (): JSX.Element => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
@@ -17,9 +17,9 @@ const ForgotPassword = () => {
 
     try {
       const { error } = await authService.forgotPassword(email);
-      
+
       if (error) throw error;
-      
+
       setSuccessMessage('Password reset instructions have been sent to your email');
       setEmail(''); // Clear the form
     } catch (error) {
@@ -42,8 +42,8 @@ const ForgotPassword = () => {
               Get Back Access
             </h2>
             <p className={styles.quoteText}>
-              Don't worry, we'll help you recover your account.
-              Just enter your email and follow the instructions.
+              Don't worry, we'll help you recover your account. Just enter your email and follow the
+              instructions.
             </p>
           </div>
         </div>
@@ -54,9 +54,7 @@ const ForgotPassword = () => {
         <div className={styles.formWrapper}>
           <div className={styles.formSection}>
             <h1 className={styles.title}>Reset Password</h1>
-            <p className={styles.subtitle}>
-              Enter your email to receive reset instructions
-            </p>
+            <p className={styles.subtitle}>Enter your email to receive reset instructions</p>
 
             {error && <div className={styles.error}>{error}</div>}
             {successMessage && <div className={styles.success}>{successMessage}</div>}
@@ -68,17 +66,13 @@ const ForgotPassword = () => {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   required
                 />
               </div>
 
-              <button 
-                type="submit" 
-                className={styles.submitButton}
-                disabled={isLoading}
-              >
+              <button type="submit" className={styles.submitButton} disabled={isLoading}>
                 {isLoading ? 'Sending...' : 'Send Reset Instructions'}
               </button>
             </form>
@@ -95,4 +89,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword; 
+export default ForgotPassword;

@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { authService } from '@/core/services/authService';
 import styles from './Login.module.css';
 
-const EmailConfirmation = () => {
+const EmailConfirmation = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const [error, setError] = useState('');
   const [isProcessing, setIsProcessing] = useState(true);
 
   useEffect(() => {
-    const confirmEmail = async () => {
+    const confirmEmail = async (): Promise<void> => {
       try {
         const hash = location.hash;
         if (!hash) {
@@ -20,20 +20,19 @@ const EmailConfirmation = () => {
         // Extract token from hash
         const params = new URLSearchParams(hash.substring(1));
         const accessToken = params.get('access_token');
-        
+
         if (!accessToken) {
           throw new Error('Invalid confirmation link');
         }
 
-        await authService.confirmEmail(accessToken);
-        
+        await authService.confirmEmail();
+
         // Redirect to login after short delay
         setTimeout(() => {
-          navigate('/auth/login', { 
-            state: { message: 'Email confirmed successfully. Please log in.' } 
+          navigate('/auth/login', {
+            state: { message: 'Email confirmed successfully. Please log in.' },
           });
         }, 2000);
-
       } catch (error) {
         setError(error instanceof Error ? error.message : 'Failed to confirm email');
       } finally {
@@ -66,4 +65,4 @@ const EmailConfirmation = () => {
   );
 };
 
-export default EmailConfirmation; 
+export default EmailConfirmation;

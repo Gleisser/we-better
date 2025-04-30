@@ -5,7 +5,7 @@ import { useAuth } from '@/shared/contexts/AuthContext';
 import { authService } from '@/core/services/authService';
 import styles from './Login.module.css';
 
-const Login = () => {
+const Login = (): JSX.Element => {
   const navigate = useNavigate();
   const { checkAuth } = useAuth();
   const [email, setEmail] = useState('');
@@ -14,23 +14,19 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
-      console.log('Starting sign in process...');
-      const { user, session, error: authError } = await authService.signIn(email, password);
-      
-      console.log('Sign in response:', { user, session, error: authError });
-      
+      const { user, error: authError } = await authService.signIn(email, password);
+
       if (authError) {
         throw authError;
       }
 
       if (user) {
-        console.log('User authenticated, checking auth state and navigating...');
         await checkAuth();
         navigate('/app');
       } else {
@@ -45,7 +41,7 @@ const Login = () => {
     }
   };
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = (): void => {
     // TODO: Implement Google sign-in later
     setError('Google sign-in will be available soon');
   };
@@ -63,8 +59,8 @@ const Login = () => {
               You Want
             </h2>
             <p className={styles.quoteText}>
-              You can get everything you want if you work hard,
-              trust the process, and stick to the plan.
+              You can get everything you want if you work hard, trust the process, and stick to the
+              plan.
             </p>
           </div>
         </div>
@@ -76,9 +72,7 @@ const Login = () => {
           {/* Form Section */}
           <div className={styles.formSection}>
             <h1 className={styles.title}>Welcome Back</h1>
-            <p className={styles.subtitle}>
-              Enter your email and password to access your account
-            </p>
+            <p className={styles.subtitle}>Enter your email and password to access your account</p>
 
             {error && <div className={styles.error}>{error}</div>}
 
@@ -89,7 +83,7 @@ const Login = () => {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   required
                 />
@@ -102,7 +96,7 @@ const Login = () => {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={e => setPassword(e.target.value)}
                     placeholder="Enter your password"
                     required
                   />
@@ -127,23 +121,19 @@ const Login = () => {
                 </Link>
               </div>
 
-              <button 
-                type="submit" 
-                className={styles.submitButton}
-                disabled={isLoading}
-              >
+              <button type="submit" className={styles.submitButton} disabled={isLoading}>
                 {isLoading ? 'Signing In...' : 'Sign In'}
               </button>
 
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={styles.googleButton}
                 onClick={handleGoogleSignIn}
                 disabled={true} // Disabled until implemented
               >
-                <img 
-                  src="/assets/images/icons/google_logo.png" 
-                  alt="" 
+                <img
+                  src="/assets/images/icons/google_logo.png"
+                  alt=""
                   className={styles.googleIcon}
                 />
                 Sign In with Google (Coming Soon)
@@ -151,7 +141,7 @@ const Login = () => {
             </form>
 
             <p className={styles.signupPrompt}>
-              Don't have an account? 
+              Don't have an account?
               <Link to="/auth/signup" className={styles.signupLink}>
                 Sign Up
               </Link>
@@ -163,4 +153,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

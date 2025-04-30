@@ -4,7 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { authService } from '@/core/services/authService';
 import styles from './Login.module.css'; // We'll reuse the login styles for now
 
-const SignUp = () => {
+const SignUp = (): JSX.Element => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,10 +15,10 @@ const SignUp = () => {
   const [error, setError] = useState('');
   const [isConfirmationSent, setIsConfirmationSent] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setError('');
-    
+
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -27,8 +27,12 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      const { user, error: authError, needsEmailConfirmation } = await authService.signUp(email, password);
-      
+      const {
+        user,
+        error: authError,
+        needsEmailConfirmation,
+      } = await authService.signUp(email, password);
+
       if (authError) throw authError;
 
       if (needsEmailConfirmation) {
@@ -43,7 +47,7 @@ const SignUp = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = async (): Promise<void> => {
     setError('');
     setIsLoading(true);
 
@@ -57,7 +61,7 @@ const SignUp = () => {
     }
   };
 
-  const handleResendConfirmation = async () => {
+  const handleResendConfirmation = async (): Promise<void> => {
     try {
       const { error } = await authService.resendConfirmation(email);
       if (error) {
@@ -66,7 +70,7 @@ const SignUp = () => {
         setError('Confirmation email resent. Please check your inbox.');
       }
     } catch (error) {
-      setError('Failed to resend confirmation email');
+      setError(error instanceof Error ? error.message : 'Failed to resend confirmation email');
     }
   };
 
@@ -84,8 +88,7 @@ const SignUp = () => {
                 Email
               </h2>
               <p className={styles.quoteText}>
-                We're excited to have you join our community.
-                Just one more step to get started!
+                We're excited to have you join our community. Just one more step to get started!
               </p>
             </div>
           </div>
@@ -96,28 +99,18 @@ const SignUp = () => {
           <div className={styles.formWrapper}>
             <div className={styles.formSection}>
               <h1 className={styles.title}>Check Your Email</h1>
-              <p className={styles.subtitle}>
-                We've sent a confirmation link to:
-              </p>
+              <p className={styles.subtitle}>We've sent a confirmation link to:</p>
               <p className={styles.emailHighlight}>{email}</p>
 
               {error && <div className={styles.error}>{error}</div>}
 
               <div className={styles.confirmationActions}>
-                <p className={styles.resendPrompt}>
-                  Didn't receive the email?
-                </p>
-                <button 
-                  onClick={handleResendConfirmation}
-                  className={styles.submitButton}
-                >
+                <p className={styles.resendPrompt}>Didn't receive the email?</p>
+                <button onClick={handleResendConfirmation} className={styles.submitButton}>
                   Resend Confirmation
                 </button>
 
-                <Link 
-                  to="/auth/login" 
-                  className={styles.googleButton}
-                >
+                <Link to="/auth/login" className={styles.googleButton}>
                   Back to Login
                 </Link>
               </div>
@@ -141,8 +134,8 @@ const SignUp = () => {
               Journey Today
             </h2>
             <p className={styles.quoteText}>
-              Join our community of self-improvers and start your
-              journey towards becoming your best self.
+              Join our community of self-improvers and start your journey towards becoming your best
+              self.
             </p>
           </div>
         </div>
@@ -153,9 +146,7 @@ const SignUp = () => {
         <div className={styles.formWrapper}>
           <div className={styles.formSection}>
             <h1 className={styles.title}>Create Account</h1>
-            <p className={styles.subtitle}>
-              Enter your details to create your account
-            </p>
+            <p className={styles.subtitle}>Enter your details to create your account</p>
 
             {error && <div className={styles.error}>{error}</div>}
 
@@ -166,7 +157,7 @@ const SignUp = () => {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   required
                 />
@@ -179,7 +170,7 @@ const SignUp = () => {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={e => setPassword(e.target.value)}
                     placeholder="Create a password"
                     required
                   />
@@ -201,7 +192,7 @@ const SignUp = () => {
                     id="confirmPassword"
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={e => setConfirmPassword(e.target.value)}
                     placeholder="Confirm your password"
                     required
                   />
@@ -216,23 +207,19 @@ const SignUp = () => {
                 </div>
               </div>
 
-              <button 
-                type="submit" 
-                className={styles.submitButton}
-                disabled={isLoading}
-              >
+              <button type="submit" className={styles.submitButton} disabled={isLoading}>
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>
 
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={styles.googleButton}
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
               >
-                <img 
-                  src="/assets/images/icons/google_logo.png" 
-                  alt="" 
+                <img
+                  src="/assets/images/icons/google_logo.png"
+                  alt=""
                   className={styles.googleIcon}
                 />
                 Sign Up with Google
@@ -252,4 +239,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp; 
+export default SignUp;

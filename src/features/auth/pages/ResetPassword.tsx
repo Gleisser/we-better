@@ -5,7 +5,7 @@ import { authService } from '@/core/services/authService';
 import { supabase } from '@/core/services/supabaseClient';
 import styles from './Login.module.css';
 
-const ResetPassword = () => {
+const ResetPassword = (): JSX.Element => {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -16,41 +16,31 @@ const ResetPassword = () => {
 
   // Process the authentication hash when the component mounts
   useEffect(() => {
-    const handleAuthRedirect = async () => {
+    const handleAuthRedirect = async (): Promise<void> => {
       try {
         setIsLoading(true);
-        
-        // Check if we have the required hash parameters
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token');
-        const type = hashParams.get('type');
-        
-        // Log the hash params for debugging
-        console.log('Hash params:', { accessToken: !!accessToken, refreshToken: !!refreshToken, type });
-        
         // This crucial step processes the hash fragment and establishes the session
         const { data, error } = await supabase.auth.getSession();
-        
-        console.log('Session data:', data);
-        
+
         if (error) {
-          console.error("Failed to get session:", error);
-          setError("Failed to verify your recovery link. Please try requesting a new password reset.");
+          console.error('Failed to get session:', error);
+          setError(
+            'Failed to verify your recovery link. Please try requesting a new password reset.'
+          );
           return;
         }
-        
+
         if (!data.session) {
-          console.warn("No session found in redirect");
-          setError("Your recovery link appears to be invalid or expired. Please request a new one.");
+          console.warn('No session found in redirect');
+          setError(
+            'Your recovery link appears to be invalid or expired. Please request a new one.'
+          );
           return;
         }
-        
-        console.log("Auth redirect processed successfully", data.session?.user?.id);
         setHashProcessed(true);
       } catch (err) {
-        console.error("Error handling auth redirect:", err);
-        setError("An unexpected error occurred. Please try again or request a new reset link.");
+        console.error('Error handling auth redirect:', err);
+        setError('An unexpected error occurred. Please try again or request a new reset link.');
       } finally {
         setIsLoading(false);
       }
@@ -59,7 +49,7 @@ const ResetPassword = () => {
     handleAuthRedirect();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setError('');
     setSuccessMessage('');
@@ -67,17 +57,19 @@ const ResetPassword = () => {
 
     try {
       if (!hashProcessed) {
-        throw new Error("Please wait for your recovery link to be verified before resetting your password.");
+        throw new Error(
+          'Please wait for your recovery link to be verified before resetting your password.'
+        );
       }
-      
+
       const { error } = await authService.resetPassword(password);
-      
+
       if (error) throw error;
-      
+
       setSuccessMessage('Password updated successfully');
       setTimeout(() => navigate('/auth/login'), 2000);
     } catch (error) {
-      console.error("Password reset error:", error);
+      console.error('Password reset error:', error);
       setError(error instanceof Error ? error.message : 'Failed to reset password');
     } finally {
       setIsLoading(false);
@@ -95,9 +87,7 @@ const ResetPassword = () => {
               <br />
               Password
             </h2>
-            <p className={styles.quoteText}>
-              Choose a strong password to protect your account.
-            </p>
+            <p className={styles.quoteText}>Choose a strong password to protect your account.</p>
           </div>
         </div>
       </div>
@@ -106,9 +96,7 @@ const ResetPassword = () => {
         <div className={styles.formWrapper}>
           <div className={styles.formSection}>
             <h1 className={styles.title}>Reset Your Password</h1>
-            <p className={styles.subtitle}>
-              Enter your new password below
-            </p>
+            <p className={styles.subtitle}>Enter your new password below</p>
 
             {error && <div className={styles.error}>{error}</div>}
             {successMessage && <div className={styles.success}>{successMessage}</div>}
@@ -126,7 +114,7 @@ const ResetPassword = () => {
                       id="password"
                       type={showPassword ? 'text' : 'password'}
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={e => setPassword(e.target.value)}
                       placeholder="Enter your new password"
                       required
                       minLength={6}
@@ -141,11 +129,7 @@ const ResetPassword = () => {
                   </div>
                 </div>
 
-                <button 
-                  type="submit" 
-                  className={styles.submitButton}
-                  disabled={isLoading}
-                >
+                <button type="submit" className={styles.submitButton} disabled={isLoading}>
                   {isLoading ? 'Updating...' : 'Update Password'}
                 </button>
               </form>
@@ -157,4 +141,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword; 
+export default ResetPassword;

@@ -7,7 +7,7 @@ interface AuthLayoutProps {
   children?: ReactNode;
 }
 
-const AuthLayout = ({ children }: AuthLayoutProps) => {
+const AuthLayout = ({ children }: AuthLayoutProps): JSX.Element => {
   const location = useLocation();
 
   return (
@@ -18,7 +18,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
           initial={{ x: '50%', opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: '-50%', opacity: 0 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 20 }}
           className={styles.loginCard}
         >
           {children || <Outlet />}
@@ -28,4 +28,4 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
   );
 };
 
-export default AuthLayout; 
+export default AuthLayout;
