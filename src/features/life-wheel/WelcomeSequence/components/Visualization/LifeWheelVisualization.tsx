@@ -11,13 +11,17 @@ import { Mesh, Group } from 'three';
 // Visual stage type that matches our message sequence
 type VisualStage =
   | 'intro'
-  | 'platform'
-  | 'wheel-intro'
-  | 'segments'
+  | 'platform-1'
+  | 'platform-2'
+  | 'wheel-intro-1'
+  | 'wheel-intro-2'
+  | 'segments-1'
+  | 'segments-2'
   | 'completion'
   | 'benefits-1'
   | 'benefits-2'
   | 'benefits-3'
+  | 'benefits-4'
   | 'finale';
 
 interface LifeWheelVisualizationProps {
@@ -250,11 +254,14 @@ const VisualizationScene = ({
   const getActiveSegments = (): number[] => {
     switch (currentStage) {
       case 'intro':
-      case 'platform':
+      case 'platform-1':
+      case 'platform-2':
         return []; // No segments active yet
-      case 'wheel-intro':
+      case 'wheel-intro-1':
+      case 'wheel-intro-2':
         return [0]; // Just first segment
-      case 'segments': {
+      case 'segments-1':
+      case 'segments-2': {
         // Progressively reveal segments based on index
         const maxSegments = Math.min(
           Math.floor((currentIndex - 2) * 2), // Start showing from message 3
@@ -266,6 +273,7 @@ const VisualizationScene = ({
       case 'benefits-1':
       case 'benefits-2':
       case 'benefits-3':
+      case 'benefits-4':
       case 'finale':
         // All segments active
         return Array.from({ length: DEFAULT_LIFE_CATEGORIES.length }, (_, i) => i);
@@ -316,6 +324,7 @@ const VisualizationScene = ({
       case 'benefits-2':
         return [0, 1, 2];
       case 'benefits-3':
+      case 'benefits-4':
       case 'finale':
         return [0, 1, 2, 3, 4];
       default:
@@ -332,7 +341,7 @@ const VisualizationScene = ({
     if (currentStage === 'intro') {
       setLogoScale(1);
       setLogoOpacity(1);
-    } else if (currentStage === 'platform') {
+    } else if (currentStage === 'platform-1' || currentStage === 'platform-2') {
       setLogoScale(0.5);
       setLogoOpacity(0.7);
     } else {
@@ -350,9 +359,13 @@ const VisualizationScene = ({
       wheelRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.3) * 0.05;
 
       // Different rotation speeds based on stage
-      if (['intro', 'platform', 'wheel-intro'].includes(currentStage)) {
+      if (
+        ['intro', 'platform-1', 'platform-2', 'wheel-intro-1', 'wheel-intro-2'].includes(
+          currentStage
+        )
+      ) {
         wheelRef.current.rotation.y += 0.002;
-      } else if (currentStage === 'segments') {
+      } else if (currentStage === 'segments-1' || currentStage === 'segments-2') {
         wheelRef.current.rotation.y += 0.001;
       } else {
         wheelRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.2) * 0.1;

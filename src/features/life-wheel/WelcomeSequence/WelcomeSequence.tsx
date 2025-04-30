@@ -13,25 +13,25 @@ import Modal from './components/Modal';
 import UserProfileForm from './components/UserProfileForm';
 import styles from './WelcomeSequence.module.css';
 
-const WelcomeSequence = ({ 
-  onComplete, 
-  onSkip, 
+const WelcomeSequence = ({
+  onComplete,
+  onSkip,
   userName = '',
-  isLoading = false
-}: WelcomeSequenceProps) => {
+  isLoading = false,
+}: WelcomeSequenceProps): JSX.Element => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfileData>({});
-  
+
   // Check if current index is valid
   const isValidIndex = currentIndex >= 0 && currentIndex < WELCOME_SEQUENCE.length;
-  
+
   // Current message
   const currentMessage = isValidIndex ? WELCOME_SEQUENCE[currentIndex] : null;
   const currentVisualStage = currentMessage?.visualStage || 'intro';
-  
+
   // Handle special platform-2 stage to show profile form
   useEffect(() => {
     if (currentVisualStage === 'platform-2' && !showProfileModal) {
@@ -39,18 +39,18 @@ const WelcomeSequence = ({
       const timer = setTimeout(() => {
         setShowProfileModal(true);
       }, 2000); // Wait 2 seconds after the message appears
-      
+
       return () => clearTimeout(timer);
     }
   }, [currentVisualStage, showProfileModal]);
-  
+
   // Handle advancement to next message
   const handleNext = useCallback(() => {
     if (currentVisualStage === 'platform-2' && !showProfileModal) {
       setShowProfileModal(true);
       return;
     }
-    
+
     if (currentIndex < WELCOME_SEQUENCE.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
@@ -59,12 +59,12 @@ const WelcomeSequence = ({
       setTimeout(() => onComplete(userProfile), 500);
     }
   }, [currentIndex, currentVisualStage, onComplete, showProfileModal, userProfile]);
-  
+
   // Start sequence
   const handleStart = useCallback(() => {
     setIsStarted(true);
   }, []);
-  
+
   // Handle skip button
   const handleSkip = useCallback(() => {
     setIsFinished(true);
@@ -84,59 +84,56 @@ const WelcomeSequence = ({
     setShowProfileModal(false);
     // Continue with the sequence (don't save profile data)
   }, []);
-  
+
   // Keyboard navigation
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
       if (showProfileModal) return; // Don't handle keyboard events when modal is open
-      
+
       if (!isStarted || isFinished) {
         if (e.key === 'Enter' && !isStarted) handleStart();
         if (e.key === 'Escape' && !isStarted) handleSkip();
         return;
       }
-      
+
       if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
         handleNext();
       } else if (e.key === 'Escape') {
         handleSkip();
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isStarted, isFinished, handleNext, handleSkip, handleStart, showProfileModal]);
-  
+
   return (
     <div className={styles.fullScreenContainer}>
       {/* Login background */}
       <div className={styles.backgroundImage} />
-      
+
       {/* 3D Visualization - always present but changes states */}
       <ErrorBoundary>
-        <LifeWheelVisualization 
-          currentStage={currentVisualStage}
-          currentIndex={currentIndex}
-        />
+        <LifeWheelVisualization currentStage={currentVisualStage} currentIndex={currentIndex} />
       </ErrorBoundary>
-      
+
       <div className={styles.contentWrapper}>
         {isLoading ? (
           <ContentCard className={styles.loadingCard}>
-            <motion.div 
+            <motion.div
               className={styles.loadingSpinner}
               animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             />
             <p>Loading your experience...</p>
           </ContentCard>
         ) : !isStarted ? (
           <ContentCard className={styles.welcomeCard}>
-            <AnimatedTitle 
+            <AnimatedTitle
               title={`Welcome${userName ? `, ${userName}` : ''}!`}
               subtitle="Begin your journey to better well-being with our interactive experience"
             />
-            <ButtonGroup 
+            <ButtonGroup
               onBegin={handleStart}
               onSkip={handleSkip}
               beginLabel="Begin Journey"
@@ -148,21 +145,18 @@ const WelcomeSequence = ({
             {currentMessage && (
               <div className={styles.sequenceContainer}>
                 <ContentCard className={styles.messageCard}>
-                  <MessageAnimation 
-                    key={currentMessage.id} 
-                    message={currentMessage} 
+                  <MessageAnimation
+                    key={currentMessage.id}
+                    message={currentMessage}
                     onComplete={handleNext}
                     userName={userName}
                   />
-                  
+
                   <div className={styles.controlsContainer}>
-                    <ProgressIndicator 
-                      total={WELCOME_SEQUENCE.length} 
-                      current={currentIndex} 
-                    />
-                    
+                    <ProgressIndicator total={WELCOME_SEQUENCE.length} current={currentIndex} />
+
                     <div className={styles.buttons}>
-                      <motion.button 
+                      <motion.button
                         className={styles.nextButton}
                         onClick={handleNext}
                         whileHover={{ scale: 1.05 }}
@@ -171,7 +165,7 @@ const WelcomeSequence = ({
                       >
                         Next
                       </motion.button>
-                      <motion.button 
+                      <motion.button
                         className={styles.skipButton}
                         onClick={handleSkip}
                         whileHover={{ scale: 1.05 }}
@@ -191,7 +185,7 @@ const WelcomeSequence = ({
 
       {/* User Profile Modal */}
       <Modal isOpen={showProfileModal} onClose={handleSkipProfile}>
-        <UserProfileForm 
+        <UserProfileForm
           onSubmit={handleProfileSubmit}
           onCancel={handleSkipProfile}
           initialData={userProfile}
@@ -201,4 +195,4 @@ const WelcomeSequence = ({
   );
 };
 
-export default WelcomeSequence; 
+export default WelcomeSequence;
