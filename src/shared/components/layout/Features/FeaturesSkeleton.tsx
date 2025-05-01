@@ -1,6 +1,6 @@
 import styles from './Features.module.css';
 
-const FeaturesSkeleton = () => {
+const FeaturesSkeleton = (): JSX.Element => {
   return (
     <section className={styles.featuresContainer} data-testid="features-skeleton">
       <div>
@@ -12,7 +12,7 @@ const FeaturesSkeleton = () => {
               <div className={styles.featuresCardOuterGlow} />
               {/* Inner glow effect */}
               <div className={styles.featuresCardInnerGlow} />
-              
+
               {/* Card content */}
               <div className={styles.featuresCardContent}>
                 <div className={styles.featuresCardTitleArrowSection}>
@@ -37,7 +37,7 @@ const FeaturesSkeleton = () => {
           <div className="max-w-7xl mx-auto">
             {/* Featured title skeleton */}
             <div className="h-6 bg-white/5 rounded animate-pulse w-48 mx-auto mb-8" />
-            
+
             {/* Brands grid skeleton */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center">
               {[...Array(6)].map((_, index) => (
@@ -53,4 +53,4 @@ const FeaturesSkeleton = () => {
   );
 };
 
-export default FeaturesSkeleton; 
+export default FeaturesSkeleton;

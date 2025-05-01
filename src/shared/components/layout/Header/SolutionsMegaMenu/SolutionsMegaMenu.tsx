@@ -2,8 +2,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SolutionsMegaMenuProps } from './types';
 import { API_CONFIG } from '@/core/config/api-config';
 import { SOLUTIONS_MEGA_MENU_FALLBACK } from '@/utils/constants/fallback/megamenu';
+import { MenuLink } from '../MegaMenu/types';
 
-const SolutionsMegaMenu = ({ isOpen, onClose, menuData }: SolutionsMegaMenuProps) => {
+const SolutionsMegaMenu = ({ isOpen, onClose, menuData }: SolutionsMegaMenuProps): JSX.Element => {
   const menuItems = menuData?.menu_links || SOLUTIONS_MEGA_MENU_FALLBACK;
 
   return (
@@ -21,18 +22,16 @@ const SolutionsMegaMenu = ({ isOpen, onClose, menuData }: SolutionsMegaMenuProps
         >
           <div className="p-6">
             <div className="grid grid-cols-2 gap-6">
-              {menuItems.map((item, index) => (
-                <a 
-                  key={index}
-                  href="#"
-                  className="group text-white"
-                >
+              {menuItems.map((item: MenuLink, index: number) => (
+                <a key={index} href="#" className="group text-white">
                   <div className="flex items-start space-x-3">
                     <div className="pt-1">
-                      <img 
-                        src={menuData && API_CONFIG.imageBaseURL + item.image.url || item.image.url} 
-                        alt={`${item.title} solution - ${item.description}`} 
-                        className="w-6 h-6" 
+                      <img
+                        src={
+                          (menuData && API_CONFIG.imageBaseURL + item.image.url) || item.image.url
+                        }
+                        alt={`${item.title} solution - ${item.description}`}
+                        className="w-6 h-6"
                       />
                     </div>
                     <div>
@@ -54,4 +53,4 @@ const SolutionsMegaMenu = ({ isOpen, onClose, menuData }: SolutionsMegaMenuProps
   );
 };
 
-export default SolutionsMegaMenu; 
+export default SolutionsMegaMenu;

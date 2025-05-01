@@ -11,53 +11,51 @@ const INITIAL_PROFILES = [
   {
     id: 1,
     src: '/assets/images/community/community_1.webp',
-    alt: 'Community member profile 1'
+    alt: 'Community member profile 1',
   },
   {
     id: 2,
     src: '/assets/images/community/community_2.webp',
-    alt: 'Community member profile 2'
+    alt: 'Community member profile 2',
   },
   {
     id: 3,
     src: '/assets/images/community/community_3.webp',
-    alt: 'Community member profile 3'
+    alt: 'Community member profile 3',
   },
   {
     id: 4,
     src: '/assets/images/community/community_4.webp',
-    alt: 'Community member profile 4'
+    alt: 'Community member profile 4',
   },
   {
     id: 5,
     src: '/assets/images/community/community_5.webp',
-    alt: 'Community member profile 5'
+    alt: 'Community member profile 5',
   },
   {
     id: 6,
     src: '/assets/images/community/community_6.webp',
-    alt: 'Community member profile 6'
-  }
+    alt: 'Community member profile 6',
+  },
 ] as const;
 
-const Community = () => {
+const Community = (): JSX.Element => {
   const profilesRef = useRef<HTMLDivElement>(null);
-  
+
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useCommunity();
   const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
-    fallbackMessage: 'Failed to load community content'
+    fallbackMessage: 'Failed to load community content',
   });
   const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500
+    minimumLoadingTime: 500,
   });
 
   const defaultTitle = (
     <>
-      
-      <span className={styles.highlight}>Community of achievers</span>{' '}
-      worldwide!{' '}
+      <span className={styles.highlight}>Community of achievers</span> worldwide!{' '}
       <span role="img" aria-label="Earth">
         🌎
       </span>
@@ -86,29 +84,32 @@ const Community = () => {
 
   // Handle scroll animation
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = (): void => {
       if (!profilesRef.current) return;
-      
+
       const scrollPosition = window.scrollY;
       const element = profilesRef.current;
       const elementTop = element.getBoundingClientRect().top + window.scrollY;
       const windowHeight = window.innerHeight;
-      
-      if (scrollPosition + windowHeight > elementTop && scrollPosition < elementTop + element.offsetHeight) {
+
+      if (
+        scrollPosition + windowHeight > elementTop &&
+        scrollPosition < elementTop + element.offsetHeight
+      ) {
         const relativeScroll = scrollPosition - elementTop + windowHeight;
-        
+
         const columns = element.children;
         Array.from(columns).forEach((column, index) => {
           const isOddColumn = index % 2 === 0;
           const direction = isOddColumn ? 1 : -1;
           const speed = isOddColumn ? 0.15 : 0.1;
           const offset = relativeScroll * speed * direction;
-          
+
           const initialOffset = isOddColumn ? -200 : 0;
           const maxOffset = isOddColumn ? 400 : 200;
           const limitedOffset = Math.max(Math.min(offset, maxOffset), -maxOffset);
-          
-          (column as HTMLElement).style.transform = 
+
+          (column as HTMLElement).style.transform =
             `translateY(${limitedOffset + initialOffset}px)`;
         });
       }
@@ -143,10 +144,7 @@ const Community = () => {
         <div className={styles.communityContent}>
           <div className={styles.errorState} role="alert">
             <p>{error?.message}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className={styles.retryButton}
-            >
+            <button onClick={() => window.location.reload()} className={styles.retryButton}>
               Try Again
             </button>
           </div>
@@ -156,27 +154,18 @@ const Community = () => {
   }
 
   return (
-    <section 
-      className={styles.communityContainer}
-      aria-labelledby="community-title"
-    >
+    <section className={styles.communityContainer} aria-labelledby="community-title">
       <div className={styles.communityContent}>
         <div className={styles.leftColumn}>
-          <div 
-            className={styles.discordLabel}
-            aria-label="Discord server ranking"
-          >
+          <div className={styles.discordLabel} aria-label="Discord server ranking">
             {data?.data?.label || '#1 Self Improvement Community'}
           </div>
-          
-          <h2 
-            className={styles.title}
-            id="community-title"
-          >
+
+          <h2 className={styles.title} id="community-title">
             {renderHighlightedText({
               text: data?.data?.title,
               highlightClassName: styles.highlight,
-              fallback: defaultTitle
+              fallback: defaultTitle,
             })}
             {data?.data?.title && (
               <span role="img" aria-label="Earth">
@@ -184,11 +173,11 @@ const Community = () => {
               </span>
             )}
           </h2>
-          
-          <a 
-            href="https://discord.gg/webetter" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+
+          <a
+            href="https://discord.gg/webetter"
+            target="_blank"
+            rel="noopener noreferrer"
             className={styles.discordButton}
             aria-label="Join our community"
           >
@@ -197,18 +186,11 @@ const Community = () => {
           </a>
         </div>
 
-        <div 
-          className={styles.rightColumn}
-          role="presentation"
-        >
-          <div 
-            className={styles.profileColumns} 
-            ref={profilesRef}
-            aria-hidden="true"
-          >
-            {INITIAL_PROFILES.map((profile) => (
+        <div className={styles.rightColumn} role="presentation">
+          <div className={styles.profileColumns} ref={profilesRef} aria-hidden="true">
+            {INITIAL_PROFILES.map(profile => (
               <div key={profile.id} className={styles.profileColumn}>
-                <img 
+                <img
                   src={profile.src}
                   alt={profile.alt}
                   className={styles.profileImage}
@@ -224,4 +206,4 @@ const Community = () => {
   );
 };
 
-export default Community; 
+export default Community;

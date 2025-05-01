@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/shared/contexts/AuthContext';
 import { SettingsIcon, LogoutIcon, BookmarkIcon } from '@/shared/components/common/icons';
 import styles from './ProfileMenu.module.css';
@@ -8,11 +7,10 @@ interface ProfileMenuProps {
   onClose: () => void;
 }
 
-const ProfileMenu = ({ onClose }: ProfileMenuProps) => {
-  const navigate = useNavigate();
+const ProfileMenu = ({ onClose }: ProfileMenuProps): JSX.Element => {
   const { user, logout } = useAuth();
 
-  const handleSignOut = async () => {
+  const handleSignOut = async (): Promise<void> => {
     try {
       await logout();
       onClose();
@@ -22,7 +20,7 @@ const ProfileMenu = ({ onClose }: ProfileMenuProps) => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className={styles.profileMenu}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -37,7 +35,7 @@ const ProfileMenu = ({ onClose }: ProfileMenuProps) => {
       <div className={styles.menuDivider} />
 
       {/* Bookmarks Section */}
-      <button 
+      <button
         className={styles.menuItem}
         onClick={() => {
           // TODO: Navigate to bookmarks page
@@ -56,10 +54,7 @@ const ProfileMenu = ({ onClose }: ProfileMenuProps) => {
 
       <div className={styles.menuDivider} />
 
-      <button 
-        className={styles.menuItem}
-        onClick={handleSignOut}
-      >
+      <button className={styles.menuItem} onClick={handleSignOut}>
         <LogoutIcon className={styles.menuItemIcon} />
         <span>Sign out</span>
       </button>
@@ -67,4 +62,4 @@ const ProfileMenu = ({ onClose }: ProfileMenuProps) => {
   );
 };
 
-export default ProfileMenu; 
+export default ProfileMenu;

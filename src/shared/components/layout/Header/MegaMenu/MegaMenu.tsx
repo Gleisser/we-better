@@ -2,10 +2,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MegaMenuProps } from './types';
 import { API_CONFIG } from '@/core/config/api-config';
 import { SOLUTIONS_MEGA_MENU_FALLBACK } from '@/utils/constants/fallback/megamenu';
+import { MenuLink } from './types';
 
-
-
-const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps) => {
+const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps): JSX.Element => {
   const menuItems = menuData?.menu_links || SOLUTIONS_MEGA_MENU_FALLBACK;
   const blogPost = menuData?.menu_blog_post;
 
@@ -26,8 +25,8 @@ const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps) => {
             <div className="grid grid-cols-[1.5fr,1fr] gap-6">
               {/* Menu items */}
               <div className="space-y-4">
-                {menuItems.map((item) => (
-                  <a 
+                {menuItems.map((item: MenuLink) => (
+                  <a
                     key={item.id || item.href}
                     href={item.href}
                     className="block group text-white hover:text-white visited:text-white active:text-white focus:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-lg"
@@ -53,23 +52,29 @@ const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps) => {
               <div className="space-y-3">
                 <div className="aspect-[4/3] rounded-lg overflow-hidden bg-black/20">
                   <img
-                    src={blogPost && API_CONFIG.imageBaseURL + blogPost?.cover?.formats?.medium?.url || "/assets/images/hero/blog_post.webp"}
-                    alt={blogPost?.title 
-                      ? `Featured blog post: ${blogPost.title} - 15 Principles to be Successful in Business` 
-                      : "Featured blog post: 15 Principles to be Successful in Business"}
+                    src={
+                      (blogPost &&
+                        API_CONFIG.imageBaseURL + blogPost?.cover?.formats?.medium?.url) ||
+                      '/assets/images/hero/blog_post.webp'
+                    }
+                    alt={
+                      blogPost?.title
+                        ? `Featured blog post: ${blogPost.title} - 15 Principles to be Successful in Business`
+                        : 'Featured blog post: 15 Principles to be Successful in Business'
+                    }
                     className="w-full h-full object-cover"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="inline-flex items-center px-2 py-1 rounded-full bg-[#6366F1]/10 border border-[#6366F1]/25">
                     <span className="text-[#6366F1] text-xs font-semibold">NEW</span>
                   </div>
                   <div className="text-white text-sm font-semibold font-plus-jakarta">
-                    {blogPost?.title || "15 Principles to be Successful in Business"}
+                    {blogPost?.title || '15 Principles to be Successful in Business'}
                   </div>
                   <p className="text-white/60 text-xs leading-relaxed">
-                    {blogPost?.description || "Everyone can do it, and achieve financial freedom"}
+                    {blogPost?.description || 'Everyone can do it, and achieve financial freedom'}
                   </p>
                 </div>
               </div>
@@ -81,4 +86,4 @@ const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps) => {
   );
 };
 
-export default MegaMenu; 
+export default MegaMenu;

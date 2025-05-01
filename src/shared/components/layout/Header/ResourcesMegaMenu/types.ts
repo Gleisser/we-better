@@ -1,7 +1,7 @@
-import { MegaMenu } from "@/types/menu";
+import { MegaMenu } from '@/utils/types/menu';
 
 export interface ResourcesMegaMenuProps {
   isOpen: boolean;
   onClose: () => void;
   menuData?: MegaMenu;
-} 
+}

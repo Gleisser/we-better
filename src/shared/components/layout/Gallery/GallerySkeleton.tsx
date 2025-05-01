@@ -1,6 +1,6 @@
 import styles from './Gallery.module.css';
 
-const GallerySkeleton = () => {
+const GallerySkeleton = (): JSX.Element => {
   return (
     <section className={styles.galleryContainer}>
       <div className={styles.galleryContent}>
@@ -13,8 +13,8 @@ const GallerySkeleton = () => {
 
         <div className={styles.masonryGrid}>
           {[...Array(12)].map((_, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={`${styles.masonryItem} ${index % 3 === 0 ? styles.large : styles.small}`}
             >
               <div className="w-full h-full bg-white/5 rounded-2xl animate-pulse" />
@@ -26,4 +26,4 @@ const GallerySkeleton = () => {
   );
 };
 
-export default GallerySkeleton; 
+export default GallerySkeleton;

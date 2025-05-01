@@ -1,5 +1,5 @@
 import { API_CONFIG } from '@/core/config/api-config';
-import { Brand } from '@/types/features-response';
+import { Brand } from '@/utils/types/features-response';
 
 interface FeaturedProps extends React.HTMLAttributes<HTMLDivElement> {
   brands: Brand[];
@@ -8,15 +8,15 @@ interface FeaturedProps extends React.HTMLAttributes<HTMLDivElement> {
   isLoading?: boolean;
 }
 
-const Featured = ({ 
-  brands, 
-  title, 
-  headingLevel = 'h2', 
+const Featured = ({
+  brands,
+  title,
+  headingLevel = 'h2',
   isLoading = false,
-  ...props 
-}: FeaturedProps) => {
+  ...props
+}: FeaturedProps): JSX.Element => {
   const HeadingTag = headingLevel;
-  
+
   const fallbackBrands = [
     {
       name: 'Fortune',
@@ -69,33 +69,29 @@ const Featured = ({
   ];
 
   const brandsToDisplay = brands.length > 0 ? brands : fallbackBrands;
-  
+
   return (
-    <div 
-      className="mt-24 px-4 sm:px-6 lg:px-8"
-      role="complementary"
-      {...props}
-    >
+    <div className="mt-24 px-4 sm:px-6 lg:px-8" role="complementary" {...props}>
       <div className="max-w-7xl mx-auto">
-        <HeadingTag 
+        <HeadingTag
           className="text-center text-white/50 text-lg tracking-wider mb-8 font-plus-jakarta"
           id="featured-brands"
         >
           {title ? title : 'As Featured in'}
         </HeadingTag>
-        <div 
+        <div
           className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center"
           role="list"
           aria-labelledby="featured-brands"
         >
-          {brandsToDisplay.map((item) => (
-            <div 
-              key={item.name}
-              className="flex justify-center items-center"
-              role="listitem"
-            >
+          {brandsToDisplay.map(item => (
+            <div key={item.name} className="flex justify-center items-center" role="listitem">
               <img
-                src={brands.length > 0 ? API_CONFIG.imageBaseURL + item.logo?.img?.url : item.logo.img.url}
+                src={
+                  brands.length > 0
+                    ? API_CONFIG.imageBaseURL + item.logo?.img?.url
+                    : item.logo.img.url
+                }
                 alt={`${item.name} logo`}
                 width={120}
                 height={40}
@@ -113,4 +109,4 @@ const Featured = ({
   );
 };
 
-export default Featured; 
+export default Featured;

@@ -2,12 +2,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ResourcesMegaMenuProps } from './types';
 import { API_CONFIG } from '@/core/config/api-config';
 import { RESOURCES_MEGA_MENU_FALLBACK } from '@/utils/constants/fallback/megamenu';
+import { MenuLink } from '../MegaMenu/types';
 
-const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps) => {
-  const menuItems = menuData?.menu_links || RESOURCES_MEGA_MENU_FALLBACK
+const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps): JSX.Element => {
+  const menuItems = menuData?.menu_links || RESOURCES_MEGA_MENU_FALLBACK;
 
   const latestPost = menuData?.menu_blog_post;
-  
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -31,30 +32,34 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
                 <div className="space-y-3">
                   <div className="aspect-[16/10] rounded-lg overflow-hidden">
                     <img
-                      src={latestPost && API_CONFIG.imageBaseURL + latestPost?.cover?.url || "/assets/images/hero/Newslatter.png"}
-                      alt={latestPost?.title 
-                        ? `Latest blog post: ${latestPost.title} - Stay updated with We Better` 
-                        : "Latest blog post: AI Statistics and Marketing Insights for 2024"}
+                      src={
+                        (latestPost && API_CONFIG.imageBaseURL + latestPost?.cover?.url) ||
+                        '/assets/images/hero/Newslatter.png'
+                      }
+                      alt={
+                        latestPost?.title
+                          ? `Latest blog post: ${latestPost.title} - Stay updated with We Better`
+                          : 'Latest blog post: AI Statistics and Marketing Insights for 2024'
+                      }
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="space-y-2">
                     <div className="text-white text-base font-semibold font-plus-jakarta">
-                      {latestPost?.title || "Subscribe to our Newsletter"}
+                      {latestPost?.title || 'Subscribe to our Newsletter'}
                     </div>
                     <p className="text-[#6366F1] text-xs font-plus-jakarta">
-                      {latestPost?.post_date ? 
-                        new Date(latestPost.post_date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        }) 
+                      {latestPost?.post_date
+                        ? new Date(latestPost.post_date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })
                         : new Date().toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })
-                      }
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })}
                     </p>
                   </div>
                 </div>
@@ -62,18 +67,21 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
 
               {/* Resources Links */}
               <div className="space-y-4">
-                {menuItems.map((item, index) => (
-                  <a 
+                {menuItems.map((item: MenuLink, index: number) => (
+                  <a
                     key={index}
                     href="#"
                     className="group flex items-start space-x-3 p-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors"
                   >
                     <div className="mt-1">
                       {item.image && (
-                        <img 
-                          src={menuData && API_CONFIG.imageBaseURL + item.image?.url || item.image?.url} 
-                          alt={`${item.title} section icon - ${item.description}`} 
-                          className="w-5 h-5" 
+                        <img
+                          src={
+                            (menuData && API_CONFIG.imageBaseURL + item.image?.url) ||
+                            item.image?.url
+                          }
+                          alt={`${item.title} section icon - ${item.description}`}
+                          className="w-5 h-5"
                         />
                       )}
                     </div>
@@ -96,4 +104,4 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
   );
 };
 
-export default ResourcesMegaMenu; 
+export default ResourcesMegaMenu;

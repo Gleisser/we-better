@@ -1,17 +1,17 @@
-import styles from '../Features.module.css'
-import { Card } from '../../../../../types/features-response'
-import { motion } from 'framer-motion'
+import styles from '../Features.module.css';
+import { Card } from '@/utils/types/features-response';
+import { motion } from 'framer-motion';
 import { ArrowRight, ArrowTopRight } from '@/shared/components/common/icons';
 import { FEATURES_CONSTANTS } from '@/utils/constants/fallback';
 
-type FallbackCard = typeof FEATURES_CONSTANTS[0];
+type FallbackCard = (typeof FEATURES_CONSTANTS)[0];
 
 interface FeaturesCardProps {
   card: Card | FallbackCard;
   index: number;
 }
 
-function FeaturesCard({ card }: FeaturesCardProps) {
+const FeaturesCard = ({ card }: FeaturesCardProps): JSX.Element => {
   // Helper function to determine if card is from API or fallback
   const isApiCard = (card: Card | FallbackCard): card is Card => {
     return 'Description' in card;
@@ -23,10 +23,7 @@ function FeaturesCard({ card }: FeaturesCardProps) {
   const buttonText = isApiCard(card) ? card.link?.title : card.buttonText;
 
   return (
-    <motion.div
-      className="relative group"
-      whileHover="hover"
-    >
+    <motion.div className="relative group" whileHover="hover">
       {/* Outer glow effect */}
       <motion.div
         className={styles.featuresCardOuterGlow}
@@ -34,7 +31,7 @@ function FeaturesCard({ card }: FeaturesCardProps) {
           hover: {
             opacity: 1,
             scale: 1.05,
-          }
+          },
         }}
         initial="initial"
         animate="animate"
@@ -47,7 +44,7 @@ function FeaturesCard({ card }: FeaturesCardProps) {
           hover: {
             opacity: 1,
             scale: 1.02,
-          }
+          },
         }}
         initial="initial"
         animate="animate"
@@ -56,21 +53,19 @@ function FeaturesCard({ card }: FeaturesCardProps) {
         {/* Header area with title and arrow */}
         <div className={styles.featuresCardTitleArrowSection}>
           <h3 className={styles.featuresCardTitle}>{title}</h3>
-          
+
           {/* Arrow icons remain unchanged */}
           <div className={styles.featuresCardArrowContainer}>
             {/* Default state: arrow pointing top-right */}
             <ArrowTopRight className={styles.featuresCardArrowDefault} />
-           
+
             {/* Hover state: arrow pointing right */}
             <ArrowRight className={styles.featuresCardArrowHover} />
           </div>
         </div>
-        
+
         {/* Description */}
-        <p className="text-white/70 text-sm leading-relaxed">
-          {description}
-        </p>
+        <p className="text-white/70 text-sm leading-relaxed">{description}</p>
 
         {/* Button text at bottom */}
         <div className="mt-8">
@@ -81,6 +76,6 @@ function FeaturesCard({ card }: FeaturesCardProps) {
       </div>
     </motion.div>
   );
-}
+};
 
 export default FeaturesCard;
