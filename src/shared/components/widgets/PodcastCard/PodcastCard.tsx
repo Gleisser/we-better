@@ -1,22 +1,35 @@
 import React from 'react';
-import { PlayIcon, BookmarkIcon, ChevronUpIcon, ChevronDownIcon } from '@/shared/components/common/icons';
+import {
+  PlayIcon,
+  BookmarkIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+} from '@/shared/components/common/icons';
 import { Tooltip } from '@/shared/components/common/Tooltip';
 import { useBookmarkedPodcasts } from '@/shared/hooks/useBookmarkedPodcasts';
-import type { Podcast } from '@/features/podcasts/pages/mockPodcasts';
+import type { Podcast } from '@/core/services/podcastService';
 import styles from './PodcastCard.module.css';
 
+export interface ExtendedPodcast extends Podcast {
+  episode?: string;
+  category?: string;
+  subCategory?: string;
+  spotifyUri?: string;
+  listens?: number;
+}
+
 interface PodcastCardProps {
-  podcast: Podcast;
-  onPlay: (podcast: Podcast) => void;
+  podcast: ExtendedPodcast;
+  onPlay: (podcast: ExtendedPodcast) => void;
   isPlaying: boolean;
   isCurrentlyPlaying: boolean;
 }
 
-const PodcastCard: React.FC<PodcastCardProps> = ({ 
-  podcast, 
-  onPlay, 
-  isPlaying,
-  isCurrentlyPlaying 
+const PodcastCard: React.FC<PodcastCardProps> = ({
+  podcast,
+  onPlay,
+  isPlaying: _isPlaying,
+  isCurrentlyPlaying,
 }) => {
   const [userVote, setUserVote] = React.useState<'up' | 'down' | null>(null);
   const [votes, setVotes] = React.useState(0);
@@ -26,7 +39,7 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
     return count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count.toString();
   };
 
-  const handleVote = (vote: 'up' | 'down') => {
+  const handleVote = (vote: 'up' | 'down'): void => {
     if (userVote === vote) {
       setUserVote(null);
       setVotes(vote === 'up' ? votes - 1 : votes + 1);
@@ -40,18 +53,20 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
     }
   };
 
+  const handleBookmarkClick = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    if (isBookmarked(podcast.id)) {
+      removeBookmark(podcast.id);
+    } else {
+      addBookmark(podcast);
+    }
+  };
+
   return (
     <div className={styles.card}>
       <div className={styles.thumbnailSection}>
-        <img 
-          src={podcast.thumbnailUrl} 
-          alt={podcast.title}
-          className={styles.thumbnail}
-        />
-        <button 
-          className={styles.playButton}
-          onClick={() => onPlay(podcast)}
-        >
+        <img src={podcast.thumbnailUrl} alt={podcast.title} className={styles.thumbnail} />
+        <button className={styles.playButton} onClick={() => onPlay(podcast)}>
           <PlayIcon className={styles.playIcon} />
         </button>
         {isCurrentlyPlaying && (
@@ -64,41 +79,38 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
       <div className={styles.content}>
         <div className={styles.header}>
           <h3 className={styles.title}>{podcast.title}</h3>
-          <p className={styles.episode}>{podcast.episode}</p>
+          {podcast.episode && <p className={styles.episode}>{podcast.episode}</p>}
         </div>
 
         <div className={styles.meta}>
           <span className={styles.author}>{podcast.author}</span>
           <span className={styles.dot}>•</span>
           <span className={styles.duration}>{podcast.duration}</span>
-          <span className={styles.dot}>•</span>
-          {podcast.listens && <span className={styles.listens}>{formatListenCount(podcast.listens)} listens</span>}
+          {podcast.listens && (
+            <>
+              <span className={styles.dot}>•</span>
+              <span className={styles.listens}>{formatListenCount(podcast.listens)} listens</span>
+            </>
+          )}
         </div>
 
         {podcast.category && (
           <div className={styles.categories}>
             <span className={styles.category}>{podcast.category}</span>
-            <span className={styles.subCategory}>{podcast.subCategory}</span>
+            {podcast.subCategory && (
+              <span className={styles.subCategory}>{podcast.subCategory}</span>
+            )}
           </div>
         )}
 
         <div className={styles.actions}>
           <div className={styles.leftActions}>
-            <Tooltip content={isBookmarked(podcast.id) ? "Remove bookmark" : "Bookmark podcast"}>
+            <Tooltip content={isBookmarked(podcast.id) ? 'Remove bookmark' : 'Bookmark podcast'}>
               <button
                 className={`${styles.iconButton} ${isBookmarked(podcast.id) ? styles.bookmarked : ''}`}
-                onClick={() => {
-                  if (isBookmarked(podcast.id)) {
-                    removeBookmark(podcast.id);
-                  } else {
-                    addBookmark(podcast);
-                  }
-                }}
+                onClick={handleBookmarkClick}
               >
-                <BookmarkIcon 
-                  className={styles.actionIcon} 
-                  filled={isBookmarked(podcast.id)}
-                />
+                <BookmarkIcon className={styles.actionIcon} filled={isBookmarked(podcast.id)} />
               </button>
             </Tooltip>
           </div>
@@ -115,7 +127,7 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
                 <span className={styles.voteCount}>{votes > 0 ? votes : ''}</span>
               </button>
             </Tooltip>
-            
+
             <Tooltip content="Downvote">
               <button
                 className={`${styles.voteButton} ${styles.downvoteButton} ${
@@ -133,4 +145,4 @@ const PodcastCard: React.FC<PodcastCardProps> = ({
   );
 };
 
-export default PodcastCard; 
+export default PodcastCard;

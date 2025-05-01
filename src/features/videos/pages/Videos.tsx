@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import styles from './Videos.module.css';
 import { ChevronDownIcon, SettingsIcon } from '@/shared/components/common/icons';
 import { YoutubeModal } from '@/shared/components/widgets/VideoWidget/YoutubeModal';
-import VideoCard from '@/shared/components/widgets/VideoCard/VideoCard';
+import VideoCard, { ExtendedVideo } from '@/shared/components/widgets/VideoCard/VideoCard';
 import FeedSettingsModal from '@/shared/components/common/FeedSettingsModal/FeedSettingsModal';
-import { videoService, Video } from '@/core/services/videoService';
+import { videoService } from '@/core/services/videoService';
 
-const Videos = () => {
+const Videos = (): JSX.Element => {
   const [loading, setLoading] = useState(true);
-  const [videos, setVideos] = useState<Video[]>([]);
+  const [videos, setVideos] = useState<ExtendedVideo[]>([]);
   const [showFeedSettings, setShowFeedSettings] = useState(false);
   const [showOrderBy, setShowOrderBy] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState('Latest');
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<ExtendedVideo | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -20,15 +20,18 @@ const Videos = () => {
 
   const PAGE_SIZE = 12;
 
-  const orderOptions = [
-    { label: 'Recommended', value: 'rating:desc' },
-    { label: 'Latest', value: 'publishedAt:desc' },
-    { label: 'Most Popular', value: 'views:desc' },
-    { label: 'Most Upvoted', value: 'rating:desc' },
-    { label: 'Most Viewed', value: 'views:desc' },
-  ];
+  const orderOptions = useMemo(
+    () => [
+      { label: 'Recommended', value: 'rating:desc' },
+      { label: 'Latest', value: 'publishedAt:desc' },
+      { label: 'Most Popular', value: 'views:desc' },
+      { label: 'Most Upvoted', value: 'rating:desc' },
+      { label: 'Most Viewed', value: 'views:desc' },
+    ],
+    []
+  );
 
-  const fetchVideos = async (pageNum: number, sortValue?: string) => {
+  const fetchVideos = async (pageNum: number, sortValue?: string): Promise<void> => {
     try {
       setIsLoadingMore(true);
       const response = await videoService.getVideos({
@@ -36,11 +39,11 @@ const Videos = () => {
         pagination: {
           page: pageNum,
           pageSize: PAGE_SIZE,
-        }
+        },
       });
 
       const mappedVideos = videoService.mapVideoResponse(response);
-      
+
       if (pageNum === 1) {
         setVideos(mappedVideos);
       } else {
@@ -56,7 +59,7 @@ const Videos = () => {
     }
   };
 
-  const handleOrderSelect = (option: string) => {
+  const handleOrderSelect = (option: string): void => {
     setSelectedOrder(option);
     setShowOrderBy(false);
     setPage(1);
@@ -67,19 +70,22 @@ const Videos = () => {
   };
 
   // Intersection Observer callback
-  const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
-    const target = entries[0];
-    if (target.isIntersecting && hasMore && !isLoadingMore) {
-      setPage(prev => prev + 1);
-    }
-  }, [hasMore, isLoadingMore]);
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && hasMore && !isLoadingMore) {
+        setPage(prev => prev + 1);
+      }
+    },
+    [hasMore, isLoadingMore]
+  );
 
   // Initialize intersection observer
   useEffect(() => {
     const option = {
       root: null,
-      rootMargin: "20px",
-      threshold: 0
+      rootMargin: '20px',
+      threshold: 0,
     };
 
     const observer = new IntersectionObserver(handleObserver, option);
@@ -92,7 +98,7 @@ const Videos = () => {
   useEffect(() => {
     const selectedOption = orderOptions.find(opt => opt.label === selectedOrder);
     fetchVideos(page, selectedOption?.value);
-  }, [page]);
+  }, [page, orderOptions, selectedOrder]);
 
   // Initial fetch
   useEffect(() => {
@@ -103,35 +109,32 @@ const Videos = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.filters}>
-          <button 
-            className={styles.filterButton}
-            onClick={() => setShowFeedSettings(true)}
-          >
+          <button className={styles.filterButton} onClick={() => setShowFeedSettings(true)}>
             <SettingsIcon className={styles.filterIcon} />
             <span>Feed Settings</span>
           </button>
 
           <div className={styles.dropdownContainer}>
-            <button 
+            <button
               className={`${styles.filterButton} ${showOrderBy ? styles.active : ''}`}
               onClick={() => setShowOrderBy(!showOrderBy)}
             >
               <span>Order by: {selectedOrder}</span>
-              <ChevronDownIcon className={`${styles.filterIcon} ${showOrderBy ? styles.rotated : ''}`} />
+              <ChevronDownIcon
+                className={`${styles.filterIcon} ${showOrderBy ? styles.rotated : ''}`}
+              />
             </button>
 
             {showOrderBy && (
               <div className={styles.dropdownMenu}>
-                {orderOptions.map((option) => (
+                {orderOptions.map(option => (
                   <button
                     key={option.value}
                     className={`${styles.dropdownItem} ${selectedOrder === option.label ? styles.selected : ''}`}
                     onClick={() => handleOrderSelect(option.label)}
                   >
                     {option.label}
-                    {selectedOrder === option.label && (
-                      <span className={styles.checkmark}>✓</span>
-                    )}
+                    {selectedOrder === option.label && <span className={styles.checkmark}>✓</span>}
                   </button>
                 ))}
               </div>
@@ -140,10 +143,7 @@ const Videos = () => {
         </div>
       </div>
 
-      <FeedSettingsModal 
-        isOpen={showFeedSettings} 
-        onClose={() => setShowFeedSettings(false)} 
-      />
+      <FeedSettingsModal isOpen={showFeedSettings} onClose={() => setShowFeedSettings(false)} />
 
       {loading && page === 1 ? (
         <p className="text-white/70">Loading videos...</p>
@@ -151,19 +151,13 @@ const Videos = () => {
         <>
           <div className={styles.videoGrid}>
             {videos.map(video => (
-              <VideoCard 
-                key={video.id} 
-                video={video}
-                onPlay={() => setSelectedVideo(video)}
-              />
+              <VideoCard key={video.id} video={video} onPlay={() => setSelectedVideo(video)} />
             ))}
           </div>
-          
+
           {/* Loading indicator */}
           <div ref={loader} className="w-full py-4 text-center">
-            {isLoadingMore && hasMore && (
-              <p className="text-white/70">Loading more videos...</p>
-            )}
+            {isLoadingMore && hasMore && <p className="text-white/70">Loading more videos...</p>}
           </div>
         </>
       )}
@@ -173,13 +167,11 @@ const Videos = () => {
           isOpen={!!selectedVideo}
           onClose={() => setSelectedVideo(null)}
           video={selectedVideo}
-          onProgress={(progress) => {
-            console.log('Video progress:', progress);
-          }}
+          onProgress={() => {}}
         />
       )}
     </div>
   );
 };
 
-export default Videos; 
+export default Videos;

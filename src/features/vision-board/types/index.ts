@@ -1,11 +1,10 @@
-import { LifeCategory } from "@/features/life-wheel/life-wheel/types";
+import { LifeCategory } from '@/features/life-wheel/types';
 
 // Content types
 export enum VisionBoardContentType {
   IMAGE = 'image',
-  AI_GENERATED = 'ai_generated'
+  AI_GENERATED = 'ai_generated',
 }
-
 
 // Position interface
 export interface Position {
@@ -19,8 +18,6 @@ export interface Size {
   height: number;
 }
 
-
-
 // Board Content interface
 export interface VisionBoardContent {
   id: string;
@@ -29,18 +26,14 @@ export interface VisionBoardContent {
   size: Size;
   rotation: number;
   categoryId?: string;
-  
-  
 
-  
   // Image specific properties
   src?: string;
   alt?: string;
   caption?: string;
-  
+
   // AI specific properties
   prompt?: string;
-  
 }
 // Vision Board Data interface
 export interface VisionBoardData {
@@ -58,7 +51,7 @@ export interface VisionBoardData {
 export enum ToolbarMode {
   ADD = 'add',
   FILTER = 'filter',
-  ARRANGE = 'arrange'
+  ARRANGE = 'arrange',
 }
 
 // Vision Board Props
@@ -72,4 +65,4 @@ export interface VisionBoardProps {
   onComplete?: () => void;
   className?: string;
   readOnly?: boolean;
-} 
+}

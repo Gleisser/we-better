@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { 
-  PlayIcon, 
+import {
+  PlayIcon,
   BookmarkIcon,
   MoreVerticalIcon,
   ChevronUpIcon,
@@ -9,15 +9,19 @@ import {
   ShareIcon,
   EyeOffIcon,
   HashtagIcon,
-  FlagIcon
+  FlagIcon,
 } from '@/shared/components/common/icons';
 import { Tooltip } from '@/shared/components/common/Tooltip';
 import styles from './VideoCard.module.css';
 import type { Video } from '../VideoWidget/types';
 import ViewCounter from '../VideoWidget/ViewCounter';
 
+export interface ExtendedVideo extends Omit<Video, 'subCategory'> {
+  subCategory?: string;
+}
+
 interface VideoCardProps {
-  video: Video;
+  video: ExtendedVideo;
   onPlay: () => void;
 }
 
@@ -29,7 +33,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
   const moreButtonRef = useRef<HTMLButtonElement>(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
 
-  const handleVote = (voteType: 'up' | 'down') => {
+  const handleVote = (voteType: 'up' | 'down'): void => {
     if (voteType === 'up') {
       if (userVote === 'up') {
         setVotes(prev => prev - 1);
@@ -43,21 +47,21 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = async (): Promise<void> => {
     if (navigator.share) {
       try {
         await navigator.share({
           title: video.title,
           text: video.description,
-          url: `https://youtube.com/watch?v=${video.youtubeId}`
+          url: `https://youtube.com/watch?v=${video.youtubeId}`,
         });
       } catch (err) {
-        console.log('Error sharing:', err);
+        console.error('Error sharing:', err);
       }
     }
   };
 
-  const handleOptionClick = (action: string) => {
+  const handleOptionClick = (action: string): void => {
     switch (action) {
       case 'share':
         handleShare();
@@ -90,8 +94,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
 
   useEffect(() => {
     if (showMoreMenu) {
-      const handleScroll = () => setShowMoreMenu(false);
-      const handleResize = () => setShowMoreMenu(false);
+      const handleScroll = (): void => setShowMoreMenu(false);
+      const handleResize = (): void => setShowMoreMenu(false);
 
       window.addEventListener('scroll', handleScroll, true);
       window.addEventListener('resize', handleResize);
@@ -106,17 +110,14 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
   return (
     <div className={styles.card}>
       <div className={styles.thumbnailSection}>
-        <img 
+        <img
           src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
           alt={video.title}
           className={styles.thumbnail}
         />
-        
+
         <div className={styles.overlay}>
-          <button 
-            className={styles.playButton}
-            onClick={onPlay}
-          >
+          <button className={styles.playButton} onClick={onPlay}>
             <PlayIcon className={styles.playIcon} />
           </button>
 
@@ -130,10 +131,10 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
         </div>
 
         <div className={styles.topActions}>
-          <Tooltip content={isBookmarked ? "Remove bookmark" : "Bookmark video"}>
+          <Tooltip content={isBookmarked ? 'Remove bookmark' : 'Bookmark video'}>
             <button
               className={`${styles.iconButton} ${isBookmarked ? styles.bookmarked : ''}`}
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 setIsBookmarked(!isBookmarked);
               }}
@@ -144,10 +145,10 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
 
           <div className={styles.moreContainer}>
             <Tooltip content="More options">
-              <button 
+              <button
                 ref={moreButtonRef}
                 className={styles.iconButton}
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   setShowMoreMenu(!showMoreMenu);
                 }}
@@ -156,100 +157,101 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
               </button>
             </Tooltip>
 
-            {showMoreMenu && createPortal(
-              <>
-                <div 
-                  className={styles.menuPositioner}
-                  style={{
-                    top: menuPosition.top,
-                    right: menuPosition.right,
-                  }}
-                >
-                  <div className={styles.moreMenu}>
-                    <button 
-                      className={styles.moreOption}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOptionClick('share');
-                      }}
-                    >
-                      <ShareIcon className={styles.optionIcon} />
-                      <span>Share via</span>
-                    </button>
-
-                    <button 
-                      className={styles.moreOption}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOptionClick('hide');
-                      }}
-                    >
-                      <EyeOffIcon className={styles.optionIcon} />
-                      <span>Hide</span>
-                    </button>
-
-                    <button 
-                      className={styles.moreOption}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOptionClick('follow');
-                      }}
-                    >
-                      <BookmarkIcon className={styles.optionIcon} />
-                      <span>Follow {video.author}</span>
-                    </button>
-
-                    <div className={styles.menuDivider} />
-
-                    <button 
-                      className={styles.moreOption}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOptionClick('block');
-                      }}
-                    >
-                      <EyeOffIcon className={styles.optionIcon} />
-                      <span>Don't show posts from {video.author}</span>
-                    </button>
-
-                    {video.tags.map(tag => (
-                      <button 
-                        key={tag}
+            {showMoreMenu &&
+              createPortal(
+                <>
+                  <div
+                    className={styles.menuPositioner}
+                    style={{
+                      top: menuPosition.top,
+                      right: menuPosition.right,
+                    }}
+                  >
+                    <div className={styles.moreMenu}>
+                      <button
                         className={styles.moreOption}
-                        onClick={(e) => {
+                        onClick={e => {
                           e.stopPropagation();
-                          handleOptionClick('notInterested');
+                          handleOptionClick('share');
                         }}
                       >
-                        <HashtagIcon className={styles.optionIcon} />
-                        <span>Not interested in #{tag}</span>
+                        <ShareIcon className={styles.optionIcon} />
+                        <span>Share via</span>
                       </button>
-                    ))}
 
-                    <div className={styles.menuDivider} />
+                      <button
+                        className={styles.moreOption}
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleOptionClick('hide');
+                        }}
+                      >
+                        <EyeOffIcon className={styles.optionIcon} />
+                        <span>Hide</span>
+                      </button>
 
-                    <button 
-                      className={styles.moreOption}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOptionClick('report');
-                      }}
-                    >
-                      <FlagIcon className={styles.optionIcon} />
-                      <span>Report</span>
-                    </button>
+                      <button
+                        className={styles.moreOption}
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleOptionClick('follow');
+                        }}
+                      >
+                        <BookmarkIcon className={styles.optionIcon} />
+                        <span>Follow {video.author}</span>
+                      </button>
+
+                      <div className={styles.menuDivider} />
+
+                      <button
+                        className={styles.moreOption}
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleOptionClick('block');
+                        }}
+                      >
+                        <EyeOffIcon className={styles.optionIcon} />
+                        <span>Don't show posts from {video.author}</span>
+                      </button>
+
+                      {video.tags.map(tag => (
+                        <button
+                          key={tag}
+                          className={styles.moreOption}
+                          onClick={e => {
+                            e.stopPropagation();
+                            handleOptionClick('notInterested');
+                          }}
+                        >
+                          <HashtagIcon className={styles.optionIcon} />
+                          <span>Not interested in #{tag}</span>
+                        </button>
+                      ))}
+
+                      <div className={styles.menuDivider} />
+
+                      <button
+                        className={styles.moreOption}
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleOptionClick('report');
+                        }}
+                      >
+                        <FlagIcon className={styles.optionIcon} />
+                        <span>Report</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div 
-                  className={styles.menuOverlay} 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowMoreMenu(false);
-                  }} 
-                />
-              </>,
-              document.body
-            )}
+                  <div
+                    className={styles.menuOverlay}
+                    onClick={e => {
+                      e.stopPropagation();
+                      setShowMoreMenu(false);
+                    }}
+                  />
+                </>,
+                document.body
+              )}
           </div>
         </div>
       </div>
@@ -273,7 +275,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
                 className={`${styles.voteButton} ${styles.upvoteButton} ${
                   userVote === 'up' ? styles.votedUp : ''
                 }`}
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   handleVote('up');
                 }}
@@ -282,13 +284,13 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
                 <span className={styles.voteCount}>{votes > 0 ? votes : ''}</span>
               </button>
             </Tooltip>
-            
+
             <Tooltip content="Downvote">
               <button
                 className={`${styles.voteButton} ${styles.downvoteButton} ${
                   userVote === 'down' ? styles.votedDown : ''
                 }`}
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   handleVote('down');
                 }}
@@ -303,4 +305,4 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onPlay }) => {
   );
 };
 
-export default VideoCard; 
+export default VideoCard;

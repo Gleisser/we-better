@@ -16,21 +16,21 @@ export const Toast: React.FC<ToastProps> = ({
   type,
   visible,
   onClose,
-  duration = 3000
+  duration = 3000,
 }) => {
   useEffect(() => {
     if (visible) {
       const timer = setTimeout(() => {
         onClose();
       }, duration);
-      
+
       return () => clearTimeout(timer);
     }
   }, [visible, duration, onClose]);
-  
+
   if (!visible) return null;
-  
-  const getIcon = () => {
+
+  const getIcon = (): string => {
     switch (type) {
       case 'success':
         return '✅';
@@ -43,18 +43,14 @@ export const Toast: React.FC<ToastProps> = ({
         return 'ℹ️';
     }
   };
-  
+
   return (
     <div className={`${styles.toast} ${styles[`toast-${type}`]}`}>
       <div className={styles.toastIcon}>{getIcon()}</div>
       <div className={styles.toastMessage}>{message}</div>
-      <button 
-        className={styles.toastClose}
-        onClick={onClose}
-        aria-label="Close notification"
-      >
+      <button className={styles.toastClose} onClick={onClose} aria-label="Close notification">
         ×
       </button>
     </div>
   );
-}; 
+};
