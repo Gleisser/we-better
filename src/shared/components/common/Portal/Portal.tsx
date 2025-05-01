@@ -11,27 +11,27 @@ interface PortalProps {
 }
 
 /**
- * A Portal component that renders its children into a DOM node that exists outside 
+ * A Portal component that renders its children into a DOM node that exists outside
  * the DOM hierarchy of the parent component.
- * 
+ *
  * Features:
  * - Server-side rendering safe with mounting state
  * - Fallback to document.body if portal-root is not found
  * - Automatic cleanup on unmount
  * - Preserves React context
- * 
+ *
  * The component will first try to render into an element with id 'portal-root'.
  * If not found, it falls back to document.body.
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {React.ReactNode} props.children - Content to render in the portal
- * 
+ *
  * @example
  * ```tsx
  * // First, ensure you have a portal root in your HTML:
  * // <div id="portal-root"></div>
- * 
+ *
  * function Modal() {
  *   return (
  *     <Portal>
@@ -43,7 +43,7 @@ interface PortalProps {
  *   );
  * }
  * ```
- * 
+ *
  * @example
  * ```tsx
  * // Using with a loading overlay
@@ -58,7 +58,7 @@ interface PortalProps {
  * }
  * ```
  */
-export const Portal = ({ children }: PortalProps) => {
+export const Portal = ({ children }: PortalProps): JSX.Element | null => {
   /**
    * State to track if the component has mounted.
    * This ensures the portal is only created client-side, preventing SSR issues.
@@ -75,9 +75,6 @@ export const Portal = ({ children }: PortalProps) => {
   }, []);
 
   return mounted
-    ? createPortal(
-        children,
-        document.getElementById('portal-root') || document.body
-      )
+    ? createPortal(children, document.getElementById('portal-root') || document.body)
     : null;
-}; 
+};

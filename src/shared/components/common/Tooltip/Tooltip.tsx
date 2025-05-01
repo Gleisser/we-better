@@ -23,16 +23,16 @@ interface TooltipProps {
  * - Dynamic updates on scroll and resize
  * - Smooth show/hide behavior
  * - Customizable styling through className prop
- * 
+ *
  * The tooltip is positioned above the trigger element and centered horizontally.
  * It automatically updates its position when the window is scrolled or resized.
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {string} props.content - Text to display in the tooltip
  * @param {React.ReactElement} props.children - Element that triggers the tooltip
  * @param {string} [props.className] - Optional CSS class for the wrapper
- * 
+ *
  * @example
  * ```tsx
  * // Basic usage
@@ -40,11 +40,11 @@ interface TooltipProps {
  *   <button>🗑️</button>
  * </Tooltip>
  * ```
- * 
+ *
  * @example
  * ```tsx
  * // With custom styling
- * <Tooltip 
+ * <Tooltip
  *   content="User profile settings"
  *   className="tooltip-wrapper"
  * >
@@ -63,12 +63,12 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children, className }
    * Updates the tooltip's position based on the trigger element's position.
    * Calculates position to center the tooltip above the trigger element.
    */
-  const updatePosition = () => {
+  const updatePosition = (): void => {
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       setPosition({
         top: rect.top - 8, // Add some padding
-        left: rect.left + (rect.width / 2),
+        left: rect.left + rect.width / 2,
       });
     }
   };
@@ -100,20 +100,19 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children, className }
       className={className}
     >
       {children}
-      {isVisible && createPortal(
-        <div 
-          className={styles.tooltipPositioner}
-          style={{
-            top: position.top,
-            left: position.left,
-          }}
-        >
-          <div className={styles.tooltip}>
-            {content}
-          </div>
-        </div>,
-        document.body
-      )}
+      {isVisible &&
+        createPortal(
+          <div
+            className={styles.tooltipPositioner}
+            style={{
+              top: position.top,
+              left: position.left,
+            }}
+          >
+            <div className={styles.tooltip}>{content}</div>
+          </div>,
+          document.body
+        )}
     </div>
   );
-}; 
+};

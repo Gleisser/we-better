@@ -1,10 +1,10 @@
 /**
  * MobileNotifications Component
- * 
+ *
  * A mobile-optimized notifications panel that displays user notifications with animations
  * and interactive features. Provides a sliding panel interface with notification management
  * capabilities.
- * 
+ *
  * Features:
  * - Animated entrance/exit using Framer Motion
  * - Support for multiple notification types
@@ -13,20 +13,20 @@
  * - Interactive actions based on notification type
  * - Batch actions (mark all as read)
  * - Individual notification deletion
- * 
+ *
  * The component handles:
  * - Notification display and formatting
  * - Animation states and transitions
  * - User interaction with notifications
  * - Conditional rendering of action buttons
  * - Responsive layout for mobile devices
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {boolean} props.isOpen - Controls the visibility of the notifications panel
  * @param {() => void} props.onClose - Callback function to close the panel
  * @param {NotificationItem[]} props.notifications - Array of notification items to display
- * 
+ *
  * @example
  * ```tsx
  * function App() {
@@ -45,7 +45,7 @@
  *       isRead: false
  *     }
  *   ];
- * 
+ *
  *   return (
  *     <MobileNotifications
  *       isOpen={isOpen}
@@ -104,11 +104,15 @@ interface MobileNotificationsProps {
   notifications: NotificationItem[];
 }
 
-export const MobileNotifications = ({ isOpen, onClose, notifications }: MobileNotificationsProps) => {
+export const MobileNotifications = ({
+  isOpen,
+  onClose,
+  notifications,
+}: MobileNotificationsProps): JSX.Element => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div 
+        <motion.div
           className={styles.overlay}
           initial={{ opacity: 0, y: '100%' }}
           animate={{ opacity: 1, y: 0 }}
@@ -117,7 +121,7 @@ export const MobileNotifications = ({ isOpen, onClose, notifications }: MobileNo
         >
           <div className={styles.header}>
             <h2 className={styles.title}>Notifications</h2>
-            <button 
+            <button
               onClick={onClose}
               className={styles.closeButton}
               aria-label="Close notifications"
@@ -125,15 +129,15 @@ export const MobileNotifications = ({ isOpen, onClose, notifications }: MobileNo
               <XIcon className={styles.closeIcon} />
             </button>
           </div>
-          
+
           <div className={styles.content}>
-            {notifications.map((notification) => (
-              <div 
-                key={notification.id} 
+            {notifications.map(notification => (
+              <div
+                key={notification.id}
                 className={`${styles.notificationItem} ${!notification.isRead ? styles.unread : ''}`}
               >
                 <div className={styles.notificationHeader}>
-                  <UserAvatar 
+                  <UserAvatar
                     name={notification.user.name}
                     image={notification.user.image}
                     isOnline={notification.user.isOnline}
@@ -149,10 +153,7 @@ export const MobileNotifications = ({ isOpen, onClose, notifications }: MobileNo
                     </div>
                     <span className={styles.timestamp}>{notification.timestamp}</span>
                   </div>
-                  <button 
-                    className={styles.deleteButton}
-                    aria-label="Delete notification"
-                  >
+                  <button className={styles.deleteButton} aria-label="Delete notification">
                     <TrashIcon className={styles.trashIcon} />
                   </button>
                 </div>
@@ -182,4 +183,4 @@ export const MobileNotifications = ({ isOpen, onClose, notifications }: MobileNo
       )}
     </AnimatePresence>
   );
-}; 
+};

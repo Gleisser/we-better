@@ -27,7 +27,7 @@ interface ConfirmDialogProps {
  * - Portal-based rendering
  * - Responsive design with centered positioning
  * - Cancel and confirm action buttons
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {boolean} props.isOpen - Controls dialog visibility
@@ -35,17 +35,17 @@ interface ConfirmDialogProps {
  * @param {() => void} props.onConfirm - Handler for confirmation action
  * @param {string} props.title - Dialog title text
  * @param {string} props.message - Dialog message text
- * 
+ *
  * @example
  * ```tsx
  * function DeleteItem() {
  *   const [isDialogOpen, setIsDialogOpen] = useState(false);
- * 
+ *
  *   const handleDelete = () => {
  *     setIsDialogOpen(false);
  *     // Perform delete operation
  *   };
- * 
+ *
  *   return (
  *     <>
  *       <button onClick={() => setIsDialogOpen(true)}>
@@ -68,8 +68,8 @@ export const ConfirmDialog = ({
   onClose,
   onConfirm,
   title,
-  message
-}: ConfirmDialogProps) => {
+  message,
+}: ConfirmDialogProps): JSX.Element | null => {
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -103,4 +103,4 @@ export const ConfirmDialog = ({
     </AnimatePresence>,
     document.body
   );
-}; 
+};

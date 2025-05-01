@@ -7,7 +7,7 @@ interface UserAvatarProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-const getInitials = (name: string) => {
+const getInitials = (name: string): string => {
   return name
     .split(' ')
     .map(part => part[0])
@@ -16,15 +16,16 @@ const getInitials = (name: string) => {
     .slice(0, 2);
 };
 
-const UserAvatar = ({ name, image, isOnline = false, size = 'md' }: UserAvatarProps) => {
+const UserAvatar = ({
+  name,
+  image,
+  isOnline = false,
+  size = 'md',
+}: UserAvatarProps): JSX.Element => {
   return (
     <div className={`${styles.container} ${styles[size]}`}>
       {image ? (
-        <img 
-          src={image} 
-          alt={name}
-          className={styles.image}
-        />
+        <img src={image} alt={name} className={styles.image} />
       ) : (
         <div className={styles.fallback}>
           <span className={styles.initials}>{getInitials(name)}</span>
@@ -35,4 +36,4 @@ const UserAvatar = ({ name, image, isOnline = false, size = 'md' }: UserAvatarPr
   );
 };
 
-export default UserAvatar; 
+export default UserAvatar;

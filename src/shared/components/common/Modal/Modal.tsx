@@ -23,20 +23,20 @@ interface ModalProps {
  * - Automatically manages body scroll lock when open
  * - Click outside to close
  * - Portal-based rendering to avoid stacking context issues
- * 
+ *
  * @component
  * @param {ModalProps} props - The component props
  * @param {boolean} props.isOpen - Controls the visibility of the modal
  * @param {() => void} props.onClose - Callback function to close the modal
  * @param {ReactNode} props.children - Content to be rendered inside the modal
- * 
+ *
  * @example
  * ```tsx
  * const [isOpen, setIsOpen] = useState(false);
- * 
+ *
  * return (
- *   <Modal 
- *     isOpen={isOpen} 
+ *   <Modal
+ *     isOpen={isOpen}
  *     onClose={() => setIsOpen(false)}
  *   >
  *     <div>Modal Content</div>
@@ -44,7 +44,7 @@ interface ModalProps {
  * );
  * ```
  */
-export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
+export const Modal = ({ isOpen, onClose, children }: ModalProps): JSX.Element => {
   /**
    * Effect hook to manage body scroll lock when modal is open.
    * Prevents background content from scrolling while modal is visible.
@@ -83,4 +83,4 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
     </AnimatePresence>,
     document.body
   );
-}; 
+};

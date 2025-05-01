@@ -5,7 +5,7 @@ import AIChatBox from './AIChatBox';
 import styles from './AIAssistantButton.module.css';
 import { useBottomSheet } from '@/shared/contexts/BottomSheetContext';
 
-const AIAssistantButton = () => {
+const AIAssistantButton = (): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const controls = useAnimation();
@@ -14,31 +14,27 @@ const AIAssistantButton = () => {
   // Particle configuration
   const particles = Array.from({ length: 12 }, (_, i) => ({
     id: i,
-    angle: (i * 360) / 12
+    angle: (i * 360) / 12,
   }));
 
-  const handleOpenChat = () => {
+  const handleOpenChat = (): void => {
     setActiveSheet('aiChat');
     setIsChatOpen(true);
   };
 
-  const handleCloseChat = () => {
+  const handleCloseChat = (): void => {
     setActiveSheet(null);
     setIsChatOpen(false);
   };
 
   return (
     <div className={styles.container}>
-      <AnimatePresence>
-        {isChatOpen && (
-          <AIChatBox onClose={handleCloseChat} />
-        )}
-      </AnimatePresence>
+      <AnimatePresence>{isChatOpen && <AIChatBox onClose={handleCloseChat} />}</AnimatePresence>
 
       {/* Particles */}
       {isHovered && (
         <div className={styles.particlesContainer}>
-          {particles.map((particle) => (
+          {particles.map(particle => (
             <motion.div
               key={particle.id}
               className={styles.particle}
@@ -52,8 +48,8 @@ const AIAssistantButton = () => {
               transition={{
                 duration: 1.5,
                 repeat: Infinity,
-                repeatType: "loop",
-                ease: "easeOut"
+                repeatType: 'loop',
+                ease: 'easeOut',
               }}
             />
           ))}
@@ -86,7 +82,7 @@ const AIAssistantButton = () => {
             fill="none"
             initial={{ pathLength: 0 }}
             animate={controls}
-            transition={{ duration: 1, ease: "easeInOut" }}
+            transition={{ duration: 1, ease: 'easeInOut' }}
           />
           <defs>
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -106,4 +102,4 @@ const AIAssistantButton = () => {
   );
 };
 
-export default AIAssistantButton; 
+export default AIAssistantButton;

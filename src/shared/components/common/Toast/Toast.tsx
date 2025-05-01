@@ -22,23 +22,23 @@ interface ToastProps {
  * - Portal-based rendering to avoid stacking context issues
  * - Support for success and error states
  * - Smooth slide-up animation
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {string} props.message - The text message to display
  * @param {boolean} props.isVisible - Controls toast visibility
  * @param {'success' | 'error'} [props.type='success'] - Toast type for styling
- * 
+ *
  * @example
  * ```tsx
  * function App() {
  *   const [isVisible, setIsVisible] = useState(false);
- * 
+ *
  *   const showSuccessToast = () => {
  *     setIsVisible(true);
  *     setTimeout(() => setIsVisible(false), 3000);
  *   };
- * 
+ *
  *   return (
  *     <>
  *       <button onClick={showSuccessToast}>Show Toast</button>
@@ -52,7 +52,7 @@ interface ToastProps {
  * }
  * ```
  */
-export const Toast = ({ message, isVisible, type = 'success' }: ToastProps) => {
+export const Toast = ({ message, isVisible, type = 'success' }: ToastProps): JSX.Element | null => {
   return createPortal(
     <AnimatePresence>
       {isVisible && (
@@ -68,4 +68,4 @@ export const Toast = ({ message, isVisible, type = 'success' }: ToastProps) => {
     </AnimatePresence>,
     document.body
   );
-}; 
+};

@@ -7,11 +7,11 @@ interface AIChatBoxProps {
   onClose: () => void;
 }
 
-const AIChatBox = ({ onClose }: AIChatBoxProps) => {
+const AIChatBox = ({ onClose }: AIChatBoxProps): JSX.Element | null => {
   const isMobile = window.innerWidth <= 768;
   const { activeSheet, setActiveSheet } = useBottomSheet();
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     setActiveSheet(null);
     onClose();
   };
@@ -32,30 +32,24 @@ const AIChatBox = ({ onClose }: AIChatBoxProps) => {
           onClick={handleClose}
         />
       )}
-      <motion.div 
+      <motion.div
         className={styles.container}
         initial={isMobile ? { y: '100%' } : { opacity: 0, y: 20 }}
         animate={isMobile ? { y: 0 } : { opacity: 1, y: 0 }}
         exit={isMobile ? { y: '100%' } : { opacity: 0, y: 20 }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
       >
         {/* Header */}
         <div className={styles.header}>
           <div className={styles.headerTitle}>AI Assistant</div>
-          <button 
-            onClick={handleClose}
-            className={styles.closeButton}
-            aria-label="Close chat"
-          >
+          <button onClick={handleClose} className={styles.closeButton} aria-label="Close chat">
             <XIcon className={styles.closeIcon} />
           </button>
         </div>
 
         {/* Chat Content */}
         <div className={styles.content}>
-          <div className={styles.message}>
-            How can I help you today?
-          </div>
+          <div className={styles.message}>How can I help you today?</div>
         </div>
 
         {/* Input Area */}
@@ -66,13 +60,11 @@ const AIChatBox = ({ onClose }: AIChatBoxProps) => {
             className={styles.input}
             autoFocus
           />
-          <button className={styles.sendButton}>
-            Send
-          </button>
+          <button className={styles.sendButton}>Send</button>
         </div>
       </motion.div>
     </>
   );
 };
 
-export default AIChatBox; 
+export default AIChatBox;
