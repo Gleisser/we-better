@@ -20,16 +20,12 @@ const NavItem = ({
   onMouseLeave,
   MegaMenuComponent,
   'aria-expanded': ariaExpanded,
-  'aria-haspopup': ariaHaspopup
-}: NavItemProps) => {
+  'aria-haspopup': ariaHaspopup,
+}: NavItemProps): JSX.Element => {
   return (
-    <div
-      className="relative group"
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      <a 
-        href={href} 
+    <div className="relative group" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      <a
+        href={href}
         className={`${styles.headerNavItem} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
         aria-expanded={ariaExpanded}
         aria-haspopup={ariaHaspopup}
@@ -43,4 +39,4 @@ const NavItem = ({
   );
 };
 
-export default NavItem; 
+export default NavItem;

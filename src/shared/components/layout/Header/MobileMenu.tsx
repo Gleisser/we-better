@@ -1,15 +1,15 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import styles from './MobileMenu.module.css';
-import { 
-  ArticlesIcon, 
-  CoursesIcon, 
-  VideosIcon, 
+import {
+  ArticlesIcon,
+  CoursesIcon,
+  VideosIcon,
   NewsletterIcon,
   AINewsIcon,
   WikiIcon,
   FAQIcon,
-  MobileMenuArrowIcon 
+  MobileMenuArrowIcon,
 } from '@/shared/components/common/icons';
 
 interface MobileMenuProps {
@@ -17,65 +17,59 @@ interface MobileMenuProps {
   'aria-hidden'?: boolean;
 }
 
-const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
+const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps): JSX.Element | null => {
   const [isSolutionsOpen, setIsSolutionsOpen] = useState(false);
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
 
   const solutionsItems = [
     {
       icon: <ArticlesIcon className={styles.menuIcon} />,
-      title: "Articles",
-      description: "Articles from our community",
-      iconAlt: "Articles icon showing a document with text lines"
+      title: 'Articles',
+      description: 'Articles from our community',
+      iconAlt: 'Articles icon showing a document with text lines',
     },
     {
       icon: <CoursesIcon className={styles.menuIcon} />,
-      title: "Courses",
-      description: "Courses from our community",
-      iconAlt: "Courses icon showing stacked books"
+      title: 'Courses',
+      description: 'Courses from our community',
+      iconAlt: 'Courses icon showing stacked books',
     },
     {
       icon: <VideosIcon className={styles.menuIcon} />,
-      title: "Videos",
-      description: "Videos from our community",
-      iconAlt: "Video player icon with play button"
+      title: 'Videos',
+      description: 'Videos from our community',
+      iconAlt: 'Video player icon with play button',
     },
     {
       icon: <NewsletterIcon className={styles.menuIcon} />,
-      title: "Newsletter",
-      description: "Newsletter from our community",
-      iconAlt: "Newsletter icon showing an envelope"
-    }
+      title: 'Newsletter',
+      description: 'Newsletter from our community',
+      iconAlt: 'Newsletter icon showing an envelope',
+    },
   ];
 
   const resourcesItems = [
     {
-      icon: (
-        <AINewsIcon className={styles.menuIcon} />
-      ),
-      title: "News",
-      description: "Your Source for Creativity and Industry Insights."
+      icon: <AINewsIcon className={styles.menuIcon} />,
+      title: 'News',
+      description: 'Your Source for Creativity and Industry Insights.',
     },
     {
-      icon: (
-        <WikiIcon className={styles.menuIcon} />
-      ),
-      title: "Webinar",
-      description: "Community Mentores."
+      icon: <WikiIcon className={styles.menuIcon} />,
+      title: 'Webinar',
+      description: 'Community Mentores.',
     },
     {
-      icon: (
-        <FAQIcon className={styles.menuIcon} />
-      ),
-      title: "FAQ",
-      description: "Get answers to frequently asked questions."
-    }
+      icon: <FAQIcon className={styles.menuIcon} />,
+      title: 'FAQ',
+      description: 'Get answers to frequently asked questions.',
+    },
   ];
 
   if (!isOpen) return null;
 
   return (
-    <motion.div 
+    <motion.div
       className={styles.mobileMenu}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -90,20 +84,20 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
         <div className={styles.menuLinks}>
           {/* Solutions with submenu */}
           <div className={styles.menuItemWrapper}>
-            <button 
+            <button
               className={`${styles.menuItem} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
               onClick={() => setIsSolutionsOpen(!isSolutionsOpen)}
               aria-expanded={isSolutionsOpen}
               aria-controls="solutions-submenu"
             >
               <span>Solutions</span>
-              <MobileMenuArrowIcon 
+              <MobileMenuArrowIcon
                 className={`${styles.arrow} ${isSolutionsOpen ? styles.open : ''}`}
                 aria-hidden="true"
               />
             </button>
             {isSolutionsOpen && (
-              <motion.div 
+              <motion.div
                 id="solutions-submenu"
                 className={styles.submenu}
                 initial={{ height: 0, opacity: 0 }}
@@ -113,10 +107,7 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
                 aria-label="Solutions submenu"
               >
                 {solutionsItems.map((item, index) => (
-                  <div 
-                    key={index} 
-                    className={styles.submenuItemContainer}
-                  >
+                  <div key={index} className={styles.submenuItemContainer}>
                     <div className={styles.submenuItemContent}>
                       {item.icon}
                       <div className={styles.submenuItemText}>
@@ -124,7 +115,9 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
                         <p className={styles.submenuItemDescription}>{item.description}</p>
                       </div>
                     </div>
-                    {index < solutionsItems.length - 1 && <div className={styles.submenuDivider} aria-hidden="true" />}
+                    {index < solutionsItems.length - 1 && (
+                      <div className={styles.submenuDivider} aria-hidden="true" />
+                    )}
                   </div>
                 ))}
               </motion.div>
@@ -133,20 +126,20 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
 
           {/* Resources with submenu */}
           <div className={styles.menuItemWrapper}>
-            <button 
+            <button
               className={`${styles.menuItem} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
               onClick={() => setIsResourcesOpen(!isResourcesOpen)}
               aria-expanded={isResourcesOpen}
               aria-controls="resources-submenu"
             >
               <span>Resources</span>
-              <MobileMenuArrowIcon 
+              <MobileMenuArrowIcon
                 className={`${styles.arrow} ${isResourcesOpen ? styles.open : ''}`}
-                aria-hidden="true" 
+                aria-hidden="true"
               />
             </button>
             {isResourcesOpen && (
-              <motion.div 
+              <motion.div
                 id="resources-submenu"
                 className={styles.submenu}
                 initial={{ height: 0, opacity: 0 }}
@@ -159,7 +152,7 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
                 <div className={styles.latestPost}>
                   <div className={styles.latestPostLabel}>Latest post</div>
                   <div className={styles.postImage}>
-                    <img 
+                    <img
                       src="/assets/images/hero/blog_post.webp"
                       alt="Latest Post"
                       className={styles.postImg}
@@ -173,10 +166,7 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
 
                 {/* Resources menu items */}
                 {resourcesItems.map((item, index) => (
-                  <div 
-                    key={index} 
-                    className={styles.submenuItemContainer}
-                  >
+                  <div key={index} className={styles.submenuItemContainer}>
                     <div className={styles.submenuItemContent}>
                       {item.icon}
                       <div className={styles.submenuItemText}>
@@ -184,7 +174,9 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
                         <p className={styles.submenuItemDescription}>{item.description}</p>
                       </div>
                     </div>
-                    {index < resourcesItems.length - 1 && <div className={styles.submenuDivider} aria-hidden="true" />}
+                    {index < resourcesItems.length - 1 && (
+                      <div className={styles.submenuDivider} aria-hidden="true" />
+                    )}
                   </div>
                 ))}
               </motion.div>
@@ -192,23 +184,25 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
           </div>
 
           {/* Regular menu items */}
-          <a href="#teams" className={styles.menuItem}>For Business</a>
-          <a href="#developers" className={styles.menuItem}>For Mentors</a>
-          <a href="#contact" className={styles.menuItem}>For Coaches</a>
+          <a href="#teams" className={styles.menuItem}>
+            For Business
+          </a>
+          <a href="#developers" className={styles.menuItem}>
+            For Mentors
+          </a>
+          <a href="#contact" className={styles.menuItem}>
+            For Coaches
+          </a>
         </div>
 
-        <div 
-          className={styles.storeLinks}
-          role="group"
-          aria-label="App store links"
-        >
-          <img 
-            src="/assets/images/header/mobile/app_store_header_mobile.svg" 
+        <div className={styles.storeLinks} role="group" aria-label="App store links">
+          <img
+            src="/assets/images/header/mobile/app_store_header_mobile.svg"
             alt="Download on App Store"
             className={styles.storeButton}
           />
-          <img 
-            src="/assets/images/header/mobile/play_store_header_mobile.svg" 
+          <img
+            src="/assets/images/header/mobile/play_store_header_mobile.svg"
             alt="Get it on Google Play"
             className={styles.storeButton}
           />
@@ -216,42 +210,41 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
 
         <div className={styles.community}>
           <div className={styles.communityTitle}>Join the community!</div>
-          <div 
-            className={styles.socialLinks}
-            role="group"
-            aria-label="Social media links"
-          >
-            <a 
+          <div className={styles.socialLinks} role="group" aria-label="Social media links">
+            <a
               href="#"
               className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md"
             >
-              <img 
-                src="/assets/images/header/mobile/discord-icon.svg" 
-                alt="Join our Discord community for AI discussions and support" 
+              <img
+                src="/assets/images/header/mobile/discord-icon.svg"
+                alt="Join our Discord community for AI discussions and support"
               />
             </a>
-            <a href="#"
+            <a
+              href="#"
               className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md"
             >
-              <img 
-                src="/assets/images/header/mobile/facebook-icon.svg" 
-                alt="Follow us on Facebook for latest AI technology updates" 
+              <img
+                src="/assets/images/header/mobile/facebook-icon.svg"
+                alt="Follow us on Facebook for latest AI technology updates"
               />
             </a>
-            <a href="#"
-            className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md"
-            >
-              <img 
-                src="/assets/images/header/mobile/instagram-icon.svg" 
-                alt="Follow our Instagram for AI-generated art and inspiration" 
-              />
-            </a>
-            <a href="#"
+            <a
+              href="#"
               className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md"
             >
-              <img 
-                src="/assets/images/header/mobile/fanbook-icon.svg" 
-                alt="Join our Fanbook community for exclusive AI content" 
+              <img
+                src="/assets/images/header/mobile/instagram-icon.svg"
+                alt="Follow our Instagram for AI-generated art and inspiration"
+              />
+            </a>
+            <a
+              href="#"
+              className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md"
+            >
+              <img
+                src="/assets/images/header/mobile/fanbook-icon.svg"
+                alt="Join our Fanbook community for exclusive AI content"
               />
             </a>
           </div>
@@ -261,4 +254,4 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps) => {
   );
 };
 
-export default MobileMenu; 
+export default MobileMenu;

@@ -5,11 +5,11 @@ interface HamburgerButtonProps {
   isOpen: boolean;
 }
 
-const HamburgerButton = ({ onClick, isOpen }: HamburgerButtonProps) => {
+const HamburgerButton = ({ onClick, isOpen }: HamburgerButtonProps): JSX.Element => {
   return (
-    <button 
-      className={`${styles.hamburger} ${isOpen ? styles.open : ''}`} 
-      onClick={(e) => {
+    <button
+      className={`${styles.hamburger} ${isOpen ? styles.open : ''}`}
+      onClick={e => {
         e.stopPropagation();
         onClick();
       }}
@@ -22,4 +22,4 @@ const HamburgerButton = ({ onClick, isOpen }: HamburgerButtonProps) => {
   );
 };
 
-export default HamburgerButton; 
+export default HamburgerButton;

@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { XIcon, TrashIcon } from '@/shared/components/common/icons';
 import styles from './NotificationsPopup.module.css';
 import UserAvatar from '@/shared/components/common/UserAvatar/UserAvatar';
 
 type Tab = 'all' | 'following' | 'archive';
 
-type NotificationType = 'follow' | 'reply' | 'mention' | 'task' | 'like' | 'achievement';
+export type NotificationType = 'follow' | 'reply' | 'mention' | 'task' | 'like' | 'achievement';
 
-interface NotificationItem {
+export interface NotificationItem {
   id: string;
   type: NotificationType;
   user: {
@@ -22,7 +22,7 @@ interface NotificationItem {
   isRead: boolean;
 }
 
-const NotificationsPopup = ({ onClose }: { onClose: () => void }) => {
+const NotificationsPopup = ({ onClose }: { onClose: () => void }): JSX.Element => {
   const [activeTab, setActiveTab] = useState<Tab>('all');
   const [notifications] = useState<NotificationItem[]>([
     {
@@ -31,12 +31,12 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }) => {
       user: {
         name: 'Tommy Lee',
         image: '/assets/images/avatars/tommy.jpg',
-        isOnline: true
+        isOnline: true,
       },
       content: 'replied to you in',
       target: 'Generic File',
       timestamp: '7 November 2023 • 12:35 AM',
-      isRead: false
+      isRead: false,
     },
     {
       id: '2',
@@ -44,11 +44,11 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }) => {
       user: {
         name: 'Jennifer Lee',
         image: '/assets/images/avatars/jennifer.jpg',
-        isOnline: true
+        isOnline: true,
       },
       content: 'followed you',
       timestamp: '6 November 2023 • 9:12 PM',
-      isRead: false
+      isRead: false,
     },
     {
       id: '3',
@@ -56,12 +56,12 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }) => {
       user: {
         name: 'Eve Monroe',
         image: '/assets/images/avatars/eve.jpg',
-        isOnline: false
+        isOnline: false,
       },
       content: 'assigned a task to you',
       target: '#JP-2137',
       timestamp: '6 November 2023 • 8:56 PM',
-      isRead: false
+      isRead: false,
     },
     {
       id: '4',
@@ -69,12 +69,12 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }) => {
       user: {
         name: 'Michael Chen',
         image: '/assets/images/avatars/michael.jpg',
-        isOnline: true
+        isOnline: true,
       },
       content: 'liked your article',
       target: 'How to Master TypeScript',
       timestamp: '6 November 2023 • 7:30 PM',
-      isRead: true
+      isRead: true,
     },
     {
       id: '5',
@@ -82,12 +82,12 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }) => {
       user: {
         name: 'Sarah Wilson',
         image: '/assets/images/avatars/sarah.jpg',
-        isOnline: false
+        isOnline: false,
       },
       content: 'mentioned you in',
       target: 'Team Meeting Notes',
       timestamp: '6 November 2023 • 6:45 PM',
-      isRead: true
+      isRead: true,
     },
     {
       id: '6',
@@ -95,13 +95,13 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }) => {
       user: {
         name: 'System',
         image: '/assets/images/avatars/system.jpg',
-        isOnline: true
+        isOnline: true,
       },
       content: 'You earned a new badge',
       target: '🏆 Early Adopter',
       timestamp: '6 November 2023 • 5:20 PM',
-      isRead: false
-    }
+      isRead: false,
+    },
   ]);
 
   const tabs = [
@@ -111,7 +111,7 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }) => {
   ];
 
   return (
-    <motion.div 
+    <motion.div
       className={styles.container}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -143,12 +143,12 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }) => {
       <div className={styles.notificationsList}>
         {notifications.map(notification => (
           <div key={notification.id} className={styles.notificationItem}>
-            <UserAvatar 
+            <UserAvatar
               name={notification.user.name}
               isOnline={notification.user.isOnline}
               size="md"
             />
-            
+
             <div className={styles.content}>
               <div className={styles.userAction}>
                 <span className={styles.userName}>{notification.user.name}</span>
@@ -158,7 +158,7 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }) => {
                 )}
               </div>
               <span className={styles.timestamp}>{notification.timestamp}</span>
-              
+
               <div className={styles.actions}>
                 {notification.type === 'follow' && (
                   <button className={styles.followButton}>Follow back</button>
@@ -200,4 +200,4 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }) => {
   );
 };
 
-export default NotificationsPopup; 
+export default NotificationsPopup;
