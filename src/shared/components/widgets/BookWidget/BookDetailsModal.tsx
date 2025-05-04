@@ -23,18 +23,18 @@ interface BookDetailsModalProps {
 /**
  * A modal component that displays detailed information about a book.
  * Uses Headless UI Dialog for accessibility and keyboard navigation.
- * 
+ *
  * Features:
  * - Tabbed interface for topics and book benefits
  * - Backdrop blur effect for better focus
  * - Visual match score representation
  * - Comprehensive book statistics
  * - Responsive design
- * 
+ *
  * The modal has two main sections:
  * 1. Topics Tab: Displays a grid of topics covered in the book
  * 2. Why Tab: Shows match score, book statistics, and author information
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {Book} props.book - Book data to display
@@ -42,13 +42,13 @@ interface BookDetailsModalProps {
  * @param {() => void} props.onClose - Handler for closing the modal
  * @param {'topics' | 'why'} props.activeTab - Active tab selection
  * @param {(tab: 'topics' | 'why') => void} props.onTabChange - Tab change handler
- * 
+ *
  * @example
  * ```tsx
  * function BookView({ book }) {
  *   const [isModalOpen, setIsModalOpen] = useState(false);
  *   const [activeTab, setActiveTab] = useState<'topics' | 'why'>('topics');
- * 
+ *
  *   return (
  *     <>
  *       <button onClick={() => setIsModalOpen(true)}>
@@ -65,7 +65,7 @@ interface BookDetailsModalProps {
  *   );
  * }
  * ```
- * 
+ *
  * @example
  * ```tsx
  * // Example book object structure
@@ -81,12 +81,18 @@ interface BookDetailsModalProps {
  * };
  * ```
  */
-export const BookDetailsModal = ({ book, isOpen, onClose, activeTab, onTabChange }: BookDetailsModalProps) => {
+export const BookDetailsModal = ({
+  book,
+  isOpen,
+  onClose,
+  activeTab,
+  onTabChange,
+}: BookDetailsModalProps): JSX.Element => {
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       {/* Semi-transparent backdrop with blur effect */}
       <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
-      
+
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className={styles.modal}>
           <div className={styles.header}>
@@ -104,7 +110,7 @@ export const BookDetailsModal = ({ book, isOpen, onClose, activeTab, onTabChange
                 Why This Book?
               </button>
             </div>
-            
+
             <button onClick={onClose} className={styles.closeButton}>
               <XIcon className={styles.closeIcon} />
             </button>
@@ -159,4 +165,4 @@ export const BookDetailsModal = ({ book, isOpen, onClose, activeTab, onTabChange
       </div>
     </Dialog>
   );
-}; 
+};

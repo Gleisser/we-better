@@ -16,37 +16,37 @@ const FREQUENCY_OPTIONS: { value: ReviewFrequency; label: string }[] = [
   { value: 'weekly', label: 'Weekly' },
   { value: 'biweekly', label: 'Every 2 Weeks' },
   { value: 'monthly', label: 'Monthly' },
-  { value: 'quarterly', label: 'Every 3 Months' }
+  { value: 'quarterly', label: 'Every 3 Months' },
 ];
 
 const NOTIFICATION_OPTIONS: { value: NotificationMethod; label: string; icon: string }[] = [
   { value: 'email', label: 'Email', icon: '📧' },
   { value: 'sms', label: 'SMS', icon: '📱' },
-  { value: 'push', label: 'Push Notification', icon: '🔔' }
+  { value: 'push', label: 'Push Notification', icon: '🔔' },
 ];
 
-export const ReviewSettingsModal = ({ 
-  isOpen, 
-  onClose, 
+export const ReviewSettingsModal = ({
+  isOpen,
+  onClose,
   settings,
-  onSave 
-}: ReviewSettingsModalProps) => {
+  onSave,
+}: ReviewSettingsModalProps): JSX.Element => {
   const [localSettings, setLocalSettings] = useState<ReviewSettings>(settings);
 
-  const handleFrequencyChange = (frequency: ReviewFrequency) => {
+  const handleFrequencyChange = (frequency: ReviewFrequency): void => {
     setLocalSettings(prev => ({ ...prev, frequency }));
   };
 
-  const toggleNotification = (method: NotificationMethod) => {
+  const toggleNotification = (method: NotificationMethod): void => {
     setLocalSettings(prev => ({
       ...prev,
       notifications: prev.notifications.includes(method)
         ? prev.notifications.filter(n => n !== method)
-        : [...prev.notifications, method]
+        : [...prev.notifications, method],
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = (): void => {
     onSave(localSettings);
     onClose();
   };
@@ -67,11 +67,7 @@ export const ReviewSettingsModal = ({
         >
           <div className={styles.header}>
             <h2 className={styles.title}>Review Settings</h2>
-            <button
-              className={styles.closeButton}
-              onClick={onClose}
-              aria-label="Close settings"
-            >
+            <button className={styles.closeButton} onClick={onClose} aria-label="Close settings">
               <XIcon className={styles.closeIcon} />
             </button>
           </div>
@@ -120,10 +116,12 @@ export const ReviewSettingsModal = ({
                   <select
                     className={styles.select}
                     value={localSettings.reminderDays}
-                    onChange={(e) => setLocalSettings(prev => ({
-                      ...prev,
-                      reminderDays: Number(e.target.value)
-                    }))}
+                    onChange={e =>
+                      setLocalSettings(prev => ({
+                        ...prev,
+                        reminderDays: Number(e.target.value),
+                      }))
+                    }
                   >
                     <option value={1}>1 day</option>
                     <option value={3}>3 days</option>
@@ -147,4 +145,4 @@ export const ReviewSettingsModal = ({
       </motion.div>
     </Portal>
   );
-}; 
+};

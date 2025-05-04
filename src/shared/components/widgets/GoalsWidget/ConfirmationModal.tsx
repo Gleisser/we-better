@@ -16,8 +16,8 @@ export const ConfirmationModal = ({
   onClose,
   onConfirm,
   title,
-  message
-}: ConfirmationModalProps) => {
+  message,
+}: ConfirmationModalProps): JSX.Element => {
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -37,11 +37,7 @@ export const ConfirmationModal = ({
           >
             <div className={styles.header}>
               <h2 className={styles.title}>{title}</h2>
-              <button
-                className={styles.closeButton}
-                onClick={onClose}
-                aria-label="Close modal"
-              >
+              <button className={styles.closeButton} onClick={onClose} aria-label="Close modal">
                 <XIcon className={styles.closeIcon} />
               </button>
             </div>
@@ -51,13 +47,10 @@ export const ConfirmationModal = ({
             </div>
 
             <div className={styles.footer}>
-              <button 
-                className={styles.cancelButton} 
-                onClick={onClose}
-              >
+              <button className={styles.cancelButton} onClick={onClose}>
                 Cancel
               </button>
-              <button 
+              <button
                 className={styles.confirmButton}
                 onClick={() => {
                   onConfirm();
@@ -73,4 +66,4 @@ export const ConfirmationModal = ({
     </AnimatePresence>,
     document.body
   );
-}; 
+};

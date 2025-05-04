@@ -1,36 +1,34 @@
-import { UdemyIcon, CourseraIcon, EdxIcon, SkillshareIcon, PluralsightIcon, LinkedInIcon } from '@/shared/components/common/icons';
-
 export const PLATFORM_CONFIG = {
   udemy: {
     name: 'Udemy',
     bgColor: 'rgba(183, 37, 85, 0.15)',
-    color: '#b72555'
+    color: '#b72555',
   },
   coursera: {
     name: 'Coursera',
     bgColor: 'rgba(51, 121, 194, 0.15)',
-    color: '#3379c2'
+    color: '#3379c2',
   },
   edx: {
     name: 'edX',
     bgColor: 'rgba(2, 0, 36, 0.15)',
-    color: '#020024'
+    color: '#020024',
   },
   skillshare: {
     name: 'Skillshare',
     bgColor: 'rgba(0, 0, 0, 0.15)',
-    color: '#000000'
+    color: '#000000',
   },
   pluralsight: {
     name: 'Pluralsight',
     bgColor: 'rgba(236, 0, 140, 0.15)',
-    color: '#ec008c'
+    color: '#ec008c',
   },
   linkedin: {
     name: 'LinkedIn Learning',
     bgColor: 'rgba(0, 119, 181, 0.15)',
-    color: '#0077b5'
-  }
+    color: '#0077b5',
+  },
 } as const;
 
 export type PlatformType = keyof typeof PLATFORM_CONFIG;
@@ -55,12 +53,13 @@ export const MOCK_COURSES = [
       'Productivity',
       'Goal Setting',
       'Work-Life Balance',
-      'Stress Management'
+      'Stress Management',
     ],
     matchScore: 95,
-    description: 'Master proven productivity techniques to reduce stress, increase focus, and get more done in less time.',
+    description:
+      'Master proven productivity techniques to reduce stress, increase focus, and get more done in less time.',
     lastUpdated: '2024-02-15',
-    url: 'https://www.udemy.com/course/productivity-and-time-management/'
+    url: 'https://www.udemy.com/course/productivity-and-time-management/',
   },
   {
     id: 'course_2',
@@ -81,12 +80,13 @@ export const MOCK_COURSES = [
       'Meditation',
       'Stress Reduction',
       'Emotional Balance',
-      'Mental Clarity'
+      'Mental Clarity',
     ],
     matchScore: 88,
-    description: 'Learn practical mindfulness techniques and meditation practices for reducing stress and finding inner peace.',
+    description:
+      'Learn practical mindfulness techniques and meditation practices for reducing stress and finding inner peace.',
     lastUpdated: '2024-03-01',
-    url: 'https://www.coursera.org/learn/mindfulness-meditation'
+    url: 'https://www.coursera.org/learn/mindfulness-meditation',
   },
   {
     id: 'course_3',
@@ -107,11 +107,12 @@ export const MOCK_COURSES = [
       'Habit Formation',
       'Mental Health',
       'Life Satisfaction',
-      'Personal Growth'
+      'Personal Growth',
     ],
     matchScore: 92,
-    description: 'Discover scientifically-proven strategies for increasing happiness and building a more fulfilling life.',
+    description:
+      'Discover scientifically-proven strategies for increasing happiness and building a more fulfilling life.',
     lastUpdated: '2024-03-10',
-    url: 'https://www.edx.org/learn/science-of-wellbeing'
-  }
-]; 
+    url: 'https://www.edx.org/learn/science-of-wellbeing',
+  },
+];

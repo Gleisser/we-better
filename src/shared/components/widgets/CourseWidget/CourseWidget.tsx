@@ -1,6 +1,10 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { InfoIcon, SkillsIcon, ArrowTopRight, BookmarkIcon } from '@/shared/components/common/icons';
+import {
+  InfoIcon,
+  SkillsIcon,
+  ArrowTopRight,
+  BookmarkIcon,
+} from '@/shared/components/common/icons';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { Course } from './types';
 import { MOCK_COURSES, PLATFORM_CONFIG } from './config';
@@ -9,7 +13,7 @@ import { CourseDetailsModal } from './CourseDetailsModal';
 import { Tooltip } from '@/shared/components/common/Tooltip';
 import { useBookmarkedCourses } from '@/shared/hooks/useBookmarkedCourses';
 
-const CourseWidget = () => {
+const CourseWidget = (): JSX.Element => {
   const [currentCourse] = useState<Course>(MOCK_COURSES[0]);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'skills' | 'why'>('skills');
@@ -29,13 +33,15 @@ const CourseWidget = () => {
 
   return (
     <>
-      <div 
+      <div
         className={styles.container}
-        style={{
-          '--gradient-start': theme.gradientStart,
-          '--gradient-middle': theme.gradientMiddle,
-          '--gradient-end': theme.gradientEnd,
-        } as React.CSSProperties}
+        style={
+          {
+            '--gradient-start': theme.gradientStart,
+            '--gradient-middle': theme.gradientMiddle,
+            '--gradient-end': theme.gradientEnd,
+          } as React.CSSProperties
+        }
       >
         <div className={styles.header}>
           <div className={styles.headerMain}>
@@ -50,15 +56,16 @@ const CourseWidget = () => {
           <div className={styles.courseCard}>
             {/* Thumbnail Section */}
             <div className={styles.thumbnailSection}>
-              <img 
-                src={currentCourse.thumbnail} 
+              <img
+                src={currentCourse.thumbnail}
                 alt={currentCourse.title}
                 className={styles.thumbnail}
               />
-              <div className={styles.platformBadge}
+              <div
+                className={styles.platformBadge}
                 style={{
                   backgroundColor: PLATFORM_CONFIG[currentCourse.platform].bgColor,
-                  color: PLATFORM_CONFIG[currentCourse.platform].color
+                  color: PLATFORM_CONFIG[currentCourse.platform].color,
                 }}
               >
                 <span className={styles.platformIcon}>
@@ -71,23 +78,17 @@ const CourseWidget = () => {
             {/* Course Info Section */}
             <div className={styles.courseInfo}>
               <h3 className={styles.courseTitle}>{currentCourse.title}</h3>
-              
+
               <div className={styles.instructorRow}>
-                <span className={styles.instructorName}>
-                  by {currentCourse.instructor}
-                </span>
+                <span className={styles.instructorName}>by {currentCourse.instructor}</span>
               </div>
 
               <div className={styles.statsRow}>
-                <div className={styles.rating}>
-                  ⭐ {currentCourse.rating.toFixed(1)}
-                </div>
+                <div className={styles.rating}>⭐ {currentCourse.rating.toFixed(1)}</div>
                 <div className={styles.students}>
                   👥 {formatStudentCount(currentCourse.studentsCount)} students
                 </div>
-                <div className={styles.duration}>
-                  ⏱️ {currentCourse.duration}
-                </div>
+                <div className={styles.duration}>⏱️ {currentCourse.duration}</div>
               </div>
 
               <div className={styles.bottomRow}>
@@ -116,7 +117,9 @@ const CourseWidget = () => {
                       <InfoIcon className={styles.actionIcon} />
                     </button>
                   </Tooltip>
-                  <Tooltip content={isBookmarked(currentCourse.id) ? "Remove bookmark" : "Bookmark course"}>
+                  <Tooltip
+                    content={isBookmarked(currentCourse.id) ? 'Remove bookmark' : 'Bookmark course'}
+                  >
                     <button
                       className={`${styles.iconButton} ${isBookmarked(currentCourse.id) ? styles.bookmarked : ''}`}
                       onClick={() => {
@@ -126,10 +129,12 @@ const CourseWidget = () => {
                           addBookmark(currentCourse);
                         }
                       }}
-                      aria-label={isBookmarked(currentCourse.id) ? "Remove bookmark" : "Bookmark course"}
+                      aria-label={
+                        isBookmarked(currentCourse.id) ? 'Remove bookmark' : 'Bookmark course'
+                      }
                     >
-                      <BookmarkIcon 
-                        className={styles.actionIcon} 
+                      <BookmarkIcon
+                        className={styles.actionIcon}
                         filled={isBookmarked(currentCourse.id)}
                       />
                     </button>
@@ -137,18 +142,17 @@ const CourseWidget = () => {
                 </div>
 
                 <div className={styles.priceSection}>
-                  <span className={styles.currentPrice}>
-                    ${currentCourse.price.current}
-                  </span>
+                  <span className={styles.currentPrice}>${currentCourse.price.current}</span>
                   <span className={styles.discountBadge}>
-                    {calculateDiscount(currentCourse.price.original, currentCourse.price.current)}% OFF
+                    {calculateDiscount(currentCourse.price.original, currentCourse.price.current)}%
+                    OFF
                   </span>
                 </div>
               </div>
 
-              <a 
-                href={currentCourse.url} 
-                target="_blank" 
+              <a
+                href={currentCourse.url}
+                target="_blank"
                 rel="noopener noreferrer"
                 className={styles.goToCourseButton}
               >
@@ -171,4 +175,4 @@ const CourseWidget = () => {
   );
 };
 
-export default CourseWidget; 
+export default CourseWidget;

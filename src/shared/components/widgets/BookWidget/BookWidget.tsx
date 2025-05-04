@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { BookmarkIcon, ShareIcon, ArrowTopRight, InfoIcon, StarIcon } from '@/shared/components/common/icons';
+import {
+  BookmarkIcon,
+  ShareIcon,
+  ArrowTopRight,
+  InfoIcon,
+  StarIcon,
+} from '@/shared/components/common/icons';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { Book } from './types';
 import { MOCK_BOOKS } from './config';
@@ -8,7 +14,7 @@ import { Tooltip } from '@/shared/components/common/Tooltip';
 import { useBookmarkedBooks } from '@/shared/hooks/useBookmarkedBooks';
 import { BookDetailsModal } from './BookDetailsModal';
 
-const BookWidget = () => {
+const BookWidget = (): JSX.Element => {
   const [currentBook] = useState<Book>(MOCK_BOOKS[0]);
   const { theme } = useTimeBasedTheme();
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedBooks();
@@ -26,28 +32,30 @@ const BookWidget = () => {
     return Math.round(((original - current) / original) * 100);
   };
 
-  const handleShare = async () => {
+  const handleShare = async (): Promise<void> => {
     if (navigator.share) {
       try {
         await navigator.share({
           title: currentBook.title,
           text: `Check out "${currentBook.title}" by ${currentBook.author.name}`,
-          url: currentBook.amazonUrl
+          url: currentBook.amazonUrl,
         });
       } catch (err) {
-        console.log('Error sharing:', err);
+        console.error('Error sharing:', err);
       }
     }
   };
 
   return (
-    <div 
+    <div
       className={styles.container}
-      style={{
-        '--gradient-start': theme.gradientStart,
-        '--gradient-middle': theme.gradientMiddle,
-        '--gradient-end': theme.gradientEnd,
-      } as React.CSSProperties}
+      style={
+        {
+          '--gradient-start': theme.gradientStart,
+          '--gradient-middle': theme.gradientMiddle,
+          '--gradient-end': theme.gradientEnd,
+        } as React.CSSProperties
+      }
     >
       <div className={styles.header}>
         <div className={styles.headerLeft}>
@@ -59,19 +67,13 @@ const BookWidget = () => {
       <div className={styles.content}>
         <div className={styles.bookCard}>
           <div className={styles.thumbnailSection}>
-            <img 
-              src={currentBook.thumbnail} 
-              alt={currentBook.title}
-              className={styles.thumbnail}
-            />
-            <div className={styles.matchScore}>
-              {currentBook.matchScore}% Match
-            </div>
+            <img src={currentBook.thumbnail} alt={currentBook.title} className={styles.thumbnail} />
+            <div className={styles.matchScore}>{currentBook.matchScore}% Match</div>
           </div>
 
           <div className={styles.bookInfo}>
             <h3 className={styles.bookTitle}>{currentBook.title}</h3>
-            
+
             <div className={styles.authorRow}>
               <span className={styles.authorName}>by {currentBook.author.name}</span>
             </div>
@@ -82,18 +84,16 @@ const BookWidget = () => {
                 <span>{currentBook.rating.toFixed(1)}</span>
               </div>
               <span>•</span>
-              <div>
-                {formatReviewCount(currentBook.reviewsCount)} reviews
-              </div>
+              <div>{formatReviewCount(currentBook.reviewsCount)} reviews</div>
               <span>•</span>
-              <div>
-                {currentBook.pageCount} pages
-              </div>
+              <div>{currentBook.pageCount} pages</div>
             </div>
 
             <div className={styles.bottomRow}>
               <div className={styles.actionButtons}>
-                <Tooltip content={isBookmarked(currentBook.id) ? "Remove bookmark" : "Bookmark book"}>
+                <Tooltip
+                  content={isBookmarked(currentBook.id) ? 'Remove bookmark' : 'Bookmark book'}
+                >
                   <button
                     className={`${styles.iconButton} ${isBookmarked(currentBook.id) ? styles.bookmarked : ''}`}
                     onClick={() => {
@@ -104,24 +104,21 @@ const BookWidget = () => {
                       }
                     }}
                   >
-                    <BookmarkIcon 
-                      className={styles.actionIcon} 
+                    <BookmarkIcon
+                      className={styles.actionIcon}
                       filled={isBookmarked(currentBook.id)}
                     />
                   </button>
                 </Tooltip>
 
                 <Tooltip content="Share book">
-                  <button
-                    className={styles.iconButton}
-                    onClick={handleShare}
-                  >
+                  <button className={styles.iconButton} onClick={handleShare}>
                     <ShareIcon className={styles.actionIcon} />
                   </button>
                 </Tooltip>
 
                 <Tooltip content="Book description">
-                  <button 
+                  <button
                     className={styles.iconButton}
                     onClick={() => {
                       setActiveTab('why');
@@ -141,9 +138,9 @@ const BookWidget = () => {
               </div>
             </div>
 
-            <a 
-              href={currentBook.amazonUrl} 
-              target="_blank" 
+            <a
+              href={currentBook.amazonUrl}
+              target="_blank"
               rel="noopener noreferrer"
               className={styles.buyButton}
             >
@@ -165,4 +162,4 @@ const BookWidget = () => {
   );
 };
 
-export default BookWidget; 
+export default BookWidget;

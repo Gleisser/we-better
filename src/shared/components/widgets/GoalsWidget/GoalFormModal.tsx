@@ -31,32 +31,32 @@ interface GoalFormModalProps {
  * - Dynamic milestone management
  * - Form validation
  * - Responsive design
- * 
+ *
  * The form handles:
  * - Goal title and category
  * - Target date selection
  * - Milestone creation and deletion
  * - Progress tracking
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {boolean} props.isOpen - Controls modal visibility
  * @param {() => void} props.onClose - Handler for closing the modal
  * @param {(goal: Omit<Goal, 'id'>) => void} props.onSave - Handler for form submission
  * @param {Goal | null | undefined} props.initialGoal - Initial goal data for editing
- * 
+ *
  * @example
  * ```tsx
  * // Creating a new goal
  * function GoalManager() {
  *   const [isModalOpen, setIsModalOpen] = useState(false);
- * 
+ *
  *   const handleSave = (goalData: Omit<Goal, 'id'>) => {
  *     // Handle goal creation
  *     console.log('New goal:', goalData);
  *     setIsModalOpen(false);
  *   };
- * 
+ *
  *   return (
  *     <>
  *       <button onClick={() => setIsModalOpen(true)}>
@@ -73,12 +73,12 @@ interface GoalFormModalProps {
  * }
  * ```
  */
-export const GoalFormModal = ({ 
-  isOpen, 
-  onClose, 
+export const GoalFormModal = ({
+  isOpen,
+  onClose,
   onSave,
-  initialGoal 
-}: GoalFormModalProps) => {
+  initialGoal,
+}: GoalFormModalProps): JSX.Element => {
   /**
    * Form state containing all goal data except the ID.
    * Initialized with initial goal data or default values.
@@ -88,7 +88,7 @@ export const GoalFormModal = ({
     category: initialGoal?.category || 'personal',
     progress: initialGoal?.progress || 0,
     targetDate: initialGoal?.targetDate || '',
-    milestones: initialGoal?.milestones || []
+    milestones: initialGoal?.milestones || [],
   });
 
   /**
@@ -100,14 +100,14 @@ export const GoalFormModal = ({
    * Adds a new milestone to the goal if the input is not empty.
    * Generates a unique ID using timestamp and resets the input field.
    */
-  const handleAddMilestone = () => {
+  const handleAddMilestone = (): void => {
     if (newMilestone.trim()) {
       setFormData(prev => ({
         ...prev,
         milestones: [
           ...prev.milestones,
-          { id: `m-${Date.now()}`, title: newMilestone.trim(), completed: false }
-        ]
+          { id: `m-${Date.now()}`, title: newMilestone.trim(), completed: false },
+        ],
       }));
       setNewMilestone('');
     }
@@ -117,20 +117,20 @@ export const GoalFormModal = ({
    * Removes a milestone from the goal by its ID.
    * @param {string} id - The ID of the milestone to remove
    */
-  const handleRemoveMilestone = (id: string) => {
+  const handleRemoveMilestone = (id: string): void => {
     setFormData(prev => ({
       ...prev,
-      milestones: prev.milestones.filter(m => m.id !== id)
+      milestones: prev.milestones.filter(m => m.id !== id),
     }));
   };
 
   /**
    * Handles form submission by preventing default behavior,
    * calling the onSave callback with form data, and closing the modal.
-   * 
+   *
    * @param {React.FormEvent} e - The form submission event
    */
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     onSave(formData);
     onClose();
@@ -151,14 +151,8 @@ export const GoalFormModal = ({
           exit={{ scale: 0.95, opacity: 0 }}
         >
           <div className={styles.header}>
-            <h2 className={styles.title}>
-              {initialGoal ? 'Edit Goal' : 'Create New Goal'}
-            </h2>
-            <button
-              className={styles.closeButton}
-              onClick={onClose}
-              aria-label="Close modal"
-            >
+            <h2 className={styles.title}>{initialGoal ? 'Edit Goal' : 'Create New Goal'}</h2>
+            <button className={styles.closeButton} onClick={onClose} aria-label="Close modal">
               <XIcon className={styles.closeIcon} />
             </button>
           </div>
@@ -171,7 +165,7 @@ export const GoalFormModal = ({
                   type="text"
                   className={styles.input}
                   value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="Enter your goal"
                   required
                 />
@@ -188,10 +182,12 @@ export const GoalFormModal = ({
                     className={`${styles.categoryButton} ${
                       formData.category === category ? styles.selected : ''
                     }`}
-                    onClick={() => setFormData(prev => ({ 
-                      ...prev, 
-                      category: category as GoalCategory 
-                    }))}
+                    onClick={() =>
+                      setFormData(prev => ({
+                        ...prev,
+                        category: category as GoalCategory,
+                      }))
+                    }
                   >
                     <span className={styles.categoryIcon}>{config.icon}</span>
                     <span className={styles.categoryLabel}>{config.label}</span>
@@ -207,17 +203,21 @@ export const GoalFormModal = ({
                   type="date"
                   className={styles.input}
                   value={formData.targetDate}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    targetDate: e.target.value 
-                  }))}
+                  onChange={e =>
+                    setFormData(prev => ({
+                      ...prev,
+                      targetDate: e.target.value,
+                    }))
+                  }
                   required
                 />
-                <button 
+                <button
                   type="button"
                   className={styles.calendarButton}
                   onClick={() => {
-                    const dateInput = document.querySelector('input[type="date"]') as HTMLInputElement;
+                    const dateInput = document.querySelector(
+                      'input[type="date"]'
+                    ) as HTMLInputElement;
                     dateInput?.showPicker?.();
                   }}
                 >
@@ -233,20 +233,16 @@ export const GoalFormModal = ({
                   type="text"
                   className={styles.input}
                   value={newMilestone}
-                  onChange={(e) => setNewMilestone(e.target.value)}
+                  onChange={e => setNewMilestone(e.target.value)}
                   placeholder="Add a milestone"
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddMilestone()}
+                  onKeyPress={e => e.key === 'Enter' && handleAddMilestone()}
                 />
-                <button
-                  type="button"
-                  className={styles.addButton}
-                  onClick={handleAddMilestone}
-                >
+                <button type="button" className={styles.addButton} onClick={handleAddMilestone}>
                   Add
                 </button>
               </div>
               <ul className={styles.milestoneList}>
-                {formData.milestones.map((milestone) => (
+                {formData.milestones.map(milestone => (
                   <li key={milestone.id} className={styles.milestoneItem}>
                     <span>{milestone.title}</span>
                     <button
@@ -262,17 +258,10 @@ export const GoalFormModal = ({
             </div>
 
             <div className={styles.footer}>
-              <button 
-                type="button" 
-                className={styles.cancelButton} 
-                onClick={onClose}
-              >
+              <button type="button" className={styles.cancelButton} onClick={onClose}>
                 Cancel
               </button>
-              <button 
-                type="submit" 
-                className={styles.saveButton}
-              >
+              <button type="submit" className={styles.saveButton}>
                 {initialGoal ? 'Save Changes' : 'Create Goal'}
               </button>
             </div>
@@ -281,4 +270,4 @@ export const GoalFormModal = ({
       </motion.div>
     </Portal>
   );
-}; 
+};

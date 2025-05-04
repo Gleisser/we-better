@@ -29,11 +29,11 @@ interface CourseDetailsModalProps {
  * - Visual match score representation
  * - Dynamic match description based on score
  * - Animated benefit points
- * 
+ *
  * The modal has two main sections:
  * 1. Skills Tab: Displays animated tags of skills gained from the course
  * 2. Why Tab: Shows match score, course relevance, and key benefits
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {Course} props.course - Course data to display
@@ -41,13 +41,13 @@ interface CourseDetailsModalProps {
  * @param {() => void} props.onClose - Handler for closing the modal
  * @param {'skills' | 'why'} props.activeTab - Active tab selection
  * @param {(tab: 'skills' | 'why') => void} props.onTabChange - Tab change handler
- * 
+ *
  * @example
  * ```tsx
  * function CourseView({ course }) {
  *   const [isModalOpen, setIsModalOpen] = useState(false);
  *   const [activeTab, setActiveTab] = useState<'skills' | 'why'>('skills');
- * 
+ *
  *   return (
  *     <>
  *       <button onClick={() => setIsModalOpen(true)}>
@@ -65,25 +65,25 @@ interface CourseDetailsModalProps {
  * }
  * ```
  */
-export const CourseDetailsModal = ({ 
-  course, 
-  isOpen, 
-  onClose, 
+export const CourseDetailsModal = ({
+  course,
+  isOpen,
+  onClose,
   activeTab,
-  onTabChange 
-}: CourseDetailsModalProps) => {
+  onTabChange,
+}: CourseDetailsModalProps): JSX.Element => {
   /**
    * Generates a descriptive message based on the course match score.
    * Higher scores result in more enthusiastic recommendations.
-   * 
+   *
    * @param {number} matchScore - The course match score (0-100)
    * @returns {string} A descriptive message about the course match
    */
   const getMatchDescription = (matchScore: number): string => {
-    if (matchScore >= 90) return "Perfect match for your interests!";
-    if (matchScore >= 80) return "Highly relevant to your goals";
-    if (matchScore >= 70) return "Aligns with your learning path";
-    return "Recommended based on your profile";
+    if (matchScore >= 90) return 'Perfect match for your interests!';
+    if (matchScore >= 80) return 'Highly relevant to your goals';
+    if (matchScore >= 70) return 'Aligns with your learning path';
+    return 'Recommended based on your profile';
   };
 
   return (
@@ -128,14 +128,13 @@ export const CourseDetailsModal = ({
         ) : (
           <div className={styles.whyContent}>
             <div className={styles.matchScore}>
-              <div className={styles.matchScoreCircle}
+              <div
+                className={styles.matchScoreCircle}
                 style={{
-                  background: `conic-gradient(#8B5CF6 ${course.matchScore}%, transparent ${course.matchScore}%)`
+                  background: `conic-gradient(#8B5CF6 ${course.matchScore}%, transparent ${course.matchScore}%)`,
                 }}
               >
-                <span className={styles.matchScoreText}>
-                  {course.matchScore}%
-                </span>
+                <span className={styles.matchScoreText}>{course.matchScore}%</span>
               </div>
               <span className={styles.matchDescription}>
                 {getMatchDescription(course.matchScore)}
@@ -143,7 +142,7 @@ export const CourseDetailsModal = ({
             </div>
 
             <div className={styles.whyPoints}>
-              <motion.div 
+              <motion.div
                 className={styles.whyPoint}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -152,7 +151,7 @@ export const CourseDetailsModal = ({
                 <span className={styles.whyPointIcon}>✨</span>
                 <span>Recently updated ({course.lastUpdated})</span>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className={styles.whyPoint}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -161,7 +160,7 @@ export const CourseDetailsModal = ({
                 <span className={styles.whyPointIcon}>👥</span>
                 <span>Active learning community</span>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className={styles.whyPoint}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -176,4 +175,4 @@ export const CourseDetailsModal = ({
       </div>
     </Modal>
   );
-}; 
+};

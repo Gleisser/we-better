@@ -5,7 +5,7 @@ interface ReviewTimerProps {
   nextReviewDate: Date;
 }
 
-export const ReviewTimer = ({ nextReviewDate }: ReviewTimerProps) => {
+export const ReviewTimer = ({ nextReviewDate }: ReviewTimerProps): JSX.Element => {
   const daysUntilReview = differenceInDays(nextReviewDate, new Date());
   const isToday = daysUntilReview === 0;
 
@@ -15,16 +15,10 @@ export const ReviewTimer = ({ nextReviewDate }: ReviewTimerProps) => {
       <div className={styles.timerInfo}>
         <span className={styles.timerLabel}>Next Goals Review</span>
         <span className={styles.timerValue}>
-          {daysUntilReview > 0 ? (
-            <>in {daysUntilReview} days</>
-          ) : (
-            <>Today</>
-          )}
+          {daysUntilReview > 0 ? <>in {daysUntilReview} days</> : <>Today</>}
         </span>
-        <span className={styles.timerDate}>
-          {format(nextReviewDate, 'MMM d, yyyy')}
-        </span>
+        <span className={styles.timerDate}>{format(nextReviewDate, 'MMM d, yyyy')}</span>
       </div>
     </div>
   );
-}; 
+};
