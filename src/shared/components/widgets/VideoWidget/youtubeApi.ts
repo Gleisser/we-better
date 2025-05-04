@@ -1,7 +1,7 @@
 let apiLoaded = false;
 let apiLoadPromise: Promise<void> | null = null;
 
-export const loadYouTubeAPI = () => {
+export const loadYouTubeAPI = (): Promise<void> => {
   // Return existing promise if API is already loading
   if (apiLoadPromise) {
     return apiLoadPromise;
@@ -13,7 +13,7 @@ export const loadYouTubeAPI = () => {
   }
 
   // Create new promise for API loading
-  apiLoadPromise = new Promise<void>((resolve) => {
+  apiLoadPromise = new Promise<void>(resolve => {
     // Set global callback
     window.onYouTubeIframeAPIReady = () => {
       apiLoaded = true;
@@ -30,4 +30,4 @@ export const loadYouTubeAPI = () => {
   });
 
   return apiLoadPromise;
-}; 
+};

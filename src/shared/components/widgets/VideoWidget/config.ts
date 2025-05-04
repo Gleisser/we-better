@@ -7,11 +7,14 @@ export const MOCK_VIDEOS: Video[] = [
     title: 'The Psychology of Self-Improvement',
     author: 'Academy of Ideas',
     duration: '18:24',
-    views: '124K views',
+    views: 124000,
     rating: 4.8,
     category: 'Personal Growth',
     subCategory: 'Psychology',
-    badge: 'trending'
+    badge: 'trending',
+    description: 'An in-depth exploration of psychological principles for personal development.',
+    publishedAt: '2023-05-15',
+    tags: ['psychology', 'self-improvement', 'personal growth'],
   },
   {
     id: '2',
@@ -19,11 +22,14 @@ export const MOCK_VIDEOS: Video[] = [
     title: 'Mindful Leadership: Leading with Purpose',
     author: 'Simon Sinek',
     duration: '22:15',
-    views: '89K views',
+    views: 89000,
     rating: 4.9,
     category: 'Leadership',
     subCategory: 'Mindfulness',
-    badge: 'new'
+    badge: 'new',
+    description: 'A deep dive into the principles of mindful leadership.',
+    publishedAt: '2023-04-20',
+    tags: ['leadership', 'mindfulness', 'leadership principles'],
   },
   {
     id: 'v3',
@@ -34,7 +40,10 @@ export const MOCK_VIDEOS: Video[] = [
     rating: 4.7,
     duration: '15:30',
     author: 'Cal Newport',
-    views: '256K'
+    views: 256000,
+    description: 'Discover the secrets to achieving deep work and flow state.',
+    publishedAt: '2023-03-10',
+    tags: ['productivity', 'deep work', 'flow state'],
   },
   {
     id: 'v4',
@@ -45,7 +54,10 @@ export const MOCK_VIDEOS: Video[] = [
     rating: 4.9,
     duration: '12:45',
     author: 'Jim Kwik',
-    views: '198K'
+    views: 198000,
+    description: 'Learn how to start your day right for peak performance.',
+    publishedAt: '2023-02-15',
+    tags: ['health', 'morning routine', 'peak performance'],
   },
   {
     id: 'v5',
@@ -56,7 +68,10 @@ export const MOCK_VIDEOS: Video[] = [
     rating: 4.8,
     duration: '20:18',
     author: 'Daniel Goleman',
-    views: '167K'
+    views: 167000,
+    description: 'Understand the importance of emotional intelligence in leadership.',
+    publishedAt: '2023-01-01',
+    tags: ['leadership', 'emotional intelligence', 'workplace'],
   },
   {
     id: 'v6',
@@ -67,6 +82,9 @@ export const MOCK_VIDEOS: Video[] = [
     rating: 4.9,
     duration: '16:50',
     author: 'Goodful',
-    views: '302K'
-  }
-]; 
+    views: 302000,
+    description: "A beginner's guide to meditation for relaxation and mental clarity.",
+    publishedAt: '2022-12-01',
+    tags: ['mindfulness', 'meditation', 'beginner'],
+  },
+];

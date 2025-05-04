@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { motion, useSpring, useTransform } from 'framer-motion';
 
 interface ViewCounterProps {
@@ -6,9 +6,9 @@ interface ViewCounterProps {
   className?: string;
 }
 
-const ViewCounter = ({ value, className }: ViewCounterProps) => {
+const ViewCounter = ({ value, className }: ViewCounterProps): JSX.Element => {
   const spring = useSpring(0, { mass: 1, stiffness: 100, damping: 30 });
-  const displayed = useTransform(spring, (current) => {
+  const displayed = useTransform(spring, current => {
     if (current >= 1000000) {
       return `${(current / 1000000).toFixed(1)}M views`;
     }
@@ -22,11 +22,7 @@ const ViewCounter = ({ value, className }: ViewCounterProps) => {
     spring.set(value);
   }, [spring, value]);
 
-  return (
-    <motion.span className={className}>
-      {displayed}
-    </motion.span>
-  );
+  return <motion.span className={className}>{displayed}</motion.span>;
 };
 
-export default ViewCounter; 
+export default ViewCounter;
