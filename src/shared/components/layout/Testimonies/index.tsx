@@ -4,13 +4,13 @@ import { lazy, Suspense } from 'react';
 const TestimoniesComponent = lazy(() => import('./Testimonies'));
 
 // Loading component
-const LoadingTestimonies = () => (
+const LoadingTestimonies = (): JSX.Element => (
   <div className="min-h-[500px] flex items-center justify-center bg-black">
     <div className="text-white/50">Loading testimonies...</div>
   </div>
 );
 
-export const Testimonies = () => {
+export const Testimonies = (): JSX.Element => {
   return (
     <Suspense fallback={<LoadingTestimonies />}>
       <TestimoniesComponent />
@@ -18,4 +18,4 @@ export const Testimonies = () => {
   );
 };
 
-export default Testimonies; 
+export default Testimonies;

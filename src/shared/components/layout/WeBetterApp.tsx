@@ -7,7 +7,7 @@ import { HeaderProvider } from '@/shared/contexts/HeaderContext';
 import { MobileNav } from '@/shared/components/navigation/MobileNav/MobileNav';
 import styles from './WeBetterApp.module.css';
 
-const WeBetterApp = () => {
+const WeBetterApp = (): JSX.Element => {
   return (
     <HeaderProvider>
       <div className={styles.appContainer}>
@@ -22,7 +22,7 @@ const WeBetterApp = () => {
               <h1 className={styles.greeting}>
                 Good Morning, <span className={styles.userName}>Gleisser</span>
               </h1>
-              
+
               <div className={styles.headerRight}>
                 <SearchBar />
                 <HeaderActions />
@@ -66,4 +66,4 @@ const WeBetterApp = () => {
   );
 };
 
-export default WeBetterApp; 
+export default WeBetterApp;

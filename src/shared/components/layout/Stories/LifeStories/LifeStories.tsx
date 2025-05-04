@@ -18,11 +18,11 @@ interface LifeStoriesProps {
   onCategorySelect: (category: LifeCategory) => void;
 }
 
-const LifeStories = ({ categories, onCategorySelect }: LifeStoriesProps) => {
+const LifeStories = ({ categories, onCategorySelect }: LifeStoriesProps): JSX.Element => {
   return (
     <div className={styles.container}>
       <div className={styles.storiesWrapper}>
-        {categories.map((category) => (
+        {categories.map((category: LifeCategory) => (
           <motion.button
             key={category.id}
             className={styles.storyItem}
@@ -30,10 +30,10 @@ const LifeStories = ({ categories, onCategorySelect }: LifeStoriesProps) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <div 
+            <div
               className={`${styles.storyRing} ${category.hasUpdate ? styles.hasUpdate : ''}`}
               style={{
-                background: `linear-gradient(45deg, ${category.color.from}, ${category.color.to})`
+                background: `linear-gradient(45deg, ${category.color.from}, ${category.color.to})`,
               }}
             >
               <div className={styles.storyContent}>
@@ -48,4 +48,4 @@ const LifeStories = ({ categories, onCategorySelect }: LifeStoriesProps) => {
   );
 };
 
-export default LifeStories; 
+export default LifeStories;

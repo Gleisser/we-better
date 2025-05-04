@@ -4,13 +4,13 @@ import { lazy, Suspense } from 'react';
 const ShowcaseComponent = lazy(() => import('./Showcase'));
 
 // Loading component
-const LoadingShowcase = () => (
+const LoadingShowcase = (): JSX.Element => (
   <div className="min-h-[600px] flex items-center justify-center bg-black">
     <div className="text-white/50">Loading showcase...</div>
   </div>
 );
 
-export const Showcase = () => {
+export const Showcase = (): JSX.Element => {
   return (
     <Suspense fallback={<LoadingShowcase />}>
       <ShowcaseComponent />
@@ -18,4 +18,4 @@ export const Showcase = () => {
   );
 };
 
-export default Showcase; 
+export default Showcase;

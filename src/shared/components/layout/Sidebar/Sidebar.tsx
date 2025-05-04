@@ -1,11 +1,16 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/shared/contexts/AuthContext';
-import { 
-  HomeIcon, VideoIcon, ArticleIcon, 
-  CourseIcon, PodcastIcon, SettingsIcon, 
-  LogoutIcon, CollapseIcon 
+import {
+  HomeIcon,
+  VideoIcon,
+  ArticleIcon,
+  CourseIcon,
+  PodcastIcon,
+  SettingsIcon,
+  LogoutIcon,
+  CollapseIcon,
 } from '@/shared/components/common/icons';
 import styles from './Sidebar.module.css';
 
@@ -13,37 +18,36 @@ const menuItems = [
   {
     path: '/app/dashboard',
     label: 'Dashboard',
-    icon: <HomeIcon className={styles.icon} />
+    icon: <HomeIcon className={styles.icon} />,
   },
   {
     path: '/app/videos',
     label: 'Videos',
-    icon: <VideoIcon className={styles.icon} />
+    icon: <VideoIcon className={styles.icon} />,
   },
   {
     path: '/app/articles',
     label: 'Articles',
-    icon: <ArticleIcon className={styles.icon} />
+    icon: <ArticleIcon className={styles.icon} />,
   },
   {
     path: '/app/courses',
     label: 'Courses',
-    icon: <CourseIcon className={styles.icon} />
+    icon: <CourseIcon className={styles.icon} />,
   },
   {
     path: '/app/podcasts',
     label: 'Podcasts',
-    icon: <PodcastIcon className={styles.icon} />
-  }
+    icon: <PodcastIcon className={styles.icon} />,
+  },
 ];
 
-const Sidebar = () => {
+const Sidebar = (): JSX.Element => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const { logout } = useAuth();
 
-  const handleSignOut = async () => {
+  const handleSignOut = async (): Promise<void> => {
     try {
       await logout();
     } catch (error) {
@@ -51,9 +55,12 @@ const Sidebar = () => {
     }
   };
 
-  const isActiveRoute = (path: string) => {
+  const isActiveRoute = (path: string): boolean => {
     // Check if we're at /app or /app/ and the path is dashboard
-    if ((location.pathname === '/app' || location.pathname === '/app/') && path === '/app/dashboard') {
+    if (
+      (location.pathname === '/app' || location.pathname === '/app/') &&
+      path === '/app/dashboard'
+    ) {
       return true;
     }
     // Otherwise check exact path match
@@ -65,17 +72,14 @@ const Sidebar = () => {
       <div className={styles.sidebarContent}>
         {/* Collapse Button */}
         <div className={styles.topSection}>
-          <button 
-            className={styles.collapseButton}
-            onClick={() => setIsCollapsed(!isCollapsed)}
-          >
+          <button className={styles.collapseButton} onClick={() => setIsCollapsed(!isCollapsed)}>
             <CollapseIcon className={`w-4 h-4 ${isCollapsed ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
         {/* Main Navigation */}
         <nav className={styles.mainNav}>
-          {menuItems.map((item) => (
+          {menuItems.map(item => (
             <Link
               key={item.path}
               to={item.path}
@@ -84,7 +88,7 @@ const Sidebar = () => {
             >
               <span className={styles.icon}>{item.icon}</span>
               {!isCollapsed && (
-                <motion.span 
+                <motion.span
                   className={styles.label}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -103,10 +107,7 @@ const Sidebar = () => {
             <SettingsIcon className={styles.icon} />
             {!isCollapsed && <span className={styles.label}>Settings</span>}
           </Link>
-          <button 
-            className={styles.navItem}
-            onClick={handleSignOut}
-          >
+          <button className={styles.navItem} onClick={handleSignOut}>
             <LogoutIcon className={styles.icon} />
             {!isCollapsed && <span className={styles.label}>Logout</span>}
           </button>
@@ -116,4 +117,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar; 
+export default Sidebar;

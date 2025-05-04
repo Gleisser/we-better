@@ -4,13 +4,13 @@ import { lazy, Suspense } from 'react';
 const ToolsComponent = lazy(() => import('./Tools'));
 
 // Loading component
-const LoadingTools = () => (
+const LoadingTools = (): JSX.Element => (
   <div className="min-h-[600px] flex items-center justify-center bg-black">
     <div className="text-white/50">Loading tools...</div>
   </div>
 );
 
-export const Tools = () => {
+export const Tools = (): JSX.Element => {
   return (
     <Suspense fallback={<LoadingTools />}>
       <ToolsComponent />
@@ -18,4 +18,4 @@ export const Tools = () => {
   );
 };
 
-export default Tools; 
+export default Tools;

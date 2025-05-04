@@ -15,7 +15,7 @@ const categories = [
   { id: 'courses', label: 'Courses' },
 ];
 
-const SearchBar = () => {
+const SearchBar = (): JSX.Element => {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
@@ -34,17 +34,14 @@ const SearchBar = () => {
     }
   }, [isCategoryOpen]);
 
-  const handleCategorySelect = (category: typeof categories[0]) => {
+  const handleCategorySelect = (category: (typeof categories)[0]): void => {
     setSelectedCategory(category);
     setIsCategoryOpen(false);
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        categoryButtonRef.current && 
-        !categoryButtonRef.current.contains(event.target as Node)
-      ) {
+    const handleClickOutside = (event: MouseEvent): void => {
+      if (categoryButtonRef.current && !categoryButtonRef.current.contains(event.target as Node)) {
         setIsCategoryOpen(false);
       }
     };
@@ -59,12 +56,12 @@ const SearchBar = () => {
 
   return (
     <div className={styles.container}>
-      <motion.div 
+      <motion.div
         className={styles.searchContainer}
         animate={{ width: isExpanded ? '480px' : '40px' }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
-        <button 
+        <button
           className={styles.searchButton}
           onClick={() => setIsExpanded(true)}
           aria-label="Search"
@@ -75,7 +72,7 @@ const SearchBar = () => {
         <AnimatePresence>
           {isExpanded && (
             <>
-              <motion.div 
+              <motion.div
                 className={styles.expandedContent}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -84,18 +81,20 @@ const SearchBar = () => {
               >
                 <div className={styles.inputContainer}>
                   <div className={styles.categoryDropdown}>
-                    <button 
+                    <button
                       ref={categoryButtonRef}
                       className={styles.categoryButton}
                       onClick={() => setIsCategoryOpen(!isCategoryOpen)}
                     >
                       {selectedCategory.label}
-                      <ChevronDownIcon className={`${styles.chevronIcon} ${isCategoryOpen ? styles.rotate : ''}`} />
+                      <ChevronDownIcon
+                        className={`${styles.chevronIcon} ${isCategoryOpen ? styles.rotate : ''}`}
+                      />
                     </button>
 
                     <AnimatePresence>
                       {isCategoryOpen && (
-                        <motion.div 
+                        <motion.div
                           className={styles.dropdownMenu}
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -126,7 +125,7 @@ const SearchBar = () => {
                   <input
                     type="text"
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={e => setQuery(e.target.value)}
                     placeholder={`Search ${selectedCategory.id === 'all' ? 'anything' : selectedCategory.label.toLowerCase()}...`}
                     className={styles.searchInput}
                     autoFocus
@@ -134,7 +133,7 @@ const SearchBar = () => {
                 </div>
               </motion.div>
 
-              <button 
+              <button
                 className={styles.closeButton}
                 onClick={() => {
                   setIsExpanded(false);
@@ -152,4 +151,4 @@ const SearchBar = () => {
   );
 };
 
-export default SearchBar; 
+export default SearchBar;

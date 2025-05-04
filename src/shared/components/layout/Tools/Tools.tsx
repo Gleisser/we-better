@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './Tools.module.css';
 import { TOOLS_FALLBACK } from '@/utils/constants/fallback';
 import { useTool } from '@/shared/hooks/useTool';
-import { ToolTab } from '@/types/tool';
+import { ToolTab } from '@/utils/types/tool';
 import { API_CONFIG } from '@/core/config/api-config';
 import { ToolIcon } from '@/shared/components/common/icons';
 import ToolsSkeleton from './ToolsSkeleton';
@@ -10,19 +10,19 @@ import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
-const Tools = () => {
+const Tools = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useTool();
   const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
-    fallbackMessage: 'Failed to load tools content'
+    fallbackMessage: 'Failed to load tools content',
   });
   const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500
+    minimumLoadingTime: 500,
   });
 
   const tabs = data?.data?.tabs || TOOLS_FALLBACK;
-  
+
   // State and refs
   const [activeTab, setActiveTab] = useState<ToolTab>(() => {
     return data?.data?.tabs?.[0] || TOOLS_FALLBACK[0];
@@ -45,7 +45,7 @@ const Tools = () => {
 
   // Collect poster images for preloading
   const getPosterUrls = useCallback(() => {
-    return tabs.map(tab => `/assets/images/tools/${tab.id}-poster.webp`);
+    return tabs.map((tab: ToolTab) => `/assets/images/tools/${tab.id}-poster.webp`);
   }, [tabs]);
 
   // Handle image preloading
@@ -75,26 +75,33 @@ const Tools = () => {
   }, []);
 
   // Video setup
-  const setupVideo = useCallback((video: HTMLVideoElement, tab: ToolTab) => {
-    const videoUrl = data?.data 
-      ? API_CONFIG.imageBaseURL + tab.videoSrc.video[0].url 
-      : tab.videoSrc.video[0].url;
+  const setupVideo = useCallback(
+    (video: HTMLVideoElement, tab: ToolTab) => {
+      const videoUrl = data?.data
+        ? API_CONFIG.imageBaseURL + tab.videoSrc.video[0].url
+        : tab.videoSrc.video[0].url;
 
-    video.src = videoUrl;
-    video.load();
+      video.src = videoUrl;
+      video.load();
 
-    video.addEventListener('loadedmetadata', () => {
-      if (isInView) {
-        handleVideoPlayback(video, true);
-      }
-    }, { once: true });
-  }, [data?.data, isInView, handleVideoPlayback]);
+      video.addEventListener(
+        'loadedmetadata',
+        () => {
+          if (isInView) {
+            handleVideoPlayback(video, true);
+          }
+        },
+        { once: true }
+      );
+    },
+    [data?.data, isInView, handleVideoPlayback]
+  );
 
   // Intersection Observer setup
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           setIsInView(entry.isIntersecting);
         });
       },
@@ -152,10 +159,7 @@ const Tools = () => {
         <div className={styles.toolsContent}>
           <div className={styles.errorState} role="alert">
             <p>{error?.message}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className={styles.retryButton}
-            >
+            <button onClick={() => window.location.reload()} className={styles.retryButton}>
               Try Again
             </button>
           </div>
@@ -165,28 +169,19 @@ const Tools = () => {
   }
 
   return (
-    <section 
-      className={styles.toolsContainer}
-      aria-labelledby="tools-title"
-    >
+    <section className={styles.toolsContainer} aria-labelledby="tools-title">
       <div className={styles.toolsContent}>
         <div className={styles.titleContainer}>
-          <h2 
-            className={styles.mainTitle}
-            id="tools-title"
-          >
-            <span className={styles.gradientText}>{gradientText || 'WeBetter'}</span> {toolName || 'Toolkit'}
+          <h2 className={styles.mainTitle} id="tools-title">
+            <span className={styles.gradientText}>{gradientText || 'WeBetter'}</span>{' '}
+            {toolName || 'Toolkit'}
             <ToolIcon className={styles.toolIcon} aria-hidden="true" />
           </h2>
         </div>
 
         <div className={styles.contentWrapper}>
-          <div 
-            className={styles.tabsContainer}
-            role="tablist"
-            aria-label="Tool categories"
-          >
-            {tabs.map((tool) => (
+          <div className={styles.tabsContainer} role="tablist" aria-label="Tool categories">
+            {tabs.map((tool: ToolTab) => (
               <button
                 key={tool.id}
                 onClick={() => setActiveTab(tool)}
@@ -201,7 +196,7 @@ const Tools = () => {
             ))}
           </div>
 
-          <div 
+          <div
             className={styles.contentContainer}
             role="tabpanel"
             aria-labelledby={`tab-${activeTab.id}`}
@@ -213,11 +208,7 @@ const Tools = () => {
               <p className={styles.description}>{activeTab.description}</p>
             </div>
 
-            <div 
-              className={styles.videoContainer} 
-              ref={containerRef}
-              role="presentation"
-            >
+            <div className={styles.videoContainer} ref={containerRef} role="presentation">
               <video
                 ref={videoRef}
                 autoPlay
@@ -239,4 +230,4 @@ const Tools = () => {
   );
 };
 
-export default Tools; 
+export default Tools;

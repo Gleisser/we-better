@@ -3,56 +3,58 @@ import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import styles from './Showcase.module.css';
 import { SHOWCASE_FALLBACK } from '@/utils/constants/fallback';
 import { useShowcase } from '@/shared/hooks/useShowcase';
-import { API_CONFIG } from '@/core/config/api-config';
-import { ShowcaseArrowIcon, ShowcaseArrowRightIcon, ShowcaseMobileArrowIcon, ShowcaseMobileArrowRightIcon } from '@/shared/components/common/icons';
+import {
+  ShowcaseArrowIcon,
+  ShowcaseArrowRightIcon,
+  ShowcaseMobileArrowIcon,
+  ShowcaseMobileArrowRightIcon,
+} from '@/shared/components/common/icons';
 import ShowcaseSkeleton from './ShowcaseSkeleton';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
+import { Belt } from '@/utils/types/showcase';
+import { ThumbnailImage } from '@/utils/types/common/image';
 
-const Showcase = () => {
+const Showcase = (): JSX.Element => {
   // State management
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
   const [imageIndex, setImageIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  
-  // Refs
-  const observerRef = useRef<IntersectionObserver | null>(null);
+
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
 
   // Initialize hooks
   const { data: showcase, isLoading: isDataLoading } = useShowcase();
   const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
-    fallbackMessage: 'Failed to load showcase content'
+    fallbackMessage: 'Failed to load showcase content',
   });
   const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500
+    minimumLoadingTime: 500,
   });
 
   // Memoize belts and derived values
   const belts = showcase?.data.belts || SHOWCASE_FALLBACK.belts;
-  const totalPages = useMemo(() => 
-    isMobile ? belts.length : Math.ceil(belts.length / 4),
+  const totalPages = useMemo(
+    () => (isMobile ? belts.length : Math.ceil(belts.length / 4)),
     [isMobile, belts.length]
   );
-  const itemsPerPage = useMemo(() => isMobile ? 1 : 4, [isMobile]);
-  const currentItems = useMemo(() => 
-    belts.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage),
+  const itemsPerPage = useMemo(() => (isMobile ? 1 : 4), [isMobile]);
+  const currentItems = useMemo(
+    () => belts.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage),
     [belts, currentPage, itemsPerPage]
   );
 
   // Memoize current page URLs calculation
   const getCurrentPageUrls = useCallback(() => {
     if (!currentItems.length) return [];
-    
-    return currentItems.reduce((urls: string[], item) => {
-      const itemUrls = item.images.map(image => 
-        showcase 
-          ? image.src
-          : image.src
+
+    return currentItems.reduce((urls: string[], item: Belt) => {
+      const itemUrls = item.images.map((image: ThumbnailImage) =>
+        showcase ? image.src : image.src
       );
       return [...urls, ...itemUrls];
     }, []);
@@ -83,13 +85,11 @@ const Showcase = () => {
   // Memoize image reset function
   const resetImages = useCallback(() => {
     if (!currentItems.length) return;
-    
+
     imageRefs.current.forEach((ref, index) => {
       if (ref && currentItems[index]) {
         const item = currentItems[index];
-        const initialSrc = showcase 
-          ? item.images[0].src
-          : item.images[0].src;
+        const initialSrc = showcase ? item.images[0].src : item.images[0].src;
         ref.src = initialSrc;
       }
     });
@@ -98,24 +98,24 @@ const Showcase = () => {
   // Handle image rotation
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
-    
+
     if (hoveredItem && currentItems.length) {
-      const hoveredBelt = currentItems.find(item => item.id === hoveredItem);
+      const hoveredBelt = currentItems.find((item: Belt) => item.id === hoveredItem);
       // Only set up interval if there are multiple images
       if (hoveredBelt && hoveredBelt.images.length > 1) {
         interval = setInterval(() => {
           setImageIndex(prev => {
-            const currentItemRef = imageRefs.current.find((_, i) => 
-              currentItems[i]?.id === hoveredItem
+            const currentItemRef = imageRefs.current.find(
+              (_, i) => currentItems[i]?.id === hoveredItem
             );
-            
+
             if (currentItemRef && hoveredBelt) {
               // Use modulo with actual number of images
               const nextIndex = (prev + 1) % hoveredBelt.images.length;
               currentItemRef.src = hoveredBelt.images[nextIndex].src;
               return nextIndex;
             }
-            
+
             return prev;
           });
         }, 1000);
@@ -157,24 +157,27 @@ const Showcase = () => {
   }, [loadImages, currentPage, isDataLoading, currentItems.length]);
 
   // Navigation handlers
-  const nextPage = () => {
+  const nextPage = (): void => {
     setDirection(1);
-    setCurrentPage((prev) => (prev + 1) % totalPages);
+    setCurrentPage(prev => (prev + 1) % totalPages);
   };
 
-  const prevPage = () => {
+  const prevPage = (): void => {
     setDirection(-1);
-    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
+    setCurrentPage(prev => (prev - 1 + totalPages) % totalPages);
   };
 
   // Swipe handlers
-  const swipePower = (offset: number, velocity: number) => {
+  const swipePower = (offset: number, velocity: number): number => {
     return Math.abs(offset) * velocity;
   };
 
   const swipeConfidenceThreshold = 10000;
 
-  const handleDragEnd = (e: MouseEvent | TouchEvent | PointerEvent, { offset, velocity }: PanInfo) => {
+  const handleDragEnd = (
+    e: MouseEvent | TouchEvent | PointerEvent,
+    { offset, velocity }: PanInfo
+  ): void => {
     if (isMobile) {
       const swipe = swipePower(offset.x, velocity.x);
 
@@ -190,18 +193,18 @@ const Showcase = () => {
   const slideVariants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 1000 : -1000,
-      opacity: 0
+      opacity: 0,
     }),
     center: {
       zIndex: 1,
       x: 0,
-      opacity: 1
+      opacity: 1,
     },
     exit: (direction: number) => ({
       zIndex: 0,
       x: direction < 0 ? 1000 : -1000,
-      opacity: 0
-    })
+      opacity: 0,
+    }),
   };
 
   // Show loading state
@@ -216,10 +219,7 @@ const Showcase = () => {
         <div className={styles.showcaseContent}>
           <div className={styles.errorState} role="alert">
             <p>{error?.message}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className={styles.retryButton}
-            >
+            <button onClick={() => window.location.reload()} className={styles.retryButton}>
               Try Again
             </button>
           </div>
@@ -230,37 +230,23 @@ const Showcase = () => {
 
   // Rest of the component remains the same...
   return (
-    <section 
-      className={styles.showcaseContainer}
-      aria-labelledby="showcase-title"
-    >
+    <section className={styles.showcaseContainer} aria-labelledby="showcase-title">
       <div className={styles.showcaseContent}>
         <div className={styles.header}>
-          <h2 
-            className={styles.title}
-            id="showcase-title"
-          >
+          <h2 className={styles.title} id="showcase-title">
             <span>{showcase?.data.title}</span>
             <span className={styles.gradientText}>{showcase?.data.subtitle}</span>
           </h2>
           {!isMobile && (
-            <div 
-              className={styles.navigation}
-              role="navigation"
-              aria-label="Showcase navigation"
-            >
-              <button 
-                onClick={prevPage} 
+            <div className={styles.navigation} role="navigation" aria-label="Showcase navigation">
+              <button
+                onClick={prevPage}
                 className={styles.navButton}
                 aria-label="Previous showcase"
               >
-                <ShowcaseArrowIcon className={styles.navIcon} aria-hidden="true" /> 
+                <ShowcaseArrowIcon className={styles.navIcon} aria-hidden="true" />
               </button>
-              <button 
-                onClick={nextPage} 
-                className={styles.navButton}
-                aria-label="Next showcase"
-              >
+              <button onClick={nextPage} className={styles.navButton} aria-label="Next showcase">
                 <ShowcaseArrowRightIcon className={styles.navIcon} aria-hidden="true" />
               </button>
             </div>
@@ -276,19 +262,19 @@ const Showcase = () => {
             animate="center"
             exit="exit"
             transition={{
-              x: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 }
+              x: { type: 'spring', stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
             }}
             className={styles.belt}
-            drag={isMobile ? "x" : false}
+            drag={isMobile ? 'x' : false}
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={1}
             onDragEnd={handleDragEnd}
-            whileDrag={{ cursor: "grabbing" }}
+            whileDrag={{ cursor: 'grabbing' }}
             role="region"
             aria-label="Showcase items"
           >
-            {currentItems.map((item, index) => (
+            {currentItems.map((item: Belt, index: number) => (
               <div
                 key={item.id}
                 className={styles.item}
@@ -302,14 +288,11 @@ const Showcase = () => {
               >
                 <div className={styles.imageContainer}>
                   <img
-                    ref={el => imageRefs.current[index] = el}
-                    src={showcase 
-                      ? item.images[0].src
-                      : item.images[0].src
-                    }
+                    ref={el => (imageRefs.current[index] = el)}
+                    src={showcase ? item.images[0].src : item.images[0].src}
                     alt={item.images[hoveredItem === item.id ? imageIndex : 0].alt}
                     className={styles.image}
-                    loading={index === 0 ? "eager" : "lazy"}
+                    loading={index === 0 ? 'eager' : 'lazy'}
                     decoding="async"
                     width="600"
                     height="450"
@@ -324,23 +307,15 @@ const Showcase = () => {
         </AnimatePresence>
 
         {isMobile && (
-          <div 
+          <div
             className={styles.navigation}
             role="navigation"
             aria-label="Mobile showcase navigation"
           >
-            <button 
-              onClick={prevPage} 
-              className={styles.navButton}
-              aria-label="Previous showcase"
-            >
-              <ShowcaseMobileArrowIcon className={styles.navIcon} aria-hidden="true" /> 
+            <button onClick={prevPage} className={styles.navButton} aria-label="Previous showcase">
+              <ShowcaseMobileArrowIcon className={styles.navIcon} aria-hidden="true" />
             </button>
-            <button 
-              onClick={nextPage} 
-              className={styles.navButton}
-              aria-label="Next showcase"
-            >
+            <button onClick={nextPage} className={styles.navButton} aria-label="Next showcase">
               <ShowcaseMobileArrowRightIcon className={styles.navIcon} aria-hidden="true" />
             </button>
           </div>
@@ -350,4 +325,4 @@ const Showcase = () => {
   );
 };
 
-export default Showcase; 
+export default Showcase;

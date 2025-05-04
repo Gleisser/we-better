@@ -7,6 +7,7 @@ import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { useCallback, useEffect } from 'react';
+import { Brand } from '@/utils/types/features-response';
 
 const defaultTitle = (
   <>
@@ -14,15 +15,15 @@ const defaultTitle = (
   </>
 );
 
-const Partners = () => {
+const Partners = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = usePartner();
   const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
-    fallbackMessage: 'Failed to load partners content'
+    fallbackMessage: 'Failed to load partners content',
   });
   const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500
+    minimumLoadingTime: 500,
   });
 
   // Determine content source
@@ -32,8 +33,8 @@ const Partners = () => {
   // Collect all brand logo URLs
   const getLogoUrls = useCallback(() => {
     if (!partners?.brands) return [];
-    
-    return partners.brands.map(brand => 
+
+    return partners.brands.map((brand: Brand) =>
       isAPI ? API_CONFIG.imageBaseURL + brand.logo.img.url : brand.logo.img.url
     );
   }, [partners, isAPI]);
@@ -77,10 +78,7 @@ const Partners = () => {
         <div className={styles.partnersContent}>
           <div className={styles.errorState} role="alert">
             <p>{error?.message}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className={styles.retryButton}
-            >
+            <button onClick={() => window.location.reload()} className={styles.retryButton}>
               Try Again
             </button>
           </div>
@@ -90,33 +88,19 @@ const Partners = () => {
   }
 
   return (
-    <section 
-      className={styles.partnersContainer}
-      aria-labelledby="partners-title"
-    >
+    <section className={styles.partnersContainer} aria-labelledby="partners-title">
       <div className={styles.partnersContent}>
-        <h2 
-          className={styles.title}
-          id="partners-title"
-        >
+        <h2 className={styles.title} id="partners-title">
           {renderHighlightedText({
             text: partners?.title,
             highlightClassName: styles.highlight,
-            fallback: defaultTitle
+            fallback: defaultTitle,
           })}
         </h2>
-        
-        <div 
-          className={styles.logoGrid}
-          role="region"
-          aria-label="Partner logos"
-        >
-          {partners.brands.map((brand) => (
-            <div 
-              key={brand.id} 
-              className={styles.logoContainer}
-              role="article"
-            >
+
+        <div className={styles.logoGrid} role="region" aria-label="Partner logos">
+          {partners.brands.map((brand: Brand) => (
+            <div key={brand.id} className={styles.logoContainer} role="article">
               <img
                 src={isAPI ? API_CONFIG.imageBaseURL + brand.logo.img.url : brand.logo.img.url}
                 alt={`${brand.name} logo`}
@@ -132,4 +116,4 @@ const Partners = () => {
   );
 };
 
-export default Partners; 
+export default Partners;

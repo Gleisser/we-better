@@ -1,6 +1,6 @@
 import styles from './Testimonies.module.css';
 
-const TestimoniesSkeleton = () => {
+const TestimoniesSkeleton = (): JSX.Element => {
   return (
     <section className={styles.testimoniesContainer}>
       <div className={styles.testimoniesContent}>
@@ -21,7 +21,7 @@ const TestimoniesSkeleton = () => {
                 <div className="h-4 bg-white/5 rounded animate-pulse w-5/6" />
                 <div className="h-4 bg-white/5 rounded animate-pulse w-4/6" />
               </div>
-              
+
               {/* Author skeleton */}
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-white/5 animate-pulse" />
@@ -35,4 +35,4 @@ const TestimoniesSkeleton = () => {
   );
 };
 
-export default TestimoniesSkeleton; 
+export default TestimoniesSkeleton;

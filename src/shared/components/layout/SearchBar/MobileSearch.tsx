@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SearchIcon, XIcon } from '@/shared/components/common/icons';
 import styles from './MobileSearch.module.css';
 
-export const MobileSearch = () => {
+export const MobileSearch = (): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
       {/* Search Button */}
-      <button 
+      <button
         className={styles.searchButton}
         onClick={() => setIsOpen(true)}
         aria-label="Open search"
@@ -20,7 +20,7 @@ export const MobileSearch = () => {
       {/* Search Overlay */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
+          <motion.div
             className={styles.overlay}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -36,21 +36,16 @@ export const MobileSearch = () => {
                   autoFocus
                 />
               </div>
-              <button 
-                className={styles.closeButton}
-                onClick={() => setIsOpen(false)}
-              >
+              <button className={styles.closeButton} onClick={() => setIsOpen(false)}>
                 <XIcon className={styles.closeIcon} />
               </button>
             </div>
-            
+
             {/* Search Results would go here */}
-            <div className={styles.searchResults}>
-              {/* Results content */}
-            </div>
+            <div className={styles.searchResults}>{/* Results content */}</div>
           </motion.div>
         )}
       </AnimatePresence>
     </>
   );
-}; 
+};

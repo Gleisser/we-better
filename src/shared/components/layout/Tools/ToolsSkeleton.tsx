@@ -1,6 +1,6 @@
 import styles from './Tools.module.css';
 
-const ToolsSkeleton = () => {
+const ToolsSkeleton = (): JSX.Element => {
   return (
     <section className={styles.toolsContainer}>
       <div className={styles.toolsContent}>
@@ -16,10 +16,7 @@ const ToolsSkeleton = () => {
           {/* Tabs Navigation Skeleton */}
           <div className={styles.tabsContainer}>
             {[...Array(4)].map((_, index) => (
-              <div
-                key={index}
-                className="h-8 bg-white/5 rounded-lg animate-pulse w-32"
-              />
+              <div key={index} className="h-8 bg-white/5 rounded-lg animate-pulse w-32" />
             ))}
           </div>
 
@@ -45,4 +42,4 @@ const ToolsSkeleton = () => {
   );
 };
 
-export default ToolsSkeleton; 
+export default ToolsSkeleton;
