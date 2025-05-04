@@ -57,7 +57,7 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps): JSX
     {
       icon: <WikiIcon className={styles.menuIcon} />,
       title: 'Webinar',
-      description: 'Community Mentores.',
+      description: 'Community Mentors.',
     },
     {
       icon: <FAQIcon className={styles.menuIcon} />,
@@ -158,7 +158,7 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps): JSX
                       className={styles.postImg}
                     />
                   </div>
-                  <div className={styles.postTitle}>15 Principles to be sucessful in Business</div>
+                  <div className={styles.postTitle}>15 Principles to be successful in Business</div>
                   <span className={styles.postDate}>Published Today</span>
                 </div>
 

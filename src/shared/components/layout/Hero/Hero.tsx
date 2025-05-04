@@ -1,28 +1,26 @@
-import { HERO_FALLBACK } from "@/utils/constants/fallback";
-import styles from "./Hero.module.css";
-import DashboardPreview from "./DashboardPreview";
+import { HERO_FALLBACK } from '@/utils/constants/fallback';
+import styles from './Hero.module.css';
+import DashboardPreview from './DashboardPreview';
 import FloatingImage from './FloatingImage';
 import HeroBackground from './HeroBackground';
-import CtaButton from "./Buttons/CtaButton";
-import SecondaryCtaButton from "./Buttons/SecondaryCtaButton";
-import { motion } from "framer-motion";
+import CtaButton from './Buttons/CtaButton';
+import SecondaryCtaButton from './Buttons/SecondaryCtaButton';
+import { motion } from 'framer-motion';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useHero } from '@/shared/hooks/useHero';
 import HeroSkeleton from './HeroSkeleton';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-  
 
-
-export const Hero = () => {
+export const Hero = (): JSX.Element => {
   const { data, isFetching: isDataLoading } = useHero();
   const { preloadImages } = useImagePreloader();
   const { isError, error } = useErrorHandler({
-    fallbackMessage: 'Failed to load hero content'
+    fallbackMessage: 'Failed to load hero content',
   });
   const { startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500
+    minimumLoadingTime: 500,
   });
   const [isMobile, setIsMobile] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
@@ -33,8 +31,8 @@ export const Hero = () => {
 
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             const img = entry.target as HTMLImageElement;
             if (img.dataset.src) {
@@ -47,7 +45,7 @@ export const Hero = () => {
       },
       {
         rootMargin: '50px 0px',
-        threshold: 0.1
+        threshold: 0.1,
       }
     );
 
@@ -71,19 +69,17 @@ export const Hero = () => {
   }, [isDataLoading, isError, data]);
 
   useEffect(() => {
-    const checkIfMobile = () => {
+    const checkIfMobile = (): void => {
       setIsMobile(window.innerWidth <= 768);
     };
 
     checkIfMobile();
     window.addEventListener('resize', checkIfMobile);
-    
+
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  const heroData = isError || showFallback || !data?.data 
-    ? HERO_FALLBACK 
-    : data.data;
+  const heroData = isError || showFallback || !data?.data ? HERO_FALLBACK : data.data;
 
   const getMainImageUrl = useCallback(() => {
     if (data?.data) {
@@ -94,13 +90,13 @@ export const Hero = () => {
 
   const getFloatingImageUrls = useCallback(() => {
     if (data?.data) {
-      return data.data.images.map(img => img.src);
+      return data.data.images.map((img: { src: string }) => img.src);
     }
     return HERO_FALLBACK.images.map(img => img.src);
   }, [data?.data]);
 
   useEffect(() => {
-    const loadMainImage = async () => {
+    const loadMainImage = async (): Promise<void> => {
       const mainImageUrl = getMainImageUrl();
       if (!mainImageUrl) return;
 
@@ -118,7 +114,7 @@ export const Hero = () => {
   }, [getMainImageUrl, preloadImages, startLoading, stopLoading]);
 
   useEffect(() => {
-    const loadFloatingImages = async () => {
+    const loadFloatingImages = async (): Promise<void> => {
       const imageUrls = getFloatingImageUrls();
       if (imageUrls.length === 0) return;
 
@@ -142,10 +138,7 @@ export const Hero = () => {
       <section className={styles.heroContainer}>
         <div className={styles.errorState} role="alert">
           <p>{error?.message}</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className={styles.retryButton}
-          >
+          <button onClick={() => window.location.reload()} className={styles.retryButton}>
             Try Again
           </button>
         </div>
@@ -154,49 +147,31 @@ export const Hero = () => {
   }
 
   return (
-    <section 
-      className={styles.heroContainer}
-      aria-labelledby="hero-title"
-    >
+    <section className={styles.heroContainer} aria-labelledby="hero-title">
       <HeroBackground aria-hidden="true" />
-      <motion.div 
+      <motion.div
         className={styles.contentWrapper}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 
-          className={styles.title}
-          id="hero-title"
-        >
+        <h1 className={styles.title} id="hero-title">
           <span>{heroData?.title}</span>
         </h1>
-        <p className={styles.subtitle}>
-          {heroData?.subtitle}
-        </p>
-        <div 
-          className={styles.ctaContainer}
-          role="group" 
-          aria-label="Call to action"
-        >
-          <CtaButton 
-            text={heroData?.cta_text}
-            aria-label={heroData?.cta_text} 
-          />
-          <SecondaryCtaButton 
+        <p className={styles.subtitle}>{heroData?.subtitle}</p>
+        <div className={styles.ctaContainer} role="group" aria-label="Call to action">
+          <CtaButton text={heroData?.cta_text} aria-label={heroData?.cta_text} />
+          <SecondaryCtaButton
             text={heroData?.secondary_cta_text}
             aria-label={heroData?.secondary_cta_text}
           />
         </div>
       </motion.div>
 
-      <div 
-        className={styles.previewContainer}
-        role="presentation"
-      >
+      <div className={styles.previewContainer} role="presentation">
         <div className={styles.mainPreview}>
           {isMobile ? (
-            <motion.img 
+            <motion.img
               ref={el => {
                 mainImageRef.current = el;
                 if (el) observerRef.current?.observe(el);
@@ -211,9 +186,9 @@ export const Hero = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
             />
           ) : (
-            <DashboardPreview 
-              src={heroData?.main_image?.src} 
-              alt={heroData?.main_image?.alt || "We Better Dashboard Interface"}
+            <DashboardPreview
+              src={heroData?.main_image?.src}
+              alt={heroData?.main_image?.alt || 'We Better Dashboard Interface'}
               ref={mainImageRef}
               observerRef={observerRef}
             />
@@ -221,7 +196,7 @@ export const Hero = () => {
         </div>
 
         <div aria-hidden="true">
-          {heroData?.images.map((image, index) => (
+          {heroData?.images.map((image: { src: string }, index: number) => (
             <FloatingImage
               key={`floating-image-${index}`}
               src={image.src}

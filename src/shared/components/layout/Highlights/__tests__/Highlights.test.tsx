@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Highlights from '../Highlights';
 import { useHighlight } from '@/shared/hooks/useHighlight';
@@ -7,22 +7,40 @@ import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { HIGHLIGHTS_FALLBACK } from '@/utils/constants/fallback';
 import styles from '../Highlights.module.css';
+import type { HighlightResponse } from '@/utils/types/highlight';
+
+type UseHighlightReturn = {
+  data: HighlightResponse | null;
+  isLoading: boolean;
+};
+
+type UseLoadingStateReturn = {
+  isLoading: boolean;
+  startLoading: () => void;
+  stopLoading: () => void;
+};
+
+type UseErrorHandlerReturn = {
+  isError: boolean;
+  error: Error | null;
+  handleError: (error: unknown) => void;
+};
 
 // Mock the hooks
 vi.mock('@/hooks/useHighlight', () => ({
-  useHighlight: vi.fn()
+  useHighlight: vi.fn(),
 }));
 
 vi.mock('@/hooks/utils/useErrorHandler', () => ({
-  useErrorHandler: vi.fn()
+  useErrorHandler: vi.fn(),
 }));
 
 vi.mock('@/hooks/utils/useLoadingState', () => ({
-  useLoadingState: vi.fn()
+  useLoadingState: vi.fn(),
 }));
 
 vi.mock('@/hooks/utils/useImagePreloader', () => ({
-  useImagePreloader: vi.fn()
+  useImagePreloader: vi.fn(),
 }));
 
 // Mock IntersectionObserver
@@ -30,7 +48,7 @@ const mockIntersectionObserver = vi.fn();
 mockIntersectionObserver.mockReturnValue({
   observe: () => null,
   unobserve: () => null,
-  disconnect: () => null
+  disconnect: () => null,
 });
 window.IntersectionObserver = mockIntersectionObserver;
 
@@ -40,15 +58,15 @@ describe('Highlights', () => {
     vi.useFakeTimers();
 
     // Default mock implementations
-    (useImagePreloader as any).mockReturnValue({
+    (useImagePreloader as Mock).mockReturnValue({
       preloadImages: vi.fn().mockResolvedValue(undefined),
-      isPreloading: false
+      isPreloading: false,
     });
 
-    (useLoadingState as any).mockReturnValue({
+    (useLoadingState as unknown as Mock<undefined[], UseLoadingStateReturn>).mockReturnValue({
       isLoading: false,
       startLoading: vi.fn(),
-      stopLoading: vi.fn()
+      stopLoading: vi.fn(),
     });
   });
 
@@ -58,16 +76,16 @@ describe('Highlights', () => {
 
   it('shows loading skeleton when data is being fetched', () => {
     // Mock loading state
-    (useHighlight as any).mockReturnValue({
+    (useHighlight as unknown as Mock<undefined[], UseHighlightReturn>).mockReturnValue({
       data: null,
-      isLoading: true
+      isLoading: true,
     });
 
     // Mock error handler
-    (useErrorHandler as any).mockReturnValue({
+    (useErrorHandler as unknown as Mock<undefined[], UseErrorHandlerReturn>).mockReturnValue({
       isError: false,
       error: null,
-      handleError: vi.fn()
+      handleError: vi.fn(),
     });
 
     render(<Highlights />);
@@ -83,16 +101,16 @@ describe('Highlights', () => {
   it('renders error state when there is an error fetching data', () => {
     // Mock error state
     const mockError = new Error('Failed to load highlights content');
-    
-    (useHighlight as any).mockReturnValue({
+
+    (useHighlight as unknown as Mock<undefined[], UseHighlightReturn>).mockReturnValue({
       data: null,
-      isLoading: false
+      isLoading: false,
     });
 
-    (useErrorHandler as any).mockReturnValue({
+    (useErrorHandler as unknown as Mock<undefined[], UseErrorHandlerReturn>).mockReturnValue({
       isError: true,
       error: mockError,
-      handleError: vi.fn()
+      handleError: vi.fn(),
     });
 
     render(<Highlights />);
@@ -100,7 +118,7 @@ describe('Highlights', () => {
     // Check if error message is displayed
     expect(screen.getByRole('alert')).toBeInTheDocument();
     expect(screen.getByText(/Failed to load highlights content/i)).toBeInTheDocument();
-    
+
     // Verify retry button is present and accessible
     const retryButton = screen.getByRole('button', { name: /try again/i });
     expect(retryButton).toBeInTheDocument();
@@ -113,20 +131,20 @@ describe('Highlights', () => {
 
   it('renders main content with slider when data is loaded', () => {
     // Mock successful data fetch
-    (useHighlight as any).mockReturnValue({
+    (useHighlight as unknown as Mock<undefined[], UseHighlightReturn>).mockReturnValue({
       data: {
         data: {
           title: 'Use We Better today for',
-          slides: HIGHLIGHTS_FALLBACK
-        }
+          slides: HIGHLIGHTS_FALLBACK,
+        },
       },
-      isLoading: false
+      isLoading: false,
     });
 
-    (useErrorHandler as any).mockReturnValue({
+    (useErrorHandler as unknown as Mock<undefined[], UseErrorHandlerReturn>).mockReturnValue({
       isError: false,
       error: null,
-      handleError: vi.fn()
+      handleError: vi.fn(),
     });
 
     render(<Highlights />);
@@ -134,7 +152,7 @@ describe('Highlights', () => {
     // Check title
     const title = screen.getByRole('heading', { level: 2 });
     expect(title).toBeInTheDocument();
-    expect(title).toHaveTextContent(/Use We Better today for/i);
+    expect(title).toHaveTextContent('Use We Better today for');
 
     // Check slider region
     const slider = screen.getByRole('region', { name: /Highlights slider/i });
@@ -151,4 +169,4 @@ describe('Highlights', () => {
     expect(firstImage).toHaveAttribute('loading', 'eager');
     expect(firstImage).toHaveAttribute('decoding', 'async');
   });
-}); 
+});

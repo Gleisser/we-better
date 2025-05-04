@@ -1,6 +1,6 @@
 import styles from './Highlights.module.css';
 
-const HighlightsSkeleton = () => {
+const HighlightsSkeleton = (): JSX.Element => {
   return (
     <section className={styles.highlightsContainer}>
       <div className={styles.highlightsTitle}>
@@ -17,4 +17,4 @@ const HighlightsSkeleton = () => {
   );
 };
 
-export default HighlightsSkeleton; 
+export default HighlightsSkeleton;

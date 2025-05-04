@@ -7,35 +7,35 @@ import HighlightsSkeleton from './HighlightsSkeleton';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
+import { Slide } from '@/utils/types/highlight';
 
-const Highlights = () => {
+const Highlights = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useHighlight();
   const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
-    fallbackMessage: 'Failed to load highlights content'
+    fallbackMessage: 'Failed to load highlights content',
   });
   const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500
+    minimumLoadingTime: 500,
   });
 
   // State management
   const [activeIndex, setActiveIndex] = useState(0);
   const [showFallback, setShowFallback] = useState(false);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
-  
+
   // Refs
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   // Determine data source with priority for fallback
-  const highlights = error || showFallback || !data?.data?.slides 
-    ? HIGHLIGHTS_FALLBACK 
-    : data.data.slides;
+  const highlights =
+    error || showFallback || !data?.data?.slides ? HIGHLIGHTS_FALLBACK : data.data.slides;
 
   // Collect image URLs for preloading
   const getImageUrls = useCallback(() => {
-    return highlights.map(highlight => {
+    return highlights.map((highlight: Slide) => {
       return data?.data?.slides
         ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url
         : highlight?.image?.img?.formats?.large?.url;
@@ -75,8 +75,8 @@ const Highlights = () => {
   // Setup Intersection Observer
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             const img = entry.target as HTMLImageElement;
             if (img.dataset.src) {
@@ -89,7 +89,7 @@ const Highlights = () => {
       },
       {
         rootMargin: '50px 0px',
-        threshold: 0.1
+        threshold: 0.1,
       }
     );
 
@@ -114,7 +114,7 @@ const Highlights = () => {
   // Handle slider rotation
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveIndex((current) => (current + 1) % highlights.length);
+      setActiveIndex(current => (current + 1) % highlights.length);
     }, 2000);
 
     return () => clearInterval(interval);
@@ -137,10 +137,7 @@ const Highlights = () => {
         <div className={styles.highlightsContent}>
           <div className={styles.errorState} role="alert">
             <p>{error?.message}</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className={styles.retryButton}
-            >
+            <button onClick={() => window.location.reload()} className={styles.retryButton}>
               Try Again
             </button>
           </div>
@@ -150,30 +147,20 @@ const Highlights = () => {
   }
 
   return (
-    <section 
-      className={styles.highlightsContainer}
-      aria-labelledby="highlights-title"
-    >
+    <section className={styles.highlightsContainer} aria-labelledby="highlights-title">
       <div className={styles.highlightsContent}>
-        <h2 
-          className={styles.highlightsTitle}
-          id="highlights-title"
-        >
+        <h2 className={styles.highlightsTitle} id="highlights-title">
           <span>{data?.data?.title || 'Use We Better today for'}</span>
           <span className={styles.gradientText}>{highlights[activeIndex]?.title}</span>
         </h2>
-        <div 
-          className={styles.sliderContainer}
-          role="region"
-          aria-label="Highlights slider"
-        >
-          {highlights.map((highlight, index) => {
-            const imageSrc = data?.data?.slides 
-              ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url 
+        <div className={styles.sliderContainer} role="region" aria-label="Highlights slider">
+          {highlights.map((highlight: Slide, index: number) => {
+            const imageSrc = data?.data?.slides
+              ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url
               : highlight?.image?.img?.formats?.large?.url;
 
             return (
-              <div 
+              <div
                 key={highlight.id}
                 className={`${styles.slide} ${index === activeIndex ? styles.activeSlide : ''}`}
                 role="tabpanel"
@@ -187,14 +174,15 @@ const Highlights = () => {
                       observerRef.current?.observe(el);
                     }
                   }}
-                  src={index === activeIndex || loadedImages.has(index) 
-                    ? imageSrc 
-                    : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                  src={
+                    index === activeIndex || loadedImages.has(index)
+                      ? imageSrc
+                      : 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
                   }
                   data-src={imageSrc}
                   alt={`${highlight.title} - Example of AI-generated artwork showcasing ${highlight.title.toLowerCase()} capabilities`}
                   className={styles.slideImage}
-                  loading={index === 0 ? "eager" : "lazy"}
+                  loading={index === 0 ? 'eager' : 'lazy'}
                   decoding="async"
                   onLoad={() => {
                     setLoadedImages(prev => new Set(prev).add(index));
@@ -209,4 +197,4 @@ const Highlights = () => {
   );
 };
 
-export default Highlights; 
+export default Highlights;

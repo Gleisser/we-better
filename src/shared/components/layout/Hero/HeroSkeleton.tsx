@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import styles from './Hero.module.css';
 
-const HeroSkeleton = () => {
+const HeroSkeleton = (): JSX.Element => {
   return (
     <div className={styles.heroContainer} data-testid="hero-skeleton">
       {/* Keep the background blur effect */}
@@ -9,7 +9,7 @@ const HeroSkeleton = () => {
         <div className="absolute inset-0 bg-black/50" />
       </div>
 
-      <motion.div 
+      <motion.div
         className={styles.contentWrapper}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -51,4 +51,4 @@ const HeroSkeleton = () => {
   );
 };
 
-export default HeroSkeleton; 
+export default HeroSkeleton;
