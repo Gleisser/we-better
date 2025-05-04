@@ -19,7 +19,7 @@ interface ParticleEffectProps {
 const PARTICLE_COUNT = 12;
 const PARTICLE_SYMBOLS = ['✨', '💫', '⭐️', '✴️'];
 
-const ParticleEffect = ({ isTriggered, onComplete }: ParticleEffectProps) => {
+const ParticleEffect = ({ isTriggered, onComplete }: ParticleEffectProps): JSX.Element => {
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
@@ -30,11 +30,11 @@ const ParticleEffect = ({ isTriggered, onComplete }: ParticleEffectProps) => {
         y: -(Math.random() * 100 + 50), // Upward direction
         rotation: Math.random() * 360,
         scale: Math.random() * 0.5 + 0.5,
-        opacity: 1
+        opacity: 1,
       }));
-      
+
       setParticles(newParticles);
-      
+
       // Reset after animation
       setTimeout(() => {
         setParticles([]);
@@ -43,11 +43,11 @@ const ParticleEffect = ({ isTriggered, onComplete }: ParticleEffectProps) => {
     }
   }, [isTriggered, onComplete]);
 
-  if (!isTriggered) return null;
+  if (!isTriggered) return <></>;
 
   return (
     <div className={styles.particleContainer}>
-      {particles.map((particle) => (
+      {particles.map(particle => (
         <motion.div
           key={particle.id}
           className={styles.particle}
@@ -56,7 +56,7 @@ const ParticleEffect = ({ isTriggered, onComplete }: ParticleEffectProps) => {
             y: 0,
             scale: 0,
             rotate: 0,
-            opacity: 0
+            opacity: 0,
           }}
           animate={{
             x: particle.x,
@@ -67,7 +67,7 @@ const ParticleEffect = ({ isTriggered, onComplete }: ParticleEffectProps) => {
           }}
           transition={{
             duration: 1,
-            ease: "easeOut",
+            ease: 'easeOut',
           }}
         >
           {PARTICLE_SYMBOLS[particle.id % PARTICLE_SYMBOLS.length]}
@@ -77,4 +77,4 @@ const ParticleEffect = ({ isTriggered, onComplete }: ParticleEffectProps) => {
   );
 };
 
-export default ParticleEffect; 
+export default ParticleEffect;

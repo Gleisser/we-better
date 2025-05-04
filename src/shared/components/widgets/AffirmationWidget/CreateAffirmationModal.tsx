@@ -17,12 +17,12 @@ export const CreateAffirmationModal = ({
   isOpen,
   onClose,
   onSave,
-  existingAffirmation
-}: CreateAffirmationModalProps) => {
+  existingAffirmation,
+}: CreateAffirmationModalProps): JSX.Element => {
   const [text, setText] = useState(existingAffirmation || '');
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = (): void => {
     if (existingAffirmation && !showConfirm) {
       setShowConfirm(true);
       return;
@@ -31,7 +31,7 @@ export const CreateAffirmationModal = ({
     onClose();
   };
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     setText(existingAffirmation || '');
     setShowConfirm(false);
     onClose();
@@ -56,7 +56,9 @@ export const CreateAffirmationModal = ({
           >
             <div className={styles.header}>
               <h2 className={styles.title}>
-                {existingAffirmation ? 'Update Personal Affirmation' : 'Create Personal Affirmation'}
+                {existingAffirmation
+                  ? 'Update Personal Affirmation'
+                  : 'Create Personal Affirmation'}
               </h2>
               <button onClick={handleClose} className={styles.closeButton}>
                 <XIcon className={styles.closeIcon} />
@@ -67,7 +69,7 @@ export const CreateAffirmationModal = ({
               <div className={styles.inputWrapper}>
                 <textarea
                   value={text}
-                  onChange={(e) => setText(e.target.value.slice(0, MAX_LENGTH))}
+                  onChange={e => setText(e.target.value.slice(0, MAX_LENGTH))}
                   placeholder="Write your personal affirmation..."
                   className={styles.input}
                   rows={3}
@@ -94,11 +96,7 @@ export const CreateAffirmationModal = ({
                 <button onClick={handleClose} className={styles.cancelButton}>
                   Cancel
                 </button>
-                <button
-                  onClick={handleSave}
-                  className={styles.saveButton}
-                  disabled={!text.trim()}
-                >
+                <button onClick={handleSave} className={styles.saveButton} disabled={!text.trim()}>
                   {showConfirm ? 'Yes, Replace' : 'Save'}
                 </button>
               </div>
@@ -109,4 +107,4 @@ export const CreateAffirmationModal = ({
     </AnimatePresence>,
     document.body
   );
-}; 
+};

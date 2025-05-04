@@ -31,27 +31,27 @@ export const ReminderSettings = ({
   settings,
   onUpdate,
   onRequestPermission,
-  permission
-}: ReminderSettingsProps) => {
+  permission,
+}: ReminderSettingsProps): JSX.Element => {
   const [localSettings, setLocalSettings] = useState(settings);
 
-  const handleToggleDay = (day: number) => {
+  const handleToggleDay = (day: number): void => {
     const newDays = localSettings.days.includes(day)
       ? localSettings.days.filter(d => d !== day)
       : [...localSettings.days, day].sort();
-    
+
     const newSettings = { ...localSettings, days: newDays };
     setLocalSettings(newSettings);
     onUpdate(newSettings);
   };
 
-  const handleTimeChange = (time: string) => {
+  const handleTimeChange = (time: string): void => {
     const newSettings = { ...localSettings, time };
     setLocalSettings(newSettings);
     onUpdate(newSettings);
   };
 
-  const handleToggleEnabled = async () => {
+  const handleToggleEnabled = async (): Promise<void> => {
     if (!localSettings.enabled && permission !== 'granted') {
       const granted = await onRequestPermission();
       if (!granted) return;
@@ -107,7 +107,7 @@ export const ReminderSettings = ({
                 <input
                   type="time"
                   value={localSettings.time}
-                  onChange={(e) => handleTimeChange(e.target.value)}
+                  onChange={e => handleTimeChange(e.target.value)}
                   className={styles.timeInput}
                 />
               </div>
@@ -135,4 +135,4 @@ export const ReminderSettings = ({
     </AnimatePresence>,
     document.body
   );
-}; 
+};
