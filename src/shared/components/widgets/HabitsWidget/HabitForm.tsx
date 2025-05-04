@@ -32,10 +32,10 @@ interface HabitFormProps {
  * - Category selection with icons
  * - Responsive design
  * - Support for both creation and editing modes
- * 
+ *
  * The form handles habit name and category selection, with the category options
  * being predefined in the CATEGORY_CONFIG.
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {boolean} props.isOpen - Controls modal visibility
@@ -43,19 +43,19 @@ interface HabitFormProps {
  * @param {Function} props.onSubmit - Handler for form submission
  * @param {Habit} [props.initialValues] - Initial values for editing mode
  * @param {'create' | 'edit'} props.mode - Form mode
- * 
+ *
  * @example
  * ```tsx
  * // Creating a new habit
  * function HabitManager() {
  *   const [isFormOpen, setIsFormOpen] = useState(false);
- * 
+ *
  *   const handleSubmit = (habitData) => {
  *     // Handle habit creation
  *     console.log('New habit:', habitData);
  *     setIsFormOpen(false);
  *   };
- * 
+ *
  *   return (
  *     <>
  *       <button onClick={() => setIsFormOpen(true)}>
@@ -71,19 +71,19 @@ interface HabitFormProps {
  *   );
  * }
  * ```
- * 
+ *
  * @example
  * ```tsx
  * // Editing an existing habit
  * function EditHabit({ habit }) {
  *   const [isEditing, setIsEditing] = useState(false);
- * 
+ *
  *   const handleEdit = (updatedHabit) => {
  *     // Handle habit update
  *     console.log('Updated habit:', updatedHabit);
  *     setIsEditing(false);
  *   };
- * 
+ *
  *   return (
  *     <HabitForm
  *       isOpen={isEditing}
@@ -96,17 +96,23 @@ interface HabitFormProps {
  * }
  * ```
  */
-export const HabitForm = ({ isOpen, onClose, onSubmit, initialValues, mode }: HabitFormProps) => {
+export const HabitForm = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialValues,
+  mode,
+}: HabitFormProps): JSX.Element => {
   const [name, setName] = useState(initialValues?.name ?? '');
   const [category, setCategory] = useState<HabitCategory>(initialValues?.category ?? 'health');
 
   /**
    * Handles form submission by preventing default behavior,
    * calling the onSubmit callback with form data, and closing the modal.
-   * 
+   *
    * @param {React.FormEvent} e - The form submission event
    */
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     onSubmit({ name, category });
     onClose();
@@ -124,9 +130,7 @@ export const HabitForm = ({ isOpen, onClose, onSubmit, initialValues, mode }: Ha
             exit={{ opacity: 0, scale: 0.95 }}
           >
             <div className={styles.header}>
-              <h3 className={styles.title}>
-                {mode === 'create' ? 'New Habit' : 'Edit Habit'}
-              </h3>
+              <h3 className={styles.title}>{mode === 'create' ? 'New Habit' : 'Edit Habit'}</h3>
               <button onClick={onClose} className={styles.closeButton}>
                 <XIcon className={styles.closeIcon} />
               </button>
@@ -134,12 +138,14 @@ export const HabitForm = ({ isOpen, onClose, onSubmit, initialValues, mode }: Ha
 
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.field}>
-                <label htmlFor="name" className={styles.label}>Name</label>
+                <label htmlFor="name" className={styles.label}>
+                  Name
+                </label>
                 <input
                   id="name"
                   type="text"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={e => setName(e.target.value)}
                   className={styles.input}
                   placeholder="e.g., Morning Meditation"
                   required
@@ -177,4 +183,4 @@ export const HabitForm = ({ isOpen, onClose, onSubmit, initialValues, mode }: Ha
     </AnimatePresence>,
     document.body
   );
-}; 
+};

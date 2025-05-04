@@ -11,13 +11,13 @@ interface HabitActionsMenuProps {
   position: { x: number; y: number };
 }
 
-export const HabitActionsMenu = ({ 
-  isOpen, 
-  onClose, 
-  onEdit, 
+export const HabitActionsMenu = ({
+  isOpen,
+  onClose,
+  onEdit,
   onDelete,
-  position 
-}: HabitActionsMenuProps) => {
+  position,
+}: HabitActionsMenuProps): JSX.Element => {
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -27,13 +27,13 @@ export const HabitActionsMenu = ({
             className={styles.menu}
             style={{
               left: position.x,
-              top: position.y
+              top: position.y,
             }}
             initial={{ opacity: 0, scale: 0.95, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
           >
-            <button 
+            <button
               className={styles.menuItem}
               onClick={() => {
                 onEdit();
@@ -43,7 +43,7 @@ export const HabitActionsMenu = ({
               <PencilIcon className={styles.menuIcon} />
               <span>Edit</span>
             </button>
-            <button 
+            <button
               className={`${styles.menuItem} ${styles.delete}`}
               onClick={() => {
                 onDelete();
@@ -59,4 +59,4 @@ export const HabitActionsMenu = ({
     </AnimatePresence>,
     document.body
   );
-}; 
+};

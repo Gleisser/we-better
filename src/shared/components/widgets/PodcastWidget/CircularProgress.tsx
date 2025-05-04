@@ -7,7 +7,11 @@ interface CircularProgressProps {
   onSeek: (time: number) => void;
 }
 
-export const CircularProgress = ({ progress, duration, onSeek }: CircularProgressProps) => {
+export const CircularProgress = ({
+  progress,
+  duration,
+  onSeek,
+}: CircularProgressProps): JSX.Element => {
   const radius = 95;
   const padding = 8;
   const [isDragging, setIsDragging] = useState(false);
@@ -15,113 +19,110 @@ export const CircularProgress = ({ progress, duration, onSeek }: CircularProgres
   const [previewPercentage, setPreviewPercentage] = useState<number | null>(null);
 
   const circumference = useMemo(() => 2 * Math.PI * radius, [radius]);
-  
-  const calculateProgress = useCallback((clientX: number, clientY: number) => {
-    if (!svgRef.current) return 0;
-    
-    const rect = svgRef.current.getBoundingClientRect();
-    const center = {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2
-    };
 
-    const angle = Math.atan2(
-      clientY - center.y,
-      clientX - center.x
-    );
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<SVGElement>) => {
+      if (isDragging) return;
 
-    // Convert angle to percentage (0 to 1)
-    let percentage = (angle + Math.PI / 2) / (2 * Math.PI);
-    if (percentage < 0) percentage += 1;
-    
-    return percentage;
-  }, []);
+      const rect = svgRef.current?.getBoundingClientRect();
+      if (!rect) return;
 
-  const handleMouseDown = useCallback((e: React.MouseEvent<SVGElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
+      const center = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      };
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<SVGElement>) => {
-    if (isDragging) return;
-    
-    const rect = svgRef.current?.getBoundingClientRect();
-    if (!rect) return;
+      const angle = Math.atan2(e.clientY - center.y, e.clientX - center.x);
 
-    const center = {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2
-    };
+      let percentage = (angle + Math.PI / 2) / (2 * Math.PI);
+      if (percentage < 0) percentage += 1;
 
-    const angle = Math.atan2(
-      e.clientY - center.y,
-      e.clientX - center.x
-    );
-
-    let percentage = (angle + Math.PI / 2) / (2 * Math.PI);
-    if (percentage < 0) percentage += 1;
-    
-    setPreviewPercentage(percentage);
-  }, [isDragging]);
-
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+      setPreviewPercentage(percentage);
+    },
+    [isDragging]
+  );
 
   const handleMouseLeave = useCallback(() => {
     setPreviewPercentage(null);
   }, []);
 
+  // DOM event handlers
+  const handleDocumentMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging || !svgRef.current) return;
+
+      const rect = svgRef.current.getBoundingClientRect();
+      const center = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      };
+
+      const angle = Math.atan2(e.clientY - center.y, e.clientX - center.x);
+
+      let percentage = (angle + Math.PI / 2) / (2 * Math.PI);
+      if (percentage < 0) percentage += 1;
+
+      setPreviewPercentage(percentage);
+    },
+    [isDragging]
+  );
+
+  const handleDocumentMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('mousemove', handleDocumentMouseMove);
+      document.addEventListener('mouseup', handleDocumentMouseUp);
     }
-    
+
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleDocumentMouseMove);
+      document.removeEventListener('mouseup', handleDocumentMouseUp);
     };
-  }, [isDragging, handleMouseMove, handleMouseUp]);
+  }, [isDragging, handleDocumentMouseMove, handleDocumentMouseUp]);
 
   const strokeDashoffset = useMemo(() => {
     const progressPercentage = duration > 0 ? progress / duration : 0;
     return (1 - progressPercentage) * circumference;
   }, [progress, duration, circumference]);
 
-  const handleSeek = useCallback((e: React.MouseEvent<SVGElement>) => {
-    if (isDragging) return;
-    
-    // Get the clicked element
-    const clickedElement = e.target as SVGElement;
-    
-    // Only handle clicks on the progress bar or background circle
-    if (!clickedElement.classList.contains(styles.progressBar) && 
-        !clickedElement.classList.contains(styles.progressBg)) {
-      return;
-    }
-    
-    const svg = e.currentTarget;
-    const rect = svg.getBoundingClientRect();
-    const center = {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2
-    };
+  const handleSeek = useCallback(
+    (e: React.MouseEvent<SVGElement>) => {
+      if (isDragging) return;
 
-    const angle = Math.atan2(
-      e.clientY - center.y,
-      e.clientX - center.x
-    );
+      // Get the clicked element
+      const clickedElement = e.target as SVGElement;
 
-    // Convert angle to percentage (0 to 1)
-    let percentage = (angle + Math.PI / 2) / (2 * Math.PI);
-    if (percentage < 0) percentage += 1;
+      // Only handle clicks on the progress bar or background circle
+      if (
+        !clickedElement.classList.contains(styles.progressBar) &&
+        !clickedElement.classList.contains(styles.progressBg)
+      ) {
+        return;
+      }
 
-    onSeek(percentage * duration);
-  }, [duration, onSeek, isDragging]);
+      const svg = e.currentTarget;
+      const rect = svg.getBoundingClientRect();
+      const center = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      };
+
+      const angle = Math.atan2(e.clientY - center.y, e.clientX - center.x);
+
+      // Convert angle to percentage (0 to 1)
+      let percentage = (angle + Math.PI / 2) / (2 * Math.PI);
+      if (percentage < 0) percentage += 1;
+
+      onSeek(percentage * duration);
+    },
+    [duration, onSeek, isDragging]
+  );
 
   return (
-    <svg 
+    <svg
       viewBox={`0 0 ${(radius + padding) * 2} ${(radius + padding) * 2}`}
       className={styles.progressRing}
       ref={svgRef}
@@ -140,7 +141,7 @@ export const CircularProgress = ({ progress, duration, onSeek }: CircularProgres
           <stop offset="100%" stopColor="#D946EF" stopOpacity="0.3" />
         </linearGradient>
       </defs>
-      
+
       {/* Background circle */}
       <circle
         cx={radius + padding}
@@ -149,7 +150,7 @@ export const CircularProgress = ({ progress, duration, onSeek }: CircularProgres
         className={styles.progressBg}
         strokeWidth="8"
       />
-      
+
       {/* Preview circle */}
       {previewPercentage !== null && (
         <circle
@@ -164,7 +165,7 @@ export const CircularProgress = ({ progress, duration, onSeek }: CircularProgres
           strokeLinecap="round"
         />
       )}
-      
+
       {/* Progress circle */}
       <circle
         cx={radius + padding}
@@ -179,4 +180,4 @@ export const CircularProgress = ({ progress, duration, onSeek }: CircularProgres
       />
     </svg>
   );
-}; 
+};

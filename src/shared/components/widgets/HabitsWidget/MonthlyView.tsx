@@ -1,19 +1,24 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { 
-  format, 
-  startOfMonth, 
-  endOfMonth, 
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
   eachDayOfInterval,
   isSameMonth,
   addMonths,
   subMonths,
   startOfWeek,
   endOfWeek,
-  isToday
+  isToday,
 } from 'date-fns';
-import { XIcon, ChevronLeftIcon, ChevronRightIcon, CheckmarkIcon } from '@/shared/components/common/icons';
+import {
+  XIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CheckmarkIcon,
+} from '@/shared/components/common/icons';
 import { HabitStatus } from './types';
 import { STATUS_CONFIG } from './config';
 import styles from './MonthlyView.module.css';
@@ -32,17 +37,17 @@ interface MonthlyViewProps {
   };
 }
 
-export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps) => {
+export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps): JSX.Element => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const getDaysInMonth = () => {
+  const getDaysInMonth = (): Date[] => {
     const start = startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 });
     const end = endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 });
     return eachDayOfInterval({ start, end });
   };
 
-  const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
-  const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
+  const nextMonth = (): void => setCurrentDate(addMonths(currentDate, 1));
+  const prevMonth = (): void => setCurrentDate(subMonths(currentDate, 1));
 
   return createPortal(
     <AnimatePresence>
@@ -64,9 +69,7 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps) => {
             <div className={styles.header}>
               <div className={styles.habitInfo}>
                 <h3 className={styles.habitName}>{habit.name}</h3>
-                <div className={styles.streakBadge}>
-                  🔥 {habit.streak} days
-                </div>
+                <div className={styles.streakBadge}>🔥 {habit.streak} days</div>
               </div>
               <button onClick={onClose} className={styles.closeButton}>
                 <XIcon className={styles.closeIcon} />
@@ -77,9 +80,7 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps) => {
               <button onClick={prevMonth} className={styles.navButton}>
                 <ChevronLeftIcon className={styles.navIcon} />
               </button>
-              <h4 className={styles.monthTitle}>
-                {format(currentDate, 'MMMM yyyy')}
-              </h4>
+              <h4 className={styles.monthTitle}>{format(currentDate, 'MMMM yyyy')}</h4>
               <button onClick={nextMonth} className={styles.navButton}>
                 <ChevronRightIcon className={styles.navIcon} />
               </button>
@@ -88,7 +89,9 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps) => {
             <div className={styles.calendar}>
               <div className={styles.weekDays}>
                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                  <div key={day} className={styles.weekDay}>{day}</div>
+                  <div key={day} className={styles.weekDay}>
+                    {day}
+                  </div>
                 ))}
               </div>
               <div className={styles.days}>
@@ -113,9 +116,7 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps) => {
                           <span className={styles.dayNumber}>{format(date, 'd')}</span>
                         </div>
                       ) : status ? (
-                        <span className={styles.statusIcon}>
-                          {STATUS_CONFIG[status].icon}
-                        </span>
+                        <span className={styles.statusIcon}>{STATUS_CONFIG[status].icon}</span>
                       ) : (
                         format(date, 'd')
                       )}
@@ -143,4 +144,4 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps) => {
     </AnimatePresence>,
     document.body
   );
-}; 
+};

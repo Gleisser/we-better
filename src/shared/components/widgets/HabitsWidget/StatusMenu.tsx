@@ -17,12 +17,12 @@ export const StatusMenu: React.FC<StatusMenuProps> = ({
   onClose,
   onSelect,
   position,
-}) => {
+}: StatusMenuProps): JSX.Element => {
   const menuRef = useRef<HTMLDivElement>(null);
   const isMobile = window.innerWidth <= 768;
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         onClose();
       }
@@ -32,12 +32,14 @@ export const StatusMenu: React.FC<StatusMenuProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen) return <></>;
 
-  const menuStyle = !isMobile ? {
-    left: `${position.x}px`,
-    top: `${position.y}px`
-  } : undefined;
+  const menuStyle = !isMobile
+    ? {
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+      }
+    : undefined;
 
   return createPortal(
     <AnimatePresence>
@@ -48,18 +50,9 @@ export const StatusMenu: React.FC<StatusMenuProps> = ({
             ref={menuRef}
             className={`${styles.menu} ${isMobile ? styles.mobileMenu : ''}`}
             style={menuStyle}
-            initial={isMobile 
-              ? { y: '100%' } 
-              : { opacity: 0, scale: 0.95, y: -10 }
-            }
-            animate={isMobile 
-              ? { y: 0 } 
-              : { opacity: 1, scale: 1, y: 0 }
-            }
-            exit={isMobile 
-              ? { y: '100%' } 
-              : { opacity: 0, scale: 0.95, y: -10 }
-            }
+            initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.95, y: -10 }}
+            animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1, y: 0 }}
+            exit={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.95, y: -10 }}
           >
             <div className={styles.options}>
               {Object.entries(STATUS_CONFIG).map(([status, config]) => (
@@ -82,4 +75,4 @@ export const StatusMenu: React.FC<StatusMenuProps> = ({
     </AnimatePresence>,
     document.body
   );
-}; 
+};

@@ -4,9 +4,15 @@ import styles from './HabitsWidget.module.css';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { format, startOfWeek, addDays } from 'date-fns';
 import { MonthlyView } from './MonthlyView';
-import { ChartIcon, CheckmarkIcon, PlusIcon, DotsHorizontalIcon, ChevronDownIcon } from '@/shared/components/common/icons';
+import {
+  ChartIcon,
+  CheckmarkIcon,
+  PlusIcon,
+  DotsHorizontalIcon,
+  ChevronDownIcon,
+} from '@/shared/components/common/icons';
 import { StatusMenu } from './StatusMenu';
-import { HabitStatus, Habit, HabitDay } from './types';
+import { HabitStatus, Habit } from './types';
 import { STATUS_CONFIG, CATEGORY_CONFIG, HabitCategory } from './config';
 import { updateHabitStreak, cleanupOldData } from './utils';
 import { HabitForm } from './HabitForm';
@@ -23,33 +29,28 @@ const MOCK_HABITS: Habit[] = [
     completedDays: [
       { date: '2024-01-15', status: 'completed' },
       { date: '2024-01-16', status: 'completed' },
-      { date: '2024-01-17', status: 'completed' }
-    ]
+      { date: '2024-01-17', status: 'completed' },
+    ],
   },
   {
     id: 'habit_2',
     name: 'Read 30 minutes',
     category: 'growth',
     streak: 3,
-    completedDays: []
+    completedDays: [],
   },
   {
     id: 'habit_3',
     name: 'Sleep by 11pm',
     category: 'lifestyle',
     streak: 2,
-    completedDays: []
-  }
+    completedDays: [],
+  },
 ];
 
 const STORAGE_KEY = 'habits-data';
 
-// Add this interface for the div element's data attributes
-interface DayColumnProps extends React.HTMLAttributes<HTMLDivElement> {
-  'data-tooltip'?: string;
-}
-
-const HabitsWidget = () => {
+const HabitsWidget = (): JSX.Element => {
   const [selectedCategory, setSelectedCategory] = useState<HabitCategory | 'all'>('all');
   const [habits, setHabits] = useState<Habit[]>(() => {
     const savedHabits = localStorage.getItem(STORAGE_KEY);
@@ -76,17 +77,18 @@ const HabitsWidget = () => {
       setCollapsedHabits(new Set(habits.map(habit => habit.id)));
       setIsCollapsed(true);
     }
-  }, []);
+  }, [habits]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
   }, [habits]);
 
-  const filteredHabits = selectedCategory === 'all' 
-    ? habits 
-    : habits.filter(habit => habit.category === selectedCategory);
+  const filteredHabits =
+    selectedCategory === 'all'
+      ? habits
+      : habits.filter(habit => habit.category === selectedCategory);
 
-  const getCurrentWeekDates = () => {
+  const getCurrentWeekDates = (): Date[] => {
     const start = startOfWeek(new Date(), { weekStartsOn: 1 }); // Start on Monday
     return WEEKDAYS.map((_, index) => addDays(start, index));
   };
@@ -99,30 +101,30 @@ const HabitsWidget = () => {
     return completion?.status || null;
   };
 
-  const handleDayClick = (event: React.MouseEvent, date: Date, habit: Habit) => {
+  const handleDayClick = (event: React.MouseEvent, date: Date, habit: Habit): void => {
     setSelectedDate(date);
     setSelectedHabit(habit);
-    
+
     const rect = (event.target as HTMLElement).getBoundingClientRect();
     const isMobile = window.innerWidth <= 768;
-    
+
     if (isMobile) {
       // On mobile, center the menu horizontally and position it below the clicked element
       setMenuPosition({
         x: Math.max(10, Math.min(window.innerWidth - 200, window.innerWidth / 2 - 100)), // 200px assumed menu width
-        y: rect.bottom + window.scrollY + 8
+        y: rect.bottom + window.scrollY + 8,
       });
     } else {
       // On desktop, keep current behavior
       setMenuPosition({
         x: rect.left,
-        y: rect.bottom + 8
+        y: rect.bottom + 8,
       });
     }
     setShowStatusMenu(true);
   };
 
-  const handleStatusSelect = (status: HabitStatus) => {
+  const handleStatusSelect = (status: HabitStatus): void => {
     if (selectedDate && selectedHabit) {
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
       setHabits(prevHabits => {
@@ -130,69 +132,67 @@ const HabitsWidget = () => {
           if (habit.id === selectedHabit.id) {
             const existingIndex = habit.completedDays.findIndex(day => day.date === dateStr);
             const updatedDays = [...habit.completedDays];
-            
+
             if (existingIndex >= 0) {
               updatedDays[existingIndex] = { date: dateStr, status };
             } else {
               updatedDays.push({ date: dateStr, status });
             }
-            
+
             return updateHabitStreak({
               ...habit,
               completedDays: updatedDays,
-              updatedAt: new Date().toISOString()
+              updatedAt: new Date().toISOString(),
             });
           }
           return habit;
         });
-        
+
         return updatedHabits;
       });
     }
   };
 
-  const handleCreateHabit = (habitData: { name: string; category: HabitCategory }) => {
+  const handleCreateHabit = (habitData: { name: string; category: HabitCategory }): void => {
     const newHabit: Habit = {
       id: `habit_${Date.now()}`,
       ...habitData,
       streak: 0,
       completedDays: [],
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
     setHabits(prev => [...prev, newHabit]);
   };
 
-  const handleEditHabit = (habitData: { name: string; category: HabitCategory }) => {
+  const handleEditHabit = (habitData: { name: string; category: HabitCategory }): void => {
     if (!editingHabit) return;
-    
-    setHabits(prev => prev.map(habit => 
-      habit.id === editingHabit.id 
-        ? { ...habit, ...habitData }
-        : habit
-    ));
+
+    setHabits(prev =>
+      prev.map(habit => (habit.id === editingHabit.id ? { ...habit, ...habitData } : habit))
+    );
     setEditingHabit(null);
   };
 
-  const handleDeleteHabit = (habitId: string) => {
+  const handleDeleteHabit = (habitId: string): void => {
     setHabits(prev => prev.filter(habit => habit.id !== habitId));
   };
 
   useEffect(() => {
-    const cleanup = () => {
+    const cleanup = (): void => {
       setHabits(prevHabits => cleanupOldData(prevHabits));
     };
-    
+
     // Run cleanup once a day
     const interval = setInterval(cleanup, 24 * 60 * 60 * 1000);
-    
+
     // Run cleanup on mount
     cleanup();
-    
+
     return () => clearInterval(interval);
   }, []);
 
-  const toggleHabit = (habitId: string) => {
+  const toggleHabit = (habitId: string): void => {
     setCollapsedHabits(prev => {
       const newSet = new Set(prev);
       if (newSet.has(habitId)) {
@@ -205,21 +205,23 @@ const HabitsWidget = () => {
   };
 
   return (
-    <div 
+    <div
       className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}
-      style={{
-        '--gradient-start': theme.gradientStart,
-        '--gradient-middle': theme.gradientMiddle,
-        '--gradient-end': theme.gradientEnd,
-        '--accent-rgb': theme.accentRGB,
-      } as React.CSSProperties}
+      style={
+        {
+          '--gradient-start': theme.gradientStart,
+          '--gradient-middle': theme.gradientMiddle,
+          '--gradient-end': theme.gradientEnd,
+          '--accent-rgb': theme.accentRGB,
+        } as React.CSSProperties
+      }
     >
       <div className={styles.header}>
         <div className={styles.headerMain}>
           <div className={styles.headerLeft}>
             <span className={styles.headerIcon}>✅</span>
             <span className={styles.headerText}>Daily Habits</span>
-            <button 
+            <button
               className={styles.addButton}
               onClick={() => setShowHabitForm(true)}
               aria-label="Add new habit"
@@ -231,7 +233,7 @@ const HabitsWidget = () => {
           <button
             className={`${styles.collapseButton} ${isCollapsed ? styles.collapsed : ''}`}
             onClick={() => setIsCollapsed(!isCollapsed)}
-            aria-label={isCollapsed ? "Expand habits widget" : "Collapse habits widget"}
+            aria-label={isCollapsed ? 'Expand habits widget' : 'Collapse habits widget'}
           >
             <ChevronDownIcon className={styles.collapseIcon} />
           </button>
@@ -241,12 +243,12 @@ const HabitsWidget = () => {
       <motion.div
         className={styles.collapsibleContent}
         animate={{
-          height: isCollapsed ? 0 : "auto",
-          opacity: isCollapsed ? 0 : 1
+          height: isCollapsed ? 0 : 'auto',
+          opacity: isCollapsed ? 0 : 1,
         }}
         transition={{
           duration: 0.3,
-          ease: "easeInOut"
+          ease: 'easeInOut',
         }}
       >
         <div className={styles.categorySelector}>
@@ -265,9 +267,11 @@ const HabitsWidget = () => {
                 selectedCategory === category ? styles.selected : ''
               }`}
               onClick={() => setSelectedCategory(category as HabitCategory)}
-              style={{
-                '--category-color-rgb': config.colorRGB
-              } as React.CSSProperties}
+              style={
+                {
+                  '--category-color-rgb': config.colorRGB,
+                } as React.CSSProperties
+              }
             >
               <span className={styles.categoryIcon}>{config.icon}</span>
               <span className={styles.categoryLabel}>{config.label}</span>
@@ -283,62 +287,61 @@ const HabitsWidget = () => {
                 className={`${styles.habitCard} ${collapsedHabits.has(habit.id) ? styles.collapsed : ''}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                style={{
-                  '--category-color-rgb': CATEGORY_CONFIG[habit.category as keyof typeof CATEGORY_CONFIG].colorRGB
-                } as React.CSSProperties}
+                style={
+                  {
+                    '--category-color-rgb':
+                      CATEGORY_CONFIG[habit.category as keyof typeof CATEGORY_CONFIG].colorRGB,
+                  } as React.CSSProperties
+                }
               >
                 <div className={styles.habitHeader}>
                   <div className={styles.habitMainInfo}>
-                    <span className={styles.habitIcon}>
-                      {CATEGORY_CONFIG[habit.category].icon}
-                    </span>
+                    <span className={styles.habitIcon}>{CATEGORY_CONFIG[habit.category].icon}</span>
                     <span className={styles.habitName}>{habit.name}</span>
-                    <span className={styles.streakBadge}>
-                      🔥 {habit.streak}
-                    </span>
+                    <span className={styles.streakBadge}>🔥 {habit.streak}</span>
                   </div>
                   <button
                     className={styles.toggleButton}
                     onClick={() => toggleHabit(habit.id)}
-                    aria-label={collapsedHabits.has(habit.id) ? "Expand habit" : "Collapse habit"}
+                    aria-label={collapsedHabits.has(habit.id) ? 'Expand habit' : 'Collapse habit'}
                   >
                     <ChevronDownIcon className={styles.toggleIcon} />
                   </button>
                 </div>
 
                 <div className={styles.weekProgress}>
-                  {weekDates.map((date) => (
-                    <div 
-                      key={date.toString()} 
-                      className={styles.dayColumn} 
+                  {weekDates.map(date => (
+                    <div
+                      key={date.toString()}
+                      className={styles.dayColumn}
                       data-tooltip="Click to set status"
                       role="button"
                       aria-label={`Set status for ${format(date, 'EEEE')}`}
                     >
-                      <span className={styles.dayLabel}>
-                        {format(date, 'EEE')}
-                      </span>
-                      <div 
+                      <span className={styles.dayLabel}>{format(date, 'EEE')}</span>
+                      <div
                         className={`${styles.dayCheck} ${
                           getDateStatus(habit, date) ? styles.hasStatus : ''
                         }`}
-                        onClick={(e) => handleDayClick(e, date, habit)}
+                        onClick={e => handleDayClick(e, date, habit)}
                         data-status={getDateStatus(habit, date)}
                         data-day={format(date, 'd')}
                       >
                         {(() => {
                           const status = getDateStatus(habit, date);
                           if (!status) return format(date, 'd');
-                          
+
                           if (status === 'completed') {
                             return <CheckmarkIcon className={styles.checkmarkIcon} />;
                           }
-                          
+
                           if (['partial', 'rescheduled', 'half'].includes(status)) {
                             return format(date, 'd');
                           }
-                          
-                          return <span className={styles.statusIcon}>{STATUS_CONFIG[status].icon}</span>;
+
+                          return (
+                            <span className={styles.statusIcon}>{STATUS_CONFIG[status].icon}</span>
+                          );
                         })()}
                       </div>
                     </div>
@@ -346,13 +349,13 @@ const HabitsWidget = () => {
                 </div>
 
                 <div className={styles.habitActions}>
-                  <button 
+                  <button
                     className={styles.actionButton}
-                    onClick={(e) => {
+                    onClick={e => {
                       const rect = e.currentTarget.getBoundingClientRect();
                       setActionMenuPosition({
                         x: Math.min(rect.left, window.innerWidth - 144), // 144px = menu width
-                        y: rect.bottom
+                        y: rect.bottom,
                       });
                       setSelectedHabit(habit);
                       setShowActionsMenu(true);
@@ -360,7 +363,7 @@ const HabitsWidget = () => {
                   >
                     <DotsHorizontalIcon className={styles.actionIcon} />
                   </button>
-                  <button 
+                  <button
                     className={styles.monthlyViewButton}
                     onClick={() => {
                       setSelectedHabit(habit);
@@ -422,4 +425,4 @@ const HabitsWidget = () => {
   );
 };
 
-export default HabitsWidget; 
+export default HabitsWidget;

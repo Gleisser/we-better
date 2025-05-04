@@ -1,18 +1,19 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  PlayIcon, 
-  PauseIcon, 
-  ChevronDownIcon, 
+import {
+  PlayIcon,
+  PauseIcon,
+  ChevronDownIcon,
   SkipBackward15Icon,
   SkipForward15Icon,
   SpotifyIcon,
-  VolumeIcon
 } from '@/shared/components/common/icons';
 import { CircularProgress } from './CircularProgress';
 import { podcastService, type Podcast } from '@/core/services/podcastService';
 import styles from './PodcastWidget.module.css';
 import { getSpotifyAuthToken } from '@/utils/helpers/spotify';
+// Import global types
+import '@/typings/window.d.ts';
 
 interface SpotifyPlayerState {
   isPlaying: boolean;
@@ -22,17 +23,17 @@ interface SpotifyPlayerState {
   spotifyPlayer?: Spotify.Player;
 }
 
-const PodcastWidget = () => {
+const PodcastWidget = (): JSX.Element => {
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return window.innerWidth <= 768;
   });
   const [currentEpisode, setCurrentEpisode] = useState<Podcast | null>(null);
-  const [episodes, setEpisodes] = useState<Podcast[]>([]);
+  const [_episodes, setEpisodes] = useState<Podcast[]>([]);
   const [playerState, setPlayerState] = useState<SpotifyPlayerState>({
     isPlaying: false,
     currentTime: 0,
     duration: 0,
-    volume: 0.8
+    volume: 0.8,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,8 +44,6 @@ const PodcastWidget = () => {
     const expiry = localStorage.getItem('spotify_token_expiry');
     return token && expiry && Date.now() < parseInt(expiry);
   });
-  const [isMuted, setIsMuted] = useState(false);
-  const [previousVolume, setPreviousVolume] = useState(0.5);
   const [isVolumeSliderVisible, setIsVolumeSliderVisible] = useState(false);
   const volumeSliderRef = useRef<HTMLDivElement>(null);
 
@@ -56,10 +55,10 @@ const PodcastWidget = () => {
         sort: 'publishedAt:desc',
         pagination: {
           page: 1,
-          pageSize: 5 // Get latest 5 episodes
-        }
+          pageSize: 5, // Get latest 5 episodes
+        },
       });
-      
+
       const mappedPodcasts = podcastService.mapPodcastResponse(response);
       setEpisodes(mappedPodcasts);
       if (!currentEpisode && mappedPodcasts.length > 0) {
@@ -80,8 +79,8 @@ const PodcastWidget = () => {
   useEffect(() => {
     if (!isSpotifyConnected || !currentEpisode) return;
 
-    const script = document.createElement("script");
-    script.src = "https://sdk.scdn.co/spotify-player.js";
+    const script = document.createElement('script');
+    script.src = 'https://sdk.scdn.co/spotify-player.js';
     script.async = true;
 
     document.body.appendChild(script);
@@ -89,18 +88,17 @@ const PodcastWidget = () => {
     window.onSpotifyWebPlaybackSDKReady = () => {
       const player = new window.Spotify.Player({
         name: 'WeBetter Podcast Player',
-        getOAuthToken: cb => { 
+        getOAuthToken: cb => {
           getSpotifyAuthToken().then(token => {
             if (token) cb(token);
           });
         },
-        volume: 0.5
+        volume: 0.5,
       });
 
       setPlayer(player);
 
       player.addListener('ready', ({ device_id }) => {
-        console.log('Ready with Device ID', device_id);
         setDeviceId(device_id);
         setIsLoading(false);
       });
@@ -112,7 +110,7 @@ const PodcastWidget = () => {
             isPlaying: !state.paused,
             currentTime: state.position / 1000,
             duration: state.duration / 1000,
-            spotifyPlayer: player
+            spotifyPlayer: player,
           }));
         }
       });
@@ -140,7 +138,7 @@ const PodcastWidget = () => {
 
       player.connect().then(success => {
         if (success) {
-          console.log('Successfully connected to Spotify');
+          console.info('Successfully connected to Spotify');
         }
       });
 
@@ -163,7 +161,7 @@ const PodcastWidget = () => {
         setPlayerState(prev => ({
           ...prev,
           currentTime: state.position / 1000,
-          duration: state.duration / 1000
+          duration: state.duration / 1000,
         }));
       }
     }, 1000);
@@ -171,7 +169,7 @@ const PodcastWidget = () => {
     return () => clearInterval(stateInterval);
   }, [player]);
 
-  const handleSkipForward = async () => {
+  const handleSkipForward = async (): Promise<void> => {
     if (!playerState.spotifyPlayer) return;
 
     try {
@@ -179,7 +177,7 @@ const PodcastWidget = () => {
       const currentMs = Math.floor(playerState.currentTime * 1000);
       const durationMs = Math.floor(playerState.duration * 1000);
       const newPosition = Math.min(currentMs + 15000, durationMs);
-      
+
       await playerState.spotifyPlayer.seek(newPosition);
     } catch (err) {
       console.error('Failed to skip forward:', err);
@@ -187,14 +185,14 @@ const PodcastWidget = () => {
     }
   };
 
-  const handleSkipBackward = async () => {
+  const handleSkipBackward = async (): Promise<void> => {
     if (!playerState.spotifyPlayer) return;
 
     try {
       // Convert current time to milliseconds and subtract 15 seconds
       const currentMs = Math.floor(playerState.currentTime * 1000);
       const newPosition = Math.max(currentMs - 15000, 0);
-      
+
       await playerState.spotifyPlayer.seek(newPosition);
     } catch (err) {
       console.error('Failed to skip backward:', err);
@@ -208,7 +206,7 @@ const PodcastWidget = () => {
     if (podcast.spotifyId) {
       return `spotify:episode:${podcast.spotifyId}`;
     }
-    
+
     // If we only have the external URL, extract the ID from it
     if (podcast.externalUrl) {
       const match = podcast.externalUrl.match(/episode\/([a-zA-Z0-9]+)/);
@@ -216,11 +214,11 @@ const PodcastWidget = () => {
         return `spotify:episode:${match[1]}`;
       }
     }
-    
+
     return '';
   };
 
-  const togglePlay = async () => {
+  const togglePlay = async (): Promise<void> => {
     if (!deviceId || !currentEpisode) {
       setError('Playback device not ready');
       return;
@@ -240,16 +238,19 @@ const PodcastWidget = () => {
       }
 
       if (!playerState.isPlaying) {
-        const response = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            uris: [spotifyUri]
-          })
-        });
+        const response = await fetch(
+          `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
+          {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              uris: [spotifyUri],
+            }),
+          }
+        );
 
         if (!response.ok) {
           const error = await response.json();
@@ -260,12 +261,15 @@ const PodcastWidget = () => {
 
         setPlayerState(prev => ({ ...prev, isPlaying: true }));
       } else {
-        const response = await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
+        const response = await fetch(
+          `https://api.spotify.com/v1/me/player/pause?device_id=${deviceId}`,
+          {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        });
+        );
 
         if (!response.ok) {
           const error = await response.json();
@@ -282,16 +286,16 @@ const PodcastWidget = () => {
     }
   };
 
-  const handleSeek = async (time: number) => {
+  const handleSeek = async (time: number): Promise<void> => {
     if (!playerState.spotifyPlayer) return;
-    
+
     try {
       // Convert time to milliseconds for Spotify API
       const positionMs = Math.floor(time * 1000);
       // Update local state immediately
       setPlayerState(prev => ({
         ...prev,
-        currentTime: time
+        currentTime: time,
       }));
       await playerState.spotifyPlayer.seek(positionMs);
     } catch (err) {
@@ -301,73 +305,73 @@ const PodcastWidget = () => {
   };
 
   // Add handler for linear progress bar clicks
-  const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const progressBar = e.currentTarget;
-    const rect = progressBar.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const percentage = x / rect.width;
-    const newTime = percentage * playerState.duration;
-    handleSeek(newTime);
-  };
+  // const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   const progressBar = e.currentTarget;
+  //   const rect = progressBar.getBoundingClientRect();
+  //   const x = e.clientX - rect.left;
+  //   const percentage = x / rect.width;
+  //   const newTime = percentage * playerState.duration;
+  //   handleSeek(newTime);
+  // };
 
-  const handleSpotifyConnect = async () => {
+  const handleSpotifyConnect = async (): Promise<void> => {
     const token = await getSpotifyAuthToken();
     if (token) {
       setIsSpotifyConnected(true);
     }
   };
 
-  const handleVolumeChange = async (newVolume: number) => {
-    if (!playerState.spotifyPlayer) return;
+  // const handleVolumeChange = async (newVolume: number) : Promise<void> => {
+  //   if (!playerState.spotifyPlayer) return;
 
-    try {
-      await playerState.spotifyPlayer.setVolume(newVolume);
-      setPlayerState(prev => ({ ...prev, volume: newVolume }));
-      
-      // Update mute state
-      if (newVolume === 0) {
-        setIsMuted(true);
-      } else if (isMuted) {
-        setIsMuted(false);
-      }
-      
-      // Store as previous volume if not muted
-      if (newVolume > 0) {
-        setPreviousVolume(newVolume);
-      }
-    } catch (err) {
-      console.error('Failed to change volume:', err);
-      setError('Failed to change volume');
-    }
-  };
+  //   try {
+  //     await playerState.spotifyPlayer.setVolume(newVolume);
+  //     setPlayerState(prev => ({ ...prev, volume: newVolume }));
 
-  const toggleMute = async () => {
-    if (!playerState.spotifyPlayer) return;
+  //     // Update mute state
+  //     if (newVolume === 0) {
+  //       setIsMuted(true);
+  //     } else if (isMuted) {
+  //       setIsMuted(false);
+  //     }
 
-    try {
-      if (isMuted) {
-        // Unmute: restore previous volume
-        const volumeToRestore = previousVolume || 0.5; // Fallback to 0.5 if no previous volume
-        await playerState.spotifyPlayer.setVolume(volumeToRestore);
-        setPlayerState(prev => ({ ...prev, volume: volumeToRestore }));
-        setIsMuted(false);
-      } else {
-        // Mute: save current volume and set to 0
-        if (playerState.volume > 0) {
-          setPreviousVolume(playerState.volume);
-        }
-        await playerState.spotifyPlayer.setVolume(0);
-        setPlayerState(prev => ({ ...prev, volume: 0 }));
-        setIsMuted(true);
-      }
-    } catch (err) {
-      console.error('Failed to toggle mute:', err);
-      setError('Failed to toggle mute');
-    }
-  };
+  //     // Store as previous volume if not muted
+  //     if (newVolume > 0) {
+  //       setPreviousVolume(newVolume);
+  //     }
+  //   } catch (err) {
+  //     console.error('Failed to change volume:', err);
+  //     setError('Failed to change volume');
+  //   }
+  // };
+
+  // const toggleMute = async () => {
+  //   if (!playerState.spotifyPlayer) return;
+
+  //   try {
+  //     if (isMuted) {
+  //       // Unmute: restore previous volume
+  //       const volumeToRestore = previousVolume || 0.5; // Fallback to 0.5 if no previous volume
+  //       await playerState.spotifyPlayer.setVolume(volumeToRestore);
+  //       setPlayerState(prev => ({ ...prev, volume: volumeToRestore }));
+  //       setIsMuted(false);
+  //     } else {
+  //       // Mute: save current volume and set to 0
+  //       if (playerState.volume > 0) {
+  //         setPreviousVolume(playerState.volume);
+  //       }
+  //       await playerState.spotifyPlayer.setVolume(0);
+  //       setPlayerState(prev => ({ ...prev, volume: 0 }));
+  //       setIsMuted(true);
+  //     }
+  //   } catch (err) {
+  //     console.error('Failed to toggle mute:', err);
+  //     setError('Failed to toggle mute');
+  //   }
+  // };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       if (volumeSliderRef.current && !volumeSliderRef.current.contains(event.target as Node)) {
         setIsVolumeSliderVisible(false);
       }
@@ -382,16 +386,16 @@ const PodcastWidget = () => {
     };
   }, [isVolumeSliderVisible]);
 
-  const handleProgressHover = (e: React.MouseEvent<HTMLDivElement>) => {
-    const progressBar = e.currentTarget;
-    const rect = progressBar.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const width = progressBar.offsetWidth;
-    const percentage = (x / width) * 100;
-    
-    // Update the preview progress
-    progressBar.style.setProperty('--preview-progress', `${percentage}%`);
-  };
+  // const handleProgressHover = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   const progressBar = e.currentTarget;
+  //   const rect = progressBar.getBoundingClientRect();
+  //   const x = e.clientX - rect.left;
+  //   const width = progressBar.offsetWidth;
+  //   const percentage = (x / width) * 100;
+
+  // Update the preview progress
+  //   progressBar.style.setProperty('--preview-progress', `${percentage}%`);
+  // };
 
   return (
     <div className={styles.container}>
@@ -405,7 +409,7 @@ const PodcastWidget = () => {
           <button
             className={`${styles.collapseButton} ${isCollapsed ? styles.collapsed : ''}`}
             onClick={() => setIsCollapsed(!isCollapsed)}
-            aria-label={isCollapsed ? "Expand podcast widget" : "Collapse podcast widget"}
+            aria-label={isCollapsed ? 'Expand podcast widget' : 'Collapse podcast widget'}
           >
             <ChevronDownIcon className={styles.collapseIcon} />
           </button>
@@ -415,8 +419,8 @@ const PodcastWidget = () => {
       <motion.div
         className={styles.collapsibleContent}
         animate={{
-          height: isCollapsed ? 0 : "auto",
-          opacity: isCollapsed ? 0 : 1
+          height: isCollapsed ? 0 : 'auto',
+          opacity: isCollapsed ? 0 : 1,
         }}
       >
         <div className={styles.content}>
@@ -426,7 +430,7 @@ const PodcastWidget = () => {
             <div className={styles.error}>{error}</div>
           ) : currentEpisode ? (
             <div className={styles.playerSection}>
-              <button 
+              <button
                 className={styles.skipButton}
                 onClick={handleSkipBackward}
                 aria-label="Skip 15 seconds backward"
@@ -443,11 +447,11 @@ const PodcastWidget = () => {
                   />
                   <div className={styles.artworkCircle}>
                     <div className={styles.artworkPlayButton}>
-                      <div 
+                      <div
                         className={styles.artworkPlayIcon}
                         onClick={togglePlay}
                         role="button"
-                        aria-label={playerState.isPlaying ? "Pause episode" : "Play episode"}
+                        aria-label={playerState.isPlaying ? 'Pause episode' : 'Play episode'}
                       >
                         {playerState.isPlaying ? (
                           <PauseIcon className="w-full h-full" />
@@ -456,7 +460,7 @@ const PodcastWidget = () => {
                         )}
                       </div>
                     </div>
-                    <img 
+                    <img
                       src={currentEpisode.thumbnailUrl}
                       alt={currentEpisode.title}
                       className={styles.artworkImage}
@@ -465,7 +469,7 @@ const PodcastWidget = () => {
                 </div>
               </div>
 
-              <button 
+              <button
                 className={styles.skipButton}
                 onClick={handleSkipForward}
                 aria-label="Skip 15 seconds forward"
@@ -490,7 +494,7 @@ const PodcastWidget = () => {
               {[...Array(40)].map((_, i) => {
                 const isCenter = i > 15 && i < 25;
                 return (
-                  <div 
+                  <div
                     key={i}
                     className={styles.waveformBar}
                     data-playing={playerState.isPlaying}
@@ -498,7 +502,7 @@ const PodcastWidget = () => {
                     style={{
                       height: `${20 + Math.sin(i * 0.3) * 60}%`,
                       animationDelay: `${i * 0.05}s`,
-                      opacity: isCenter ? 0.3 : 0.8
+                      opacity: isCenter ? 0.3 : 0.8,
                     }}
                   />
                 );
@@ -511,16 +515,11 @@ const PodcastWidget = () => {
 
       {!isSpotifyConnected && (
         <div className={styles.spotifyOverlay}>
-          <button 
-            className={styles.spotifyConnectButton}
-            onClick={handleSpotifyConnect}
-          >
+          <button className={styles.spotifyConnectButton} onClick={handleSpotifyConnect}>
             <SpotifyIcon className={styles.spotifyIcon} />
             Connect to Spotify
           </button>
-          <p className={styles.spotifyHint}>
-            Connect to Spotify to listen to podcast episodes
-          </p>
+          <p className={styles.spotifyHint}>Connect to Spotify to listen to podcast episodes</p>
         </div>
       )}
     </div>
@@ -529,7 +528,7 @@ const PodcastWidget = () => {
 
 const formatTime = (seconds: number): string => {
   if (!seconds) return '0:00';
-  
+
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const remainingSeconds = Math.floor(seconds % 60);
@@ -538,9 +537,9 @@ const formatTime = (seconds: number): string => {
   if (hours > 0) {
     return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   }
-  
+
   // Otherwise show MM:SS
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
-export default PodcastWidget; 
+export default PodcastWidget;
