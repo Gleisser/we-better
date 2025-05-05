@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useState, ReactNode } from 'react';
 
 /**
  * Defines the available types of header popups in the application.
@@ -7,7 +7,7 @@ import { createContext, useContext, useState, ReactNode } from 'react';
  * - 'notifications' - Popup for displaying user notifications
  * - null - No popup is currently active
  */
-type PopupType = 'profile' | 'notifications' | null;
+export type PopupType = 'profile' | 'notifications' | null;
 
 /**
  * Context interface for managing header popup state.
@@ -15,7 +15,7 @@ type PopupType = 'profile' | 'notifications' | null;
  * @property {PopupType} activePopup - Currently active popup or null if none
  * @property {(popup: PopupType) => void} setActivePopup - Function to change the active popup
  */
-interface HeaderContextType {
+export interface HeaderContextType {
   activePopup: PopupType;
   setActivePopup: (popup: PopupType) => void;
 }
@@ -24,16 +24,16 @@ interface HeaderContextType {
  * Context object for managing header popup state across the application.
  * Initialized as undefined to ensure proper provider wrapping.
  */
-const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
+export const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
 
 /**
  * Provider component for header functionality.
  * Manages the state of header popups (profile, notifications) and provides methods to control them.
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {ReactNode} props.children - Child components that will have access to header context
- * 
+ *
  * @example
  * ```tsx
  * function App() {
@@ -46,7 +46,7 @@ const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
  * }
  * ```
  */
-export const HeaderProvider = ({ children }: { children: ReactNode }) => {
+export const HeaderProvider = ({ children }: { children: ReactNode }): React.ReactNode => {
   const [activePopup, setActivePopup] = useState<PopupType>(null);
 
   return (
@@ -55,38 +55,3 @@ export const HeaderProvider = ({ children }: { children: ReactNode }) => {
     </HeaderContext.Provider>
   );
 };
-
-/**
- * Custom hook to access and manage header popup state.
- * Must be used within a HeaderProvider component.
- * 
- * @returns {HeaderContextType} The header context value containing active popup state and setter
- * @throws {Error} If used outside of a HeaderProvider
- * 
- * @example
- * ```tsx
- * function HeaderComponent() {
- *   const { activePopup, setActivePopup } = useHeader();
- * 
- *   return (
- *     <header>
- *       <button onClick={() => setActivePopup('profile')}>
- *         Profile
- *       </button>
- *       <button onClick={() => setActivePopup('notifications')}>
- *         Notifications
- *       </button>
- *       {activePopup === 'profile' && <ProfilePopup />}
- *       {activePopup === 'notifications' && <NotificationsPopup />}
- *     </header>
- *   );
- * }
- * ```
- */
-export const useHeader = () => {
-  const context = useContext(HeaderContext);
-  if (context === undefined) {
-    throw new Error('useHeader must be used within a HeaderProvider');
-  }
-  return context;
-}; 

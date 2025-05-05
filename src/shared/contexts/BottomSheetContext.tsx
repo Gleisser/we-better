@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useState, ReactNode } from 'react';
 
 /**
  * Defines the available types of bottom sheets in the application.
@@ -7,7 +7,7 @@ import { createContext, useContext, useState, ReactNode } from 'react';
  * - 'aiChat' - Sheet for AI chat interface
  * - null - No sheet is currently active
  */
-type BottomSheetType = 'stories' | 'aiChat' | null;
+export type BottomSheetType = 'stories' | 'aiChat' | null;
 
 /**
  * Context interface for managing bottom sheet state and actions.
@@ -16,7 +16,7 @@ type BottomSheetType = 'stories' | 'aiChat' | null;
  * @property {(sheet: BottomSheetType) => void} setActiveSheet - Function to change the active sheet
  * @property {() => void} closeSheet - Convenience function to close the active sheet
  */
-interface BottomSheetContextType {
+export interface BottomSheetContextType {
   activeSheet: BottomSheetType;
   setActiveSheet: (sheet: BottomSheetType) => void;
   closeSheet: () => void;
@@ -26,16 +26,16 @@ interface BottomSheetContextType {
  * Context object for managing bottom sheet state across the application.
  * Initialized as undefined to ensure proper provider wrapping.
  */
-const BottomSheetContext = createContext<BottomSheetContextType | undefined>(undefined);
+export const BottomSheetContext = createContext<BottomSheetContextType | undefined>(undefined);
 
 /**
  * Provider component for bottom sheet functionality.
  * Manages the state of bottom sheets and provides methods to control them.
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {ReactNode} props.children - Child components that will have access to bottom sheet context
- * 
+ *
  * @example
  * ```tsx
  * function App() {
@@ -47,14 +47,14 @@ const BottomSheetContext = createContext<BottomSheetContextType | undefined>(und
  * }
  * ```
  */
-export function BottomSheetProvider({ children }: { children: ReactNode }) {
+export function BottomSheetProvider({ children }: { children: ReactNode }): React.ReactNode {
   const [activeSheet, setActiveSheet] = useState<BottomSheetType>(null);
 
   /**
    * Closes the currently active bottom sheet.
    * Sets the activeSheet state to null.
    */
-  const closeSheet = () => setActiveSheet(null);
+  const closeSheet = (): void => setActiveSheet(null);
 
   return (
     <BottomSheetContext.Provider value={{ activeSheet, setActiveSheet, closeSheet }}>
@@ -62,40 +62,3 @@ export function BottomSheetProvider({ children }: { children: ReactNode }) {
     </BottomSheetContext.Provider>
   );
 }
-
-/**
- * Custom hook to access and manage bottom sheet state.
- * Must be used within a BottomSheetProvider component.
- * 
- * @returns {BottomSheetContextType} The bottom sheet context value
- * @throws {Error} If used outside of a BottomSheetProvider
- * 
- * @example
- * ```tsx
- * function YourComponent() {
- *   const { activeSheet, setActiveSheet, closeSheet } = useBottomSheet();
- * 
- *   return (
- *     <div>
- *       <button onClick={() => setActiveSheet('stories')}>
- *         Open Stories
- *       </button>
- *       <button onClick={() => setActiveSheet('aiChat')}>
- *         Open AI Chat
- *       </button>
- *       <button onClick={closeSheet}>
- *         Close Sheet
- *       </button>
- *       {activeSheet && <div>Current sheet: {activeSheet}</div>}
- *     </div>
- *   );
- * }
- * ```
- */
-export function useBottomSheet() {
-  const context = useContext(BottomSheetContext);
-  if (context === undefined) {
-    throw new Error('useBottomSheet must be used within a BottomSheetProvider');
-  }
-  return context;
-} 

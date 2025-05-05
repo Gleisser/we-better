@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useEffect, useState, useCallback } from 'react';
 import { authService } from '@/core/services/authService';
 import { supabase } from '@/core/services/supabaseClient';
 
@@ -9,9 +9,9 @@ import { supabase } from '@/core/services/supabaseClient';
  * @property {string} email - The user's email address
  * @property {string} [full_name] - The user's full name (optional)
  */
-interface User {
+export interface User {
   id: string;
-  email: string;
+  email?: string;
   full_name?: string;
 }
 
@@ -24,7 +24,7 @@ interface User {
  * @property {() => Promise<void>} checkAuth - Function to verify current authentication status
  * @property {() => Promise<void>} logout - Function to sign out the current user
  */
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -36,7 +36,7 @@ interface AuthContextType {
  * Context object for managing authentication state across the application.
  * Provides default values when accessed outside of AuthProvider.
  */
-const AuthContext = createContext<AuthContextType>({
+export const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
   isAuthenticated: false,
@@ -47,17 +47,17 @@ const AuthContext = createContext<AuthContextType>({
 /**
  * Authentication Provider component that manages user authentication state.
  * Handles user session persistence, auth state changes, and provides auth-related functions.
- * 
+ *
  * Features:
  * - Automatic session persistence
  * - Real-time auth state synchronization
  * - Loading state management
  * - Centralized auth error handling
- * 
+ *
  * @component
  * @param {Object} props - Component props
  * @param {React.ReactNode} props.children - Child components that will have access to auth context
- * 
+ *
  * @example
  * ```tsx
  * function App() {
@@ -69,7 +69,7 @@ const AuthContext = createContext<AuthContextType>({
  * }
  * ```
  */
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }): React.ReactNode => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -81,13 +81,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setIsLoading(true);
       const { user: currentUser, error } = await authService.getCurrentUser();
-      
+
       if (error) {
         console.error('Auth check error:', error);
         setUser(null);
         return;
       }
-      
+
       if (currentUser) {
         setUser(currentUser);
       } else {
@@ -105,10 +105,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   /**
    * Signs out the current user and redirects to the login page.
    * Handles the complete logout flow including state cleanup.
-   * 
+   *
    * @throws {Error} If the sign-out operation fails
    */
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     try {
       setIsLoading(true);
       await authService.signOut();
@@ -127,7 +127,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
    */
   useEffect(() => {
     checkAuth();
-    
+
     // Set up auth state listener
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
@@ -136,7 +136,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(null);
       }
     });
-    
+
     return () => {
       data.subscription.unsubscribe();
     };
@@ -156,28 +156,3 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     </AuthContext.Provider>
   );
 };
-
-/**
- * Custom hook to access the authentication context.
- * Provides type-safe access to auth state and methods.
- * 
- * @returns {AuthContextType} The authentication context value
- * 
- * @example
- * ```tsx
- * function UserProfile() {
- *   const { user, logout, isLoading } = useAuth();
- * 
- *   if (isLoading) return <Loading />;
- *   if (!user) return <Navigate to="/login" />;
- * 
- *   return (
- *     <div>
- *       <h1>Welcome {user.full_name}</h1>
- *       <button onClick={logout}>Logout</button>
- *     </div>
- *   );
- * }
- * ```
- */
-export const useAuth = () => useContext(AuthContext); 
