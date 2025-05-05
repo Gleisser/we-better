@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  XIcon, 
-  ThumbUpIcon, 
-  ThumbDownIcon, 
-  ShareIcon,
+import {
+  XIcon,
+  ThumbUpIcon,
+  ThumbDownIcon,
   TagIcon,
   SparklesIcon,
   WhatsAppIcon,
@@ -11,13 +10,36 @@ import {
   TwitterIcon,
   LinkedInIcon,
   HashtagIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  ArrowTopRight
+  ArrowTopRight,
 } from '../common/icons';
 import { usePreventScroll } from '../../hooks/usePreventScroll';
 import { articleService, Article } from '@/core/services/articleService';
 import { formatRelativeDate } from '@/utils/helpers/dateUtils';
+
+// Define interfaces for article service filters
+interface CategoryFilter {
+  id: {
+    $eq: number;
+  };
+}
+
+interface TagsFilter {
+  id: {
+    $in: number[];
+  };
+}
+
+interface OrCondition {
+  category?: CategoryFilter;
+  tags?: TagsFilter;
+}
+
+interface ArticleFilters {
+  id?: {
+    $ne: number;
+  };
+  $or?: OrCondition[];
+}
 
 interface ArticlePopupProps {
   isOpen: boolean;
@@ -53,9 +75,13 @@ interface ArticlePopupProps {
 
 const defaultHashtags = ['selfimprovement', 'productivity', 'learning', 'growth'];
 
-const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick, article: initialArticle }) => {
+const ArticlePopup: React.FC<ArticlePopupProps> = ({
+  isOpen,
+  onClose,
+  onTagClick,
+  article: initialArticle,
+}) => {
   usePreventScroll(isOpen);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
   const [currentArticle, setCurrentArticle] = useState(initialArticle);
@@ -67,16 +93,16 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
 
   // Fetch related articles based on category and tags
   useEffect(() => {
-    const fetchRelatedArticles = async () => {
+    const fetchRelatedArticles = async (): Promise<void> => {
       if (!currentArticle.id) return;
-      
+
       try {
         setIsLoadingRelated(true);
-        
-        const filters: any = {
+
+        const filters: ArticleFilters = {
           id: {
-            $ne: currentArticle.id
-          }
+            $ne: Number(currentArticle.id),
+          },
         };
 
         const orConditions = [];
@@ -85,9 +111,9 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
           orConditions.push({
             category: {
               id: {
-                $eq: currentArticle.category.id
-              }
-            }
+                $eq: currentArticle.category.id,
+              },
+            },
           });
         }
 
@@ -97,9 +123,9 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
           orConditions.push({
             tags: {
               id: {
-                $in: validTagIds
-              }
-            }
+                $in: validTagIds,
+              },
+            },
           });
         }
 
@@ -111,10 +137,10 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
           filters,
           pagination: {
             page: 1,
-            pageSize: 3
+            pageSize: 3,
           },
           sort: 'publishedAt:desc',
-          populate: ['category', 'tags']
+          populate: ['category', 'tags'],
         });
 
         setRelatedArticles(response.data);
@@ -131,7 +157,7 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
   }, [isOpen, currentArticle.id, currentArticle.category, currentArticle.tags]);
 
   // Handle clicking on a related article
-  const handleRelatedArticleClick = async (articleId: string) => {
+  const handleRelatedArticleClick = async (articleId: string): Promise<void> => {
     try {
       const response = await articleService.getArticle(articleId);
       if (response.data) {
@@ -148,7 +174,7 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
           readTime: response.data.readTime,
           postDate: response.data.postDate,
           tableOfContents: response.data.tableOfContents,
-          url: response.data.url
+          url: response.data.url,
         };
         setCurrentArticle(mappedArticle);
       }
@@ -158,13 +184,15 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
   };
 
   // Use provided hashtags or fallback to defaults
-  const hashtags = currentArticle.tags || defaultHashtags;
+  const hashtags =
+    currentArticle.tags ||
+    defaultHashtags.map(tag => ({
+      id: 0,
+      name: tag,
+      slug: tag,
+    }));
 
-  const summaryText = currentArticle.description || '';
-
-  const truncatedText = summaryText.slice(0, 250) + '...';
-
-  const handleTagClick = (tag: { id: number; name: string }) => {
+  const handleTagClick = (tag: { id: number; name: string }): void => {
     if (onTagClick) {
       onTagClick(tag);
       onClose();
@@ -177,7 +205,7 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative w-full max-w-6xl h-[80vh] bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden font-jakarta-plus">
         {/* Close button */}
-        <button 
+        <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
         >
@@ -189,16 +217,14 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
           <div className="flex-1 overflow-y-auto p-6">
             <div className="max-w-3xl">
               {/* Image */}
-              <img 
-                src={currentArticle.image || currentArticle.thumbnail} 
+              <img
+                src={currentArticle.image || currentArticle.thumbnail}
                 alt={currentArticle.title}
                 className="w-full h-64 object-cover rounded-lg mb-6"
               />
 
               {/* Title */}
-              <h1 className="text-2xl font-bold mb-4 dark:text-white">
-                {currentArticle.title}
-              </h1>
+              <h1 className="text-2xl font-bold mb-4 dark:text-white">{currentArticle.title}</h1>
 
               {/* Metadata */}
               <div className="flex items-center gap-4 mb-6 text-sm text-gray-500 dark:text-gray-400">
@@ -211,25 +237,25 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
               {/* TLDR Section with enhanced styling */}
               <div className="mb-8 bg-purple-50 dark:bg-purple-900/10 rounded-lg p-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <h2 className="text-purple-600 dark:text-purple-400 font-semibold text-lg">About this article</h2>
+                  <h2 className="text-purple-600 dark:text-purple-400 font-semibold text-lg">
+                    About this article
+                  </h2>
                   <div className="h-px flex-1 bg-purple-200 dark:bg-purple-800"></div>
                 </div>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                   {currentArticle.tldr || currentArticle.description}
                 </p>
 
-                
-                
                 {/* Hashtags section */}
                 <div className="mt-4 flex flex-wrap gap-2">
                   <HashtagIcon className="w-5 h-5 text-purple-500 dark:text-purple-400" />
-                  {hashtags.slice(0, 5).map((tag) => (
-                    <button 
-                      key={tag.id}
-                      onClick={() => handleTagClick(tag)}
+                  {hashtags.slice(0, 5).map(tag => (
+                    <button
+                      key={typeof tag === 'string' ? tag : tag.id}
+                      onClick={() => (typeof tag === 'string' ? undefined : handleTagClick(tag))}
                       className="text-purple-600 dark:text-purple-400 text-sm hover:text-purple-700 dark:hover:text-purple-300 cursor-pointer"
                     >
-                      #{tag.name}
+                      #{typeof tag === 'string' ? tag : tag.name}
                     </button>
                   ))}
                 </div>
@@ -239,8 +265,8 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
               {currentArticle.tags && currentArticle.tags.length > 0 && (
                 <div className="flex items-center gap-2 mb-6">
                   <TagIcon className="w-5 h-5 text-gray-400" />
-                  {currentArticle.tags.slice(0, 3).map((tag) => (
-                    <span 
+                  {currentArticle.tags.slice(0, 3).map(tag => (
+                    <span
                       key={tag.id}
                       className="px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full text-sm"
                     >
@@ -263,9 +289,9 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
                   </button>
                 </div>
 
-                <a 
-                  href={currentArticle.url} 
-                  target="_blank" 
+                <a
+                  href={currentArticle.url}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                 >
@@ -304,11 +330,11 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
                 <nav className="space-y-2 text-gray-600 dark:text-gray-300">
                   {currentArticle.tableOfContents
                     .filter(section => section.level <= 2) // Only show level 1 and 2
-                    .map((section) => (
+                    .map(section => (
                       <div
                         key={section.id}
                         className={`block hover:text-purple-600 ${
-                          section.level === 2 ? '' : ''  // Indent only level 2
+                          section.level === 2 ? '' : '' // Indent only level 2
                         }`}
                       >
                         {`${section.title}`}
@@ -327,11 +353,13 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
               <h3 className="text-lg font-semibold mb-4 dark:text-white">You might also like</h3>
               <div className="space-y-4">
                 {isLoadingRelated ? (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Loading related articles...</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Loading related articles...
+                  </p>
                 ) : relatedArticles.length > 0 ? (
-                  relatedArticles.map((relatedArticle) => (
-                    <div 
-                      key={relatedArticle.id} 
+                  relatedArticles.map(relatedArticle => (
+                    <div
+                      key={relatedArticle.id}
                       className="flex items-start gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors"
                       onClick={() => handleRelatedArticleClick(relatedArticle.documentId)}
                     >
@@ -342,7 +370,9 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">No related articles found</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    No related articles found
+                  </p>
                 )}
               </div>
             </div>
@@ -353,4 +383,4 @@ const ArticlePopup: React.FC<ArticlePopupProps> = ({ isOpen, onClose, onTagClick
   );
 };
 
-export default ArticlePopup; 
+export default ArticlePopup;
