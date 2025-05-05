@@ -1,6 +1,6 @@
 import { createQueryHook } from './utils/createQueryHook';
 import { communityService } from '@/core/services/community.service';
-import { CommunityResponse } from '@/types/community';
+import { CommunityResponse } from '@/utils/types/community';
 
 export const COMMUNITY_QUERY_KEY = ['community'] as const;
 
@@ -13,4 +13,4 @@ const {
   queryFn: () => communityService.getCommunity(),
 });
 
-export { useCommunity, prefetchCommunity, invalidateCommunityCache }; 
+export { useCommunity, prefetchCommunity, invalidateCommunityCache };

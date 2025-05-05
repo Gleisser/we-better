@@ -9,7 +9,17 @@ interface LongPressOptions {
   delay?: number;
 }
 
-export const useLongPress = (onLongPress: (position: Position) => void, { delay = 400 }: LongPressOptions = {}) => {
+export const useLongPress = (
+  onLongPress: (position: Position) => void,
+  { delay = 400 }: LongPressOptions = {}
+): {
+  onMouseDown: (e: React.MouseEvent) => void;
+  onTouchStart: (e: React.TouchEvent) => void;
+  onMouseUp: () => void;
+  onMouseLeave: () => void;
+  onTouchEnd: () => void;
+  longPressTriggered: boolean;
+} => {
   const [longPressTriggered, setLongPressTriggered] = useState(false);
   const timeout = useRef<NodeJS.Timeout>();
   const target = useRef<EventTarget>();
@@ -18,7 +28,7 @@ export const useLongPress = (onLongPress: (position: Position) => void, { delay 
     (event: React.MouseEvent | React.TouchEvent) => {
       if (event.target === target.current) return;
 
-      const getClientPosition = () => {
+      const getClientPosition = (): Position => {
         if ('touches' in event) {
           const touch = event.touches[0];
           return { x: touch.clientX, y: touch.clientY };
@@ -37,7 +47,9 @@ export const useLongPress = (onLongPress: (position: Position) => void, { delay 
   );
 
   const clear = useCallback(() => {
-    timeout.current && clearTimeout(timeout.current);
+    if (timeout.current) {
+      clearTimeout(timeout.current);
+    }
     setLongPressTriggered(false);
     target.current = undefined;
   }, []);
@@ -48,6 +60,6 @@ export const useLongPress = (onLongPress: (position: Position) => void, { delay 
     onMouseUp: clear,
     onMouseLeave: clear,
     onTouchEnd: clear,
-    longPressTriggered
+    longPressTriggered,
   };
-}; 
+};

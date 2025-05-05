@@ -1,6 +1,6 @@
-import { createQueryHook } from './utils/createQueryHook';
+import { createQueryHook } from '@/shared/hooks/utils/createQueryHook';
 import { heroService } from '@/core/services/hero.service';
-import { HeroResponse } from '@/types/hero';
+import { HeroResponse } from '@/utils/types/hero';
 
 export const HERO_QUERY_KEY = ['hero'] as const;
 
@@ -13,4 +13,4 @@ const {
   queryFn: () => heroService.getHero(),
 });
 
-export { useHero, prefetchHero, invalidateHeroCache }; 
+export { useHero, prefetchHero, invalidateHeroCache };

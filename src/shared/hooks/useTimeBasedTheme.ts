@@ -14,26 +14,26 @@ const TIME_THEMES: Record<TimeOfDay, ThemeColors> = {
     gradientStart: 'rgba(30, 30, 40, 0.95)',
     gradientMiddle: 'rgba(40, 40, 60, 0.95)',
     gradientEnd: 'rgba(30, 30, 40, 0.95)',
-    accentRGB: '255, 170, 100' // Warm morning glow
+    accentRGB: '255, 170, 100', // Warm morning glow
   },
   afternoon: {
     gradientStart: 'rgba(20, 20, 30, 0.95)',
     gradientMiddle: 'rgba(30, 30, 45, 0.95)',
     gradientEnd: 'rgba(20, 20, 30, 0.95)',
-    accentRGB: '150, 200, 255' // Bright blue sky
+    accentRGB: '150, 200, 255', // Bright blue sky
   },
   evening: {
     gradientStart: 'rgba(25, 20, 35, 0.95)',
     gradientMiddle: 'rgba(35, 30, 50, 0.95)',
     gradientEnd: 'rgba(25, 20, 35, 0.95)',
-    accentRGB: '255, 130, 150' // Sunset pink
+    accentRGB: '255, 130, 150', // Sunset pink
   },
   night: {
     gradientStart: 'rgba(10, 10, 20, 0.95)',
     gradientMiddle: 'rgba(20, 20, 35, 0.95)',
     gradientEnd: 'rgba(10, 10, 20, 0.95)',
-    accentRGB: '130, 150, 255' // Deep night blue
-  }
+    accentRGB: '130, 150, 255', // Deep night blue
+  },
 };
 
 const getTimeOfDay = (): TimeOfDay => {
@@ -44,11 +44,14 @@ const getTimeOfDay = (): TimeOfDay => {
   return 'night';
 };
 
-export const useTimeBasedTheme = () => {
+export const useTimeBasedTheme = (): {
+  timeOfDay: TimeOfDay;
+  theme: ThemeColors;
+} => {
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(getTimeOfDay());
 
   useEffect(() => {
-    const updateTimeOfDay = () => {
+    const updateTimeOfDay = (): void => {
       setTimeOfDay(getTimeOfDay());
     };
 
@@ -59,6 +62,6 @@ export const useTimeBasedTheme = () => {
 
   return {
     timeOfDay,
-    theme: TIME_THEMES[timeOfDay]
+    theme: TIME_THEMES[timeOfDay],
   };
-}; 
+};

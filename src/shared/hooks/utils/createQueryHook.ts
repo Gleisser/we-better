@@ -8,14 +8,20 @@ interface QueryHookOptions<TData> {
   gcTime?: number;
 }
 
-export function createQueryHook<TData>({ 
-  queryKey, 
+interface QueryHookResult<TData> {
+  useQueryHook: () => ReturnType<typeof useQuery<TData>>;
+  prefetchData: (queryClient: QueryClient) => Promise<void>;
+  invalidateCache: (queryClient: QueryClient) => Promise<void>;
+}
+
+export function createQueryHook<TData>({
+  queryKey,
   queryFn,
   staleTime = 1000 * 60 * 5, // 5 minutes
   gcTime = 1000 * 60 * 30, // 30 minutes
-}: QueryHookOptions<TData>) {
+}: QueryHookOptions<TData>): QueryHookResult<TData> {
   // Create the main query hook
-  function useQueryHook() {
+  function useQueryHook(): ReturnType<typeof useQuery<TData>> {
     return useQuery<TData>({
       queryKey,
       queryFn: async () => {
@@ -29,14 +35,14 @@ export function createQueryHook<TData>({
       staleTime,
       gcTime,
       retry: 2,
-      retryDelay: (attemptIndex) => Math.min(1000 * 1.5 ** attemptIndex, 10000),
+      retryDelay: attemptIndex => Math.min(1000 * 1.5 ** attemptIndex, 10000),
       refetchOnMount: false,
       refetchOnWindowFocus: false,
     });
   }
 
   // Create prefetch helper
-  async function prefetchData(queryClient: QueryClient) {
+  async function prefetchData(queryClient: QueryClient): Promise<void> {
     return queryClient.prefetchQuery({
       queryKey,
       queryFn,
@@ -45,7 +51,7 @@ export function createQueryHook<TData>({
   }
 
   // Create cache invalidation helper
-  function invalidateCache(queryClient: QueryClient) {
+  function invalidateCache(queryClient: QueryClient): Promise<void> {
     return queryClient.invalidateQueries({ queryKey });
   }
 
@@ -54,4 +60,4 @@ export function createQueryHook<TData>({
     prefetchData,
     invalidateCache,
   };
-} 
+}

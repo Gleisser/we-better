@@ -1,6 +1,6 @@
-import { createQueryHook } from './utils/createQueryHook';
+import { createQueryHook } from '@/shared/hooks/utils/createQueryHook';
 import { partnerService } from '@/core/services/partner.service';
-import { PartnerResponse } from '@/types/partner';
+import { PartnerResponse } from '@/utils/types/partner';
 
 export const PARTNER_QUERY_KEY = ['partner'] as const;
 
@@ -13,4 +13,4 @@ const {
   queryFn: () => partnerService.getPartners(),
 });
 
-export { usePartner, prefetchPartner, invalidatePartnerCache }; 
+export { usePartner, prefetchPartner, invalidatePartnerCache };

@@ -6,31 +6,49 @@ interface VoiceRecorderState {
   error: string | null;
 }
 
-export const useVoiceRecorder = () => {
+interface MediaDeviceError extends Error {
+  name:
+    | 'NotAllowedError'
+    | 'NotFoundError'
+    | 'NotReadableError'
+    | 'OverconstrainedError'
+    | 'AbortError'
+    | 'SecurityError'
+    | 'TypeError';
+}
+
+export const useVoiceRecorder = (): {
+  isRecording: boolean;
+  audioUrl: string | null;
+  error: string | null;
+  startRecording: () => Promise<void>;
+  stopRecording: () => void;
+  clearRecording: () => void;
+} => {
   const [state, setState] = useState<VoiceRecorderState>({
     isRecording: false,
     audioUrl: null,
-    error: null
+    error: null,
   });
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
   const startRecording = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           sampleRate: 44100,
-        } 
+        },
       });
 
       // Clear previous recording
       chunksRef.current = [];
 
       const recorder = new MediaRecorder(stream);
-      
-      recorder.ondataavailable = (event) => {
+
+      recorder.ondataavailable = event => {
         if (event.data.size > 0) {
           chunksRef.current.push(event.data);
         }
@@ -49,26 +67,26 @@ export const useVoiceRecorder = () => {
     } catch (err) {
       if (err instanceof Error) {
         // Handle specific error types
-        if ((err as any).name === 'NotAllowedError') {
-          setState(prev => ({ 
-            ...prev, 
-            error: 'Microphone access was denied. Please allow access in your browser settings.'
+        if ((err as MediaDeviceError).name === 'NotAllowedError') {
+          setState(prev => ({
+            ...prev,
+            error: 'Microphone access was denied. Please allow access in your browser settings.',
           }));
-        } else if ((err as any).name === 'NotFoundError') {
-          setState(prev => ({ 
-            ...prev, 
-            error: 'No microphone found. Please connect a microphone and try again.'
+        } else if ((err as MediaDeviceError).name === 'NotFoundError') {
+          setState(prev => ({
+            ...prev,
+            error: 'No microphone found. Please connect a microphone and try again.',
           }));
         } else {
-          setState(prev => ({ 
-            ...prev, 
-            error: `Error accessing microphone: ${err.message}`
+          setState(prev => ({
+            ...prev,
+            error: `Error accessing microphone: ${err.message}`,
           }));
         }
       } else {
-        setState(prev => ({ 
-          ...prev, 
-          error: 'An unknown error occurred while trying to access the microphone.'
+        setState(prev => ({
+          ...prev,
+          error: 'An unknown error occurred while trying to access the microphone.',
         }));
       }
       console.error('Microphone access error:', err);
@@ -96,6 +114,6 @@ export const useVoiceRecorder = () => {
     error: state.error,
     startRecording,
     stopRecording,
-    clearRecording
+    clearRecording,
   };
-}; 
+};

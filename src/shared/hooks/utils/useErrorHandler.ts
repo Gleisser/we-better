@@ -13,10 +13,17 @@ interface UseErrorHandlerOptions {
   fallbackMessage?: string;
 }
 
-export function useErrorHandler({ 
-  onError, 
-  fallbackMessage = 'An unexpected error occurred' 
-}: UseErrorHandlerOptions = {}) {
+interface UseErrorHandlerResult {
+  handleError: (error: unknown) => void;
+  clearError: () => void;
+  isError: boolean;
+  error: ErrorState | null;
+}
+
+export function useErrorHandler({
+  onError,
+  fallbackMessage = 'An unexpected error occurred',
+}: UseErrorHandlerOptions = {}): UseErrorHandlerResult {
   const [errorState, setErrorState] = useState<ErrorState>({
     hasError: false,
     message: '',
@@ -24,25 +31,28 @@ export function useErrorHandler({
     timestamp: 0,
   });
 
-  const handleError = useCallback((error: unknown) => {
-    const errorMessage = getDetailedErrorMessage(error);
-    const errorCode = getErrorCode(error);
-    
-    setErrorState({
-      hasError: true,
-      message: errorMessage || fallbackMessage,
-      code: errorCode,
-      timestamp: Date.now(),
-    });
+  const handleError = useCallback(
+    (error: unknown) => {
+      const errorMessage = getDetailedErrorMessage(error);
+      const errorCode = getErrorCode(error);
 
-    // Call custom error handler if provided
-    onError?.(error);
+      setErrorState({
+        hasError: true,
+        message: errorMessage || fallbackMessage,
+        code: errorCode,
+        timestamp: Date.now(),
+      });
 
-    // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error(`[${errorCode}]`, error);
-    }
-  }, [fallbackMessage, onError]);
+      // Call custom error handler if provided
+      onError?.(error);
+
+      // Log error to console in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`[${errorCode}]`, error);
+      }
+    },
+    [fallbackMessage, onError]
+  );
 
   const clearError = useCallback(() => {
     setErrorState({
@@ -62,4 +72,4 @@ export function useErrorHandler({
     isError,
     error,
   };
-} 
+}

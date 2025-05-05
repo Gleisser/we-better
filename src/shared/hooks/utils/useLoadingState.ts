@@ -5,10 +5,17 @@ interface UseLoadingStateOptions {
   minimumLoadingTime?: number;
 }
 
-export function useLoadingState({ 
+interface UseLoadingStateResult {
+  isLoading: boolean;
+  hasTimedOut: boolean;
+  startLoading: () => void;
+  stopLoading: () => Promise<void>;
+}
+
+export function useLoadingState({
   timeout = 30000,
-  minimumLoadingTime = 500
-}: UseLoadingStateOptions = {}) {
+  minimumLoadingTime = 500,
+}: UseLoadingStateOptions = {}): UseLoadingStateResult {
   const [isLoading, setIsLoading] = useState(false);
   const [hasTimedOut, setHasTimedOut] = useState(false);
   const loadingStartTime = useRef<number | null>(null);
@@ -16,7 +23,7 @@ export function useLoadingState({
 
   const startLoading = useCallback(() => {
     if (isLoading) return; // Prevent multiple starts
-    
+
     setIsLoading(true);
     setHasTimedOut(false);
     loadingStartTime.current = Date.now();
@@ -69,4 +76,4 @@ export function useLoadingState({
     startLoading,
     stopLoading,
   };
-} 
+}

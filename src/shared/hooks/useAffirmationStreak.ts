@@ -5,7 +5,14 @@ interface StreakData {
   lastAffirmed: string;
 }
 
-export const useAffirmationStreak = () => {
+interface UseAffirmationStreakResult {
+  streak: number;
+  isNewMilestone: boolean;
+  incrementStreak: () => boolean;
+  resetMilestone: () => void;
+}
+
+export const useAffirmationStreak = (): UseAffirmationStreakResult => {
   const [streak, setStreak] = useState<number>(0);
   const [isNewMilestone, setIsNewMilestone] = useState(false);
 
@@ -15,7 +22,7 @@ export const useAffirmationStreak = () => {
       const data: StreakData = JSON.parse(storedStreak);
       const lastAffirmed = new Date(data.lastAffirmed);
       const today = new Date();
-      
+
       // Check if streak is still valid (within 24 hours)
       if (isWithin24Hours(lastAffirmed, today)) {
         setStreak(data.count);
@@ -29,7 +36,7 @@ export const useAffirmationStreak = () => {
     }
   }, []);
 
-  const incrementStreak = () => {
+  const incrementStreak = (): boolean => {
     const today = new Date();
     const storedStreak = localStorage.getItem('affirmationStreak');
     let newCount = 1;
@@ -54,7 +61,7 @@ export const useAffirmationStreak = () => {
 
     const newData: StreakData = {
       count: newCount,
-      lastAffirmed: today.toISOString()
+      lastAffirmed: today.toISOString(),
     };
 
     localStorage.setItem('affirmationStreak', JSON.stringify(newData));
@@ -62,7 +69,7 @@ export const useAffirmationStreak = () => {
     return true;
   };
 
-  const resetMilestone = () => {
+  const resetMilestone = (): void => {
     setIsNewMilestone(false);
   };
 
@@ -70,17 +77,17 @@ export const useAffirmationStreak = () => {
     streak,
     isNewMilestone,
     incrementStreak,
-    resetMilestone
+    resetMilestone,
   };
 };
 
 // Helper functions
-const isWithin24Hours = (date1: Date, date2: Date) => {
+const isWithin24Hours = (date1: Date, date2: Date): boolean => {
   const hours = Math.abs(date2.getTime() - date1.getTime()) / 36e5;
   return hours < 24 && date1.getDate() === date2.getDate();
 };
 
-const isConsecutiveDay = (date1: Date, date2: Date) => {
+const isConsecutiveDay = (date1: Date, date2: Date): boolean => {
   const dayDiff = Math.floor((date2.getTime() - date1.getTime()) / 8.64e7);
   return dayDiff === 1;
-}; 
+};

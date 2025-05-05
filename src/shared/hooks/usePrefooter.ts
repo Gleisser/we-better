@@ -1,6 +1,6 @@
-import { createQueryHook } from './utils/createQueryHook';
+import { createQueryHook } from '@/shared/hooks/utils/createQueryHook';
 import { prefooterService } from '@/core/services/prefooter.service';
-import { PrefooterResponse } from '@/types/prefooter';
+import { PrefooterResponse } from '@/utils/types/prefooter';
 
 export const PREFOOTER_QUERY_KEY = ['prefooter'] as const;
 
@@ -13,4 +13,4 @@ const {
   queryFn: () => prefooterService.getPrefooter(),
 });
 
-export { usePrefooter, prefetchPrefooter, invalidatePrefooterCache }; 
+export { usePrefooter, prefetchPrefooter, invalidatePrefooterCache };

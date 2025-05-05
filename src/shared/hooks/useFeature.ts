@@ -1,6 +1,6 @@
 import { createQueryHook } from './utils/createQueryHook';
 import { featureService } from '@/core/services/feature.service';
-import { FeaturesResponse } from '@/types/features-response';
+import { FeaturesResponse } from '@/utils/types/features-response';
 
 export const FEATURE_QUERY_KEY = ['feature'] as const;
 
@@ -13,4 +13,4 @@ const {
   queryFn: () => featureService.getFeatures(),
 });
 
-export { useFeature, prefetchFeature, invalidateFeatureCache }; 
+export { useFeature, prefetchFeature, invalidateFeatureCache };

@@ -1,6 +1,6 @@
-import { createQueryHook } from './utils/createQueryHook';
+import { createQueryHook } from '@/shared/hooks/utils/createQueryHook';
 import { toolService } from '@/core/services/tool.service';
-import { ToolResponse } from '@/types/tool';
+import { ToolResponse } from '@/utils/types/tool';
 
 export const TOOL_QUERY_KEY = ['tool'] as const;
 
@@ -13,4 +13,4 @@ const {
   queryFn: () => toolService.getTools(),
 });
 
-export { useTool, prefetchTool, invalidateToolCache }; 
+export { useTool, prefetchTool, invalidateToolCache };

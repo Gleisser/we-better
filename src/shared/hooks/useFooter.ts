@@ -1,6 +1,6 @@
 import { createQueryHook } from './utils/createQueryHook';
 import { footerService } from '@/core/services/footer.services';
-import { FooterResponse } from '@/types/footer';
+import { FooterResponse } from '@/utils/types/footer';
 
 export const FOOTER_QUERY_KEY = ['footer'] as const;
 
@@ -13,4 +13,4 @@ const {
   queryFn: () => footerService.getFooter(),
 });
 
-export { useFooter, prefetchFooter, invalidateFooterCache }; 
+export { useFooter, prefetchFooter, invalidateFooterCache };

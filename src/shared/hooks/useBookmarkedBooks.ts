@@ -5,7 +5,14 @@ interface BookmarkedBook extends Book {
   bookmarkedAt: number;
 }
 
-export const useBookmarkedBooks = () => {
+interface UseBookmarkedBooksResult {
+  bookmarkedBooks: BookmarkedBook[];
+  addBookmark: (book: Book) => void;
+  removeBookmark: (bookId: string) => void;
+  isBookmarked: (bookId: string) => boolean;
+}
+
+export const useBookmarkedBooks = (): UseBookmarkedBooksResult => {
   const [bookmarkedBooks, setBookmarkedBooks] = useState<BookmarkedBook[]>(() => {
     const saved = localStorage.getItem('bookmarkedBooks');
     return saved ? JSON.parse(saved) : [];
@@ -15,18 +22,18 @@ export const useBookmarkedBooks = () => {
     localStorage.setItem('bookmarkedBooks', JSON.stringify(bookmarkedBooks));
   }, [bookmarkedBooks]);
 
-  const addBookmark = (book: Book) => {
+  const addBookmark = (book: Book): void => {
     setBookmarkedBooks(prev => {
       if (prev.some(b => b.id === book.id)) return prev;
       return [...prev, { ...book, bookmarkedAt: Date.now() }];
     });
   };
 
-  const removeBookmark = (bookId: string) => {
+  const removeBookmark = (bookId: string): void => {
     setBookmarkedBooks(prev => prev.filter(book => book.id !== bookId));
   };
 
-  const isBookmarked = (bookId: string) => {
+  const isBookmarked = (bookId: string): boolean => {
     return bookmarkedBooks.some(book => book.id === bookId);
   };
 
@@ -34,6 +41,6 @@ export const useBookmarkedBooks = () => {
     bookmarkedBooks,
     addBookmark,
     removeBookmark,
-    isBookmarked
+    isBookmarked,
   };
-}; 
+};

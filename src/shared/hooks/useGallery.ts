@@ -1,6 +1,6 @@
 import { createQueryHook } from './utils/createQueryHook';
 import { galleryService } from '@/core/services/gallery.service';
-import { GalleryResponse } from '@/types/gallery';
+import { GalleryResponse } from '@/utils/types/gallery';
 
 export const GALLERY_QUERY_KEY = ['gallery'] as const;
 
@@ -13,4 +13,4 @@ const {
   queryFn: () => galleryService.getGallery(),
 });
 
-export { useGallery, prefetchGallery, invalidateGalleryCache }; 
+export { useGallery, prefetchGallery, invalidateGalleryCache };

@@ -11,9 +11,8 @@ interface UseImagePreloaderReturn {
   failedUrls: string[];
 }
 
-export function useImagePreloader({ 
-  initialUrls = [], 
-  onError 
+export function useImagePreloader({
+  onError,
 }: UseImagePreloaderOptions = {}): UseImagePreloaderReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [failedUrls, setFailedUrls] = useState<string[]>([]);
@@ -27,29 +26,34 @@ export function useImagePreloader({
     });
   }, []);
 
-  const preloadImages = useCallback(async (urls: string[]): Promise<void> => {
-    if (urls.length === 0 || isLoading) return;
-    
-    setIsLoading(true);
-    setFailedUrls([]);
+  const preloadImages = useCallback(
+    async (urls: string[]): Promise<void> => {
+      if (urls.length === 0 || isLoading) return;
 
-    try {
-      await Promise.all(urls.map(async (url) => {
-        try {
-          await preloadImage(url);
-        } catch (error) {
-          setFailedUrls(prev => [...prev, url]);
-          onError?.(error);
-        }
-      }));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isLoading, preloadImage, onError]);
+      setIsLoading(true);
+      setFailedUrls([]);
+
+      try {
+        await Promise.all(
+          urls.map(async url => {
+            try {
+              await preloadImage(url);
+            } catch (error) {
+              setFailedUrls(prev => [...prev, url]);
+              onError?.(error);
+            }
+          })
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [isLoading, preloadImage, onError]
+  );
 
   return {
     preloadImages,
     isLoading,
     failedUrls,
   };
-} 
+}

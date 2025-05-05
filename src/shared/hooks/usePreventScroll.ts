@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export const usePreventScroll = (isOpen: boolean) => {
+export const usePreventScroll = (isOpen: boolean): void => {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -12,4 +12,4 @@ export const usePreventScroll = (isOpen: boolean) => {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
-}; 
+};

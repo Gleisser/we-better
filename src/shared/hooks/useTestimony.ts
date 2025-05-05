@@ -1,6 +1,6 @@
-import { createQueryHook } from './utils/createQueryHook';
+import { createQueryHook } from '@/shared/hooks/utils/createQueryHook';
 import { testimonyService } from '@/core/services/testimony.service';
-import { TestimonyResponse } from '@/types/testimony';
+import { TestimonyResponse } from '@/utils/types/testimony';
 
 export const TESTIMONY_QUERY_KEY = ['testimony'] as const;
 
@@ -13,4 +13,4 @@ const {
   queryFn: () => testimonyService.getTestimony(),
 });
 
-export { useTestimony, prefetchTestimony, invalidateTestimonyCache }; 
+export { useTestimony, prefetchTestimony, invalidateTestimonyCache };

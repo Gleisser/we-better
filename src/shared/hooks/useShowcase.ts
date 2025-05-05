@@ -1,6 +1,6 @@
-import { createQueryHook } from './utils/createQueryHook';
+import { createQueryHook } from '@/shared/hooks/utils/createQueryHook';
 import { showcaseService } from '@/core/services/showcase.service';
-import { ShowcaseResponse } from '@/types/showcase';
+import { ShowcaseResponse } from '@/utils/types/showcase';
 
 export const SHOWCASE_QUERY_KEY = ['showcase'] as const;
 
@@ -13,4 +13,4 @@ const {
   queryFn: () => showcaseService.getShowcase(),
 });
 
-export { useShowcase, prefetchShowcase, invalidateShowcaseCache }; 
+export { useShowcase, prefetchShowcase, invalidateShowcaseCache };
