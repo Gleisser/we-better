@@ -5,7 +5,7 @@ import NotificationsPopup from '../NotificationsPopup/NotificationsPopup';
 import type { NotificationItem } from '../NotificationsPopup/NotificationsPopup';
 import { MobileNotifications } from '../NotificationsPanel/MobileNotifications';
 import ProfileMenu from './ProfileMenu/ProfileMenu';
-import { useHeader } from '@/shared/contexts/HeaderContext';
+import { useHeader } from '@/shared/hooks/useHeader';
 import styles from './HeaderActions.module.css';
 
 const HeaderActions = (): JSX.Element => {

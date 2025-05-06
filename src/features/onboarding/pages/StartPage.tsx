@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/shared/contexts/AuthContext';
+import { useAuth } from '@/shared/hooks/useAuth';
 import { LifeWheel } from '@/features/life-wheel';
 import { WelcomeSequence } from '@/features/life-wheel/WelcomeSequence';
 import { VisionBoard } from '@/features/vision-board';

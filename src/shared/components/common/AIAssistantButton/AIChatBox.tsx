@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
 import styles from './AIChatBox.module.css';
-import { useBottomSheet } from '@/shared/contexts/BottomSheetContext';
+import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
 
 interface AIChatBoxProps {
   onClose: () => void;

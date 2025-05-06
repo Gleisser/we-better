@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import LifeStories from '../Stories/LifeStories';
 import { XIcon, PlayIcon } from '@/shared/components/common/icons';
 import styles from './StoriesBar.module.css';
-import { useBottomSheet } from '@/shared/contexts/BottomSheetContext';
+import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
 
 const MOCK_CATEGORIES = [
   {

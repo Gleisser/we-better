@@ -3,7 +3,7 @@ import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import { SparkleIcon } from '@/shared/components/common/icons';
 import AIChatBox from './AIChatBox';
 import styles from './AIAssistantButton.module.css';
-import { useBottomSheet } from '@/shared/contexts/BottomSheetContext';
+import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
 
 const AIAssistantButton = (): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useAuth } from '@/shared/contexts/AuthContext';
+import { useAuth } from '@/shared/hooks/useAuth';
 import { SettingsIcon, LogoutIcon, BookmarkIcon } from '@/shared/components/common/icons';
 import styles from './ProfileMenu.module.css';
 

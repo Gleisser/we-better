@@ -39,7 +39,7 @@
  */
 
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/shared/contexts/AuthContext';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 export const PublicRoute = ({ children }: { children: React.ReactNode }): JSX.Element => {
   const { user, isLoading } = useAuth();
