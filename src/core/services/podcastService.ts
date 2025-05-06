@@ -86,7 +86,7 @@ export const podcastService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<PodcastResponse>(`/api/spotify-podcasts?${queryParams}`);
+      const { data } = await apiClient.get<PodcastResponse>(`/spotify-podcasts?${queryParams}`);
       return data;
     } catch (error) {
       return handleServiceError(error, 'Podcasts');

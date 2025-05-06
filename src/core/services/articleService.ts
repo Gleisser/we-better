@@ -146,7 +146,7 @@ export const articleService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<ArticleResponse>(`/api/articles?${queryParams}`);
+      const { data } = await apiClient.get<ArticleResponse>(`/articles?${queryParams}`);
       return data;
     } catch (error) {
       return handleServiceError(error, 'Articles');

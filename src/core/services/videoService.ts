@@ -111,7 +111,7 @@ export const videoService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<VideoResponse>(`/api/youtube-videos?${queryParams}`);
+      const { data } = await apiClient.get<VideoResponse>(`/youtube-videos?${queryParams}`);
       return data;
     } catch (error) {
       return handleServiceError(error, 'Videos');

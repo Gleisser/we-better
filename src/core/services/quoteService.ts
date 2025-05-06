@@ -88,7 +88,7 @@ export const quoteService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<QuoteResponse>(`/api/quotes?${queryParams}`);
+      const { data } = await apiClient.get<QuoteResponse>(`/quotes?${queryParams}`);
       return data;
     } catch (error) {
       return handleServiceError(error, 'Quotes');
