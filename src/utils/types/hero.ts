@@ -1,4 +1,4 @@
-import { APIResponse } from '@/types/common/meta';
+import { APIResponse } from '@/utils/types/common/meta';
 import { TopLevelImage } from './common/image';
 
 export interface HeroImage {
@@ -27,4 +27,4 @@ export interface Hero {
   main_image: HeroImage;
 }
 
-export type HeroResponse = APIResponse<Hero>; 
+export type HeroResponse = APIResponse<Hero>;

@@ -8,9 +8,13 @@ export const viteMock = {
     MODE: 'test',
     DEV: true,
     PROD: false,
-    SSR: false
-  }
+    SSR: false,
+  },
 };
 
-// Mock import.meta
-(global as any).import = { meta: viteMock }; 
+// Mock import.meta using proper type assertion
+type GlobalWithImport = typeof global & {
+  import: { meta: typeof viteMock };
+};
+
+(global as GlobalWithImport).import = { meta: viteMock };

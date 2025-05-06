@@ -1,5 +1,5 @@
-import { TopLevelImage } from '@/types/common/image';
-import { APIResponse, Meta } from '@/types/common/meta';
+import { TopLevelImage } from '@/utils/types/common/image';
+import { APIResponse } from '@/utils/types/common/meta';
 
 // Base interface for timestamps
 interface TimeStamps {

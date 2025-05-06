@@ -1,11 +1,11 @@
-import { Brand } from "./features-response";
-import { APIResponse } from "@/types/common/meta";
+import { Brand } from '@/utils/types/features-response';
+import { APIResponse } from '@/utils/types/common/meta';
 
 export interface Partner {
-    documentId: string;
-    id: number;
-    title: string;
-    brands: Brand[];
+  documentId: string;
+  id: number;
+  title: string;
+  brands: Brand[];
 }
 
 export type PartnerResponse = APIResponse<Partner>;

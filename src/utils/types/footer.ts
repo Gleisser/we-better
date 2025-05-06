@@ -1,6 +1,6 @@
-import { TopLevelImage } from "./common/image";
-import { MenuLink } from "./common/menulink";
-import { APIResponse, Meta } from "./common/meta";
+import { TopLevelImage } from './common/image';
+import { MenuLink } from './common/menulink';
+import { APIResponse } from './common/meta';
 
 // Base interface for timestamps
 interface TimeStamps {
