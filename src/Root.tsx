@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import { queryClient } from './core/config/react-query';
 import { router } from './core/router';
 
-function Root() {
+function Root(): JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
@@ -13,4 +13,4 @@ function Root() {
   );
 }
 
-export default Root; 
+export default Root;

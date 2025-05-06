@@ -21,7 +21,7 @@ import { CommunityErrorFallback } from './shared/components/layout/Community/Com
 import { TestimoniesErrorFallback } from './shared/components/layout/Testimonies/TestimoniesErrorFallback';
 import { PartnersErrorFallback } from './shared/components/layout/Partners/PartnersErrorFallback';
 
-function App() {
+function App(): JSX.Element {
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -34,49 +34,49 @@ function App() {
         <ErrorBoundary section="Header">
           <Header />
         </ErrorBoundary>
-        
+
         <main className="w-full max-w-[100%] overflow-x-hidden">
           <ErrorBoundary section="Hero">
             <Hero />
           </ErrorBoundary>
-          
+
           <ErrorBoundary section="Features" fallback={<FeaturesErrorFallback />}>
             <Features />
           </ErrorBoundary>
-          
+
           <ErrorBoundary section="Highlights" fallback={<HighlightsErrorFallback />}>
             <Highlights />
           </ErrorBoundary>
-          
+
           <ErrorBoundary section="Tools" fallback={<ToolsErrorFallback />}>
             <Tools />
           </ErrorBoundary>
-          
+
           <ErrorBoundary section="Showcase" fallback={<ShowcaseErrorFallback />}>
             <Showcase />
           </ErrorBoundary>
-          
+
           <ErrorBoundary section="Gallery" fallback={<GalleryErrorFallback />}>
             <Gallery />
           </ErrorBoundary>
-          
+
           <ErrorBoundary section="Community" fallback={<CommunityErrorFallback />}>
             <Community />
           </ErrorBoundary>
-          
+
           <ErrorBoundary section="Testimonies" fallback={<TestimoniesErrorFallback />}>
             <Testimonies />
           </ErrorBoundary>
-          
+
           <ErrorBoundary section="Partners" fallback={<PartnersErrorFallback />}>
             <Partners />
           </ErrorBoundary>
-          
+
           <ErrorBoundary section="Pre-Footer">
             <PreFooter />
           </ErrorBoundary>
         </main>
-        
+
         <ErrorBoundary section="Footer">
           <Footer />
         </ErrorBoundary>

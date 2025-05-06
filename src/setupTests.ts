@@ -14,9 +14,14 @@ beforeAll(() => {
       MODE: 'test',
       DEV: true,
       PROD: false,
-      SSR: false
-    }
+      SSR: false,
+    },
   };
 
-  (global as any).import = { meta: viteMock };
-}); 
+  // Use proper type assertion
+  type GlobalWithImport = typeof global & {
+    import: { meta: typeof viteMock };
+  };
+
+  (global as GlobalWithImport).import = { meta: viteMock };
+});
