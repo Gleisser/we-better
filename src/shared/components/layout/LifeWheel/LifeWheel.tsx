@@ -73,7 +73,7 @@ const LifeWheel = ({
 
   // Handle showing tooltip
   const handleTooltipShow = (categoryId: string): void => {
-    //if (!isOpen) return;
+    if (!isOpen) return;
     //logDebug('Show tooltip', { categoryId });
     setActiveCategory(categoryId);
   };
@@ -83,16 +83,22 @@ const LifeWheel = ({
     setActiveCategory(null);
   };
 
+  // Calculate tooltip position based on category index
+  const getTooltipStyle = (categoryIndex: number): React.CSSProperties => {
+    const angle = (2 * Math.PI * categoryIndex) / categories.length - Math.PI / 2;
+    const radius = 140; // Increased radius to place tooltip outside of all elements
+
+    return {
+      position: 'absolute',
+      left: `calc(50% + ${Math.cos(angle) * radius}px)`,
+      top: `calc(50% + ${Math.sin(angle) * radius}px)`,
+      transform: 'translate(-50%, -50%)',
+    };
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.container} ref={containerRef}>
-        {/* Center button */}
-        <button className={styles.centerPiece} onClick={toggleMenu}>
-          <div className={styles.scoreRing}>
-            <div className={styles.initials}>{getInitials(userName)}</div>
-          </div>
-        </button>
-
         {/* Categories using CSS transitions instead of framer-motion */}
         <div className={styles.categoriesContainer}>
           {categories.map((category, index) => {
@@ -119,19 +125,35 @@ const LifeWheel = ({
                 onMouseLeave={handleTooltipHide}
               >
                 <span className={styles.categoryIcon}>{category.icon}</span>
-
-                {/* Inline tooltip */}
-                {isOpen && activeCategory === category.id && (
-                  <div className={styles.tooltip}>
-                    <span className={styles.categoryName}>{category.name}</span>
-                    <span className={styles.categoryScore}>{category.score}</span>
-                    {category.hasUpdate && <span className={styles.updateDot} />}
-                  </div>
-                )}
               </div>
             );
           })}
         </div>
+
+        {/* Center button - moved after categories to render on top */}
+        <button className={styles.centerPiece} onClick={toggleMenu}>
+          <div className={styles.scoreRing}>
+            <div className={styles.initials}>{getInitials(userName)}</div>
+          </div>
+        </button>
+
+        {/* Place tooltips at the top level with calculated position for each category */}
+        {isOpen &&
+          activeCategory &&
+          categories.map(
+            (category, index) =>
+              category.id === activeCategory && (
+                <div
+                  key={`tooltip-${category.id}`}
+                  className={styles.tooltip}
+                  style={getTooltipStyle(index)}
+                >
+                  <span className={styles.categoryName}>{category.name}</span>
+                  <span className={styles.categoryScore}>{category.score}</span>
+                  {category.hasUpdate && <span className={styles.updateDot} />}
+                </div>
+              )
+          )}
       </div>
     </div>
   );

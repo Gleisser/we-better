@@ -84,19 +84,16 @@
   @apply text-base;
 }
 
-/* Tooltip style - shown inside component */
+/* Tooltip style - shown with calculated positioning */
 .tooltip {
-  @apply absolute px-3 py-1.5 rounded-lg
+  @apply px-3 py-1.5 rounded-lg
          bg-gray-900/95 backdrop-blur-md
          border border-purple-500/50
          flex items-center gap-2
-         whitespace-nowrap;
-  top: -12px;
-  left: 50%;
-  transform: translate(-50%, -100%);
+         whitespace-nowrap
+         z-50;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   pointer-events: none;
-  z-index: 10;
 }
 
 .categoryName {
