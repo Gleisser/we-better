@@ -827,98 +827,340 @@ const EnhancedLifeWheel = ({
             >
               <h1 className={styles.title}>Life Wheel Insights</h1>
 
-              {!comparisonEntry || !selectedHistoryEntry ? (
+              {historyEntries.length < 2 ? (
                 <div className={styles.emptyState}>
-                  <p>Select two dates from the History tab to compare and get insights.</p>
-                  <button className={styles.insightsButton} onClick={() => setActiveTab('history')}>
-                    Go to History
-                  </button>
+                  <p>You need at least two dates to compare and get insights.</p>
+                  <p>
+                    Complete and save more life wheel assessments over time to track your progress.
+                  </p>
                 </div>
               ) : (
                 <>
-                  <div className={styles.insightsHeader}>
-                    <h3>
-                      Comparing{' '}
-                      {formatDate(
-                        historyEntries.find(e => e.id === selectedHistoryEntry)?.date || ''
-                      )}{' '}
-                      with{' '}
-                      {formatDate(historyEntries.find(e => e.id === comparisonEntry)?.date || '')}
-                    </h3>
-                  </div>
-
-                  <div className={styles.insightsSummary}>
-                    {getHighlightedAreas().improved && (
-                      <div className={styles.insightCard}>
-                        <h4>Most Improved</h4>
-                        <div className={styles.insightHighlight}>
-                          <span className={styles.insightCategory}>
-                            {getHighlightedAreas().improved?.category}
-                          </span>
-                          <span className={`${styles.insightChange} ${styles.positive}`}>
-                            +{getHighlightedAreas().improved?.change}
-                          </span>
+                  {/* Elegant Date Selector */}
+                  <div className={styles.insightDateSelector}>
+                    <div className={styles.datePickerContainer}>
+                      <div className={styles.dateSelectorCard}>
+                        <div className={styles.dateSelectorHeader}>
+                          <span className={styles.dateSelectorLabel}>Select Dates to Compare</span>
                         </div>
-                        <p>
-                          From {getHighlightedAreas().improved?.previousValue} to{' '}
-                          {getHighlightedAreas().improved?.currentValue}
-                        </p>
-                      </div>
-                    )}
-
-                    {getHighlightedAreas().declined && (
-                      <div className={styles.insightCard}>
-                        <h4>Most Declined</h4>
-                        <div className={styles.insightHighlight}>
-                          <span className={styles.insightCategory}>
-                            {getHighlightedAreas().declined?.category}
-                          </span>
-                          <span className={`${styles.insightChange} ${styles.negative}`}>
-                            {getHighlightedAreas().declined?.change}
-                          </span>
-                        </div>
-                        <p>
-                          From {getHighlightedAreas().declined?.previousValue} to{' '}
-                          {getHighlightedAreas().declined?.currentValue}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className={styles.insightsDetailsList}>
-                    <h3>Changes by Category</h3>
-                    {calculateInsights()?.length > 0 &&
-                      calculateInsights().map(insight => (
-                        <div
-                          key={insight.id}
-                          className={styles.insightItem}
-                          style={{
-                            borderLeft: `4px solid ${
-                              typeof insight.color === 'string'
-                                ? insight.color
-                                : insight.color.from || '#8B5CF6'
-                            }`,
-                          }}
-                        >
-                          <span className={styles.insightItemCategory}>{insight.category}</span>
-                          <div className={styles.insightItemValues}>
-                            <span className={styles.insightItemPrevious}>
-                              {insight.previousValue}
-                            </span>
-                            <span className={styles.insightItemArrow}>→</span>
-                            <span className={styles.insightItemCurrent}>
-                              {insight.currentValue}
-                            </span>
-                            <span
-                              className={`${styles.insightItemChange} ${insight.change > 0 ? styles.positive : insight.change < 0 ? styles.negative : ''}`}
+                        <div className={styles.dateSelectors}>
+                          <div className={styles.dateColumn}>
+                            <div className={styles.dateColumnLabel}>
+                              <div
+                                className={styles.dateColorIndicator}
+                                style={{ background: '#8B5CF6' }}
+                              ></div>
+                              <span>Base Date</span>
+                            </div>
+                            <select
+                              id="baseDate"
+                              value={selectedHistoryEntry || ''}
+                              onChange={e => setSelectedHistoryEntry(e.target.value)}
+                              className={`${styles.dateDropdown} ${styles.baseDateDropdown}`}
                             >
-                              {insight.change > 0 ? '+' : ''}
-                              {insight.change}
-                            </span>
+                              <option value="" disabled>
+                                Select a date
+                              </option>
+                              {historyEntries.map(entry => (
+                                <option key={`base-${entry.id}`} value={entry.id}>
+                                  {formatDate(entry.date)}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div className={styles.dateCompareArrow}>
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5 12H19M19 12L13 6M19 12L13 18"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
+
+                          <div className={styles.dateColumn}>
+                            <div className={styles.dateColumnLabel}>
+                              <div
+                                className={styles.dateColorIndicator}
+                                style={{ background: '#EC4899' }}
+                              ></div>
+                              <span>Compare With</span>
+                            </div>
+                            <select
+                              id="compareDate"
+                              value={comparisonEntry || ''}
+                              onChange={e => setComparisonEntry(e.target.value)}
+                              className={`${styles.dateDropdown} ${styles.compareDateDropdown}`}
+                            >
+                              <option value="" disabled>
+                                Select a date
+                              </option>
+                              {historyEntries
+                                .filter(entry => entry.id !== selectedHistoryEntry)
+                                .map(entry => (
+                                  <option key={`compare-${entry.id}`} value={entry.id}>
+                                    {formatDate(entry.date)}
+                                  </option>
+                                ))}
+                            </select>
                           </div>
                         </div>
-                      ))}
+
+                        {selectedHistoryEntry && comparisonEntry && (
+                          <div className={styles.comparingDates}>
+                            <span>
+                              Comparing{' '}
+                              <span className={styles.baseDate}>
+                                {formatDate(
+                                  historyEntries.find(e => e.id === selectedHistoryEntry)?.date ||
+                                    ''
+                                )}
+                              </span>{' '}
+                              with{' '}
+                              <span className={styles.compareDate}>
+                                {formatDate(
+                                  historyEntries.find(e => e.id === comparisonEntry)?.date || ''
+                                )}
+                              </span>
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
+
+                  {!selectedHistoryEntry || !comparisonEntry ? (
+                    <div className={styles.promptState}>
+                      <p>Select two dates above to compare and see insights.</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className={styles.insightsDashboard}>
+                        <div className={styles.insightsSummaryCards}>
+                          {getHighlightedAreas().improved && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.5, delay: 0.1 }}
+                              className={`${styles.insightCard} ${styles.improvedCard}`}
+                            >
+                              <div className={styles.insightCardIcon}>
+                                <svg
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M7 14L12 9L17 14"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </div>
+                              <h4>Most Improved</h4>
+                              <div className={styles.insightHighlight}>
+                                <span className={styles.insightCategory}>
+                                  {getHighlightedAreas().improved?.category}
+                                </span>
+                                <span className={`${styles.insightChange} ${styles.positive}`}>
+                                  +{getHighlightedAreas().improved?.change}
+                                </span>
+                              </div>
+                              <p>
+                                From {getHighlightedAreas().improved?.previousValue} to{' '}
+                                {getHighlightedAreas().improved?.currentValue}
+                              </p>
+                            </motion.div>
+                          )}
+
+                          {getHighlightedAreas().declined && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.5, delay: 0.2 }}
+                              className={`${styles.insightCard} ${styles.declinedCard}`}
+                            >
+                              <div className={styles.insightCardIcon}>
+                                <svg
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M7 10L12 15L17 10"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </div>
+                              <h4>Most Declined</h4>
+                              <div className={styles.insightHighlight}>
+                                <span className={styles.insightCategory}>
+                                  {getHighlightedAreas().declined?.category}
+                                </span>
+                                <span className={`${styles.insightChange} ${styles.negative}`}>
+                                  {getHighlightedAreas().declined?.change}
+                                </span>
+                              </div>
+                              <p>
+                                From {getHighlightedAreas().declined?.previousValue} to{' '}
+                                {getHighlightedAreas().declined?.currentValue}
+                              </p>
+                            </motion.div>
+                          )}
+
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.3 }}
+                            className={`${styles.insightCard} ${styles.summaryCard}`}
+                          >
+                            <div className={styles.insightCardIcon}>
+                              <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M8 6V20M16 6V20M12 10V16M6 12H8M16 12H18M12 4V6"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </div>
+                            <h4>Summary</h4>
+                            <div className={styles.insightsSummaryStats}>
+                              <div className={styles.statItem}>
+                                <span className={styles.statLabel}>Improved Areas</span>
+                                <span className={styles.statValue}>
+                                  {calculateInsights().filter(i => i.change > 0).length}
+                                </span>
+                              </div>
+                              <div className={styles.statItem}>
+                                <span className={styles.statLabel}>Declined Areas</span>
+                                <span className={styles.statValue}>
+                                  {calculateInsights().filter(i => i.change < 0).length}
+                                </span>
+                              </div>
+                              <div className={styles.statItem}>
+                                <span className={styles.statLabel}>Unchanged</span>
+                                <span className={styles.statValue}>
+                                  {calculateInsights().filter(i => i.change === 0).length}
+                                </span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        </div>
+
+                        <div className={styles.insightsDetailsContainer}>
+                          <h3 className={styles.insightsDetailHeader}>
+                            <span>Changes by Category</span>
+                            <div className={styles.insightsSorter}>
+                              <span className={styles.sorterLabel}>Sort by:</span>
+                              <button className={styles.sorterButton}>
+                                Largest Change
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M17 8L12 3L7 8M17 16L12 21L7 16"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          </h3>
+
+                          <div className={styles.insightsDetailsList}>
+                            {calculateInsights()?.length > 0 &&
+                              calculateInsights()
+                                .sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
+                                .map((insight, index) => (
+                                  <motion.div
+                                    initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.4, delay: 0.1 * index }}
+                                    key={insight.id}
+                                    className={styles.insightItem}
+                                    style={{
+                                      borderLeft: `4px solid ${
+                                        typeof insight.color === 'string'
+                                          ? insight.color
+                                          : insight.color.from || '#8B5CF6'
+                                      }`,
+                                    }}
+                                  >
+                                    <div className={styles.insightItemContent}>
+                                      <span className={styles.insightItemCategory}>
+                                        {insight.category}
+                                      </span>
+                                      <div className={styles.insightItemValues}>
+                                        <div className={styles.valueWithLabel}>
+                                          <span className={styles.valueLabel}>From</span>
+                                          <span className={styles.insightItemPrevious}>
+                                            {insight.previousValue}
+                                          </span>
+                                        </div>
+                                        <span className={styles.insightItemArrow}>→</span>
+                                        <div className={styles.valueWithLabel}>
+                                          <span className={styles.valueLabel}>To</span>
+                                          <span className={styles.insightItemCurrent}>
+                                            {insight.currentValue}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className={styles.insightItemChangeContainer}>
+                                      <div
+                                        className={`${styles.changeValue} ${insight.change > 0 ? styles.positive : insight.change < 0 ? styles.negative : styles.neutral}`}
+                                      >
+                                        {insight.change > 0 ? '+' : ''}
+                                        {insight.change}
+                                      </div>
+                                      <div className={styles.changeBar}>
+                                        <div
+                                          className={`${styles.changeBarInner} ${insight.change > 0 ? styles.positiveBar : insight.change < 0 ? styles.negativeBar : styles.neutralBar}`}
+                                          style={{
+                                            width: `${Math.min(Math.abs(insight.change) * 10, 100)}%`,
+                                          }}
+                                        ></div>
+                                      </div>
+                                    </div>
+                                  </motion.div>
+                                ))}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </motion.div>
