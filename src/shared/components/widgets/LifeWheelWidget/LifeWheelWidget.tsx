@@ -4,6 +4,7 @@ import LifeWheel from '@/shared/components/layout/LifeWheel/LifeWheel';
 import { getLatestLifeWheelData } from '@/features/life-wheel/api/lifeWheelApi';
 import { createLogger } from '@/shared/utils/debugUtils';
 import styles from './LifeWheelWidget.module.css';
+import { Tooltip } from '@/shared/components/common/Tooltip';
 
 // Create a logger
 const logger = createLogger('LifeWheelWidget');
@@ -30,6 +31,24 @@ const FixedTooltip = ({ content }: { content: string | null }): JSX.Element | nu
   return <div className={styles.wheelTooltip}>{content}</div>;
 };
 
+// External Link Icon Component
+const ExternalLinkIcon = ({ className }: { className?: string }): JSX.Element => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    <polyline points="15 3 21 3 21 9" />
+    <line x1="10" y1="14" x2="21" y2="3" />
+  </svg>
+);
+
 const LifeWheelWidget = (): JSX.Element => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -38,6 +57,11 @@ const LifeWheelWidget = (): JSX.Element => {
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
   const renderCountRef = useRef(0);
+
+  // Handle navigation to LifeWheelPage
+  const handleNavigateToLifeWheel = (): void => {
+    navigate('/app/life-wheel');
+  };
 
   // Track render cycles
   useEffect(() => {
@@ -148,6 +172,17 @@ const LifeWheelWidget = (): JSX.Element => {
             <span className={styles.headerIcon}>⚖️</span>
             <span className={styles.headerText}>Life Balance</span>
           </div>
+          <div className={styles.headerActions}>
+            <Tooltip content="Go to Life Wheel details">
+              <button
+                className={styles.actionButton}
+                onClick={handleNavigateToLifeWheel}
+                aria-label="Go to Life Wheel details"
+              >
+                <ExternalLinkIcon className={styles.actionIcon} />
+              </button>
+            </Tooltip>
+          </div>
         </div>
       </div>
       <div className={styles.wheelViewContainer}>
@@ -157,7 +192,7 @@ const LifeWheelWidget = (): JSX.Element => {
         <FixedTooltip content={tooltipContent} />
       </div>
       <div className={styles.widgetFooter}>
-        <button onClick={() => navigate('/app/life-wheel')} className={styles.seeMoreButton}>
+        <button onClick={handleNavigateToLifeWheel} className={styles.seeMoreButton}>
           View Detailed Analysis
         </button>
       </div>
