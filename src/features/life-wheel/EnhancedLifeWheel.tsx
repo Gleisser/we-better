@@ -53,6 +53,11 @@ const EnhancedLifeWheel = ({
     title: '',
   });
 
+  // Add these new state variables after the existing state declarations
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1000); // milliseconds per frame
+  const [timelineIndex, setTimelineIndex] = useState(0);
+
   // Load current life wheel data
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -293,6 +298,105 @@ const EnhancedLifeWheel = ({
     }
   };
 
+  // Add a function to handle the animation playback
+  const handlePlayTimeline = useCallback(() => {
+    if (historyEntries.length <= 1) {
+      return; // Can't animate with only one entry
+    }
+
+    if (isPlaying) {
+      setIsPlaying(false);
+      return;
+    }
+
+    setIsPlaying(true);
+    // Start at the current selected history entry or at the beginning
+    const startIndex = selectedHistoryEntry
+      ? historyEntries.findIndex(e => e.id === selectedHistoryEntry)
+      : 0;
+
+    setTimelineIndex(startIndex >= 0 ? startIndex : 0);
+  }, [historyEntries, isPlaying, selectedHistoryEntry]);
+
+  // Effect to handle the animation progression
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    const timer = setTimeout(() => {
+      // Move to next timeline entry
+      setTimelineIndex(prev => {
+        const nextIndex = prev + 1;
+        if (nextIndex >= historyEntries.length) {
+          setIsPlaying(false); // Stop at the end
+          return prev;
+        }
+
+        // Update the selected entry to match the timeline
+        setSelectedHistoryEntry(historyEntries[nextIndex].id);
+        return nextIndex;
+      });
+    }, playbackSpeed);
+
+    return () => clearTimeout(timer);
+  }, [isPlaying, timelineIndex, historyEntries, playbackSpeed]);
+
+  // Add a function to handle playback speed changes
+  const handleSpeedChange = useCallback((speed: number) => {
+    setPlaybackSpeed(speed);
+  }, []);
+
+  // Add a function to handle scrubber movement
+  const handleScrubberChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newIndex = parseInt(e.target.value);
+      setTimelineIndex(newIndex);
+      if (historyEntries[newIndex]) {
+        setSelectedHistoryEntry(historyEntries[newIndex].id);
+      }
+    },
+    [historyEntries]
+  );
+
+  // Add a function to calculate changes between dates
+  const getChangeSummary = useCallback(() => {
+    if (!selectedHistoryEntry || historyEntries.length <= 1) return null;
+
+    // Find the previous entry index
+    const currentIndex = historyEntries.findIndex(e => e.id === selectedHistoryEntry);
+    if (currentIndex <= 0) return null; // No previous entry
+
+    const previousEntry = historyEntries[currentIndex - 1];
+    const currentEntry = historyEntries[currentIndex];
+
+    // Calculate changes
+    const changes = currentEntry.categories
+      .map(currentCat => {
+        const previousCat = previousEntry.categories.find(c => c.id === currentCat.id);
+        if (!previousCat) return null;
+
+        const change = currentCat.value - previousCat.value;
+        return {
+          category: currentCat.name,
+          change,
+          previousValue: previousCat.value,
+          currentValue: currentCat.value,
+          color: currentCat.color,
+          id: currentCat.id,
+        };
+      })
+      .filter(Boolean) as Array<{
+      category: string;
+      change: number;
+      previousValue: number;
+      currentValue: number;
+      color: string | { from: string; to: string };
+      id: string;
+    }>;
+
+    // Sort by change magnitude (absolute value)
+    return changes.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+  }, [selectedHistoryEntry, historyEntries]);
+
   if (isLoading) {
     return (
       <div className={`${styles.lifeWheelContainer} ${className}`}>
@@ -522,7 +626,96 @@ const EnhancedLifeWheel = ({
                     ))}
                   </div>
 
+                  {/* Timeline Animation Controls */}
+                  <div className={styles.timelineControls}>
+                    <button
+                      className={`${styles.timelineButton} ${isPlaying ? styles.pauseButton : styles.playButton}`}
+                      onClick={handlePlayTimeline}
+                      disabled={historyEntries.length <= 1}
+                      title={isPlaying ? 'Pause Animation' : 'Play Timeline Animation'}
+                    >
+                      {isPlaying ? '❚❚' : '▶'}
+                    </button>
+
+                    <div className={styles.speedControls}>
+                      <span>Speed:</span>
+                      <button
+                        onClick={() => handleSpeedChange(2000)}
+                        className={`${styles.speedButton} ${playbackSpeed === 2000 ? styles.activeSpeed : ''}`}
+                        title="Slow"
+                      >
+                        0.5x
+                      </button>
+                      <button
+                        onClick={() => handleSpeedChange(1000)}
+                        className={`${styles.speedButton} ${playbackSpeed === 1000 ? styles.activeSpeed : ''}`}
+                        title="Normal"
+                      >
+                        1x
+                      </button>
+                      <button
+                        onClick={() => handleSpeedChange(500)}
+                        className={`${styles.speedButton} ${playbackSpeed === 500 ? styles.activeSpeed : ''}`}
+                        title="Fast"
+                      >
+                        2x
+                      </button>
+                    </div>
+
+                    <div className={styles.timelineProgress}>
+                      <div className={styles.progressIndicator}>
+                        <span>
+                          {timelineIndex + 1} / {historyEntries.length}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Timeline Scrubber */}
+                  {historyEntries.length > 1 && (
+                    <div className={styles.scrubberContainer}>
+                      <div className={styles.dateLabel}>
+                        {formatDate(historyEntries[0]?.date || '')}
+                      </div>
+                      <input
+                        type="range"
+                        min={0}
+                        max={historyEntries.length - 1}
+                        value={timelineIndex}
+                        onChange={handleScrubberChange}
+                        className={styles.scrubber}
+                      />
+                      <div className={styles.dateLabel}>
+                        {formatDate(historyEntries[historyEntries.length - 1]?.date || '')}
+                      </div>
+                    </div>
+                  )}
+
                   <div className={styles.historyViewContainer}>
+                    {/* Current date display */}
+                    <div className={styles.currentDateDisplay}>
+                      <motion.div
+                        key={selectedHistoryEntry}
+                        initial={{ y: -20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 20, opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className={styles.dateCard}
+                      >
+                        <h3 className={styles.currentDateHeading}>
+                          {formatDate(
+                            historyEntries.find(e => e.id === selectedHistoryEntry)?.date || ''
+                          )}
+                        </h3>
+                        {isPlaying && (
+                          <div className={styles.animatingIndicator}>
+                            <div className={styles.pulse}></div>
+                            <span>Animating</span>
+                          </div>
+                        )}
+                      </motion.div>
+                    </div>
+
                     <div
                       style={{
                         width: '100%',
@@ -582,6 +775,42 @@ const EnhancedLifeWheel = ({
                             </p>
                           </div>
                         )}
+                      </div>
+                    )}
+
+                    {isPlaying && (
+                      <div className={styles.changeSummary}>
+                        <h3 className={styles.changeSummaryTitle}>Changes from Previous Period</h3>
+                        <div className={styles.changesList}>
+                          {getChangeSummary()
+                            ?.slice(0, 3)
+                            .map(change => (
+                              <div
+                                key={change.id}
+                                className={styles.changeItem}
+                                style={{
+                                  borderLeft: `3px solid ${
+                                    typeof change.color === 'string'
+                                      ? change.color
+                                      : (change.color as { from: string; to: string }).from
+                                  }`,
+                                }}
+                              >
+                                <div className={styles.changeHeader}>
+                                  <span className={styles.changeName}>{change.category}</span>
+                                  <span
+                                    className={`${styles.changeValue} ${change.change > 0 ? styles.positive : change.change < 0 ? styles.negative : ''}`}
+                                  >
+                                    {change.change > 0 ? '+' : ''}
+                                    {change.change}
+                                  </span>
+                                </div>
+                                <div className={styles.changeDetail}>
+                                  {change.previousValue} → {change.currentValue}
+                                </div>
+                              </div>
+                            ))}
+                        </div>
                       </div>
                     )}
                   </div>

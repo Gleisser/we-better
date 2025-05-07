@@ -252,7 +252,10 @@ const EnhancedRadarChart = ({
         <motion.polygon
           initial={{ points: getPolygonPoints(data.map(point => ({ ...point, value: 0 }))) }}
           animate={{ points: getPolygonPoints(animatedData) }}
-          transition={{ duration: animate ? 1 : 0, ease: 'easeOut' }}
+          transition={{
+            duration: animate ? 0.8 : 0,
+            ease: 'easeInOut',
+          }}
           fill="url(#radar-gradient)"
           stroke="rgba(255, 255, 255, 0.8)"
           strokeWidth="1.5"
@@ -272,7 +275,11 @@ const EnhancedRadarChart = ({
             className={styles.valueIndicator}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: animate ? 0.3 : 0, delay: animate ? 0.8 : 0 }}
+            transition={{
+              duration: animate ? 0.6 : 0,
+              delay: animate ? 0.2 : 0,
+              ease: 'easeOut',
+            }}
             onMouseEnter={() => {
               setHoveredCategory(indicator.id);
               const dataPoint = data.find(d => d.id === indicator.id);
@@ -394,6 +401,22 @@ const EnhancedRadarChart = ({
               {tooltipData.category.healthStatus || ''}
             </text>
           </g>
+        )}
+
+        {/* Add a visual effect for transitions */}
+        {animate && (
+          <motion.circle
+            cx={150}
+            cy={150}
+            r={120}
+            fill="none"
+            stroke="rgba(139, 92, 246, 0.5)"
+            strokeWidth={2}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.2 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          />
         )}
       </svg>
     </div>
