@@ -6,11 +6,12 @@
   @apply grid gap-4 w-full;
   grid-template-columns: repeat(3, 1fr);
   grid-template-areas:
-    "quote affirmation article"
-    "habits habits habits"
-    "goals goals goals"
-    "videos videos videos"
-    "podcast course book";
+    'quote affirmation lifeWheel'
+    'habits habits habits'
+    'goals goals goals'
+    'videos videos videos'
+    'podcast course book'
+    'article article article';
 }
 
 .widget {
@@ -29,6 +30,10 @@
 
 .affirmation {
   grid-area: affirmation;
+}
+
+.lifeWheel {
+  grid-area: lifeWheel;
 }
 
 .article {
@@ -64,13 +69,14 @@
   .bentoGrid {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
-      "quote affirmation"
-      "article article"
-      "habits habits"
-      "goals goals"
-      "videos videos"
-      "podcast course"
-      "book book";
+      'quote affirmation'
+      'lifeWheel lifeWheel'
+      'habits habits'
+      'goals goals'
+      'videos videos'
+      'podcast course'
+      'book book'
+      'article article';
   }
 }
 
@@ -78,27 +84,24 @@
   .bentoGrid {
     grid-template-columns: 1fr;
     grid-template-areas:
-      "quote"
-      "affirmation"
-      "article"
-      "habits"
-      "goals"
-      "videos"
-      "podcast"
-      "course"
-      "book";
+      'quote'
+      'affirmation'
+      'lifeWheel'
+      'habits'
+      'goals'
+      'videos'
+      'podcast'
+      'course'
+      'book'
+      'article';
   }
 }
 
 /* Glow effect */
 .widget::after {
-  content: "";
+  content: '';
   @apply absolute inset-0 rounded-[32px] opacity-0 transition-opacity duration-300 pointer-events-none;
-  background: radial-gradient(
-    circle at center,
-    rgba(139, 92, 246, 0.15) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
   z-index: 1;
 }
 

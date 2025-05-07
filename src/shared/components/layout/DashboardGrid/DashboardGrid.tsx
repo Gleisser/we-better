@@ -30,9 +30,9 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({ featuredArticle, isLoadin
           <AffirmationWidget />
         </div>
 
-        {/* Article Widget */}
-        <div className={`${styles.widget} ${styles.article}`}>
-          <ArticleWidget article={featuredArticle} isLoading={isLoading} />
+        {/* Life Wheel Widget - Now in the position previously occupied by the article */}
+        <div className={`${styles.widget} ${styles.lifeWheel}`}>
+          <LifeWheelWidget />
         </div>
 
         {/* Habits Widget */}
@@ -65,9 +65,9 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({ featuredArticle, isLoadin
           <BookWidget />
         </div>
 
-        {/* Life Wheel Widget */}
-        <div className={`${styles.widget} ${styles.lifeWheel}`}>
-          <LifeWheelWidget />
+        {/* Article Widget - Hidden via CSS */}
+        <div className={`${styles.widget} ${styles.article}`}>
+          <ArticleWidget article={featuredArticle} isLoading={isLoading} />
         </div>
       </div>
     </div>
