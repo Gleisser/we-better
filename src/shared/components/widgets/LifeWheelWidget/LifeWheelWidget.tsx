@@ -1,9 +1,8 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LifeWheel from '@/shared/components/layout/LifeWheel/LifeWheel';
-import { EnhancedRadarChart } from '@/features/life-wheel';
 import { getLatestLifeWheelData } from '@/features/life-wheel/api/lifeWheelApi';
-import styles from './Dashboard.module.css';
+import styles from './LifeWheelWidget.module.css';
 
 // Use the correct LifeCategory interface that matches the one in OrbitalStories
 interface LifeCategory {
@@ -20,20 +19,9 @@ interface LifeCategory {
   orbitSpeed?: number;
 }
 
-// Interface for radar chart data point
-interface RadarDataPoint {
-  id: string;
-  name: string;
-  value: number;
-  color: string | { from: string; to: string };
-  description?: string;
-  icon?: string;
-}
-
 const LifeWheelWidget = (): JSX.Element => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [showRadarView, setShowRadarView] = useState(false);
   const [categories, setCategories] = useState<LifeCategory[]>([]);
   const [tooltipContent, setTooltipContent] = useState<string | null>(null);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -78,34 +66,11 @@ const LifeWheelWidget = (): JSX.Element => {
       clearTimeout(tooltipTimeoutRef.current);
     }
 
-    setTooltipContent(`${category.name}: ${category.score}%`);
+    setTooltipContent(`${category.name} score: ${category.score}`);
 
     // Auto-hide tooltip after 3 seconds
     tooltipTimeoutRef.current = setTimeout(() => setTooltipContent(null), 3000);
   }, []);
-
-  const handleToggleView = useCallback(() => {
-    setShowRadarView(prev => !prev);
-    // Clear any existing tooltip when switching views
-    setTooltipContent(null);
-    if (tooltipTimeoutRef.current) {
-      clearTimeout(tooltipTimeoutRef.current);
-    }
-  }, []);
-
-  const handleRadarCategoryClick = useCallback((category: RadarDataPoint) => {
-    // Clear any existing timeout
-    if (tooltipTimeoutRef.current) {
-      clearTimeout(tooltipTimeoutRef.current);
-    }
-
-    // Set tooltip content
-    setTooltipContent(`${category.name}: ${category.value}/10`);
-
-    // Auto-hide tooltip after 3 seconds
-    tooltipTimeoutRef.current = setTimeout(() => setTooltipContent(null), 3000);
-  }, []);
-
   // Clean up timeout on unmount
   useEffect(() => {
     return () => {
@@ -130,43 +95,12 @@ const LifeWheelWidget = (): JSX.Element => {
     <div className={styles.lifeWheelWidget} ref={widgetRef}>
       <div className={styles.widgetHeader}>
         <h3 className={styles.widgetTitle}>Life Balance</h3>
-        <button
-          onClick={handleToggleView}
-          className={styles.viewToggleButton}
-          title={showRadarView ? 'Switch to orbital view' : 'Switch to radar view'}
-        >
-          {showRadarView ? '⚪' : '📊'}
-        </button>
       </div>
-
-      {showRadarView ? (
-        <div className={styles.radarViewContainer}>
-          <EnhancedRadarChart
-            data={categories.map(cat => ({
-              id: cat.id,
-              name: cat.name,
-              value: cat.score,
-              color: cat.color,
-              icon: cat.icon,
-              description: `Your current score is ${cat.score}/10`,
-            }))}
-            animate={true}
-            onCategoryClick={handleRadarCategoryClick}
-            className={styles.dashboardRadarChart}
-          />
-
-          {/* Positioned tooltip */}
-          {tooltipContent && <div className={styles.radarTooltip}>{tooltipContent}</div>}
-        </div>
-      ) : (
-        <div className={styles.wheelViewContainer}>
-          <LifeWheel categories={categories} onCategorySelect={handleCategorySelect} />
-
-          {/* Additional tooltip for orbital view that's always visible */}
-          {tooltipContent && <div className={styles.wheelTooltip}>{tooltipContent}</div>}
-        </div>
-      )}
-
+      <div className={styles.wheelViewContainer}>
+        <LifeWheel categories={categories} onCategorySelect={handleCategorySelect} />
+        {/* Additional tooltip for orbital view that's always visible */}
+        {tooltipContent && <div className={styles.wheelTooltip}>{tooltipContent}</div>}
+      </div>
       <div className={styles.widgetFooter}>
         <button onClick={() => navigate('/app/life-wheel')} className={styles.seeMoreButton}>
           View Detailed Analysis

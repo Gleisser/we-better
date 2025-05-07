@@ -9,6 +9,7 @@ import BookWidget from '@/shared/components/widgets/BookWidget/BookWidget';
 import ArticleWidget from '@/shared/components/widgets/ArticleWidget/ArticleWidget';
 import { Article } from '@/core/services/articleService';
 import styles from './DashboardGrid.module.css';
+import LifeWheelWidget from '../../widgets/LifeWheelWidget/LifeWheelWidget';
 
 interface DashboardGridProps {
   featuredArticle: Article | null;
@@ -63,9 +64,14 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({ featuredArticle, isLoadin
         <div className={`${styles.widget} ${styles.book}`}>
           <BookWidget />
         </div>
+
+        {/* Life Wheel Widget */}
+        <div className={`${styles.widget} ${styles.lifeWheel}`}>
+          <LifeWheelWidget />
+        </div>
       </div>
     </div>
   );
 };
 
-export default DashboardGrid; 
+export default DashboardGrid;

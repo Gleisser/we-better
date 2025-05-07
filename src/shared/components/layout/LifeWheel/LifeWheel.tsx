@@ -75,7 +75,7 @@ const Tooltip = ({
       }}
     >
       <span className={styles.categoryName}>{category.name}</span>
-      <span className={styles.categoryScore}>{category.score}%</span>
+      <span className={styles.categoryScore}>{category.score}</span>
       {category.hasUpdate && <span className={styles.updateDot} />}
     </motion.div>,
     document.body
@@ -85,7 +85,7 @@ const Tooltip = ({
 const LifeWheel = ({
   categories = MOCK_CATEGORIES,
   onCategorySelect,
-  userName = 'Gleisser Souza',
+  userName = 'Gleisser Santos',
 }: LifeWheelProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
