@@ -3,6 +3,7 @@ import StoriesBar from '@/shared/components/layout/StoriesBar/StoriesBar';
 import DashboardGrid from '@/shared/components/layout/DashboardGrid/DashboardGrid';
 import AIAssistantButton from '@/shared/components/common/AIAssistantButton/AIAssistantButton';
 import { articleService, Article } from '@/core/services/articleService';
+import LifeWheelWidget from './LifeWheelWidget';
 import styles from './Dashboard.module.css';
 
 const Dashboard = (): JSX.Element => {
@@ -36,6 +37,9 @@ const Dashboard = (): JSX.Element => {
   return (
     <div className={styles.container}>
       <DashboardGrid featuredArticle={featuredArticle} isLoading={isLoading} />
+      <div className="mx-auto w-full max-w-md">
+        <LifeWheelWidget />
+      </div>
       <StoriesBar />
       <AIAssistantButton />
     </div>

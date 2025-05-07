@@ -16,7 +16,7 @@ interface LifeCategory {
   orbitSpeed?: number;
 }
 
-interface OrbitalStoriesProps {
+interface LifeWheelProps {
   categories: LifeCategory[];
   onCategorySelect: (category: LifeCategory) => void;
   userName?: string;
@@ -52,11 +52,11 @@ const MOCK_CATEGORIES: LifeCategory[] = [
   // ... other categories with different orbit radiuses and speeds
 ];
 
-const OrbitalStories = ({
+const LifeWheel = ({
   categories = MOCK_CATEGORIES,
   onCategorySelect,
   userName = 'Gleisser Souza',
-}: OrbitalStoriesProps): JSX.Element => {
+}: LifeWheelProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
@@ -165,4 +165,4 @@ const OrbitalStories = ({
   );
 };
 
-export default OrbitalStories;
+export default LifeWheel;

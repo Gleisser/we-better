@@ -1,6 +1,6 @@
 .lifeWheelContainer {
   width: 100%;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   background: rgba(17, 17, 25, 0.7);
   border-radius: 16px;
@@ -9,6 +9,7 @@
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.07);
   color: white;
+  overflow: hidden;
 }
 
 .headerSection {
@@ -20,7 +21,7 @@
   font-size: 28px;
   font-weight: 800;
   text-align: center;
-  background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 16px;
@@ -79,7 +80,7 @@
   color: white;
   font-size: 16px;
   font-weight: 600;
-  text-shadow: 
+  text-shadow:
     0 2px 4px rgba(0, 0, 0, 0.3),
     0 4px 8px rgba(0, 0, 0, 0.2);
   letter-spacing: 0.5px;
@@ -113,14 +114,14 @@
   width: 40px;
   height: 40px;
   border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #8B5CF6;
+  border-top-color: #8b5cf6;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 .errorState {
   text-align: center;
-  color: #EF4444;
+  color: #ef4444;
   padding: 40px 0;
 }
 
@@ -143,7 +144,7 @@
 }
 
 .primaryButton {
-  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   color: white;
 }
 
@@ -163,8 +164,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive adjustments */
@@ -172,7 +177,7 @@
   .lifeWheelContainer {
     padding: 16px;
   }
-  
+
   .categoriesList {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
@@ -183,19 +188,19 @@
     padding: 12px;
     border-radius: 12px;
   }
-  
+
   .title {
     font-size: 20px;
   }
-  
+
   .categoriesList {
     grid-template-columns: 1fr;
   }
-  
+
   .actionButtons {
     flex-direction: column;
   }
-  
+
   .button {
     width: 100%;
   }
@@ -244,10 +249,10 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 1px rgba(255, 255, 255, 0.15);
-  border-radius: 24px;
+  border-radius: 20px;
   padding: 24px;
   width: 100%;
   display: flex;
@@ -277,7 +282,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.1),
     inset 0 1px 1px rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
@@ -328,9 +333,9 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--track-color, #8B5CF6);
+  background: var(--track-color, #8b5cf6);
   cursor: pointer;
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.3),
     0 0 0 2px rgba(255, 255, 255, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.8);
@@ -339,7 +344,7 @@
 
 .slider::-webkit-slider-thumb:hover {
   transform: scale(1.1);
-  box-shadow: 
+  box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.4),
     0 0 0 3px rgba(255, 255, 255, 0.2);
 }
@@ -348,9 +353,9 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--track-color, #8B5CF6);
+  background: var(--track-color, #8b5cf6);
   cursor: pointer;
-  box-shadow: 
+  box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.3),
     0 0 0 2px rgba(255, 255, 255, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.8);
@@ -359,7 +364,7 @@
 
 .slider::-moz-range-thumb:hover {
   transform: scale(1.1);
-  box-shadow: 
+  box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.4),
     0 0 0 3px rgba(255, 255, 255, 0.2);
 }
@@ -415,7 +420,7 @@
 .tourButton {
   display: block;
   margin: 20px auto 0;
-  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -436,7 +441,7 @@
 .completeButton {
   display: block;
   margin: 15px auto 0;
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -477,8 +482,10 @@
   padding: 24px;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 2px #6366F1;
-  color: #1F2937;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 0 2px #6366f1;
+  color: #1f2937;
   position: relative;
   overflow: visible; /* Allow skip button to be visible outside the card */
 }
@@ -511,18 +518,18 @@
   font-size: 16px;
   line-height: 1.6;
   margin-bottom: 20px;
-  color: #4B5563;
+  color: #4b5563;
   text-align: center;
 }
 
 /* Tour tip */
 .tourTip {
   font-size: 14px;
-  background: #F3F4F6;
+  background: #f3f4f6;
   padding: 12px;
   border-radius: 8px;
   color: #374151;
-  border-left: 4px solid #6366F1;
+  border-left: 4px solid #6366f1;
   margin-bottom: 20px;
 }
 
@@ -536,7 +543,8 @@
   padding-bottom: 10px; /* Add space after buttons */
 }
 
-.tourNavLeft, .tourNavRight {
+.tourNavLeft,
+.tourNavRight {
   display: flex;
 }
 
@@ -554,7 +562,7 @@
 
 /* Primary tour button */
 .tourNavButtonPrimary {
-  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   color: white;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
 }
@@ -566,13 +574,13 @@
 
 /* Secondary tour button */
 .tourNavButton:not(.tourNavButtonPrimary) {
-  background: #F3F4F6;
-  color: #4B5563;
-  border: 1px solid #E5E7EB;
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
 }
 
 .tourNavButton:not(.tourNavButtonPrimary):hover {
-  background: #E5E7EB;
+  background: #e5e7eb;
 }
 
 /* Skip tour button */
@@ -611,7 +619,7 @@
   border-radius: 50%;
   background: rgba(239, 68, 68, 0.1);
   border: none;
-  color: #EF4444;
+  color: #ef4444;
   font-size: 20px;
   line-height: 1;
   cursor: pointer;
@@ -632,15 +640,15 @@
   .tourCard {
     padding: 18px;
   }
-  
+
   .tourTitle {
     font-size: 20px;
   }
-  
+
   .tourDescription {
     font-size: 14px;
   }
-  
+
   .tourNavButton {
     padding: 8px 16px;
     font-size: 13px;
@@ -691,26 +699,26 @@
 /* Highlighted category item - increased z-index and improved visibility */
 .highlighted {
   background: rgba(255, 255, 255, 0.95) !important;
-  border: 3px solid #6366F1 !important;
+  border: 3px solid #6366f1 !important;
   transform: translateY(-2px);
   box-shadow: 0 0 30px 15px rgba(99, 102, 241, 0.3);
   z-index: 1001 !important; /* Above the overlay */
   position: relative;
   backdrop-filter: blur(0) !important; /* Remove any blur effect */
-  color: #1F2937 !important;
+  color: #1f2937 !important;
   transition: all 0.3s ease !important;
 }
 
 /* Make highlighted element text more visible */
 .highlighted .categoryName {
-  color: #1F2937 !important;
+  color: #1f2937 !important;
   text-shadow: none !important;
   font-size: 18px !important;
   letter-spacing: 0.5px !important;
 }
 
 .highlighted .valueLabel {
-  color: #1F2937 !important;
+  color: #1f2937 !important;
   background: rgba(99, 102, 241, 0.3) !important;
   text-shadow: none !important;
   font-weight: 600 !important;
@@ -720,14 +728,20 @@
 /* Highlighted element slider */
 .highlighted .slider::-webkit-slider-thumb {
   transform: scale(1.2) !important;
-  border: 2px solid #6366F1 !important;
+  border: 2px solid #6366f1 !important;
 }
 
 /* Temporarily move highlighted element to increase visibility if needed */
 @keyframes pulse-highlight {
-  0% { transform: translateY(-2px); }
-  50% { transform: translateY(-4px); }
-  100% { transform: translateY(-2px); }
+  0% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(-2px);
+  }
 }
 
 .highlighted {
@@ -747,16 +761,16 @@
     max-height: 80vh;
     overflow-y: auto;
   }
-  
+
   .skipTourButton {
     bottom: 15px;
     padding: 8px 16px;
   }
-  
+
   .categoriesList {
     grid-template-columns: 1fr;
   }
-  
+
   .highlighted {
     transform: none !important;
     animation: none !important;
@@ -768,22 +782,22 @@
     max-height: 85vh;
     padding: 15px;
   }
-  
+
   .tourTitle {
     font-size: 18px;
     margin-bottom: 10px;
   }
-  
+
   .tourDescription {
     font-size: 14px;
     margin-bottom: 12px;
   }
-  
+
   .tourTip {
     padding: 8px;
     margin-bottom: 12px;
   }
-  
+
   .skipTourButton {
     bottom: 10px;
   }
@@ -807,7 +821,7 @@
 /* Save button */
 .saveButton {
   display: inline-block;
-  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: none;
   border-radius: 8px;
@@ -825,7 +839,7 @@
 }
 
 .saveButton:disabled {
-  background: #94A3B8;
+  background: #94a3b8;
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -835,8 +849,8 @@
   margin-top: 16px;
   padding: 12px 16px;
   background: rgba(16, 185, 129, 0.2);
-  border-left: 4px solid #10B981;
-  color: #065F46;
+  border-left: 4px solid #10b981;
+  color: #065f46;
   border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
@@ -845,8 +859,14 @@
 }
 
 @keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Retry button */
@@ -867,4 +887,225 @@
 .retryButton:hover {
   background: rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
-} 
+}
+
+/* Enhanced Life Wheel Styles */
+.backgroundImageEnhanced {
+  @apply absolute inset-0 bg-cover bg-center bg-no-repeat z-0;
+  background-image: linear-gradient(to bottom right, rgba(15, 23, 42, 0.8), rgba(88, 28, 135, 0.8));
+}
+
+.tabsContainer {
+  @apply flex justify-center space-x-2 mb-8;
+}
+
+.tab {
+  @apply px-4 py-2 rounded-lg text-sm font-medium transition-colors;
+  @apply bg-gray-800/50 text-gray-300 hover:bg-gray-700/70 hover:text-white;
+}
+
+.activeTab {
+  @apply bg-purple-800/70 text-white;
+}
+
+.tabContent {
+  @apply w-full;
+}
+
+.timelineContainer {
+  @apply flex flex-wrap gap-2 mb-6 justify-center;
+}
+
+.timelineEntry {
+  @apply px-4 py-2 rounded-lg bg-gray-800/60 text-gray-300 hover:bg-gray-700/80 
+          hover:text-white transition-colors text-sm flex flex-col items-center;
+}
+
+.selectedEntry {
+  @apply bg-purple-800/70 text-white;
+}
+
+.timelineDate {
+  @apply font-medium;
+}
+
+.compareCheckbox {
+  @apply mt-1 flex items-center space-x-1 text-xs;
+}
+
+.historyViewContainer {
+  @apply mt-8;
+}
+
+.historyDetails {
+  @apply mt-6 text-center;
+}
+
+.emptyState {
+  @apply flex flex-col items-center justify-center py-12 text-center;
+}
+
+.insightsButton {
+  @apply mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700
+         transition-colors;
+}
+
+.insightsHeader {
+  @apply text-center mb-6;
+}
+
+.insightsSummary {
+  @apply flex flex-wrap justify-center gap-6 mb-8;
+}
+
+.insightCard {
+  @apply bg-gray-800/60 rounded-lg p-4 w-64;
+}
+
+.insightHighlight {
+  @apply flex justify-between items-center mt-2 mb-1 text-xl font-bold;
+}
+
+.insightCategory {
+  @apply truncate;
+}
+
+.insightChange {
+  @apply px-2 py-1 rounded-md text-sm font-mono;
+}
+
+.positive {
+  @apply bg-green-600/30 text-green-400;
+}
+
+.negative {
+  @apply bg-red-600/30 text-red-400;
+}
+
+.insightsDetailsList {
+  @apply mt-10;
+}
+
+.insightItem {
+  @apply flex justify-between items-center p-3 mb-2 bg-gray-800/40 rounded-md;
+}
+
+.insightItemCategory {
+  @apply font-medium;
+}
+
+.insightItemValues {
+  @apply flex items-center space-x-2;
+}
+
+.insightItemPrevious {
+  @apply text-gray-400;
+}
+
+.insightItemArrow {
+  @apply text-gray-500;
+}
+
+.insightItemCurrent {
+  @apply font-semibold;
+}
+
+.insightItemChange {
+  @apply ml-3 px-2 py-0.5 rounded-md text-sm font-mono;
+}
+
+.tooltip {
+  @apply bg-gray-900/90 text-white p-3 rounded-lg max-w-xs;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.tooltipTitle {
+  @apply text-sm font-bold mb-1;
+}
+
+.tooltipContent {
+  @apply text-xs text-gray-300;
+}
+
+/* Enhanced Radar Chart styles */
+.enhancedRadarChart {
+  width: 100%;
+  height: 100%;
+  max-width: 800px;
+  max-height: 800px;
+}
+
+/* Make sure the radar container is properly sized */
+.radarContainer {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px 0;
+}
+
+/* Ensure chart is visible in the container */
+.radarSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Life Wheel Page Layout Styles - similar to Videos and Podcasts pages */
+.lifeWheelPageContainer {
+  @apply w-full min-h-screen p-6 flex flex-col;
+  background: linear-gradient(to bottom right, #0f172a, #581c87);
+}
+
+.header {
+  @apply flex flex-wrap justify-between items-center mb-6;
+}
+
+.filters {
+  @apply flex flex-wrap gap-3 items-center;
+}
+
+.filterButton {
+  @apply flex items-center gap-2 px-4 py-2 bg-gray-800/60 text-white rounded-lg
+         transition-colors hover:bg-gray-700/80;
+}
+
+.filterIcon {
+  @apply w-4 h-4 text-gray-400;
+}
+
+.active {
+  @apply bg-purple-800/70;
+}
+
+.rotated {
+  @apply rotate-180;
+}
+
+.dropdownContainer {
+  @apply relative;
+}
+
+.dropdownMenu {
+  @apply absolute top-full left-0 mt-2 py-2 w-56 bg-gray-800/95 rounded-lg shadow-lg z-10
+         backdrop-blur-sm border border-gray-700/50;
+}
+
+.dropdownItem {
+  @apply w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700/80 flex justify-between items-center;
+}
+
+.selected {
+  @apply bg-purple-800/50 text-white;
+}
+
+.checkmark {
+  @apply text-green-400;
+}
+
+.lifeWheelContent {
+  @apply w-full flex-1 rounded-xl overflow-hidden;
+}

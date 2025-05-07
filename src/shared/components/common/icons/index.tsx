@@ -493,13 +493,37 @@ export const HomeIcon = ({
   height = 24,
   color = 'currentColor',
 }: IconProps): JSX.Element => (
-  <svg viewBox="0 0 24 24" width={width} height={height} fill="none" className={className}>
+  <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none">
     <path
+      d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+      stroke={color}
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth={1.5}
+    />
+    <path
+      d="M9 22V12h6v10"
       stroke={color}
-      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const LifeWheelIcon = ({
+  className,
+  width = 24,
+  height = 24,
+  color = 'currentColor',
+}: IconProps): JSX.Element => (
+  <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="2" />
+    <path
+      d="M12 2V22M2 12H22M12 12L17 17M12 12L7 7M12 12L7 17M12 12L17 7"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
     />
   </svg>
 );
