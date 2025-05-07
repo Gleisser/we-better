@@ -34,14 +34,30 @@
   @apply relative pt-2 pb-4;
 }
 
+.wheelViewContainer {
+  @apply relative pt-2 pb-4;
+}
+
 .dashboardRadarChart {
   @apply max-h-72 mx-auto;
 }
 
 .radarTooltip {
-  @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
-         bg-gray-800/90 text-white px-3 py-1.5 rounded-lg text-sm
-         backdrop-blur-sm z-10;
+  @apply absolute top-4 left-1/2 transform -translate-x-1/2
+         bg-gray-900/95 text-white px-4 py-2 rounded-lg text-sm
+         backdrop-blur-sm border border-purple-500/50 font-medium z-50;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+  min-width: 120px;
+  text-align: center;
+}
+
+.wheelTooltip {
+  @apply absolute bottom-2 left-1/2 transform -translate-x-1/2
+         bg-gray-900/95 text-white px-4 py-2 rounded-lg text-sm
+         backdrop-blur-sm border border-purple-500/50 font-medium z-50;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+  min-width: 120px;
+  text-align: center;
 }
 
 .widgetFooter {

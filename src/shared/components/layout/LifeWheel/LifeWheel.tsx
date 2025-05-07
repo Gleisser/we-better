@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import styles from './LifeWheel.module.css';
 
 interface LifeCategory {
@@ -52,6 +53,35 @@ const MOCK_CATEGORIES: LifeCategory[] = [
   // ... other categories with different orbit radiuses and speeds
 ];
 
+// Tooltip component that will be rendered in a portal
+const Tooltip = ({
+  category,
+  position,
+}: {
+  category: LifeCategory;
+  position: { x: number; y: number };
+}): JSX.Element => {
+  // Create a portal for the tooltip to appear at the root of the document
+  return createPortal(
+    <motion.div
+      className={styles.tooltipPortal}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      style={{
+        position: 'fixed',
+        left: position.x,
+        top: position.y,
+      }}
+    >
+      <span className={styles.categoryName}>{category.name}</span>
+      <span className={styles.categoryScore}>{category.score}%</span>
+      {category.hasUpdate && <span className={styles.updateDot} />}
+    </motion.div>,
+    document.body
+  );
+};
+
 const LifeWheel = ({
   categories = MOCK_CATEGORIES,
   onCategorySelect,
@@ -59,12 +89,17 @@ const LifeWheel = ({
 }: LifeWheelProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+
+  // Ensure tooltips open only after animation completes
+  useEffect(() => {
+    if (!isOpen) {
+      setActiveCategory(null);
+    }
+  }, [isOpen]);
 
   const toggleMenu = (): void => {
     setIsOpen(!isOpen);
-    if (isOpen) {
-      setActiveCategory(null);
-    }
   };
 
   // Calculate positions in a circle
@@ -94,6 +129,19 @@ const LifeWheel = ({
       .map(word => word[0])
       .join('')
       .toUpperCase();
+  };
+
+  // Handle showing the tooltip with position calculation
+  const handleShowTooltip = (category: LifeCategory, event: React.MouseEvent): void => {
+    setActiveCategory(category.id);
+
+    // Calculate the position carefully to avoid clipping
+    // Position it above the bubble where it won't be obscured
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    setTooltipPosition({
+      x: rect.left + rect.width / 2,
+      y: rect.top - 10, // Position above the element
+    });
   };
 
   return (
@@ -132,33 +180,30 @@ const LifeWheel = ({
                 stiffness: 300,
                 damping: 30,
               }}
-              onClick={() => onCategorySelect(category)}
-              onHoverStart={() => setActiveCategory(category.id)}
-              onHoverEnd={() => setActiveCategory(null)}
+              onClick={() => {
+                setActiveCategory(null);
+                onCategorySelect(category);
+              }}
+              onMouseEnter={e => isOpen && handleShowTooltip(category, e)}
+              onMouseLeave={() => setActiveCategory(null)}
               style={{
                 position: 'absolute',
                 background: `linear-gradient(45deg, ${category.color.from}20, ${category.color.to}20)`,
               }}
             >
               <span className={styles.categoryIcon}>{category.icon}</span>
-
-              {/* Category label */}
-              <AnimatePresence>
-                {isOpen && activeCategory === category.id && (
-                  <motion.div
-                    className={styles.categoryLabel}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                  >
-                    <span className={styles.categoryName}>{category.name}</span>
-                    <span className={styles.categoryScore}>{category.score}%</span>
-                    {category.hasUpdate && <span className={styles.updateDot} />}
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </motion.div>
           ))}
+        </AnimatePresence>
+
+        {/* Render tooltip through portal if a category is active */}
+        <AnimatePresence>
+          {isOpen && activeCategory && (
+            <Tooltip
+              category={categories.find(c => c.id === activeCategory) || categories[0]}
+              position={tooltipPosition}
+            />
+          )}
         </AnimatePresence>
       </div>
     </div>

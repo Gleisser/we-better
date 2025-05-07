@@ -56,13 +56,27 @@
   @apply text-base;
 }
 
+/* This is kept for compatibility with other code that might use it */
 .categoryLabel {
   @apply absolute top-full mt-2
          px-3 py-1.5 rounded-lg
-         bg-black/80 backdrop-blur-sm
-         border border-white/10
+         bg-gray-900/95 backdrop-blur-md
+         border border-purple-500/50
          flex items-center gap-2
-         whitespace-nowrap;
+         whitespace-nowrap z-50;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+}
+
+/* New tooltip portal that will be rendered at document body level */
+.tooltipPortal {
+  @apply px-3 py-1.5 rounded-lg
+         bg-gray-900/95 backdrop-blur-md
+         border border-purple-500/50
+         flex items-center gap-2
+         whitespace-nowrap z-[9999];
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transform: translateX(-50%) translateY(-100%);
+  pointer-events: none;
 }
 
 .categoryName {
@@ -70,7 +84,7 @@
 }
 
 .categoryScore {
-  @apply text-xs text-white/70;
+  @apply text-xs text-white/90 font-medium;
 }
 
 .updateDot {

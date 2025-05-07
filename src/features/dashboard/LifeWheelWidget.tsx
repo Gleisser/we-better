@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LifeWheel from '@/shared/components/layout/LifeWheel/LifeWheel';
 import { EnhancedRadarChart } from '@/features/life-wheel';
@@ -36,6 +36,8 @@ const LifeWheelWidget = (): JSX.Element => {
   const [showRadarView, setShowRadarView] = useState(false);
   const [categories, setCategories] = useState<LifeCategory[]>([]);
   const [tooltipContent, setTooltipContent] = useState<string | null>(null);
+  const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const widgetRef = useRef<HTMLDivElement>(null);
 
   // Fetch initial data
   useEffect(() => {
@@ -70,20 +72,47 @@ const LifeWheelWidget = (): JSX.Element => {
     fetchData();
   }, []);
 
-  const handleCategorySelect = useCallback(
-    (_category: LifeCategory) => {
-      navigate('/app/life-wheel');
-    },
-    [navigate]
-  );
+  const handleCategorySelect = useCallback((category: LifeCategory) => {
+    // Show tooltip for orbital view
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+    }
+
+    setTooltipContent(`${category.name}: ${category.score}%`);
+
+    // Auto-hide tooltip after 3 seconds
+    tooltipTimeoutRef.current = setTimeout(() => setTooltipContent(null), 3000);
+  }, []);
 
   const handleToggleView = useCallback(() => {
     setShowRadarView(prev => !prev);
+    // Clear any existing tooltip when switching views
+    setTooltipContent(null);
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+    }
   }, []);
 
   const handleRadarCategoryClick = useCallback((category: RadarDataPoint) => {
+    // Clear any existing timeout
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+    }
+
+    // Set tooltip content
     setTooltipContent(`${category.name}: ${category.value}/10`);
-    setTimeout(() => setTooltipContent(null), 2000);
+
+    // Auto-hide tooltip after 3 seconds
+    tooltipTimeoutRef.current = setTimeout(() => setTooltipContent(null), 3000);
+  }, []);
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
+    };
   }, []);
 
   if (isLoading) {
@@ -98,7 +127,7 @@ const LifeWheelWidget = (): JSX.Element => {
   }
 
   return (
-    <div className={styles.lifeWheelWidget}>
+    <div className={styles.lifeWheelWidget} ref={widgetRef}>
       <div className={styles.widgetHeader}>
         <h3 className={styles.widgetTitle}>Life Balance</h3>
         <button
@@ -125,10 +154,17 @@ const LifeWheelWidget = (): JSX.Element => {
             onCategoryClick={handleRadarCategoryClick}
             className={styles.dashboardRadarChart}
           />
+
+          {/* Positioned tooltip */}
           {tooltipContent && <div className={styles.radarTooltip}>{tooltipContent}</div>}
         </div>
       ) : (
-        <LifeWheel categories={categories} onCategorySelect={handleCategorySelect} />
+        <div className={styles.wheelViewContainer}>
+          <LifeWheel categories={categories} onCategorySelect={handleCategorySelect} />
+
+          {/* Additional tooltip for orbital view that's always visible */}
+          {tooltipContent && <div className={styles.wheelTooltip}>{tooltipContent}</div>}
+        </div>
       )}
 
       <div className={styles.widgetFooter}>
