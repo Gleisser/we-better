@@ -60,25 +60,18 @@ const ArticleWidget: React.FC<ArticleWidgetProps> = ({ article, isLoading }) => 
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !article) {
     return (
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <span className={styles.headerIcon}>📰</span>
-            <span className={styles.headerText}>Article of the Day</span>
-          </div>
-        </div>
-        <div className={styles.content}>
-          <LoadingSkeleton />
-        </div>
-      </div>
-    );
-  }
-
-  if (!article) {
-    return (
-      <div className={styles.container}>
+      <div
+        className={styles.container}
+        style={
+          {
+            '--gradient-start': theme.gradientStart,
+            '--gradient-middle': theme.gradientMiddle,
+            '--gradient-end': theme.gradientEnd,
+          } as React.CSSProperties
+        }
+      >
         <div className={styles.header}>
           <div className={styles.headerLeft}>
             <span className={styles.headerIcon}>📰</span>
@@ -114,19 +107,10 @@ const ArticleWidget: React.FC<ArticleWidgetProps> = ({ article, isLoading }) => 
         <div className={styles.articleCard}>
           <div className={styles.thumbnailSection}>
             <img src={article.thumbnail} alt={article.title} className={styles.thumbnail} />
-            {/* <div className={styles.sourceBadge}>
-              <img 
-                src={article.source.icon} 
-                alt={article.source.name}
-                className={styles.sourceIcon}
-              />
-              {article.source.name}
-            </div> */}
           </div>
 
           <div className={styles.articleInfo}>
             <h3 className={styles.articleTitle}>{article.title}</h3>
-
             <p className={styles.articleDescription}>{article.description}</p>
 
             <div className={styles.metadata}>
