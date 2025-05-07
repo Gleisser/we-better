@@ -5,6 +5,7 @@ import { LifeCategory } from './types';
 import { DEFAULT_LIFE_CATEGORIES } from './constants/categories';
 import styles from './LifeWheel.module.css';
 import { getLatestLifeWheelData, saveLifeWheelData, getLifeWheelHistory } from './api/lifeWheelApi';
+import ReactDOM from 'react-dom';
 
 type HistoryEntry = {
   id: string;
@@ -41,14 +42,12 @@ const EnhancedLifeWheel = ({
   const [activeTab, setActiveTab] = useState<'current' | 'history' | 'insights'>('current');
   const [tooltipInfo, setTooltipInfo] = useState<{
     visible: boolean;
-    x: number;
-    y: number;
+    targetElement: HTMLElement | null;
     content: string;
     title: string;
   }>({
     visible: false,
-    x: 0,
-    y: 0,
+    targetElement: null,
     content: '',
     title: '',
   });
@@ -175,13 +174,15 @@ const EnhancedLifeWheel = ({
     [comparisonEntry]
   );
 
-  // Show tooltip on hover
+  // Show tooltip on hover with more reliable positioning
   const handleShowTooltip = useCallback(
     (event: React.MouseEvent, title: string, content: string) => {
+      // Store the reference to the target element
+      const targetElement = event.currentTarget as HTMLElement;
+
       setTooltipInfo({
         visible: true,
-        x: event.clientX,
-        y: event.clientY,
+        targetElement,
         title,
         content,
       });
@@ -932,26 +933,47 @@ const EnhancedLifeWheel = ({
 
       {/* Tooltip */}
       <AnimatePresence>
-        {tooltipInfo.visible && (
-          <motion.div
-            className={styles.tooltip}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            style={{
-              position: 'fixed',
-              left: tooltipInfo.x + 15,
-              top: tooltipInfo.y - 15,
-              zIndex: 1000,
-            }}
-          >
-            <h4 className={styles.tooltipTitle}>{tooltipInfo.title}</h4>
-            <p className={styles.tooltipContent}>{tooltipInfo.content}</p>
-          </motion.div>
+        {tooltipInfo.visible && tooltipInfo.targetElement && (
+          <TooltipPortal>
+            <motion.div
+              className={styles.tooltip}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              style={{
+                position: 'fixed',
+                ...getTooltipPosition(tooltipInfo.targetElement),
+                zIndex: 1000,
+              }}
+            >
+              <h4 className={styles.tooltipTitle}>{tooltipInfo.title}</h4>
+              <p className={styles.tooltipContent}>{tooltipInfo.content}</p>
+            </motion.div>
+          </TooltipPortal>
         )}
       </AnimatePresence>
     </div>
   );
+};
+
+// TooltipPortal component for rendering the tooltip in the document body
+const TooltipPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return ReactDOM.createPortal(children, document.body);
+};
+
+// Helper function to calculate tooltip position
+const getTooltipPosition = (
+  targetElement: HTMLElement
+): { left: string; top: string; transform: string } => {
+  const rect = targetElement.getBoundingClientRect();
+
+  // Calculate centered position well above the element
+  // Increased the vertical offset to create more space for interaction
+  return {
+    left: `${rect.left + rect.width / 2}px`,
+    top: `${rect.top - 50}px`, // Increased from 10px to 50px to position tooltip higher
+    transform: 'translate(-50%, -100%)',
+  };
 };
 
 export default EnhancedLifeWheel;
