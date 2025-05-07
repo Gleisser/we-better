@@ -12,6 +12,7 @@ import {
   LogoutIcon,
   CollapseIcon,
   LifeWheelIcon,
+  DreamBoardIcon,
 } from '@/shared/components/common/icons';
 import styles from './Sidebar.module.css';
 
@@ -25,6 +26,11 @@ const menuItems = [
     path: '/app/life-wheel',
     label: 'Life Wheel',
     icon: <LifeWheelIcon className={styles.icon} />,
+  },
+  {
+    path: '/app/dream-board',
+    label: 'Dream Board',
+    icon: <DreamBoardIcon className={styles.icon} />,
   },
   {
     path: '/app/videos',

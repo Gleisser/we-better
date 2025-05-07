@@ -1368,3 +1368,34 @@ export const CourseraIcon = ({ className }: { className?: string }): JSX.Element
 );
 
 // Add other platform icons similarly...
+
+export const DreamBoardIcon = ({
+  className,
+  width = 24,
+  height = 24,
+  color = 'currentColor',
+}: IconProps): JSX.Element => (
+  <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none">
+    <path
+      d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.5 10L12 7l3.5 3"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.5 14l2-2 1 1L14 10.5l1.5 1.5"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);

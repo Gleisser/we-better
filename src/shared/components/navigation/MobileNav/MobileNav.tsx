@@ -46,6 +46,7 @@ import {
   ArticleIcon,
   CourseIcon,
   PodcastIcon,
+  DreamBoardIcon,
 } from '@/shared/components/common/icons';
 import styles from './MobileNav.module.css';
 
@@ -54,6 +55,11 @@ const NAV_ITEMS = [
     label: 'Home',
     icon: HomeIcon,
     path: '/app/dashboard',
+  },
+  {
+    label: 'Dream Board',
+    icon: DreamBoardIcon,
+    path: '/app/dream-board',
   },
   {
     label: 'Videos',

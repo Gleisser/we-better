@@ -18,6 +18,7 @@ import ResetPassword from '@/features/auth/pages/ResetPassword';
 import { SpotifyCallback } from '@/features/auth/pages/SpotifyCallback';
 import { StartPage } from '@/features/onboarding/pages/StartPage';
 import { EnhancedLifeWheelPage } from '@/features/life-wheel';
+import { DreamBoardPage } from '@/features/dream-board';
 //import AuthDebugger from '@/features/auth/AuthDebugger';
 // import { LifeWheel } from '@/features/life-wheel';
 // import { WelcomeSequence } from '@/features/life-wheel/WelcomeSequence';
@@ -203,6 +204,10 @@ export const router = createBrowserRouter([
       {
         path: 'life-wheel',
         element: <EnhancedLifeWheelPage />,
+      },
+      {
+        path: 'dream-board',
+        element: <DreamBoardPage />,
       },
       {
         path: 'videos',
