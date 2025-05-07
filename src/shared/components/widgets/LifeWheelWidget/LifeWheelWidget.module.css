@@ -1,6 +1,6 @@
 .lifeWheelWidget {
   @apply bg-gradient-to-br from-gray-900 to-purple-900/80
-           rounded-xl shadow-lg p-2 h-full w-full;
+           rounded-xl shadow-lg p-2 pb-4 h-full w-full;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   /* Test containment */
   isolation: isolate;
@@ -9,7 +9,7 @@
 
 /* Enhanced Life Wheel Widget Styles */
 .widgetHeader {
-  @apply flex flex-col gap-2 px-4 pt-3 mb-1;
+  @apply flex flex-col gap-2 px-4 pt-3 mb-0;
 }
 
 .headerTop {
@@ -43,7 +43,7 @@
 }
 
 .wheelViewContainer {
-  @apply relative flex items-center justify-center flex-1 h-full;
+  @apply relative flex items-center justify-center flex-1 h-full pt-0 pb-6;
   /* Test containment */
   position: relative;
   isolation: isolate;
@@ -63,9 +63,9 @@
 }
 
 .wheelTooltip {
-  @apply absolute bottom-2 left-1/2 transform -translate-x-1/2
-           bg-gray-900/95 text-white px-4 py-2 rounded-lg text-sm
-           backdrop-blur-sm border border-purple-500/50 font-medium z-50;
+  @apply absolute bottom-3 left-1/2 transform -translate-x-1/2
+         bg-gray-900/95 text-white px-4 py-2 rounded-lg text-sm
+         backdrop-blur-sm border border-purple-500/50 font-medium z-50;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
   min-width: 120px;
   text-align: center;
@@ -75,7 +75,7 @@
 }
 
 .widgetFooter {
-  @apply mt-1 text-center;
+  @apply mt-0 mb-3 text-center;
 }
 
 .seeMoreButton {

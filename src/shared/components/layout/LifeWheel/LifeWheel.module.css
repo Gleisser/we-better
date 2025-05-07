@@ -3,6 +3,8 @@
   position: relative;
   /* Testing containment */
   isolation: isolate;
+  padding-top: 0;
+  margin-top: -10px; /* Pull up the wheel slightly to center it */
 }
 
 .container {
