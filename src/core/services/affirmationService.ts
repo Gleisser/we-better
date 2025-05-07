@@ -86,7 +86,7 @@ export const affirmationService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<AffirmationResponse>(`/api/affirmations?${queryParams}`);
+      const { data } = await apiClient.get<AffirmationResponse>(`/affirmations?${queryParams}`);
       return data;
     } catch (error) {
       return handleServiceError(error, 'Affirmations');
@@ -177,7 +177,7 @@ export const affirmationService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<AffirmationResponse>(`/api/affirmations?${queryParams}`);
+      const { data } = await apiClient.get<AffirmationResponse>(`/affirmations?${queryParams}`);
       return data;
     } catch (error) {
       return handleServiceError(error, 'Affirmations');
