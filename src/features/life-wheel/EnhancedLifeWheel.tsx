@@ -761,11 +761,6 @@ const EnhancedLifeWheel = ({
 
                     {selectedHistoryEntry && (
                       <div className={styles.historyDetails}>
-                        <h3>
-                          {formatDate(
-                            historyEntries.find(e => e.id === selectedHistoryEntry)?.date || ''
-                          )}
-                        </h3>
                         {comparisonEntry && (
                           <div className={styles.comparisonInfo}>
                             <p>
