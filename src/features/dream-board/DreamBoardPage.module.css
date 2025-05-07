@@ -1,0 +1,492 @@
+.dreamBoardContainer {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #f9fafb;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(30, 30, 30, 0.6);
+  color: #f9fafb;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background-color: rgba(60, 60, 60, 0.6);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.activeTab {
+  background-color: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.7);
+}
+
+/* Mini Vision Board */
+.miniBoard {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.miniBoard.expanded {
+  height: auto;
+  max-height: 500px;
+}
+
+.miniBoardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.miniBoardHeader h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.miniBoardHeader button {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  background-color: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #f9fafb;
+  cursor: pointer;
+}
+
+.miniBoardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.miniDream {
+  background-color: rgba(40, 40, 40, 0.6);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  position: relative;
+}
+
+.dreamTitle {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.progressIndicator {
+  height: 4px;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  border-radius: 2px;
+}
+
+/* Main Content */
+.mainContent {
+  margin-bottom: 2rem;
+}
+
+/* Categories Dashboard */
+.categoriesDashboard {
+  margin-bottom: 2.5rem;
+}
+
+.categoriesDashboard h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.categoriesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.categoryCard {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  transition: all 0.2s;
+}
+
+.categoryCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(139, 92, 246, 0.7);
+}
+
+.categoryCard h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.dreamCount {
+  font-size: 0.875rem;
+  color: rgba(249, 250, 251, 0.7);
+}
+
+/* Progress Section */
+.progressSection {
+  margin-bottom: 2.5rem;
+}
+
+.progressSection h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.dreamsProgress {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.dreamProgressCard {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.dreamProgressCard h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.progressBar {
+  height: 8px;
+  background-color: rgba(60, 60, 60, 0.6);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  border-radius: 4px;
+}
+
+.progressText {
+  font-size: 0.875rem;
+  color: rgba(249, 250, 251, 0.7);
+}
+
+/* Timeline Section */
+.timelineSection {
+  margin-bottom: 2.5rem;
+}
+
+.timelineSection h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.timelineContainer {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.timeframeColumn {
+  flex: 1;
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.timeframeColumn h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.timelineDream {
+  background-color: rgba(40, 40, 40, 0.6);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid #8b5cf6;
+}
+
+/* AI Insights */
+.aiInsights {
+  margin-bottom: 2.5rem;
+}
+
+.aiInsights h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.insightCard {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  margin-bottom: 1rem;
+}
+
+.insightCard h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #8b5cf6;
+}
+
+/* Resource Section */
+.resourceSection {
+  margin-bottom: 2.5rem;
+}
+
+.resourceSection h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.resourceCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.resourceCard {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.resourceCard h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.resourceCard p {
+  font-size: 0.875rem;
+  color: rgba(249, 250, 251, 0.7);
+  margin-bottom: 1rem;
+}
+
+.resourceButton {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resourceButton:hover {
+  background-color: rgba(139, 92, 246, 0.4);
+}
+
+/* Journal Section */
+.journalSection {
+  margin-bottom: 2.5rem;
+}
+
+.journalSection h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.journalEntry {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  margin-bottom: 1rem;
+}
+
+.journalEntry h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.journalDate {
+  font-size: 0.875rem;
+  color: rgba(249, 250, 251, 0.7);
+  margin-bottom: 1rem;
+}
+
+.addEntryButton {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addEntryButton:hover {
+  background-color: rgba(139, 92, 246, 0.4);
+}
+
+/* Tools Footer */
+.toolsFooter {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.toolSection {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.toolSection h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #d946ef;
+}
+
+.toolSection p {
+  font-size: 0.875rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .timelineContainer {
+    flex-direction: column;
+  }
+}
+
+/* Additional styles for new elements */
+.milestonesInfo {
+  font-size: 0.75rem;
+  color: rgba(249, 250, 251, 0.6);
+  margin-top: 0.25rem;
+}
+
+.categoryBadge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #d946ef;
+  margin-top: 0.5rem;
+}
+
+.emotionBadge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #d946ef;
+  margin-bottom: 0.75rem;
+}
+
+.journalContent {
+  line-height: 1.6;
+}
+
+.relatedCategories {
+  font-size: 0.75rem;
+  color: rgba(249, 250, 251, 0.7);
+  margin-top: 0.5rem;
+}
+
+.resourceType {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #d946ef;
+  margin-bottom: 0.75rem;
+  text-transform: capitalize;
+}
+
+.weatherStatus {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.weatherIcon {
+  display: inline-block;
+  margin-left: 0.25rem;
+  font-weight: 500;
+}
+
+.notificationPreview {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: rgba(40, 40, 40, 0.6);
+  border-radius: 0.25rem;
+}
+
+.timelinePlaceholder {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  margin: 1rem 0;
+  text-align: center;
+  color: rgba(249, 250, 251, 0.7);
+}
+
+.detailedTimeline {
+  margin-bottom: 2.5rem;
+}
+
+.detailedTimeline h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
