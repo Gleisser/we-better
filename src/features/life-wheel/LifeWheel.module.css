@@ -278,7 +278,7 @@
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  padding: 12px 16px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1108,4 +1108,23 @@
 
 .lifeWheelContent {
   @apply w-full flex-1 rounded-xl overflow-hidden;
+}
+
+/* Value container and health indicator */
+.valueContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.healthIndicator {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }

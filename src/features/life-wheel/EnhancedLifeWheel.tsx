@@ -271,6 +271,28 @@ const EnhancedLifeWheel = ({
     });
   };
 
+  // Helper function to determine the background color based on score
+  const getCategoryBackgroundColor = (value: number): string => {
+    if (value < 5) {
+      return 'rgba(239, 68, 68, 0.2)'; // Red background for low values
+    } else if (value >= 5 && value <= 7) {
+      return 'rgba(245, 158, 11, 0.2)'; // Orange/yellow for medium values
+    } else {
+      return 'rgba(16, 185, 129, 0.2)'; // Green for high values
+    }
+  };
+
+  // Helper function to get category health indicator text
+  const getCategoryHealthText = (value: number): { text: string; color: string } => {
+    if (value < 5) {
+      return { text: 'Needs Attention', color: '#ef4444' };
+    } else if (value >= 5 && value <= 7) {
+      return { text: 'Developing', color: '#f59e0b' };
+    } else {
+      return { text: 'Thriving', color: '#10b981' };
+    }
+  };
+
   if (isLoading) {
     return (
       <div className={`${styles.lifeWheelContainer} ${className}`}>
@@ -347,14 +369,18 @@ const EnhancedLifeWheel = ({
                 }}
               >
                 <RadarChart
-                  data={categories.map(category => ({
-                    name: category.name,
-                    value: category.value,
-                    color: category.color,
-                    id: category.id,
-                    description: category.description || '',
-                    icon: category.icon || '',
-                  }))}
+                  data={categories.map(category => {
+                    const healthColor = getCategoryHealthText(category.value).color;
+                    return {
+                      name: category.name,
+                      value: category.value,
+                      color: healthColor,
+                      id: category.id,
+                      description: category.description || '',
+                      icon: category.icon || '',
+                      healthStatus: getCategoryHealthText(category.value).text,
+                    };
+                  })}
                   animate={true}
                   onCategoryClick={category =>
                     handleShowTooltip(
@@ -363,7 +389,7 @@ const EnhancedLifeWheel = ({
                         clientY: window.innerHeight / 2,
                       } as React.MouseEvent,
                       category.name,
-                      category.description || `Your current score is ${category.value}/10`
+                      `${category.description || `Score: ${category.value}/10`} (${category.healthStatus})`
                     )
                   }
                   className={styles.enhancedRadarChart}
@@ -375,6 +401,10 @@ const EnhancedLifeWheel = ({
                   <div
                     key={category.id}
                     className={styles.categoryItem}
+                    style={{
+                      background: getCategoryBackgroundColor(category.value),
+                      transition: 'background-color 0.3s ease',
+                    }}
                     onMouseEnter={e =>
                       handleShowTooltip(e, category.name, category.description || '')
                     }
@@ -409,7 +439,18 @@ const EnhancedLifeWheel = ({
                       }
                       disabled={readOnly}
                     />
-                    <div className={styles.valueLabel}>{category.value}/10</div>
+                    <div className={styles.valueContainer}>
+                      <div className={styles.valueLabel}>{category.value}/10</div>
+                      <div
+                        className={styles.healthIndicator}
+                        style={{
+                          color: getCategoryHealthText(category.value).color,
+                          backgroundColor: `${getCategoryHealthText(category.value).color}20`,
+                        }}
+                      >
+                        {getCategoryHealthText(category.value).text}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -494,22 +535,30 @@ const EnhancedLifeWheel = ({
                       }}
                     >
                       <RadarChart
-                        data={getCurrentViewData().map(category => ({
-                          name: category.name,
-                          value: category.value,
-                          color: category.color,
-                          id: category.id,
-                          description: category.description || '',
-                          icon: category.icon || '',
-                        }))}
-                        comparisonData={getComparisonData()?.map(category => ({
-                          name: category.name,
-                          value: category.value,
-                          color: category.color,
-                          id: category.id,
-                          description: category.description || '',
-                          icon: category.icon || '',
-                        }))}
+                        data={getCurrentViewData().map(category => {
+                          const healthColor = getCategoryHealthText(category.value).color;
+                          return {
+                            name: category.name,
+                            value: category.value,
+                            color: healthColor,
+                            id: category.id,
+                            description: category.description || '',
+                            icon: category.icon || '',
+                            healthStatus: getCategoryHealthText(category.value).text,
+                          };
+                        })}
+                        comparisonData={getComparisonData()?.map(category => {
+                          const healthColor = getCategoryHealthText(category.value).color;
+                          return {
+                            name: category.name,
+                            value: category.value,
+                            color: healthColor,
+                            id: category.id,
+                            description: category.description || '',
+                            icon: category.icon || '',
+                            healthStatus: getCategoryHealthText(category.value).text,
+                          };
+                        })}
                         animate={true}
                         showComparison={showComparison}
                         className={styles.enhancedRadarChart}

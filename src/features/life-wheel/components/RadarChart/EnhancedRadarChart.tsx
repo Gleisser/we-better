@@ -11,6 +11,7 @@ interface DataPoint {
   icon?: string;
   gradient?: string;
   highlight?: boolean;
+  healthStatus?: string;
 }
 
 interface RadarChartProps {
@@ -37,6 +38,21 @@ const EnhancedRadarChart = ({
   );
 
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+
+  // Add a tooltip component to the radar chart
+  const [tooltipData, setTooltipData] = useState<{
+    visible: boolean;
+    text: string;
+    x: number;
+    y: number;
+    category: DataPoint | null;
+  }>({
+    visible: false,
+    text: '',
+    x: 0,
+    y: 0,
+    category: null,
+  });
 
   // Update animated data when real data changes
   useEffect(() => {
@@ -257,8 +273,23 @@ const EnhancedRadarChart = ({
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: animate ? 0.3 : 0, delay: animate ? 0.8 : 0 }}
-            onMouseEnter={() => setHoveredCategory(indicator.id)}
-            onMouseLeave={() => setHoveredCategory(null)}
+            onMouseEnter={() => {
+              setHoveredCategory(indicator.id);
+              const dataPoint = data.find(d => d.id === indicator.id);
+              if (dataPoint) {
+                setTooltipData({
+                  visible: true,
+                  text: dataPoint.name,
+                  x: indicator.x,
+                  y: indicator.y - 50,
+                  category: dataPoint,
+                });
+              }
+            }}
+            onMouseLeave={() => {
+              setHoveredCategory(null);
+              setTooltipData(prev => ({ ...prev, visible: false }));
+            }}
             onClick={() => {
               const dataPoint = data.find(d => d.id === indicator.id);
               if (dataPoint && onCategoryClick) onCategoryClick(dataPoint);
@@ -331,6 +362,39 @@ const EnhancedRadarChart = ({
             <stop offset="100%" stopColor="rgba(217, 70, 239, 0.4)" />
           </radialGradient>
         </defs>
+
+        {/* Tooltip */}
+        {tooltipData.visible && tooltipData.category && (
+          <g className={styles.tooltip} transform={`translate(${tooltipData.x}, ${tooltipData.y})`}>
+            <rect
+              x="-60"
+              y="-40"
+              width="120"
+              height="50"
+              rx="5"
+              fill="rgba(0, 0, 0, 0.7)"
+              strokeWidth="1"
+              stroke="rgba(255, 255, 255, 0.3)"
+            />
+            <text x="0" y="-20" textAnchor="middle" className={styles.tooltipTitle}>
+              {tooltipData.category.name}
+            </text>
+            <text x="0" y="0" textAnchor="middle" className={styles.tooltipValue}>
+              Score: {tooltipData.category.value}/10
+            </text>
+            <text
+              x="0"
+              y="20"
+              textAnchor="middle"
+              className={styles.tooltipHealth}
+              fill={
+                typeof tooltipData.category.color === 'string' ? tooltipData.category.color : '#fff'
+              }
+            >
+              {tooltipData.category.healthStatus || ''}
+            </text>
+          </g>
+        )}
       </svg>
     </div>
   );

@@ -116,6 +116,23 @@
   ry: 4;
 }
 
+.tooltipTitle {
+  font-size: 12px;
+  font-weight: bold;
+  fill: white;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+.tooltipValue {
+  font-size: 10px;
+  fill: rgba(255, 255, 255, 0.8);
+}
+
+.tooltipHealth {
+  font-size: 10px;
+  font-weight: bold;
+}
+
 @media (max-width: 768px) {
   .categoryLabel {
     font-size: 10px;
