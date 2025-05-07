@@ -57,6 +57,11 @@ const EnhancedLifeWheel = ({
   const [playbackSpeed, setPlaybackSpeed] = useState(1000); // milliseconds per frame
   const [timelineIndex, setTimelineIndex] = useState(0);
 
+  // Add a new state variable for tracking the current sort method
+  const [insightsSortMethod, setInsightsSortMethod] = useState<
+    'magnitude' | 'value' | 'alphabetical' | 'improved'
+  >('magnitude');
+
   // Load current life wheel data
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -397,6 +402,74 @@ const EnhancedLifeWheel = ({
     // Sort by change magnitude (absolute value)
     return changes.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
   }, [selectedHistoryEntry, historyEntries]);
+
+  // Add a function to handle sort method changes
+  const handleSortMethodChange = useCallback(() => {
+    // Rotate through different sort methods
+    setInsightsSortMethod(prevMethod => {
+      switch (prevMethod) {
+        case 'magnitude':
+          return 'value';
+        case 'value':
+          return 'improved';
+        case 'improved':
+          return 'alphabetical';
+        case 'alphabetical':
+          return 'magnitude';
+        default:
+          return 'magnitude';
+      }
+    });
+  }, []);
+
+  // Helper function to get sort method display text
+  const getSortMethodText = useCallback((method: string): string => {
+    switch (method) {
+      case 'magnitude':
+        return 'Largest Change';
+      case 'value':
+        return 'Current Value';
+      case 'improved':
+        return 'Most Improved';
+      case 'alphabetical':
+        return 'Alphabetical';
+      default:
+        return 'Largest Change';
+    }
+  }, []);
+
+  // Define a proper interface for the insights object used in sortInsights
+  interface InsightItem {
+    category: string;
+    change: number;
+    currentValue: number;
+    previousValue: number;
+    color: string | { from: string; to: string };
+    id: string;
+  }
+
+  // Sort function with proper typing
+  const sortInsights = useCallback(
+    (insights: InsightItem[]) => {
+      if (!insights || insights.length === 0) return [];
+
+      const sortedInsights = [...insights];
+
+      switch (insightsSortMethod) {
+        case 'magnitude':
+          return sortedInsights.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+        case 'value':
+          return sortedInsights.sort((a, b) => b.currentValue - a.currentValue);
+        case 'improved':
+          return sortedInsights.sort((a, b) => b.change - a.change);
+        case 'alphabetical':
+          return sortedInsights.sort((a, b) => a.category.localeCompare(b.category));
+        default:
+          return sortedInsights;
+      }
+    },
+    [insightsSortMethod]
+  );
 
   if (isLoading) {
     return (
@@ -1078,8 +1151,12 @@ const EnhancedLifeWheel = ({
                             <span>Changes by Category</span>
                             <div className={styles.insightsSorter}>
                               <span className={styles.sorterLabel}>Sort by:</span>
-                              <button className={styles.sorterButton}>
-                                Largest Change
+                              <button
+                                className={styles.sorterButton}
+                                onClick={handleSortMethodChange}
+                                title="Click to change sorting method"
+                              >
+                                {getSortMethodText(insightsSortMethod)}
                                 <svg
                                   width="16"
                                   height="16"
@@ -1101,61 +1178,59 @@ const EnhancedLifeWheel = ({
 
                           <div className={styles.insightsDetailsList}>
                             {calculateInsights()?.length > 0 &&
-                              calculateInsights()
-                                .sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
-                                .map((insight, index) => (
-                                  <motion.div
-                                    initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.1 * index }}
-                                    key={insight.id}
-                                    className={styles.insightItem}
-                                    style={{
-                                      borderLeft: `4px solid ${
-                                        typeof insight.color === 'string'
-                                          ? insight.color
-                                          : insight.color.from || '#8B5CF6'
-                                      }`,
-                                    }}
-                                  >
-                                    <div className={styles.insightItemContent}>
-                                      <span className={styles.insightItemCategory}>
-                                        {insight.category}
-                                      </span>
-                                      <div className={styles.insightItemValues}>
-                                        <div className={styles.valueWithLabel}>
-                                          <span className={styles.valueLabel}>From</span>
-                                          <span className={styles.insightItemPrevious}>
-                                            {insight.previousValue}
-                                          </span>
-                                        </div>
-                                        <span className={styles.insightItemArrow}>→</span>
-                                        <div className={styles.valueWithLabel}>
-                                          <span className={styles.valueLabel}>To</span>
-                                          <span className={styles.insightItemCurrent}>
-                                            {insight.currentValue}
-                                          </span>
-                                        </div>
+                              sortInsights(calculateInsights()).map((insight, index) => (
+                                <motion.div
+                                  initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.4, delay: 0.1 * Math.min(index, 5) }}
+                                  key={insight.id}
+                                  className={styles.insightItem}
+                                  style={{
+                                    borderLeft: `4px solid ${
+                                      typeof insight.color === 'string'
+                                        ? insight.color
+                                        : insight.color.from || '#8b5cf6'
+                                    }`,
+                                  }}
+                                >
+                                  <div className={styles.insightItemContent}>
+                                    <span className={styles.insightItemCategory}>
+                                      {insight.category}
+                                    </span>
+                                    <div className={styles.insightItemValues}>
+                                      <div className={styles.valueWithLabel}>
+                                        <span className={styles.valueLabel}>From</span>
+                                        <span className={styles.insightItemPrevious}>
+                                          {insight.previousValue}
+                                        </span>
+                                      </div>
+                                      <span className={styles.insightItemArrow}>→</span>
+                                      <div className={styles.valueWithLabel}>
+                                        <span className={styles.valueLabel}>To</span>
+                                        <span className={styles.insightItemCurrent}>
+                                          {insight.currentValue}
+                                        </span>
                                       </div>
                                     </div>
-                                    <div className={styles.insightItemChangeContainer}>
+                                  </div>
+                                  <div className={styles.insightItemChangeContainer}>
+                                    <div
+                                      className={`${styles.changeValue} ${insight.change > 0 ? styles.positive : insight.change < 0 ? styles.negative : styles.neutral}`}
+                                    >
+                                      {insight.change > 0 ? '+' : ''}
+                                      {insight.change}
+                                    </div>
+                                    <div className={styles.changeBar}>
                                       <div
-                                        className={`${styles.changeValue} ${insight.change > 0 ? styles.positive : insight.change < 0 ? styles.negative : styles.neutral}`}
-                                      >
-                                        {insight.change > 0 ? '+' : ''}
-                                        {insight.change}
-                                      </div>
-                                      <div className={styles.changeBar}>
-                                        <div
-                                          className={`${styles.changeBarInner} ${insight.change > 0 ? styles.positiveBar : insight.change < 0 ? styles.negativeBar : styles.neutralBar}`}
-                                          style={{
-                                            width: `${Math.min(Math.abs(insight.change) * 10, 100)}%`,
-                                          }}
-                                        ></div>
-                                      </div>
+                                        className={`${styles.changeBarInner} ${insight.change > 0 ? styles.positiveBar : insight.change < 0 ? styles.negativeBar : styles.neutralBar}`}
+                                        style={{
+                                          width: `${Math.min(Math.abs(insight.change) * 10, 100)}%`,
+                                        }}
+                                      ></div>
                                     </div>
-                                  </motion.div>
-                                ))}
+                                  </div>
+                                </motion.div>
+                              ))}
                           </div>
                         </div>
                       </div>
