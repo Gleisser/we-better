@@ -2,7 +2,11 @@ import { useCallback, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LifeWheel from '@/shared/components/layout/LifeWheel/LifeWheel';
 import { getLatestLifeWheelData } from '@/features/life-wheel/api/lifeWheelApi';
+import { createLogger } from '@/shared/utils/debugUtils';
 import styles from './LifeWheelWidget.module.css';
+
+// Create a logger
+const logger = createLogger('LifeWheelWidget');
 
 // Use the correct LifeCategory interface that matches the one in OrbitalStories
 interface LifeCategory {
@@ -19,6 +23,13 @@ interface LifeCategory {
   orbitSpeed?: number;
 }
 
+// Simplified fixed tooltip component to minimize DOM changes
+const FixedTooltip = ({ content }: { content: string | null }): JSX.Element | null => {
+  if (!content) return null;
+
+  return <div className={styles.wheelTooltip}>{content}</div>;
+};
+
 const LifeWheelWidget = (): JSX.Element => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +37,25 @@ const LifeWheelWidget = (): JSX.Element => {
   const [tooltipContent, setTooltipContent] = useState<string | null>(null);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
+  const renderCountRef = useRef(0);
+
+  // Track render cycles
+  useEffect(() => {
+    renderCountRef.current += 1;
+    logger.log(`Widget render #${renderCountRef.current}`);
+  });
+
+  // Track component mount/unmount and performance
+  useEffect(() => {
+    const startTime = performance.now();
+    logger.log('Widget mounted');
+
+    return () => {
+      logger.log('Widget unmounted', {
+        lifetime: performance.now() - startTime,
+      });
+    };
+  }, []);
 
   // Fetch initial data
   useEffect(() => {
@@ -49,6 +79,7 @@ const LifeWheelWidget = (): JSX.Element => {
             orbitSpeed: Math.random() * 0.5 + 0.3, // Random orbit speed for visual variety
           }));
           setCategories(mappedCategories);
+          logger.log('Categories loaded', { count: mappedCategories.length });
         }
       } catch (error) {
         console.error('Error loading life wheel data:', error);
@@ -60,17 +91,30 @@ const LifeWheelWidget = (): JSX.Element => {
     fetchData();
   }, []);
 
+  // Optimized handler with requestAnimationFrame for better performance
   const handleCategorySelect = useCallback((category: LifeCategory) => {
-    // Show tooltip for orbital view
-    if (tooltipTimeoutRef.current) {
-      clearTimeout(tooltipTimeoutRef.current);
-    }
+    logger.log('Category selected', { id: category.id, name: category.name });
 
-    setTooltipContent(`${category.name} score: ${category.score}`);
+    // Use requestAnimationFrame to batch DOM updates
+    requestAnimationFrame(() => {
+      // Clear existing timeout to prevent race conditions
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
 
-    // Auto-hide tooltip after 3 seconds
-    tooltipTimeoutRef.current = setTimeout(() => setTooltipContent(null), 3000);
+      // Update tooltip with minimal DOM changes
+      setTooltipContent(`${category.name} score: ${category.score}`);
+
+      // Auto-hide tooltip after 3 seconds, with RAF for perf
+      tooltipTimeoutRef.current = setTimeout(() => {
+        requestAnimationFrame(() => {
+          logger.log('Tooltip timeout completed');
+          setTooltipContent(null);
+        });
+      }, 3000);
+    });
   }, []);
+
   // Clean up timeout on unmount
   useEffect(() => {
     return () => {
@@ -79,6 +123,11 @@ const LifeWheelWidget = (): JSX.Element => {
       }
     };
   }, []);
+
+  // Track tooltip state changes for debugging
+  useEffect(() => {
+    logger.log('Tooltip content changed', { content: tooltipContent });
+  }, [tooltipContent]);
 
   if (isLoading) {
     return (
@@ -98,8 +147,9 @@ const LifeWheelWidget = (): JSX.Element => {
       </div>
       <div className={styles.wheelViewContainer}>
         <LifeWheel categories={categories} onCategorySelect={handleCategorySelect} />
-        {/* Additional tooltip for orbital view that's always visible */}
-        {tooltipContent && <div className={styles.wheelTooltip}>{tooltipContent}</div>}
+
+        {/* Fixed positioned tooltip to minimize layout changes */}
+        <FixedTooltip content={tooltipContent} />
       </div>
       <div className={styles.widgetFooter}>
         <button onClick={() => navigate('/app/life-wheel')} className={styles.seeMoreButton}>

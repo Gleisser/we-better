@@ -8,8 +8,14 @@ import { MobileNav } from '@/shared/components/navigation/MobileNav/MobileNav';
 import styles from './WeBetterApp.module.css';
 
 const WeBetterApp = (): JSX.Element => {
+  // Check if we're in development mode
+  // const isDev = process.env.NODE_ENV === 'development';
+
   return (
     <HeaderProvider>
+      {/* Only include debug tools in development */}
+      {/* {isDev && <RepaintDetector />} */}
+
       <div className={styles.appContainer}>
         {/* Sidebar */}
         <Sidebar />

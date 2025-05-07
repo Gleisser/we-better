@@ -2,6 +2,9 @@
   @apply bg-gradient-to-br from-gray-900 to-purple-900/80
            rounded-xl shadow-lg p-4 mx-4 my-6 max-w-md;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  /* Test containment */
+  isolation: isolate;
+  position: relative;
 }
 
 .widgetTitle {
@@ -24,6 +27,9 @@
 
 .wheelViewContainer {
   @apply relative pt-2 pb-4;
+  /* Test containment */
+  position: relative;
+  isolation: isolate;
 }
 
 .dashboardRadarChart {
@@ -46,6 +52,9 @@
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
   min-width: 120px;
   text-align: center;
+  /* Use transition instead of animation for predictable behavior */
+  opacity: 1;
+  transition: opacity 0.2s ease;
 }
 
 .widgetFooter {

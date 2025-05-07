@@ -1,10 +1,14 @@
 .wrapper {
   @apply w-full flex items-center justify-center;
+  position: relative;
+  /* Testing containment */
+  isolation: isolate;
 }
 
 .container {
   @apply relative h-[240px] w-[240px]
          flex items-center justify-center;
+  position: relative;
 }
 
 .centerPiece {
@@ -18,7 +22,6 @@
   position: absolute;
   left: calc(50% - 40px);
   top: calc(50% - 40px);
-  transform: none;
 }
 
 .scoreRing {
@@ -40,43 +43,60 @@
          font-medium tracking-wider uppercase;
 }
 
+/* Container for all category bubbles */
+.categoriesContainer {
+  @apply absolute w-full h-full;
+  position: relative;
+}
+
+/* Individual category bubble - CSS Transitions */
 .categoryBubble {
-  @apply absolute w-12 h-12
+  @apply w-12 h-12
          rounded-full bg-black/40 backdrop-blur-xl
          border border-white/10
          flex items-center justify-center
-         cursor-pointer
-         transition-all duration-300;
-  margin-left: -24px;
-  margin-top: -24px;
-  transform: none;
+         cursor-pointer;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -24px; /* half width */
+  margin-top: -24px; /* half height */
+  transition:
+    transform 0.3s ease,
+    opacity 0.2s ease,
+    visibility 0.2s;
+  opacity: 0;
+  visibility: hidden;
+  background: var(--category-bg);
+  transform: translate(0, 0);
+  transition-delay: 0ms;
+}
+
+/* When wheel is open */
+.categoryBubble.open {
+  transform: translate(var(--category-x), var(--category-y));
+  opacity: 1;
+  visibility: visible;
+  transition-delay: var(--category-delay);
 }
 
 .categoryIcon {
   @apply text-base;
 }
 
-/* This is kept for compatibility with other code that might use it */
-.categoryLabel {
-  @apply absolute top-full mt-2
-         px-3 py-1.5 rounded-lg
+/* Tooltip style - shown inside component */
+.tooltip {
+  @apply absolute px-3 py-1.5 rounded-lg
          bg-gray-900/95 backdrop-blur-md
          border border-purple-500/50
          flex items-center gap-2
-         whitespace-nowrap z-50;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-}
-
-/* New tooltip portal that will be rendered at document body level */
-.tooltipPortal {
-  @apply px-3 py-1.5 rounded-lg
-         bg-gray-900/95 backdrop-blur-md
-         border border-purple-500/50
-         flex items-center gap-2
-         whitespace-nowrap z-[9999];
+         whitespace-nowrap;
+  top: -12px;
+  left: 50%;
+  transform: translate(-50%, -100%);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  transform: translateX(-50%) translateY(-100%);
   pointer-events: none;
+  z-index: 10;
 }
 
 .categoryName {
@@ -89,14 +109,13 @@
 
 .updateDot {
   @apply w-1.5 h-1.5 rounded-full
-         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]
-         animate-pulse;
+         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
 }
 
 /* Hover effects */
 .categoryBubble:hover {
   @apply border-white/20 bg-white/10;
-  transform: scale(1.1);
+  z-index: 5;
 }
 
 .centerPiece:hover {
