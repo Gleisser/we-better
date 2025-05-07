@@ -1,14 +1,15 @@
 .wrapper {
-  @apply w-full flex items-center justify-center;
+  @apply w-full h-full flex items-center justify-center;
   position: relative;
   /* Testing containment */
   isolation: isolate;
 }
 
 .container {
-  @apply relative h-[240px] w-[240px]
+  @apply relative w-full h-full
          flex items-center justify-center;
   position: relative;
+  min-height: 240px;
 }
 
 .centerPiece {
