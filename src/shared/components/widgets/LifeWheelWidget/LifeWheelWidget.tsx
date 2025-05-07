@@ -143,7 +143,12 @@ const LifeWheelWidget = (): JSX.Element => {
   return (
     <div className={styles.lifeWheelWidget} ref={widgetRef}>
       <div className={styles.widgetHeader}>
-        <h3 className={styles.widgetTitle}>Life Balance</h3>
+        <div className={styles.headerTop}>
+          <div className={styles.headerLeft}>
+            <span className={styles.headerIcon}>⚖️</span>
+            <span className={styles.headerText}>Life Balance</span>
+          </div>
+        </div>
       </div>
       <div className={styles.wheelViewContainer}>
         <LifeWheel categories={categories} onCategorySelect={handleCategorySelect} />
