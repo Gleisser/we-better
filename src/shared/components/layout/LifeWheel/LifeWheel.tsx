@@ -86,7 +86,7 @@ const LifeWheel = ({
   // Calculate tooltip position based on category index
   const getTooltipStyle = (categoryIndex: number): React.CSSProperties => {
     const angle = (2 * Math.PI * categoryIndex) / categories.length - Math.PI / 2;
-    const radius = 140; // Increased radius to place tooltip outside of all elements
+    const radius = 180; // Increased radius to place tooltip outside of all elements
 
     return {
       position: 'absolute',
@@ -104,7 +104,7 @@ const LifeWheel = ({
           {categories.map((category, index) => {
             // Calculate position on a circle
             const angle = (2 * Math.PI * index) / categories.length - Math.PI / 2;
-            const radius = 90; // Distance from center
+            const radius = 120; // Increased distance from center
 
             const style = {
               // Use CSS custom properties for positioning

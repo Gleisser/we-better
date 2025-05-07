@@ -1,6 +1,6 @@
 .lifeWheelWidget {
   @apply bg-gradient-to-br from-gray-900 to-purple-900/80
-           rounded-xl shadow-lg p-4 h-full w-full;
+           rounded-xl shadow-lg p-2 h-full w-full;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   /* Test containment */
   isolation: isolate;
@@ -13,7 +13,7 @@
 
 /* Enhanced Life Wheel Widget Styles */
 .widgetHeader {
-  @apply flex justify-between items-center mb-2;
+  @apply flex justify-between items-center mb-1;
 }
 
 .viewToggleButton {
@@ -58,7 +58,7 @@
 }
 
 .widgetFooter {
-  @apply mt-2 text-center;
+  @apply mt-1 text-center;
 }
 
 .seeMoreButton {

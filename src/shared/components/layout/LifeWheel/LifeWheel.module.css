@@ -13,7 +13,7 @@
 }
 
 .centerPiece {
-  @apply absolute w-20 h-20
+  @apply absolute w-24 h-24
          rounded-full bg-black/40 backdrop-blur-xl
          border border-white/10
          flex items-center justify-center
@@ -21,18 +21,18 @@
          transition-all duration-300
          z-50;
   position: absolute;
-  left: calc(50% - 40px);
-  top: calc(50% - 40px);
+  left: calc(50% - 48px);
+  top: calc(50% - 48px);
 }
 
 .scoreRing {
-  @apply w-[72px] h-[72px] rounded-full
+  @apply w-[88px] h-[88px] rounded-full
          bg-gradient-to-br from-[#8B5CF6] to-[#D946EF]
          flex items-center justify-center;
 }
 
 .initials {
-  @apply text-2xl font-bold text-white;
+  @apply text-3xl font-bold text-white;
 }
 
 .scoreValue {
@@ -52,7 +52,7 @@
 
 /* Individual category bubble - CSS Transitions */
 .categoryBubble {
-  @apply w-12 h-12
+  @apply w-16 h-16
          rounded-full bg-black/40 backdrop-blur-xl
          border border-white/10
          flex items-center justify-center
@@ -60,8 +60,8 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  margin-left: -24px; /* half width */
-  margin-top: -24px; /* half height */
+  margin-left: -32px; /* half width */
+  margin-top: -32px; /* half height */
   transition:
     transform 0.3s ease,
     opacity 0.2s ease,
@@ -82,7 +82,7 @@
 }
 
 .categoryIcon {
-  @apply text-base;
+  @apply text-xl;
 }
 
 /* Tooltip style - shown with calculated positioning */
