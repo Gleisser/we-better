@@ -315,32 +315,141 @@
 
 .categoriesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
 }
 
 .categoryCard {
-  background-color: rgba(30, 30, 30, 0.6);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: white;
+  min-height: 160px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.categoryCard:hover {
-  transform: translateY(-3px);
-  border-color: rgba(139, 92, 246, 0.7);
+.categoryCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 1;
+}
+
+.categoryCard:hover::before {
+  opacity: 1;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.categoryIconContainer {
+  position: relative;
+  margin-right: 1.25rem;
+  z-index: 3;
+}
+
+.categoryIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.categoryIconOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+  transition: opacity 0.3s ease;
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+}
+
+.categoryCard:hover .categoryIcon {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.categoryCard:hover .categoryIconOverlay {
+  opacity: 0.4;
+}
+
+.categoryContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  z-index: 2;
 }
 
 .categoryCard h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .dreamCount {
-  font-size: 0.875rem;
-  color: rgba(249, 250, 251, 0.7);
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-bottom: 1.25rem;
+  font-weight: 400;
+}
+
+.categoryProgressWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.categoryProgressBar {
+  flex: 1;
+  height: 5px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.categoryProgressFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.categoryProgressLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  width: 40px;
+  text-align: right;
 }
 
 /* Progress Section */
@@ -830,44 +939,6 @@
   background: rgba(139, 92, 246, 0.3);
 }
 
-.categoriesGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
-}
-
-.categoryCard {
-  position: relative;
-  overflow: hidden;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  color: white;
-  min-height: 120px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.categoryCard::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  transition: opacity 0.3s;
-  z-index: 1;
-}
-
-.categoryCard:hover::before {
-  opacity: 1;
-}
-
 .categoryCard.expanded {
   grid-row-end: span 2;
   min-height: 300px;
@@ -893,24 +964,56 @@
   filter: saturate(1);
 }
 
+.categoryHeader {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
 .categoryIconContainer {
   position: relative;
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
+  margin-right: 1rem;
+  z-index: 3;
 }
 
 .categoryIcon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  font-size: 20px;
-  margin-right: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.categoryIconOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+  transition: opacity 0.3s ease;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+
+.categoryCard:hover .categoryIcon {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.categoryCard:hover .categoryIconOverlay {
+  opacity: 0.3;
 }
 
 .categoryContent {
@@ -918,6 +1021,7 @@
   flex-direction: column;
   flex: 1;
   z-index: 2;
+  padding-top: 0.5rem;
 }
 
 .categoryCard h3 {

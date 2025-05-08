@@ -19,15 +19,15 @@ import { DEFAULT_LIFE_CATEGORIES } from '../life-wheel/constants/categories';
 const categoryDetails = {
   Travel: {
     icon: '✈️',
-    illustration: '/images/dream-categories/travel.svg',
-    gradient: 'linear-gradient(135deg, #3B83F6 0%, #1A56DB 100%)',
-    hoverGradient: 'linear-gradient(135deg, #60A5FA 0%, #3B83F6 100%)',
-    shadowColor: 'rgba(59, 131, 246, 0.4)',
-    color: '#3B83F6',
+    illustration: '/assets/images/dreamboard/travel.webp',
+    gradient: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+    hoverGradient: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+    shadowColor: 'rgba(37, 99, 235, 0.4)',
+    color: '#3B82F6',
   },
   Skills: {
     icon: '🎯',
-    illustration: '/images/dream-categories/skills.svg',
+    illustration: '/assets/images/dreamboard/skills.webp',
     gradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
     hoverGradient: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
     shadowColor: 'rgba(245, 158, 11, 0.4)',
@@ -35,50 +35,50 @@ const categoryDetails = {
   },
   Finance: {
     icon: '💰',
-    illustration: '/images/dream-categories/finance.svg',
-    gradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-    hoverGradient: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)',
-    shadowColor: 'rgba(16, 185, 129, 0.4)',
+    illustration: '/assets/images/dreamboard/finance.webp',
+    gradient: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+    hoverGradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+    shadowColor: 'rgba(5, 150, 105, 0.4)',
     color: '#10B981',
   },
   Health: {
     icon: '💪',
-    illustration: '/images/dream-categories/health.svg',
-    gradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
-    hoverGradient: 'linear-gradient(135deg, #F87171 0%, #EF4444 100%)',
-    shadowColor: 'rgba(239, 68, 68, 0.4)',
+    illustration: '/assets/images/dreamboard/health.webp',
+    gradient: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+    hoverGradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+    shadowColor: 'rgba(220, 38, 38, 0.4)',
     color: '#EF4444',
   },
   Relationships: {
     icon: '❤️',
-    illustration: '/images/dream-categories/relationships.svg',
-    gradient: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)',
-    hoverGradient: 'linear-gradient(135deg, #F472B6 0%, #EC4899 100%)',
-    shadowColor: 'rgba(236, 72, 153, 0.4)',
+    illustration: '/assets/images/dreamboard/relationship.webp',
+    gradient: 'linear-gradient(135deg, #DB2777 0%, #BE185D 100%)',
+    hoverGradient: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)',
+    shadowColor: 'rgba(219, 39, 119, 0.4)',
     color: '#EC4899',
   },
   Career: {
     icon: '💼',
-    illustration: '/images/dream-categories/career.svg',
-    gradient: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
-    hoverGradient: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
-    shadowColor: 'rgba(139, 92, 246, 0.4)',
+    illustration: '/assets/images/dreamboard/career.webp',
+    gradient: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+    hoverGradient: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+    shadowColor: 'rgba(124, 58, 237, 0.4)',
     color: '#8B5CF6',
   },
   Education: {
     icon: '🎓',
-    illustration: '/images/dream-categories/education.svg',
-    gradient: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
-    hoverGradient: 'linear-gradient(135deg, #818CF8 0%, #6366F1 100%)',
-    shadowColor: 'rgba(99, 102, 241, 0.4)',
+    illustration: '/assets/images/dreamboard/education.webp',
+    gradient: 'linear-gradient(135deg, #4F46E5 0%, #4338CA 100%)',
+    hoverGradient: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+    shadowColor: 'rgba(79, 70, 229, 0.4)',
     color: '#6366F1',
   },
   Spirituality: {
     icon: '✨',
-    illustration: '/images/dream-categories/spirituality.svg',
-    gradient: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
-    hoverGradient: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
-    shadowColor: 'rgba(139, 92, 246, 0.4)',
+    illustration: '/assets/images/dreamboard/spirituality.webp',
+    gradient: 'linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%)',
+    hoverGradient: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+    shadowColor: 'rgba(109, 40, 217, 0.4)',
     color: '#8B5CF6',
   },
 };
@@ -97,7 +97,7 @@ const getCategoryDetails = (category: string): CategoryDetails => {
   return (
     categoryDetails[category as keyof typeof categoryDetails] || {
       icon: '🌟',
-      illustration: '/images/dream-categories/default.svg',
+      illustration: '/assets/images/dreamboard/spirituality.webp', // Default placeholder image
       gradient: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
       hoverGradient: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
       shadowColor: 'rgba(139, 92, 246, 0.4)',
@@ -384,35 +384,45 @@ const DreamBoardPage: React.FC = () => {
                       role="button"
                       aria-expanded={isExpanded}
                     >
-                      <div className={styles.categoryIconContainer}>
-                        <div className={styles.categoryIcon} aria-hidden="true">
-                          {categoryDetail.icon}
-                        </div>
-                      </div>
-
-                      <div className={styles.categoryContent}>
-                        <h3>{category}</h3>
-                        <div
-                          className={styles.dreamCount}
-                          aria-label={`${dreamCount} dreams in ${category}`}
-                        >
-                          {dreamCount} {dreamCount === 1 ? 'dream' : 'dreams'}
-                        </div>
-
-                        {/* Progress visualization */}
-                        <div className={styles.categoryProgressWrapper}>
-                          <div className={styles.categoryProgressBar}>
-                            <div
-                              className={styles.categoryProgressFill}
-                              style={{
-                                width: `${categoryProgress * 100}%`,
-                                backgroundColor: categoryDetail.color,
-                              }}
-                            ></div>
+                      <div className={styles.categoryHeader}>
+                        <div className={styles.categoryIconContainer}>
+                          <div
+                            className={styles.categoryIcon}
+                            aria-hidden="true"
+                            style={{
+                              backgroundImage: `url(${categoryDetail.illustration})`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                            }}
+                          >
+                            <div className={styles.categoryIconOverlay}></div>
                           </div>
-                          <span className={styles.categoryProgressLabel}>
-                            {Math.round(categoryProgress * 100)}%
-                          </span>
+                        </div>
+
+                        <div className={styles.categoryContent}>
+                          <h3>{category}</h3>
+                          <div
+                            className={styles.dreamCount}
+                            aria-label={`${dreamCount} dreams in ${category}`}
+                          >
+                            {dreamCount} {dreamCount === 1 ? 'dream' : 'dreams'}
+                          </div>
+
+                          {/* Progress visualization */}
+                          <div className={styles.categoryProgressWrapper}>
+                            <div className={styles.categoryProgressBar}>
+                              <div
+                                className={styles.categoryProgressFill}
+                                style={{
+                                  width: `${categoryProgress * 100}%`,
+                                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                }}
+                              ></div>
+                            </div>
+                            <span className={styles.categoryProgressLabel}>
+                              {Math.round(categoryProgress * 100)}%
+                            </span>
+                          </div>
                         </div>
                       </div>
 
