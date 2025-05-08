@@ -78,24 +78,26 @@ const DreamBoardPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Quick Access Mini Vision Board */}
-      <section className={`${styles.miniBoard} ${expandedMiniBoard ? styles.expanded : ''}`}>
-        <div className={styles.miniBoardHeader}>
-          <h2>Quick Vision</h2>
-          <button onClick={toggleMiniBoard}>{expandedMiniBoard ? 'Minimize' : 'Expand'}</button>
-        </div>
-        <div className={styles.miniBoardContent}>
-          {dreams.slice(0, 3).map(dream => (
-            <div key={dream.id} className={styles.miniDream}>
-              <div className={styles.dreamTitle}>{dream.title}</div>
-              <div
-                className={styles.progressIndicator}
-                style={{ width: `${dream.progress * 100}%` }}
-              />
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Quick Access Mini Vision Board - only show in vision-board tab */}
+      {activeTab === 'vision-board' && (
+        <section className={`${styles.miniBoard} ${expandedMiniBoard ? styles.expanded : ''}`}>
+          <div className={styles.miniBoardHeader}>
+            <h2>Quick Vision</h2>
+            <button onClick={toggleMiniBoard}>{expandedMiniBoard ? 'Minimize' : 'Expand'}</button>
+          </div>
+          <div className={styles.miniBoardContent}>
+            {dreams.slice(0, 3).map(dream => (
+              <div key={dream.id} className={styles.miniDream}>
+                <div className={styles.dreamTitle}>{dream.title}</div>
+                <div
+                  className={styles.progressIndicator}
+                  style={{ width: `${dream.progress * 100}%` }}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Main Content Section */}
       <main className={styles.mainContent}>
