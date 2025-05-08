@@ -727,36 +727,77 @@
   align-items: center;
 }
 
+/* Base styles for all buttons in the header controls */
 .miniBoardHeaderControls button {
-  background: rgba(255, 255, 255, 0.1);
+  height: 36px;
   border: none;
   border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.8);
+  padding: 0 14px;
+  font-size: 0.85rem;
+  color: white;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
 }
 
-.miniBoardHeaderControls button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
+/* Style icon elements consistently */
+.miniBoardHeaderControls button::before,
+.dreamBoardButtonIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
 }
 
+/* Style for the expand/minimize button */
+.miniBoardHeaderControls button:last-child {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(79, 70, 229, 0.2));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.miniBoardHeaderControls button:last-child:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(79, 70, 229, 0.3));
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Style for the dream board button */
 .miniBoardHeaderControls .dreamBoardButton {
   display: flex;
   align-items: center;
   gap: 8px;
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(219, 39, 119, 0.2));
   border: 1px solid rgba(239, 68, 68, 0.3);
-  padding: 6px 12px;
+  padding: 0 16px;
 }
 
 .miniBoardHeaderControls .dreamBoardButton:hover {
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(219, 39, 119, 0.3));
   box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
 }
 
-.dreamBoardButtonIcon {
-  font-size: 16px;
+/* Only add the icon when in the 'Expand' state */
+.miniBoardHeaderControls .expandButton::before {
+  content: '▼'; /* Black down-pointing triangle */
+  margin-right: 8px;
+  font-size: 12px;
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
+
+/* Use a different icon for the 'Minimize' state */
+.miniBoardHeaderControls .minimizeButton::before {
+  content: '▲'; /* Black up-pointing triangle */
+  margin-right: 8px;
+  font-size: 12px;
+  line-height: 1;
+  position: relative;
+  top: -1px;
 }

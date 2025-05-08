@@ -108,7 +108,12 @@ const DreamBoardPage: React.FC = () => {
                 <span className={styles.dreamBoardButtonIcon}>🎨</span>
                 <span>My Dream Board</span>
               </button>
-              <button onClick={toggleMiniBoard}>{expandedMiniBoard ? 'Minimize' : 'Expand'}</button>
+              <button
+                className={expandedMiniBoard ? styles.minimizeButton : styles.expandButton}
+                onClick={toggleMiniBoard}
+              >
+                <span>{expandedMiniBoard ? 'Minimize' : 'Expand'}</span>
+              </button>
             </div>
           </div>
           <div className={styles.miniBoardContent}>
