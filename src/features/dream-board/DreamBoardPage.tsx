@@ -11,12 +11,14 @@ import {
   mockWeather,
   mockNotifications,
 } from './mock-data';
+import { CosmicDreamExperience } from './components/CosmicDreamExperience/CosmicDreamExperience';
 
 const DreamBoardPage: React.FC = () => {
   const [expandedMiniBoard, setExpandedMiniBoard] = useState(false);
   const [activeTab, setActiveTab] = useState('vision-board');
   const [dreams] = useState<Dream[]>(mockDreams);
   const [journalEntries] = useState<JournalEntry[]>(mockJournalEntries);
+  const [activeDream, setActiveDream] = useState<Dream | null>(null);
 
   // Toggle mini vision board expansion
   const toggleMiniBoard = (): void => {
@@ -33,6 +35,11 @@ const DreamBoardPage: React.FC = () => {
     }).format(date);
   };
 
+  // Handle dream selection
+  const handleDreamSelect = (dream: Dream | null): void => {
+    setActiveDream(dream);
+  };
+
   return (
     <div className={styles.dreamBoardContainer}>
       <header className={styles.header}>
@@ -43,6 +50,12 @@ const DreamBoardPage: React.FC = () => {
             onClick={() => setActiveTab('vision-board')}
           >
             Vision Board
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'experience' ? styles.activeTab : ''}`}
+            onClick={() => setActiveTab('experience')}
+          >
+            Experience
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'insights' ? styles.activeTab : ''}`}
@@ -165,6 +178,17 @@ const DreamBoardPage: React.FC = () => {
                 </div>
               </div>
             </section>
+          </div>
+        )}
+
+        {activeTab === 'experience' && (
+          <div className={styles.experienceTab}>
+            <CosmicDreamExperience
+              dreams={dreams}
+              categories={mockCategories}
+              onDreamSelect={handleDreamSelect}
+              activeDream={activeDream}
+            />
           </div>
         )}
 
