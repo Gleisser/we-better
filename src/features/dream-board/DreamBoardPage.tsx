@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styles from './DreamBoardPage.module.css';
 import { Dream, JournalEntry } from './types';
 import {
@@ -15,6 +15,97 @@ import { CosmicDreamExperience } from './components/CosmicDreamExperience/Cosmic
 import { DreamBoardModal } from './components/DreamBoardModal';
 import { DEFAULT_LIFE_CATEGORIES } from '../life-wheel/constants/categories';
 
+// Define custom category icons and colors
+const categoryDetails = {
+  Travel: {
+    icon: '✈️',
+    illustration: '/images/dream-categories/travel.svg',
+    gradient: 'linear-gradient(135deg, #3B83F6 0%, #1A56DB 100%)',
+    hoverGradient: 'linear-gradient(135deg, #60A5FA 0%, #3B83F6 100%)',
+    shadowColor: 'rgba(59, 131, 246, 0.4)',
+    color: '#3B83F6',
+  },
+  Skills: {
+    icon: '🎯',
+    illustration: '/images/dream-categories/skills.svg',
+    gradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+    hoverGradient: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
+    shadowColor: 'rgba(245, 158, 11, 0.4)',
+    color: '#F59E0B',
+  },
+  Finance: {
+    icon: '💰',
+    illustration: '/images/dream-categories/finance.svg',
+    gradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+    hoverGradient: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)',
+    shadowColor: 'rgba(16, 185, 129, 0.4)',
+    color: '#10B981',
+  },
+  Health: {
+    icon: '💪',
+    illustration: '/images/dream-categories/health.svg',
+    gradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+    hoverGradient: 'linear-gradient(135deg, #F87171 0%, #EF4444 100%)',
+    shadowColor: 'rgba(239, 68, 68, 0.4)',
+    color: '#EF4444',
+  },
+  Relationships: {
+    icon: '❤️',
+    illustration: '/images/dream-categories/relationships.svg',
+    gradient: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)',
+    hoverGradient: 'linear-gradient(135deg, #F472B6 0%, #EC4899 100%)',
+    shadowColor: 'rgba(236, 72, 153, 0.4)',
+    color: '#EC4899',
+  },
+  Career: {
+    icon: '💼',
+    illustration: '/images/dream-categories/career.svg',
+    gradient: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+    hoverGradient: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
+    shadowColor: 'rgba(139, 92, 246, 0.4)',
+    color: '#8B5CF6',
+  },
+  Education: {
+    icon: '🎓',
+    illustration: '/images/dream-categories/education.svg',
+    gradient: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+    hoverGradient: 'linear-gradient(135deg, #818CF8 0%, #6366F1 100%)',
+    shadowColor: 'rgba(99, 102, 241, 0.4)',
+    color: '#6366F1',
+  },
+  Spirituality: {
+    icon: '✨',
+    illustration: '/images/dream-categories/spirituality.svg',
+    gradient: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+    hoverGradient: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
+    shadowColor: 'rgba(139, 92, 246, 0.4)',
+    color: '#8B5CF6',
+  },
+};
+
+type CategoryDetails = {
+  icon: string;
+  illustration: string;
+  gradient: string;
+  hoverGradient: string;
+  shadowColor: string;
+  color: string;
+};
+
+// Utility function to get category details
+const getCategoryDetails = (category: string): CategoryDetails => {
+  return (
+    categoryDetails[category as keyof typeof categoryDetails] || {
+      icon: '🌟',
+      illustration: '/images/dream-categories/default.svg',
+      gradient: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+      hoverGradient: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
+      shadowColor: 'rgba(139, 92, 246, 0.4)',
+      color: '#8B5CF6',
+    }
+  );
+};
+
 const DreamBoardPage: React.FC = () => {
   const [expandedMiniBoard, setExpandedMiniBoard] = useState(false);
   const [activeTab, setActiveTab] = useState('vision-board');
@@ -22,6 +113,12 @@ const DreamBoardPage: React.FC = () => {
   const [journalEntries] = useState<JournalEntry[]>(mockJournalEntries);
   const [activeDream, setActiveDream] = useState<Dream | null>(null);
   const [isDreamBoardModalOpen, setIsDreamBoardModalOpen] = useState(false);
+
+  // New state variables for Dream Categories section
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [focusedCategory, setFocusedCategory] = useState<string | null>(null);
+  const [filterCategory, setFilterCategory] = useState<string | null>(null);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   // Toggle mini vision board expansion
   const toggleMiniBoard = (): void => {
@@ -56,6 +153,57 @@ const DreamBoardPage: React.FC = () => {
       })
     );
   };
+
+  // Calculate the overall progress for a category
+  const calculateCategoryProgress = (category: string): number => {
+    const categoryDreams = dreams.filter(dream => dream.category === category);
+    if (categoryDreams.length === 0) return 0;
+
+    const totalProgress = categoryDreams.reduce((sum, dream) => sum + dream.progress, 0);
+    return totalProgress / categoryDreams.length;
+  };
+
+  // Handle category card expansion
+  const toggleCategoryExpand = (category: string): void => {
+    if (expandedCategory === category) {
+      setExpandedCategory(null);
+    } else {
+      setExpandedCategory(category);
+    }
+  };
+
+  // Set category filter
+  const toggleCategoryFilter = (category: string): void => {
+    if (filterCategory === category) {
+      setFilterCategory(null);
+    } else {
+      setFilterCategory(category);
+      setFocusedCategory(category);
+    }
+  };
+
+  // Handle adding new dream to a category
+  const handleAddDreamToCategory = (): void => {
+    // Open dream board modal pre-selected with this category
+    setIsDreamBoardModalOpen(true);
+    // Additional logic to pre-select the category could be added here
+  };
+
+  // Get recent activity for a category
+  const getCategoryRecentActivity = (category: string): string => {
+    const categoryDreams = dreams.filter(dream => dream.category === category);
+    if (categoryDreams.length === 0) return 'No recent activity';
+
+    // Sort dreams by date created, most recent first
+    const sortedDreams = [...categoryDreams].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    return `Last updated: ${formatDate(sortedDreams[0].createdAt)}`;
+  };
+
+  // Animation refs for categories
+  const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   return (
     <div className={styles.dreamBoardContainer}>
@@ -189,18 +337,137 @@ const DreamBoardPage: React.FC = () => {
       <main className={styles.mainContent}>
         {activeTab === 'vision-board' && (
           <div className={styles.visionBoardTab}>
-            {/* Dream Categories Dashboard */}
+            {/* Dream Categories Dashboard - ENHANCED VERSION */}
             <section className={styles.categoriesDashboard}>
-              <h2>Dream Categories</h2>
+              <div className={styles.categoriesHeader}>
+                <h2>Dream Categories</h2>
+                <div className={styles.categoriesControls}>
+                  {filterCategory && (
+                    <button
+                      className={styles.clearFilterButton}
+                      onClick={() => setFilterCategory(null)}
+                    >
+                      Clear Filter
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <div className={styles.categoriesGrid}>
-                {mockCategories.map(category => (
-                  <div key={category} className={styles.categoryCard}>
-                    <h3>{category}</h3>
-                    <div className={styles.dreamCount}>
-                      {dreams.filter(dream => dream.category === category).length} dreams
+                {mockCategories.map(category => {
+                  const categoryDetail = getCategoryDetails(category);
+                  const isHovered = hoveredCategory === category;
+                  const isExpanded = expandedCategory === category;
+                  const isFocused = focusedCategory === category;
+                  const categoryProgress = calculateCategoryProgress(category);
+                  const dreamCount = dreams.filter(dream => dream.category === category).length;
+                  const hasDreams = dreamCount > 0;
+                  const isActive = hasDreams;
+
+                  return (
+                    <div
+                      key={category}
+                      ref={el => (categoryRefs.current[category] = el)}
+                      className={`${styles.categoryCard} ${isExpanded ? styles.expanded : ''} ${isActive ? styles.active : styles.dormant} ${isFocused ? styles.focused : ''}`}
+                      style={{
+                        background: isHovered
+                          ? categoryDetail.hoverGradient
+                          : categoryDetail.gradient,
+                        boxShadow: `0 8px 24px ${categoryDetail.shadowColor}`,
+                      }}
+                      onClick={() => toggleCategoryExpand(category)}
+                      onMouseEnter={() => setHoveredCategory(category)}
+                      onMouseLeave={() => setHoveredCategory(null)}
+                      onFocus={() => setHoveredCategory(category)}
+                      onBlur={() => setHoveredCategory(null)}
+                      tabIndex={0}
+                      role="button"
+                      aria-expanded={isExpanded}
+                    >
+                      <div className={styles.categoryIconContainer}>
+                        <div className={styles.categoryIcon} aria-hidden="true">
+                          {categoryDetail.icon}
+                        </div>
+                      </div>
+
+                      <div className={styles.categoryContent}>
+                        <h3>{category}</h3>
+                        <div
+                          className={styles.dreamCount}
+                          aria-label={`${dreamCount} dreams in ${category}`}
+                        >
+                          {dreamCount} {dreamCount === 1 ? 'dream' : 'dreams'}
+                        </div>
+
+                        {/* Progress visualization */}
+                        <div className={styles.categoryProgressWrapper}>
+                          <div className={styles.categoryProgressBar}>
+                            <div
+                              className={styles.categoryProgressFill}
+                              style={{
+                                width: `${categoryProgress * 100}%`,
+                                backgroundColor: categoryDetail.color,
+                              }}
+                            ></div>
+                          </div>
+                          <span className={styles.categoryProgressLabel}>
+                            {Math.round(categoryProgress * 100)}%
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Expanded content (visible only when expanded) */}
+                      {isExpanded && (
+                        <div className={styles.expandedCategoryContent}>
+                          <div className={styles.recentActivity}>
+                            <h4>Recent Activity</h4>
+                            <p>{getCategoryRecentActivity(category)}</p>
+                          </div>
+
+                          <div className={styles.categoryActions}>
+                            <button
+                              className={styles.categoryActionButton}
+                              onClick={e => {
+                                e.stopPropagation();
+                                handleAddDreamToCategory();
+                              }}
+                            >
+                              Add Dream
+                            </button>
+                            <button
+                              className={styles.categoryActionButton}
+                              onClick={e => {
+                                e.stopPropagation();
+                                toggleCategoryFilter(category);
+                              }}
+                            >
+                              {filterCategory === category ? 'Clear Filter' : 'Focus'}
+                            </button>
+                          </div>
+
+                          {hasDreams && (
+                            <div className={styles.categoryQuickDreams}>
+                              <h4>Dreams</h4>
+                              <ul className={styles.quickDreamsList}>
+                                {dreams
+                                  .filter(dream => dream.category === category)
+                                  .slice(0, 3)
+                                  .map(dream => (
+                                    <li key={dream.id} className={styles.quickDreamItem}>
+                                      <span className={styles.quickDreamTitle}>{dream.title}</span>
+                                      <span className={styles.quickDreamProgress}>
+                                        {Math.round(dream.progress * 100)}%
+                                      </span>
+                                    </li>
+                                  ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
 
