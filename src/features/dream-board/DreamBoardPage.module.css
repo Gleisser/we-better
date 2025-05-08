@@ -1220,3 +1220,430 @@
   margin-right: 0.5rem;
   font-size: 1.1rem;
 }
+
+/* Milestone Management Styles */
+.milestoneSection {
+  margin-top: 1.5rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.milestoneSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.milestoneSectionHeader h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.addMilestoneButton {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addMilestoneButton:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.milestoneList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.milestoneItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.milestoneItem:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.milestoneCheckboxContainer {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.milestoneCheckbox {
+  margin-right: 0.8rem;
+  height: 18px;
+  width: 18px;
+  cursor: pointer;
+}
+
+.milestoneLabel {
+  font-size: 0.95rem;
+  color: #fff;
+  text-decoration: none;
+  transition: text-decoration 0.2s;
+  cursor: pointer;
+}
+
+.milestoneCheckbox:checked + .milestoneLabel {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.milestoneDetails {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.milestoneDate {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.milestoneActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editMilestoneButton,
+.deleteMilestoneButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.2rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.editMilestoneButton:hover,
+.deleteMilestoneButton:hover {
+  opacity: 1;
+}
+
+.emptyMilestones {
+  text-align: center;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+/* Milestone History */
+.milestoneHistorySection {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.milestoneHistorySection details {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.milestoneHistorySection summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.3rem 0;
+}
+
+.milestoneHistoryList {
+  list-style: none;
+  padding: 0.5rem 0 0 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.historyItem {
+  display: flex;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.historyAction {
+  font-weight: 500;
+  margin-right: 0.5rem;
+  min-width: 80px;
+}
+
+.historyMilestone {
+  flex: 1;
+}
+
+.historyTime {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.milestoneModal {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.milestoneModal h3 {
+  margin: 0 0 1.5rem 0;
+  color: #fff;
+  font-size: 1.3rem;
+}
+
+.formGroup {
+  margin-bottom: 1.2rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.formGroup textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.cancelButton,
+.saveButton {
+  padding: 0.7rem 1.2rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cancelButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.saveButton {
+  background-color: #3b82f6;
+  border: none;
+  color: #fff;
+  font-weight: 500;
+}
+
+.saveButton:hover {
+  background-color: #2563eb;
+}
+
+/* Manage Milestones Button */
+.manageMilestonesButton {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.7rem;
+  background-color: rgba(59, 130, 246, 0.2);
+  color: white;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.manageMilestonesButton:hover {
+  background-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.manageMilestonesButton:active {
+  transform: translateY(0);
+}
+
+/* Milestones Popup */
+.milestonesPopup {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 0;
+  width: 95%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.milestonesPopupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2));
+  border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.milestonesPopupHeader h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.closePopupButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.closePopupButton:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.milestonesPopupContent {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(90vh - 80px);
+}
+
+.milestonesProgressSummary {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.milestonesProgressSummary .progressBar {
+  height: 8px;
+  margin-bottom: 1rem;
+}
+
+.milestonesProgressSummary p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+}
+
+.milestonesContainer {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+/* Milestone Form Styles */
+.milestoneFormContainer {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.milestoneFormHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.milestoneFormHeader h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 600;
+}
+
+.closeFormButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.closeFormButton:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}

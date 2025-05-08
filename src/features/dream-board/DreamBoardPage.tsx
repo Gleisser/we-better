@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import styles from './DreamBoardPage.module.css';
-import { Dream, JournalEntry } from './types';
+import { Dream, JournalEntry, Milestone } from './types';
 import {
   mockDreams,
   mockCategories,
@@ -119,6 +119,18 @@ const DreamBoardPage: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
+  // New state variables for milestone management
+  const [selectedDreamForMilestones, setSelectedDreamForMilestones] = useState<string | null>(null);
+  const [milestoneAction, setMilestoneAction] = useState<'add' | 'edit' | null>(null);
+  const [currentMilestone, setCurrentMilestone] = useState<Milestone | null>(null);
+  const [milestoneHistory, setMilestoneHistory] = useState<
+    Array<{ dreamId: string; milestoneId: string; action: string; timestamp: string }>
+  >([]);
+  const [showMilestonesPopup, setShowMilestonesPopup] = useState(false);
+
+  // New state for inline form display
+  const [showMilestoneForm, setShowMilestoneForm] = useState(false);
+
   // Toggle mini vision board expansion
   const toggleMiniBoard = (): void => {
     setExpandedMiniBoard(!expandedMiniBoard);
@@ -173,6 +185,206 @@ const DreamBoardPage: React.FC = () => {
 
   // Animation refs for categories
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  // Milestone Management Functions
+  const handleMilestoneComplete = (
+    dreamId: string,
+    milestoneId: string,
+    isComplete: boolean
+  ): void => {
+    setDreams(prevDreams =>
+      prevDreams.map(dream => {
+        if (dream.id === dreamId) {
+          const updatedMilestones = dream.milestones.map(milestone =>
+            milestone.id === milestoneId ? { ...milestone, completed: isComplete } : milestone
+          );
+
+          // Add to history
+          setMilestoneHistory(prev => [
+            ...prev,
+            {
+              dreamId,
+              milestoneId,
+              action: isComplete ? 'completed' : 'uncompleted',
+              timestamp: new Date().toISOString(),
+            },
+          ]);
+
+          // Recalculate progress based on milestones
+          const completedCount = updatedMilestones.filter(m => m.completed).length;
+          const totalCount = updatedMilestones.length;
+          const newProgress = totalCount > 0 ? completedCount / totalCount : 0;
+
+          return {
+            ...dream,
+            milestones: updatedMilestones,
+            progress: newProgress,
+          };
+        }
+        return dream;
+      })
+    );
+  };
+
+  const handleDeleteMilestone = (dreamId: string, milestoneId: string): void => {
+    if (window.confirm('Are you sure you want to delete this milestone?')) {
+      setDreams(prevDreams =>
+        prevDreams.map(dream => {
+          if (dream.id === dreamId) {
+            const updatedMilestones = dream.milestones.filter(
+              milestone => milestone.id !== milestoneId
+            );
+
+            // Add to history
+            setMilestoneHistory(prev => [
+              ...prev,
+              {
+                dreamId,
+                milestoneId,
+                action: 'deleted',
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+
+            // Recalculate progress
+            const completedCount = updatedMilestones.filter(m => m.completed).length;
+            const totalCount = updatedMilestones.length;
+            const newProgress = totalCount > 0 ? completedCount / totalCount : 0;
+
+            return {
+              ...dream,
+              milestones: updatedMilestones,
+              progress: newProgress,
+            };
+          }
+          return dream;
+        })
+      );
+    }
+  };
+
+  // Handle opening the milestone management popup
+  const handleOpenMilestoneManager = (dreamId: string): void => {
+    setSelectedDreamForMilestones(dreamId);
+    setShowMilestonesPopup(true);
+    // Reset milestone form view whenever popup opens
+    setShowMilestoneForm(false);
+    setMilestoneAction(null);
+    setCurrentMilestone(null);
+  };
+
+  // Handle initiating add/edit milestone
+  const handleInitiateMilestoneAction = (
+    action: 'add' | 'edit',
+    milestone: Milestone | null = null
+  ): void => {
+    setMilestoneAction(action);
+    setCurrentMilestone(milestone);
+    setShowMilestoneForm(true);
+  };
+
+  // Handle save milestone with integrated form
+  const handleSaveMilestone = (e: React.FormEvent): void => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const title = (form.elements.namedItem('title') as HTMLInputElement).value;
+    const description = (form.elements.namedItem('description') as HTMLTextAreaElement).value;
+    const date = (form.elements.namedItem('date') as HTMLInputElement).value;
+
+    if (!selectedDreamForMilestones) return;
+
+    const milestoneData: Milestone = {
+      id: currentMilestone?.id || '',
+      title,
+      description,
+      completed: currentMilestone?.completed || false,
+      date: date ? new Date(date).toISOString() : undefined,
+    };
+
+    setDreams(prevDreams =>
+      prevDreams.map(dream => {
+        if (dream.id === selectedDreamForMilestones) {
+          let updatedMilestones;
+
+          if (milestoneAction === 'add') {
+            // Generate a unique ID for new milestone
+            const newMilestone = {
+              ...milestoneData,
+              id: `m${Date.now()}`,
+              completed: false,
+            };
+            updatedMilestones = [...dream.milestones, newMilestone];
+
+            // Add to history
+            setMilestoneHistory(prev => [
+              ...prev,
+              {
+                dreamId: dream.id,
+                milestoneId: newMilestone.id,
+                action: 'added',
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+          } else if (milestoneAction === 'edit' && currentMilestone) {
+            updatedMilestones = dream.milestones.map(m =>
+              m.id === currentMilestone.id ? milestoneData : m
+            );
+
+            // Add to history
+            setMilestoneHistory(prev => [
+              ...prev,
+              {
+                dreamId: dream.id,
+                milestoneId: milestoneData.id,
+                action: 'edited',
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+          } else {
+            updatedMilestones = dream.milestones;
+          }
+
+          // Recalculate progress
+          const completedCount = updatedMilestones.filter(m => m.completed).length;
+          const totalCount = updatedMilestones.length;
+          const newProgress = totalCount > 0 ? completedCount / totalCount : 0;
+
+          return {
+            ...dream,
+            milestones: updatedMilestones,
+            progress: newProgress,
+          };
+        }
+        return dream;
+      })
+    );
+
+    // Reset form state
+    setShowMilestoneForm(false);
+    setMilestoneAction(null);
+    setCurrentMilestone(null);
+  };
+
+  // Cancel milestone editing/adding
+  const handleCancelMilestoneForm = (): void => {
+    setShowMilestoneForm(false);
+    setMilestoneAction(null);
+    setCurrentMilestone(null);
+  };
+
+  // Format date for display
+  const formatDisplayDate = (dateString?: string): string => {
+    if (!dateString) return 'No date set';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
+  };
+
+  // Get selected dream object
+  const selectedDream = dreams.find(dream => dream.id === selectedDreamForMilestones);
 
   return (
     <div className={styles.dreamBoardContainer}>
@@ -427,7 +639,7 @@ const DreamBoardPage: React.FC = () => {
               </div>
             </section>
 
-            {/* Progress Tracking Layer */}
+            {/* Progress Tracking Layer - Modified for cleaner UI */}
             <section className={styles.progressSection}>
               <h2>Dream Progress</h2>
               <div className={styles.dreamsProgress}>
@@ -445,6 +657,14 @@ const DreamBoardPage: React.FC = () => {
                       {dream.milestones.filter(m => m.completed).length} of{' '}
                       {dream.milestones.length} milestones completed
                     </div>
+
+                    {/* Milestone Management Button */}
+                    <button
+                      className={styles.manageMilestonesButton}
+                      onClick={() => handleOpenMilestoneManager(dream.id)}
+                    >
+                      Manage Milestones
+                    </button>
                   </div>
                 ))}
               </div>
@@ -613,6 +833,213 @@ const DreamBoardPage: React.FC = () => {
         onClose={() => setIsDreamBoardModalOpen(false)}
         categories={DEFAULT_LIFE_CATEGORIES}
       />
+
+      {/* Milestones Management Popup */}
+      {showMilestonesPopup && selectedDream && (
+        <div className={styles.modalOverlay} onClick={() => setShowMilestonesPopup(false)}>
+          <div className={styles.milestonesPopup} onClick={e => e.stopPropagation()}>
+            <div className={styles.milestonesPopupHeader}>
+              <h3>Manage Milestones: {selectedDream.title}</h3>
+              <button
+                className={styles.closePopupButton}
+                onClick={() => setShowMilestonesPopup(false)}
+                aria-label="Close popup"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className={styles.milestonesPopupContent}>
+              {/* Progress Summary */}
+              <div className={styles.milestonesProgressSummary}>
+                <div className={styles.progressBar}>
+                  <div
+                    className={styles.progressFill}
+                    style={{ width: `${selectedDream.progress * 100}%` }}
+                  />
+                </div>
+                <p>
+                  <strong>{Math.round(selectedDream.progress * 100)}% Complete:</strong>{' '}
+                  {selectedDream.milestones.filter(m => m.completed).length} of{' '}
+                  {selectedDream.milestones.length} milestones
+                </p>
+              </div>
+
+              {/* Milestone Form (visible when adding/editing) */}
+              {showMilestoneForm ? (
+                <div className={styles.milestoneFormContainer}>
+                  <div className={styles.milestoneFormHeader}>
+                    <h4>{milestoneAction === 'add' ? 'Add New Milestone' : 'Edit Milestone'}</h4>
+                    <button
+                      className={styles.closeFormButton}
+                      onClick={handleCancelMilestoneForm}
+                      aria-label="Close form"
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleSaveMilestone}>
+                    <div className={styles.formGroup}>
+                      <label htmlFor="title">Title (required)</label>
+                      <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        required
+                        defaultValue={currentMilestone?.title || ''}
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label htmlFor="description">Description (optional)</label>
+                      <textarea
+                        id="description"
+                        name="description"
+                        defaultValue={currentMilestone?.description || ''}
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label htmlFor="date">Target Date</label>
+                      <input
+                        type="date"
+                        id="date"
+                        name="date"
+                        defaultValue={
+                          currentMilestone?.date
+                            ? new Date(currentMilestone.date).toISOString().split('T')[0]
+                            : ''
+                        }
+                      />
+                    </div>
+
+                    <div className={styles.formActions}>
+                      <button
+                        type="button"
+                        className={styles.cancelButton}
+                        onClick={handleCancelMilestoneForm}
+                      >
+                        Cancel
+                      </button>
+                      <button type="submit" className={styles.saveButton}>
+                        {milestoneAction === 'add' ? 'Add Milestone' : 'Save Changes'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              ) : (
+                /* Milestone List (visible when not adding/editing) */
+                <div className={styles.milestonesContainer}>
+                  <div className={styles.milestoneSectionHeader}>
+                    <h4>Milestones</h4>
+                    <button
+                      className={styles.addMilestoneButton}
+                      onClick={() => handleInitiateMilestoneAction('add')}
+                    >
+                      + Add Milestone
+                    </button>
+                  </div>
+
+                  {selectedDream.milestones.length > 0 ? (
+                    <ul className={styles.milestoneList}>
+                      {selectedDream.milestones.map(milestone => (
+                        <li key={milestone.id} className={styles.milestoneItem}>
+                          <div className={styles.milestoneCheckboxContainer}>
+                            <input
+                              type="checkbox"
+                              id={`milestone-${milestone.id}`}
+                              checked={milestone.completed}
+                              onChange={e =>
+                                handleMilestoneComplete(
+                                  selectedDream.id,
+                                  milestone.id,
+                                  e.target.checked
+                                )
+                              }
+                              className={styles.milestoneCheckbox}
+                            />
+                            <label
+                              htmlFor={`milestone-${milestone.id}`}
+                              className={styles.milestoneLabel}
+                            >
+                              {milestone.title}
+                            </label>
+                          </div>
+
+                          <div className={styles.milestoneDetails}>
+                            <span className={styles.milestoneDate}>
+                              {formatDisplayDate(milestone.date)}
+                            </span>
+
+                            <div className={styles.milestoneActions}>
+                              <button
+                                className={styles.editMilestoneButton}
+                                onClick={() => handleInitiateMilestoneAction('edit', milestone)}
+                                aria-label="Edit milestone"
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                className={styles.deleteMilestoneButton}
+                                onClick={() =>
+                                  handleDeleteMilestone(selectedDream.id, milestone.id)
+                                }
+                                aria-label="Delete milestone"
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className={styles.emptyMilestones}>
+                      <p>No milestones added yet. Add your first milestone to track progress!</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Milestone History (only show when not in form mode) */}
+              {!showMilestoneForm &&
+                milestoneHistory.filter(h => h.dreamId === selectedDream.id).length > 0 && (
+                  <div className={styles.milestoneHistorySection}>
+                    <details>
+                      <summary>Milestone History</summary>
+                      <ul className={styles.milestoneHistoryList}>
+                        {milestoneHistory
+                          .filter(h => h.dreamId === selectedDream.id)
+                          .sort(
+                            (a, b) =>
+                              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+                          )
+                          .map((historyItem, index) => {
+                            const milestone = selectedDream.milestones.find(
+                              m => m.id === historyItem.milestoneId
+                            );
+                            const milestoneTitle = milestone
+                              ? milestone.title
+                              : 'Deleted milestone';
+                            const formattedTime = new Date(historyItem.timestamp).toLocaleString();
+
+                            return (
+                              <li key={index} className={styles.historyItem}>
+                                <span className={styles.historyAction}>{historyItem.action}</span>
+                                <span className={styles.historyMilestone}>{milestoneTitle}</span>
+                                <span className={styles.historyTime}>{formattedTime}</span>
+                              </li>
+                            );
+                          })}
+                      </ul>
+                    </details>
+                  </div>
+                )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
