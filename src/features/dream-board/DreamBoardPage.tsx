@@ -397,7 +397,7 @@ const DreamBoardPage: React.FC = () => {
                       {/* Expanded content (visible only when expanded) */}
                       {isExpanded && (
                         <div className={styles.expandedCategoryContent}>
-                          {hasDreams && (
+                          {hasDreams ? (
                             <div className={styles.categoryQuickDreams}>
                               <h4>Dreams</h4>
                               <ul className={styles.quickDreamsList}>
@@ -413,6 +413,10 @@ const DreamBoardPage: React.FC = () => {
                                     </li>
                                   ))}
                               </ul>
+                            </div>
+                          ) : (
+                            <div className={styles.emptyStateMessage}>
+                              <p>No dreams in this category yet</p>
                             </div>
                           )}
                         </div>

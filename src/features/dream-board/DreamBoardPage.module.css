@@ -1179,3 +1179,44 @@
   outline: 2px solid white;
   outline-offset: 2px;
 }
+
+.emptyStateMessage {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.emptyStateMessage p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.addDreamButton {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addDreamButton:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.addDreamButton:active {
+  transform: translateY(0);
+}
+
+.addDreamButton::before {
+  content: '+';
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
