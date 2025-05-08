@@ -16,7 +16,7 @@ import { CosmicDreamExperience } from './components/CosmicDreamExperience/Cosmic
 const DreamBoardPage: React.FC = () => {
   const [expandedMiniBoard, setExpandedMiniBoard] = useState(false);
   const [activeTab, setActiveTab] = useState('vision-board');
-  const [dreams] = useState<Dream[]>(mockDreams);
+  const [dreams, setDreams] = useState<Dream[]>(mockDreams);
   const [journalEntries] = useState<JournalEntry[]>(mockJournalEntries);
   const [activeDream, setActiveDream] = useState<Dream | null>(null);
 
@@ -38,6 +38,20 @@ const DreamBoardPage: React.FC = () => {
   // Handle dream selection
   const handleDreamSelect = (dream: Dream | null): void => {
     setActiveDream(dream);
+  };
+
+  // Update dream progress
+  const updateDreamProgress = (dreamId: string, adjustment: number): void => {
+    setDreams(prevDreams =>
+      prevDreams.map(dream => {
+        if (dream.id === dreamId) {
+          // Calculate new progress and ensure it stays between 0 and 1
+          const newProgress = Math.min(1, Math.max(0, dream.progress + adjustment));
+          return { ...dream, progress: newProgress };
+        }
+        return dream;
+      })
+    );
   };
 
   return (
@@ -86,15 +100,70 @@ const DreamBoardPage: React.FC = () => {
             <button onClick={toggleMiniBoard}>{expandedMiniBoard ? 'Minimize' : 'Expand'}</button>
           </div>
           <div className={styles.miniBoardContent}>
-            {dreams.slice(0, 3).map(dream => (
-              <div key={dream.id} className={styles.miniDream}>
-                <div className={styles.dreamTitle}>{dream.title}</div>
-                <div
-                  className={styles.progressIndicator}
-                  style={{ width: `${dream.progress * 100}%` }}
-                />
-              </div>
-            ))}
+            {dreams.slice(0, 3).map(dream => {
+              // Get icon based on category
+              const getIconForCategory = (category: string): string => {
+                const icons: Record<string, string> = {
+                  Travel: '✈️',
+                  Skills: '🎯',
+                  Finance: '💰',
+                  Health: '💪',
+                  Relationships: '❤️',
+                  Career: '💼',
+                  Education: '🎓',
+                  Spirituality: '✨',
+                };
+                return icons[category] || '🌟';
+              };
+
+              return (
+                <div key={dream.id} className={styles.miniDream}>
+                  <div className={styles.dreamIcon}>{getIconForCategory(dream.category)}</div>
+
+                  <div className={styles.dreamContentWrapper}>
+                    <div className={styles.dreamTitle}>{dream.title}</div>
+                    <div className={styles.progressContainer}>
+                      <div className={styles.progressBar}>
+                        <div
+                          className={styles.progressIndicator}
+                          style={{ width: `${dream.progress * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.dreamStatus}>
+                    <div className={styles.progressControls}>
+                      <button
+                        className={styles.progressButton}
+                        onClick={e => {
+                          e.stopPropagation();
+                          updateDreamProgress(dream.id, -0.1);
+                        }}
+                        disabled={dream.progress <= 0}
+                        aria-label="Decrease progress"
+                      >
+                        <span className={styles.buttonIcon}>-</span>
+                      </button>
+                      <div className={styles.progressValue}>
+                        {Math.round(dream.progress * 100)}%
+                      </div>
+                      <button
+                        className={styles.progressButton}
+                        onClick={e => {
+                          e.stopPropagation();
+                          updateDreamProgress(dream.id, 0.1);
+                        }}
+                        disabled={dream.progress >= 1}
+                        aria-label="Increase progress"
+                      >
+                        <span className={styles.buttonIcon}>+</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
