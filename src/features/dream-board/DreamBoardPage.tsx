@@ -20,10 +20,10 @@ const categoryDetails = {
   Travel: {
     icon: '✈️',
     illustration: '/assets/images/dreamboard/travel.webp',
-    gradient: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-    hoverGradient: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-    shadowColor: 'rgba(37, 99, 235, 0.4)',
-    color: '#3B82F6',
+    gradient: 'linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%)',
+    hoverGradient: 'linear-gradient(135deg, #38BDF8 0%, #0EA5E9 100%)',
+    shadowColor: 'rgba(14, 165, 233, 0.4)',
+    color: '#38BDF8',
   },
   Skills: {
     icon: '🎯',
@@ -60,18 +60,18 @@ const categoryDetails = {
   Career: {
     icon: '💼',
     illustration: '/assets/images/dreamboard/career.webp',
-    gradient: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
-    hoverGradient: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
-    shadowColor: 'rgba(124, 58, 237, 0.4)',
-    color: '#8B5CF6',
+    gradient: 'linear-gradient(135deg, #9333EA 0%, #7E22CE 100%)',
+    hoverGradient: 'linear-gradient(135deg, #A855F7 0%, #9333EA 100%)',
+    shadowColor: 'rgba(147, 51, 234, 0.4)',
+    color: '#A855F7',
   },
   Education: {
     icon: '🎓',
     illustration: '/assets/images/dreamboard/education.webp',
-    gradient: 'linear-gradient(135deg, #4F46E5 0%, #4338CA 100%)',
-    hoverGradient: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
-    shadowColor: 'rgba(79, 70, 229, 0.4)',
-    color: '#6366F1',
+    gradient: 'linear-gradient(135deg, #e9620e 0%, #e9860e 100%)',
+    hoverGradient: 'linear-gradient(135deg, #e9860e 0%, #e9620e 100%)',
+    shadowColor: 'rgba(30, 64, 175, 0.4)',
+    color: '#3B82F6',
   },
   Spirituality: {
     icon: '✨',
@@ -116,7 +116,6 @@ const DreamBoardPage: React.FC = () => {
 
   // New state variables for Dream Categories section
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
-  const [focusedCategory, setFocusedCategory] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
@@ -170,36 +169,6 @@ const DreamBoardPage: React.FC = () => {
     } else {
       setExpandedCategory(category);
     }
-  };
-
-  // Set category filter
-  const toggleCategoryFilter = (category: string): void => {
-    if (filterCategory === category) {
-      setFilterCategory(null);
-    } else {
-      setFilterCategory(category);
-      setFocusedCategory(category);
-    }
-  };
-
-  // Handle adding new dream to a category
-  const handleAddDreamToCategory = (): void => {
-    // Open dream board modal pre-selected with this category
-    setIsDreamBoardModalOpen(true);
-    // Additional logic to pre-select the category could be added here
-  };
-
-  // Get recent activity for a category
-  const getCategoryRecentActivity = (category: string): string => {
-    const categoryDreams = dreams.filter(dream => dream.category === category);
-    if (categoryDreams.length === 0) return 'No recent activity';
-
-    // Sort dreams by date created, most recent first
-    const sortedDreams = [...categoryDreams].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-
-    return `Last updated: ${formatDate(sortedDreams[0].createdAt)}`;
   };
 
   // Animation refs for categories
@@ -358,7 +327,6 @@ const DreamBoardPage: React.FC = () => {
                   const categoryDetail = getCategoryDetails(category);
                   const isHovered = hoveredCategory === category;
                   const isExpanded = expandedCategory === category;
-                  const isFocused = focusedCategory === category;
                   const categoryProgress = calculateCategoryProgress(category);
                   const dreamCount = dreams.filter(dream => dream.category === category).length;
                   const hasDreams = dreamCount > 0;
@@ -368,7 +336,7 @@ const DreamBoardPage: React.FC = () => {
                     <div
                       key={category}
                       ref={el => (categoryRefs.current[category] = el)}
-                      className={`${styles.categoryCard} ${isExpanded ? styles.expanded : ''} ${isActive ? styles.active : styles.dormant} ${isFocused ? styles.focused : ''}`}
+                      className={`${styles.categoryCard} ${isExpanded ? styles.expanded : ''} ${isActive ? styles.active : styles.dormant}`}
                       style={{
                         background: isHovered
                           ? categoryDetail.hoverGradient
@@ -429,32 +397,6 @@ const DreamBoardPage: React.FC = () => {
                       {/* Expanded content (visible only when expanded) */}
                       {isExpanded && (
                         <div className={styles.expandedCategoryContent}>
-                          <div className={styles.recentActivity}>
-                            <h4>Recent Activity</h4>
-                            <p>{getCategoryRecentActivity(category)}</p>
-                          </div>
-
-                          <div className={styles.categoryActions}>
-                            <button
-                              className={styles.categoryActionButton}
-                              onClick={e => {
-                                e.stopPropagation();
-                                handleAddDreamToCategory();
-                              }}
-                            >
-                              Add Dream
-                            </button>
-                            <button
-                              className={styles.categoryActionButton}
-                              onClick={e => {
-                                e.stopPropagation();
-                                toggleCategoryFilter(category);
-                              }}
-                            >
-                              {filterCategory === category ? 'Clear Filter' : 'Focus'}
-                            </button>
-                          </div>
-
                           {hasDreams && (
                             <div className={styles.categoryQuickDreams}>
                               <h4>Dreams</h4>
