@@ -664,3 +664,99 @@
   font-weight: 600;
   margin-bottom: 1rem;
 }
+
+.dreamBoardButtonContainer {
+  margin-top: 8px;
+}
+
+.dreamBoardButton {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  color: white;
+  text-align: left;
+}
+
+.dreamBoardButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dreamBoardButtonIcon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  font-size: 16px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.7), rgba(219, 39, 119, 0.5));
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+.dreamBoardButtonText {
+  display: flex;
+  flex-direction: column;
+}
+
+.dreamBoardButtonTitle {
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dreamBoardButtonSubtitle {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+}
+
+.miniBoardHeaderControls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.miniBoardHeaderControls button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.miniBoardHeaderControls button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.miniBoardHeaderControls .dreamBoardButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(219, 39, 119, 0.2));
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 6px 12px;
+}
+
+.miniBoardHeaderControls .dreamBoardButton:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(219, 39, 119, 0.3));
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+.dreamBoardButtonIcon {
+  font-size: 16px;
+}

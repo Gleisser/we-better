@@ -1,0 +1,141 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.modalContainer {
+  position: relative;
+  width: 95%;
+  height: 95%;
+  max-width: 1600px;
+  max-height: 90vh;
+  background: var(--dream-board-bg, rgba(30, 30, 40, 0.8));
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 24px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 1010;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.closeButton:hover {
+  background: rgba(239, 68, 68, 0.8);
+  transform: scale(1.1);
+}
+
+.modalContent {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.visionBoardWrapper {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+/* Override some VisionBoard styles to match the dashboard */
+.visionBoardWrapper :global(.fullScreenContainer) {
+  background: none !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: 16px;
+  overflow: hidden;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+}
+
+.visionBoardWrapper :global(.contentWrapper) {
+  position: absolute !important;
+  inset: 0 !important;
+  overflow: auto;
+  height: 100% !important;
+  padding-top: 20px;
+}
+
+.visionBoardWrapper :global(.glassCard) {
+  background: none;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: auto;
+}
+
+/* Make the background image lighter and more subtle */
+.visionBoardWrapper :global(.backgroundImage) {
+  opacity: 0.2;
+}
+
+/* Target the internal elements of VisionBoard to ensure proper sizing */
+.visionBoardWrapper :global(.canvasContainer) {
+  position: relative !important;
+  height: calc(100% - 80px) !important;
+  overflow: auto !important;
+}
+
+/* Fix intro screen overlay */
+.visionBoardWrapper :global(.introScreenOverlay) {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1005 !important;
+}
+
+/* Ensure intro screen appears within modal */
+.visionBoardWrapper :global(.introScreen) {
+  width: 90% !important;
+  max-width: 600px !important;
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  z-index: 1006 !important;
+}
+
+/* Prevent content controls from extending outside modal */
+.visionBoardWrapper :global(.contentControls) {
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  z-index: 1004 !important;
+  right: 10px !important;
+}
+
+/* Override Toolbar */
+.visionBoardWrapper :global(.actionButtons) {
+  position: relative !important;
+  z-index: 999 !important;
+}

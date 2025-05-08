@@ -12,6 +12,8 @@ import {
   mockNotifications,
 } from './mock-data';
 import { CosmicDreamExperience } from './components/CosmicDreamExperience/CosmicDreamExperience';
+import { DreamBoardModal } from './components/DreamBoardModal';
+import { DEFAULT_LIFE_CATEGORIES } from '../life-wheel/constants/categories';
 
 const DreamBoardPage: React.FC = () => {
   const [expandedMiniBoard, setExpandedMiniBoard] = useState(false);
@@ -19,6 +21,7 @@ const DreamBoardPage: React.FC = () => {
   const [dreams, setDreams] = useState<Dream[]>(mockDreams);
   const [journalEntries] = useState<JournalEntry[]>(mockJournalEntries);
   const [activeDream, setActiveDream] = useState<Dream | null>(null);
+  const [isDreamBoardModalOpen, setIsDreamBoardModalOpen] = useState(false);
 
   // Toggle mini vision board expansion
   const toggleMiniBoard = (): void => {
@@ -97,7 +100,16 @@ const DreamBoardPage: React.FC = () => {
         <section className={`${styles.miniBoard} ${expandedMiniBoard ? styles.expanded : ''}`}>
           <div className={styles.miniBoardHeader}>
             <h2>Quick Vision</h2>
-            <button onClick={toggleMiniBoard}>{expandedMiniBoard ? 'Minimize' : 'Expand'}</button>
+            <div className={styles.miniBoardHeaderControls}>
+              <button
+                className={styles.dreamBoardButton}
+                onClick={() => setIsDreamBoardModalOpen(true)}
+              >
+                <span className={styles.dreamBoardButtonIcon}>🎨</span>
+                <span>My Dream Board</span>
+              </button>
+              <button onClick={toggleMiniBoard}>{expandedMiniBoard ? 'Minimize' : 'Expand'}</button>
+            </div>
           </div>
           <div className={styles.miniBoardContent}>
             {dreams.slice(0, 3).map(dream => {
@@ -366,6 +378,13 @@ const DreamBoardPage: React.FC = () => {
           )}
         </div>
       </footer>
+
+      {/* Dream Board Modal */}
+      <DreamBoardModal
+        isOpen={isDreamBoardModalOpen}
+        onClose={() => setIsDreamBoardModalOpen(false)}
+        categories={DEFAULT_LIFE_CATEGORIES}
+      />
     </div>
   );
 };
