@@ -20,6 +20,7 @@ import VisionBoardTab from './components/VisionBoardTab';
 import DreamInsights from './components/DreamInsights';
 import DetailedTimeline from './components/DetailedTimeline';
 import DreamJournal from './components/DreamJournal';
+import FooterTools from './components/FooterTools';
 
 type CategoryDetails = {
   icon: string;
@@ -486,32 +487,11 @@ const DreamBoardPage: React.FC = () => {
       </main>
 
       {/* Footer Tools Section */}
-      <footer className={styles.toolsFooter}>
-        <div className={styles.toolSection}>
-          <h3>Dream Weather</h3>
-          <p>{mockWeather.message}</p>
-          <div className={styles.weatherStatus}>
-            Overall: <span className={styles.weatherIcon}>{mockWeather.overall}</span>
-          </div>
-        </div>
-        <div className={styles.toolSection}>
-          <h3>Notifications</h3>
-          <p>You have {mockNotifications.filter(n => !n.read).length} unread notifications.</p>
-          <div className={styles.notificationPreview}>{mockNotifications[0].description}</div>
-        </div>
-        <div className={styles.toolSection}>
-          <h3>Challenge Mode</h3>
-          {mockChallenges.filter(c => !c.completed).length > 0 ? (
-            <p>
-              {mockChallenges.filter(c => !c.completed)[0].title}: Day{' '}
-              {mockChallenges.filter(c => !c.completed)[0].currentDay} of{' '}
-              {mockChallenges.filter(c => !c.completed)[0].duration}
-            </p>
-          ) : (
-            <p>No active challenges. Start a new one!</p>
-          )}
-        </div>
-      </footer>
+      <FooterTools
+        weather={mockWeather}
+        notifications={mockNotifications}
+        challenges={mockChallenges}
+      />
 
       {/* Dream Board Modal */}
       <DreamBoardModal
