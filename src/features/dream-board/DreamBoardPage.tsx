@@ -18,6 +18,7 @@ import categoryDetails from './components/constants/dreamboard';
 import achievementBadges from './components/constants/achievements';
 import VisionBoardTab from './components/VisionBoardTab';
 import DreamInsights from './components/DreamInsights';
+import DetailedTimeline from './components/DetailedTimeline';
 
 type CategoryDetails = {
   icon: string;
@@ -476,19 +477,7 @@ const DreamBoardPage: React.FC = () => {
           <DreamInsights dreams={dreams} insights={mockInsights} resources={mockResources} />
         )}
 
-        {activeTab === 'timeline' && (
-          <div className={styles.timelineTab}>
-            {/* More detailed timeline view - placeholder for now */}
-            <section className={styles.detailedTimeline}>
-              <h2>Dream Journey Timeline</h2>
-              <p>Extended timeline visualization will be implemented here.</p>
-              <div className={styles.timelinePlaceholder}>
-                This section will show a more detailed timeline of your dreams, including
-                milestones, achievements, and a visual roadmap of your journey.
-              </div>
-            </section>
-          </div>
-        )}
+        {activeTab === 'timeline' && <DetailedTimeline />}
 
         {activeTab === 'journal' && (
           <div className={styles.journalTab}>
