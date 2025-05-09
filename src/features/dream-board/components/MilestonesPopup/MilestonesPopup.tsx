@@ -2,6 +2,7 @@ import React from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream, Milestone } from '../../types';
 import TimelineComponent from './TimelineComponent';
+import { calculateProgress, getPercentage } from '../../utils/progressUtils';
 
 interface MilestoneHistoryItem {
   dreamId: string;
@@ -84,15 +85,15 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
               <div
                 className={styles.progressFill}
                 style={{
-                  width: `${selectedDream.progress * 100}%`,
+                  width: `${getPercentage(calculateProgress(selectedDream.milestones, false))}%`,
                   backgroundColor: '#4caf50',
                 }}
               />
             </div>
             <p>
-              <strong>{Math.round(selectedDream.progress * 100)}% Complete:</strong>{' '}
-              {selectedDream.milestones.filter(m => m.completed).length} of{' '}
-              {selectedDream.milestones.length} milestones
+              You've completed {selectedDream.milestones.filter(m => m.completed).length} of{' '}
+              {selectedDream.milestones.length} milestones (
+              {getPercentage(calculateProgress(selectedDream.milestones, false))}% complete)
             </p>
           </div>
 
@@ -134,6 +135,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                       milestones={selectedDream.milestones}
                       formatDisplayDate={formatDisplayDate}
                       dreamTitle={selectedDream.title}
+                      progress={calculateProgress(selectedDream.milestones, false)}
                     />
                   ) : (
                     <div className={styles.emptyVisualization}>

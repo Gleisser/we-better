@@ -1,17 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Milestone } from '../../types';
 import styles from './TimelineComponent.module.css';
+import { calculateProgress, getPercentage } from '../../utils/progressUtils';
 
 interface TimelineComponentProps {
   milestones: Milestone[];
   formatDisplayDate: (dateString?: string) => string;
   dreamTitle: string;
+  progress?: number;
 }
 
 const TimelineComponent: React.FC<TimelineComponentProps> = ({
   milestones,
   formatDisplayDate,
   dreamTitle,
+  progress,
 }) => {
   const timelineWrapperRef = useRef<HTMLDivElement>(null);
   const [showScrollIndicators, setShowScrollIndicators] = useState(false);
@@ -32,13 +35,15 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({
       });
   }, [milestones]);
 
-  // Calculate project progress for progress bar, excluding the goal itself
+  // Use the progress from props or calculate it with the shared utility
   const progressPercentage = React.useMemo(() => {
-    if (milestones.length === 0) return 0;
-    const completedCount = milestones.filter(m => m.completed).length;
-    // Just show the percentage of completed milestones
-    return Math.round((completedCount / milestones.length) * 100);
-  }, [milestones]);
+    if (progress !== undefined) {
+      return Math.round(progress * 100);
+    }
+
+    // Use our utility for consistent calculation
+    return getPercentage(calculateProgress(milestones, false));
+  }, [milestones, progress]);
 
   // Generate timeline markers based on user milestones
   const timelineMarkers = React.useMemo(() => {

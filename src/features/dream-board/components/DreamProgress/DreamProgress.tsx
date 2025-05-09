@@ -100,7 +100,6 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
                   <div
                     style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}
                   >
-                    <span className={styles.progressText}>{Math.round(dream.progress * 100)}%</span>
                     <div className={styles.milestonesInfo}>
                       {dream.milestones.filter(m => m.completed).length} of{' '}
                       {dream.milestones.length} milestones completed
