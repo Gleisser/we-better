@@ -83,7 +83,10 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
             <div className={styles.progressBar}>
               <div
                 className={styles.progressFill}
-                style={{ width: `${selectedDream.progress * 100}%` }}
+                style={{
+                  width: `${selectedDream.progress * 100}%`,
+                  backgroundColor: '#4caf50',
+                }}
               />
             </div>
             <p>

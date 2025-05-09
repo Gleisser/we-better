@@ -32,10 +32,11 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({
       });
   }, [milestones]);
 
-  // Calculate project progress for progress bar
+  // Calculate project progress for progress bar, excluding the goal itself
   const progressPercentage = React.useMemo(() => {
     if (milestones.length === 0) return 0;
     const completedCount = milestones.filter(m => m.completed).length;
+    // Just show the percentage of completed milestones
     return Math.round((completedCount / milestones.length) * 100);
   }, [milestones]);
 
@@ -283,6 +284,7 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({
                 <div
                   className={`${styles.markerDot} ${marker.completed ? styles.completedMarker : ''}`}
                 >
+                  {/* Only add svg check if completed - no content in the CSS */}
                   {marker.completed && (
                     <svg
                       width="16"

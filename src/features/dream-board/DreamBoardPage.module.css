@@ -171,12 +171,22 @@
 }
 
 .progressBar {
-  height: 4px;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
   overflow: hidden;
   position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.progressFill {
+  position: absolute;
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  left: 0;
+  top: 0;
 }
 
 .progressIndicator {
