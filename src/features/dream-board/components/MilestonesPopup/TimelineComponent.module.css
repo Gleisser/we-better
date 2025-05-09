@@ -23,12 +23,15 @@
 .timelineContainer {
   position: relative;
   padding: 20px 0;
+  color: #fff;
+  background-color: #1a1a1a;
+  border-radius: 8px;
 }
 
 .timelineContent {
   min-width: 900px;
   position: relative;
-  padding: 60px 20px 40px;
+  padding: 60px 30px 40px; /* Increased left/right padding */
 }
 
 .dragIndicator {
@@ -47,13 +50,13 @@
 .dragHandle {
   width: 50px;
   height: 5px;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
   transition: background-color 0.3s;
 }
 
 .timelineWrapper:hover .dragHandle {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 .timelineTrack {
@@ -64,6 +67,7 @@
 .timelineAxis {
   position: relative;
   height: 100px;
+  padding-top: 20px; /* Add padding to avoid overlapping text */
 }
 
 /* Scroll Buttons */
@@ -111,7 +115,7 @@
 
 .progressBar {
   height: 8px;
-  background-color: #e0e0e0;
+  background-color: #333;
   border-radius: 4px;
   overflow: hidden;
   position: relative;
@@ -160,16 +164,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 100px;
+  min-width: 80px; /* Reduced min width */
+  max-width: 110px; /* Added max width */
   text-align: center;
+  z-index: 2; /* Ensure markers appear above timeline line */
 }
 
 .markerDot {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: white;
-  border: 2px solid #e0e0e0;
+  background-color: #333;
+  border: 2px solid #555;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -193,19 +199,32 @@
 .markerLabel {
   font-weight: bold;
   margin-bottom: 4px;
-  color: #333;
+  color: #fff;
+  font-size: 12px;
 }
 
 .markerSubLabel {
   font-weight: bold;
   margin-bottom: 4px;
-  color: #333;
+  color: #fff;
+  font-size: 12px;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
 }
 
 .markerDescription {
-  font-size: 12px;
-  color: #666;
-  max-width: 120px;
+  font-size: 11px;
+  color: #aaa;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
 }
 
 .milestonePoint {
@@ -271,7 +290,7 @@
 @media (max-width: 768px) {
   .timelineContent {
     min-width: 700px;
-    padding: 40px 10px 30px;
+    padding: 40px 20px 30px;
   }
 
   .markerDot {
@@ -280,15 +299,15 @@
   }
 
   .markerLabel {
-    font-size: 12px;
-  }
-
-  .markerSubLabel {
     font-size: 11px;
   }
 
-  .markerDescription {
+  .markerSubLabel {
     font-size: 10px;
+  }
+
+  .markerDescription {
+    font-size: 9px;
     max-width: 80px;
   }
 

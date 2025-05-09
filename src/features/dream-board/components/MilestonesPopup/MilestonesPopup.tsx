@@ -130,6 +130,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                     <TimelineComponent
                       milestones={selectedDream.milestones}
                       formatDisplayDate={formatDisplayDate}
+                      dreamTitle={selectedDream.title}
                     />
                   ) : (
                     <div className={styles.emptyVisualization}>

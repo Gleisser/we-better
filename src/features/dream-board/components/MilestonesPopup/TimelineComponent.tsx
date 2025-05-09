@@ -5,9 +5,14 @@ import styles from './TimelineComponent.module.css';
 interface TimelineComponentProps {
   milestones: Milestone[];
   formatDisplayDate: (dateString?: string) => string;
+  dreamTitle: string;
 }
 
-const TimelineComponent: React.FC<TimelineComponentProps> = ({ milestones, formatDisplayDate }) => {
+const TimelineComponent: React.FC<TimelineComponentProps> = ({
+  milestones,
+  formatDisplayDate,
+  dreamTitle,
+}) => {
   const timelineWrapperRef = useRef<HTMLDivElement>(null);
   const [showScrollIndicators, setShowScrollIndicators] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -33,6 +38,39 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({ milestones, forma
     const completedCount = milestones.filter(m => m.completed).length;
     return Math.round((completedCount / milestones.length) * 100);
   }, [milestones]);
+
+  // Generate timeline markers based on user milestones
+  const timelineMarkers = React.useMemo(() => {
+    if (sortedMilestones.length === 0) return [];
+
+    // Calculate total timeline spaces between milestones
+    const spacing = 100 / (sortedMilestones.length + 1); // +1 for the final goal (dream title)
+
+    // Create markers for each milestone plus the final goal
+    const markers = sortedMilestones.map((milestone, index) => {
+      const position = spacing * (index + 1);
+      return {
+        id: milestone.id,
+        title: milestone.title,
+        description: milestone.description || '',
+        position: `${position}%`,
+        date: milestone.date,
+        completed: milestone.completed,
+      };
+    });
+
+    // Add the final goal (dream title) at the end
+    markers.push({
+      id: 'dream-goal',
+      title: dreamTitle,
+      description: 'Goal Completion',
+      position: '100%',
+      date: '',
+      completed: false,
+    });
+
+    return markers;
+  }, [sortedMilestones, dreamTitle]);
 
   // Check if the timeline is scrollable and update indicators
   useEffect(() => {
@@ -223,65 +261,6 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({ milestones, forma
         </div>
 
         <div className={styles.timelineContent}>
-          <div className={styles.timelineTrack}>
-            {sortedMilestones.map(milestone => {
-              const isCompleted = milestone.completed;
-              const milestoneDate = milestone.date ? new Date(milestone.date) : new Date();
-
-              // Calculate label positions for evenly distributed dates
-              const dateLabels = [
-                { date: new Date('2024-01-20'), label: 'Jan 20', position: '0%' },
-                { date: new Date('2024-02-14'), label: 'Feb 14', position: '16.6%' },
-                { date: new Date('2024-03-08'), label: 'Mar 8', position: '33.3%' },
-                { date: new Date('2024-04-30'), label: 'Apr 30', position: '50%' },
-                { date: new Date('2024-06-07'), label: 'Jun 7', position: '66.6%' },
-                { date: new Date('2024-09-16'), label: 'Sep 16', position: '100%' },
-              ];
-
-              // Find which date segment this milestone belongs to
-              let position = '0%';
-              for (let i = 0; i < dateLabels.length - 1; i++) {
-                if (
-                  milestoneDate >= dateLabels[i].date &&
-                  milestoneDate <= dateLabels[i + 1].date
-                ) {
-                  const segmentStart = dateLabels[i].date.getTime();
-                  const segmentEnd = dateLabels[i + 1].date.getTime();
-                  const segmentRange = segmentEnd - segmentStart;
-                  const milestonePosition = milestoneDate.getTime() - segmentStart;
-
-                  const startPos = parseFloat(dateLabels[i].position);
-                  const endPos = parseFloat(dateLabels[i + 1].position);
-                  const posRange = endPos - startPos;
-
-                  const percentInSegment = milestonePosition / segmentRange;
-                  const finalPosition = startPos + percentInSegment * posRange;
-
-                  position = `${finalPosition}%`;
-                  break;
-                }
-              }
-
-              return (
-                <div
-                  key={milestone.id}
-                  className={styles.milestonePoint}
-                  style={{ left: position }}
-                >
-                  <div className={`${styles.milestoneIcon} ${isCompleted ? styles.completed : ''}`}>
-                    {isCompleted ? '✓' : ''}
-                  </div>
-                  <div className={styles.milestoneInfo}>
-                    <span className={styles.milestoneTitle}>{milestone.title}</span>
-                    <span className={styles.milestoneDate}>
-                      {formatDisplayDate(milestone.date)}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
           {/* Timeline track with dates */}
           <div className={styles.timelineAxis}>
             <div className={styles.timelineProgress}>
@@ -298,48 +277,39 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({ milestones, forma
               <div className={styles.badgeContent}>{progressPercentage}%</div>
             </div>
 
-            {/* Timeline date markers */}
-            <div className={styles.dateMarker} style={{ left: '0%' }}>
-              <div className={`${styles.markerDot} ${styles.completedMarker}`}></div>
-              <div className={styles.markerLabel}>Jan 20</div>
-              <div className={styles.markerSubLabel}>Start of Evaluation</div>
-              <div className={styles.markerDescription}>Preparation</div>
-            </div>
-
-            <div className={styles.dateMarker} style={{ left: '16.6%' }}>
-              <div className={`${styles.markerDot} ${styles.completedMarker}`}></div>
-              <div className={styles.markerLabel}>Feb 14</div>
-              <div className={styles.markerSubLabel}>Initial Scoping</div>
-              <div className={styles.markerDescription}>Data checking</div>
-            </div>
-
-            <div className={styles.dateMarker} style={{ left: '33.3%' }}>
-              <div className={`${styles.markerDot} ${styles.completedMarker}`}></div>
-              <div className={styles.markerLabel}>Mar 8</div>
-              <div className={styles.markerSubLabel}>Validation</div>
-              <div className={styles.markerDescription}>Completed proof of concept</div>
-            </div>
-
-            <div className={styles.dateMarker} style={{ left: '50%' }}>
-              <div className={`${styles.markerDot} ${styles.completedMarker}`}></div>
-              <div className={styles.markerLabel}>Apr 30</div>
-              <div className={styles.markerSubLabel}>Contracting</div>
-              <div className={styles.markerDescription}>Signed Contract</div>
-            </div>
-
-            <div className={styles.dateMarker} style={{ left: '66.6%' }}>
-              <div className={`${styles.markerDot} ${styles.completedMarker}`}></div>
-              <div className={styles.markerLabel}>Jun 7</div>
-              <div className={styles.markerSubLabel}>Migration</div>
-              <div className={styles.markerDescription}>All information is migrated</div>
-            </div>
-
-            <div className={styles.dateMarker} style={{ left: '100%' }}>
-              <div className={styles.markerDot}></div>
-              <div className={styles.markerLabel}>Sep 16</div>
-              <div className={styles.markerSubLabel}>Global Launch</div>
-              <div className={styles.markerDescription}>In Asia, Australia, Latin America</div>
-            </div>
+            {/* Timeline date markers - now using the user's milestones */}
+            {timelineMarkers.map(marker => (
+              <div key={marker.id} className={styles.dateMarker} style={{ left: marker.position }}>
+                <div
+                  className={`${styles.markerDot} ${marker.completed ? styles.completedMarker : ''}`}
+                >
+                  {marker.completed && (
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M5 12L10 17L19 8"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
+                </div>
+                <div className={styles.markerLabel}>
+                  {marker.date ? formatDisplayDate(marker.date) : 'Goal'}
+                </div>
+                <div className={styles.markerSubLabel}>{marker.title}</div>
+                {marker.description && (
+                  <div className={styles.markerDescription}>{marker.description}</div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
