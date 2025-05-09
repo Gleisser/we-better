@@ -1647,3 +1647,223 @@
   gap: 1rem;
   margin-top: 1.5rem;
 }
+
+/* Visualization Tabs */
+.visualizationTabs {
+  display: flex;
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+}
+
+.vizTab {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  text-align: center;
+}
+
+.vizTab:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.activeVizTab {
+  background-color: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+/* Common Visualization Styles */
+.timelineVisualization,
+.chartVisualization,
+.achievementsVisualization {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.timelineVisualization h4,
+.chartVisualization h4,
+.achievementsVisualization h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 600;
+}
+
+.emptyVisualization {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+/* Timeline Visualization */
+.timelineContainer {
+  position: relative;
+  height: 180px;
+  margin: 2rem 0;
+}
+
+.timelineAxis {
+  position: relative;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.15);
+  margin-top: 80px;
+}
+
+.timeMarker {
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.markerLine {
+  height: 10px;
+  width: 2px;
+  background-color: rgba(255, 255, 255, 0.4);
+  margin: 0 auto;
+}
+
+.markerLabel {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+.timelinePoint {
+  position: absolute;
+  transform: translateX(-50%);
+  bottom: 50px;
+}
+
+.pointConnector {
+  height: 30px;
+  width: 2px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 0 auto;
+}
+
+.pointDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #f44336;
+  margin: 0 auto;
+  margin-top: -6px;
+  position: relative;
+  z-index: 2;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.completedPoint .pointDot {
+  background-color: #4caf50;
+}
+
+.pointContent {
+  min-width: 120px;
+  text-align: center;
+  margin-top: 0.5rem;
+  transform: rotate(-30deg);
+  transform-origin: top center;
+}
+
+.pointTitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 0.2rem;
+}
+
+.pointDate {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Progress Chart Visualization */
+.progressChartContainer {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.chartLabels {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Achievement Badges */
+.badgeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1rem;
+}
+
+.achievementBadge {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.earnedBadge {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(46, 125, 50, 0.15));
+  border-color: rgba(76, 175, 80, 0.4);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+}
+
+.earnedBadge:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+}
+
+.unearnedBadge {
+  opacity: 0.6;
+  filter: grayscale(0.8);
+}
+
+.badgeIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.badgeTitle {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: white;
+}
+
+.badgeDescription {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+.badgeLock {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
