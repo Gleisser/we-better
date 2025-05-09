@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import styles from './DreamBoardPage.module.css';
 import { Dream, JournalEntry, Milestone } from './types';
 import {
@@ -17,6 +17,7 @@ import { DEFAULT_LIFE_CATEGORIES } from '../life-wheel/constants/categories';
 import categoryDetails from './components/constants/dreamboard';
 import achievementBadges from './components/constants/achievements';
 import QuickVision from './components/QuickVision';
+import DreamCategories from './components/DreamCategories';
 
 type CategoryDetails = {
   icon: string;
@@ -124,9 +125,6 @@ const DreamBoardPage: React.FC = () => {
       setExpandedCategory(category);
     }
   };
-
-  // Animation refs for categories
-  const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   // Milestone Management Functions
   const handleMilestoneComplete = (
@@ -456,126 +454,19 @@ const DreamBoardPage: React.FC = () => {
       <main className={styles.mainContent}>
         {activeTab === 'vision-board' && (
           <div className={styles.visionBoardTab}>
-            {/* Dream Categories Dashboard - ENHANCED VERSION */}
-            <section className={styles.categoriesDashboard}>
-              <div className={styles.categoriesHeader}>
-                <h2>Dream Categories</h2>
-                <div className={styles.categoriesControls}>
-                  {filterCategory && (
-                    <button
-                      className={styles.clearFilterButton}
-                      onClick={() => setFilterCategory(null)}
-                    >
-                      Clear Filter
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div className={styles.categoriesGrid}>
-                {mockCategories.map(category => {
-                  const categoryDetail = getCategoryDetails(category);
-                  const isHovered = hoveredCategory === category;
-                  const isExpanded = expandedCategory === category;
-                  const categoryProgress = calculateCategoryProgress(category);
-                  const dreamCount = dreams.filter(dream => dream.category === category).length;
-                  const hasDreams = dreamCount > 0;
-                  const isActive = hasDreams;
-
-                  return (
-                    <div
-                      key={category}
-                      ref={el => (categoryRefs.current[category] = el)}
-                      className={`${styles.categoryCard} ${isExpanded ? styles.expanded : ''} ${isActive ? styles.active : styles.dormant}`}
-                      style={{
-                        background: isHovered
-                          ? categoryDetail.hoverGradient
-                          : categoryDetail.gradient,
-                        boxShadow: `0 8px 24px ${categoryDetail.shadowColor}`,
-                      }}
-                      onClick={() => toggleCategoryExpand(category)}
-                      onMouseEnter={() => setHoveredCategory(category)}
-                      onMouseLeave={() => setHoveredCategory(null)}
-                      onFocus={() => setHoveredCategory(category)}
-                      onBlur={() => setHoveredCategory(null)}
-                      tabIndex={0}
-                      role="button"
-                      aria-expanded={isExpanded}
-                    >
-                      <div className={styles.categoryHeader}>
-                        <div className={styles.categoryIconContainer}>
-                          <div
-                            className={styles.categoryIcon}
-                            aria-hidden="true"
-                            style={{
-                              backgroundImage: `url(${categoryDetail.illustration})`,
-                              backgroundSize: 'cover',
-                              backgroundPosition: 'center',
-                            }}
-                          >
-                            <div className={styles.categoryIconOverlay}></div>
-                          </div>
-                        </div>
-
-                        <div className={styles.categoryContent}>
-                          <h3>{category}</h3>
-                          <div
-                            className={styles.dreamCount}
-                            aria-label={`${dreamCount} dreams in ${category}`}
-                          >
-                            {dreamCount} {dreamCount === 1 ? 'dream' : 'dreams'}
-                          </div>
-
-                          {/* Progress visualization */}
-                          <div className={styles.categoryProgressWrapper}>
-                            <div className={styles.categoryProgressBar}>
-                              <div
-                                className={styles.categoryProgressFill}
-                                style={{
-                                  width: `${categoryProgress * 100}%`,
-                                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                }}
-                              ></div>
-                            </div>
-                            <span className={styles.categoryProgressLabel}>
-                              {Math.round(categoryProgress * 100)}%
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Expanded content (visible only when expanded) */}
-                      {isExpanded && (
-                        <div className={styles.expandedCategoryContent}>
-                          {hasDreams ? (
-                            <div className={styles.categoryQuickDreams}>
-                              <h4>Dreams</h4>
-                              <ul className={styles.quickDreamsList}>
-                                {dreams
-                                  .filter(dream => dream.category === category)
-                                  .slice(0, 3)
-                                  .map(dream => (
-                                    <li key={dream.id} className={styles.quickDreamItem}>
-                                      <span className={styles.quickDreamTitle}>{dream.title}</span>
-                                      <span className={styles.quickDreamProgress}>
-                                        {Math.round(dream.progress * 100)}%
-                                      </span>
-                                    </li>
-                                  ))}
-                              </ul>
-                            </div>
-                          ) : (
-                            <div className={styles.emptyStateMessage}>
-                              <p>No dreams in this category yet</p>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
+            {/* Dream Categories Dashboard */}
+            <DreamCategories
+              categories={mockCategories}
+              dreams={dreams}
+              getCategoryDetails={getCategoryDetails}
+              calculateCategoryProgress={calculateCategoryProgress}
+              hoveredCategory={hoveredCategory}
+              setHoveredCategory={setHoveredCategory}
+              expandedCategory={expandedCategory}
+              toggleCategoryExpand={toggleCategoryExpand}
+              filterCategory={filterCategory}
+              setFilterCategory={setFilterCategory}
+            />
 
             {/* Progress Tracking Layer - Modified for cleaner UI */}
             <section className={styles.progressSection}>
