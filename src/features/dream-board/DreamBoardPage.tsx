@@ -17,6 +17,7 @@ import { DEFAULT_LIFE_CATEGORIES } from '../life-wheel/constants/categories';
 import categoryDetails from './components/constants/dreamboard';
 import achievementBadges from './components/constants/achievements';
 import VisionBoardTab from './components/VisionBoardTab';
+import DreamInsights from './components/DreamInsights';
 
 type CategoryDetails = {
   icon: string;
@@ -472,43 +473,7 @@ const DreamBoardPage: React.FC = () => {
         )}
 
         {activeTab === 'insights' && (
-          <div className={styles.insightsTab}>
-            {/* AI-Powered Insights */}
-            <section className={styles.aiInsights}>
-              <h2>Dream Insights</h2>
-              {mockInsights.map(insight => (
-                <div key={insight.id} className={styles.insightCard}>
-                  <h3>{insight.title}</h3>
-                  <p>{insight.description}</p>
-                  {insight.relatedCategories && insight.relatedCategories.length > 0 && (
-                    <div className={styles.relatedCategories}>
-                      Related to: {insight.relatedCategories.join(', ')}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </section>
-
-            {/* Resource Connection */}
-            <section className={styles.resourceSection}>
-              <h2>Recommended Resources</h2>
-              <div className={styles.resourceCards}>
-                {mockResources.map(resource => (
-                  <div key={resource.id} className={styles.resourceCard}>
-                    <h3>{resource.title}</h3>
-                    <p>
-                      Relevant to:{' '}
-                      {resource.relevantDreamIds
-                        .map(id => dreams.find(d => d.id === id)?.title)
-                        .join(', ')}
-                    </p>
-                    <div className={styles.resourceType}>{resource.type}</div>
-                    <button className={styles.resourceButton}>View {resource.type}</button>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </div>
+          <DreamInsights dreams={dreams} insights={mockInsights} resources={mockResources} />
         )}
 
         {activeTab === 'timeline' && (
