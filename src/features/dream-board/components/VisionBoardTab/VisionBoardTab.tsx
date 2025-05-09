@@ -78,7 +78,11 @@ const VisionBoardTab: React.FC<VisionBoardTabProps> = ({
         />
 
         {/* Dream Progress Component */}
-        <DreamProgress dreams={dreams} handleOpenMilestoneManager={handleOpenMilestoneManager} />
+        <DreamProgress
+          dreams={dreams}
+          handleOpenMilestoneManager={handleOpenMilestoneManager}
+          getCategoryDetails={getCategoryDetails}
+        />
 
         {/* Dream Timeline Component */}
         <DreamTimeline dreams={dreams} />
