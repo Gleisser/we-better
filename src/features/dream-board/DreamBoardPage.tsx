@@ -18,6 +18,7 @@ import categoryDetails from './components/constants/dreamboard';
 import achievementBadges from './components/constants/achievements';
 import QuickVision from './components/QuickVision';
 import DreamCategories from './components/DreamCategories';
+import DreamProgress from './components/DreamProgress';
 
 type CategoryDetails = {
   icon: string;
@@ -468,36 +469,11 @@ const DreamBoardPage: React.FC = () => {
               setFilterCategory={setFilterCategory}
             />
 
-            {/* Progress Tracking Layer - Modified for cleaner UI */}
-            <section className={styles.progressSection}>
-              <h2>Dream Progress</h2>
-              <div className={styles.dreamsProgress}>
-                {dreams.map(dream => (
-                  <div key={dream.id} className={styles.dreamProgressCard}>
-                    <h3>{dream.title}</h3>
-                    <div className={styles.progressBar}>
-                      <div
-                        className={styles.progressFill}
-                        style={{ width: `${dream.progress * 100}%` }}
-                      />
-                    </div>
-                    <span className={styles.progressText}>{Math.round(dream.progress * 100)}%</span>
-                    <div className={styles.milestonesInfo}>
-                      {dream.milestones.filter(m => m.completed).length} of{' '}
-                      {dream.milestones.length} milestones completed
-                    </div>
-
-                    {/* Milestone Management Button */}
-                    <button
-                      className={styles.manageMilestonesButton}
-                      onClick={() => handleOpenMilestoneManager(dream.id)}
-                    >
-                      Manage Milestones
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
+            {/* Dream Progress Component */}
+            <DreamProgress
+              dreams={dreams}
+              handleOpenMilestoneManager={handleOpenMilestoneManager}
+            />
 
             {/* Timeline Visualization */}
             <section className={styles.timelineSection}>
