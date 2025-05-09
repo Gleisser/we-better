@@ -16,10 +16,7 @@ import { DreamBoardModal } from './components/DreamBoardModal';
 import { DEFAULT_LIFE_CATEGORIES } from '../life-wheel/constants/categories';
 import categoryDetails from './components/constants/dreamboard';
 import achievementBadges from './components/constants/achievements';
-import QuickVision from './components/QuickVision';
-import DreamCategories from './components/DreamCategories';
-import DreamProgress from './components/DreamProgress';
-import DreamTimeline from './components/DreamTimeline';
+import VisionBoardTab from './components/VisionBoardTab';
 
 type CategoryDetails = {
   icon: string;
@@ -441,44 +438,26 @@ const DreamBoardPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Quick Access Mini Vision Board - only show in vision-board tab */}
-      {activeTab === 'vision-board' && (
-        <QuickVision
-          dreams={dreams}
-          expandedMiniBoard={expandedMiniBoard}
-          toggleMiniBoard={toggleMiniBoard}
-          updateDreamProgress={updateDreamProgress}
-          openDreamBoardModal={() => setIsDreamBoardModalOpen(true)}
-        />
-      )}
-
       {/* Main Content Section */}
       <main className={styles.mainContent}>
         {activeTab === 'vision-board' && (
-          <div className={styles.visionBoardTab}>
-            {/* Dream Categories Dashboard */}
-            <DreamCategories
-              categories={mockCategories}
-              dreams={dreams}
-              getCategoryDetails={getCategoryDetails}
-              calculateCategoryProgress={calculateCategoryProgress}
-              hoveredCategory={hoveredCategory}
-              setHoveredCategory={setHoveredCategory}
-              expandedCategory={expandedCategory}
-              toggleCategoryExpand={toggleCategoryExpand}
-              filterCategory={filterCategory}
-              setFilterCategory={setFilterCategory}
-            />
-
-            {/* Dream Progress Component */}
-            <DreamProgress
-              dreams={dreams}
-              handleOpenMilestoneManager={handleOpenMilestoneManager}
-            />
-
-            {/* Dream Timeline Component */}
-            <DreamTimeline dreams={dreams} />
-          </div>
+          <VisionBoardTab
+            dreams={dreams}
+            expandedMiniBoard={expandedMiniBoard}
+            toggleMiniBoard={toggleMiniBoard}
+            updateDreamProgress={updateDreamProgress}
+            handleOpenMilestoneManager={handleOpenMilestoneManager}
+            openDreamBoardModal={() => setIsDreamBoardModalOpen(true)}
+            getCategoryDetails={getCategoryDetails}
+            calculateCategoryProgress={calculateCategoryProgress}
+            hoveredCategory={hoveredCategory}
+            setHoveredCategory={setHoveredCategory}
+            expandedCategory={expandedCategory}
+            toggleCategoryExpand={toggleCategoryExpand}
+            filterCategory={filterCategory}
+            setFilterCategory={setFilterCategory}
+            categories={mockCategories}
+          />
         )}
 
         {activeTab === 'experience' && (
