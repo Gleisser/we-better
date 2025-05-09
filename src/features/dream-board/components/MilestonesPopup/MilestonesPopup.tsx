@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream, Milestone } from '../../types';
+import TimelineComponent from './TimelineComponent';
 
 interface MilestoneHistoryItem {
   dreamId: string;
@@ -125,72 +126,11 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
               {activeVizTab === 'timeline' && (
                 <div className={styles.timelineVisualization}>
                   <h4>Milestone Timeline</h4>
-
                   {selectedDream.milestones.some(m => m.date) ? (
-                    <div className={styles.timelineContainer}>
-                      {/* Timeline axis */}
-                      <div className={styles.timelineAxis}>
-                        {/* Time markers */}
-                        <div className={styles.timeMarker} style={{ left: '0%' }}>
-                          <div className={styles.markerLine}></div>
-                          <div className={styles.markerLabel}>Now</div>
-                        </div>
-                        <div className={styles.timeMarker} style={{ left: '25%' }}>
-                          <div className={styles.markerLine}></div>
-                          <div className={styles.markerLabel}>Q1</div>
-                        </div>
-                        <div className={styles.timeMarker} style={{ left: '50%' }}>
-                          <div className={styles.markerLine}></div>
-                          <div className={styles.markerLabel}>Q2</div>
-                        </div>
-                        <div className={styles.timeMarker} style={{ left: '75%' }}>
-                          <div className={styles.markerLine}></div>
-                          <div className={styles.markerLabel}>Q3</div>
-                        </div>
-                        <div className={styles.timeMarker} style={{ left: '100%' }}>
-                          <div className={styles.markerLine}></div>
-                          <div className={styles.markerLabel}>Q4</div>
-                        </div>
-
-                        {/* Milestones on timeline */}
-                        {selectedDream.milestones
-                          .filter(m => m.date)
-                          .sort((a, b) => {
-                            // Safe handling of dates without non-null assertions
-                            const dateA = a.date ? new Date(a.date).getTime() : 0;
-                            const dateB = b.date ? new Date(b.date).getTime() : 0;
-                            return dateA - dateB;
-                          })
-                          .map(milestone => {
-                            // Calculate position based on date (simplified for demo)
-                            // In a real implementation, calculate position based on date range
-                            const today = new Date();
-                            const milestoneDate = milestone.date ? new Date(milestone.date) : today;
-                            const daysDiff = Math.max(
-                              0,
-                              (milestoneDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-                            );
-                            const position = Math.min(100, Math.max(0, (daysDiff / 365) * 100));
-
-                            return (
-                              <div
-                                key={milestone.id}
-                                className={`${styles.timelinePoint} ${milestone.completed ? styles.completedPoint : ''}`}
-                                style={{ left: `${position}%` }}
-                              >
-                                <div className={styles.pointConnector}></div>
-                                <div className={styles.pointDot}></div>
-                                <div className={styles.pointContent}>
-                                  <div className={styles.pointTitle}>{milestone.title}</div>
-                                  <div className={styles.pointDate}>
-                                    {formatDisplayDate(milestone.date)}
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                      </div>
-                    </div>
+                    <TimelineComponent
+                      milestones={selectedDream.milestones}
+                      formatDisplayDate={formatDisplayDate}
+                    />
                   ) : (
                     <div className={styles.emptyVisualization}>
                       <p>
