@@ -16,6 +16,7 @@ import { DreamBoardModal } from './components/DreamBoardModal';
 import { DEFAULT_LIFE_CATEGORIES } from '../life-wheel/constants/categories';
 import categoryDetails from './components/constants/dreamboard';
 import achievementBadges from './components/constants/achievements';
+import QuickVision from './components/QuickVision';
 
 type CategoryDetails = {
   icon: string;
@@ -442,92 +443,13 @@ const DreamBoardPage: React.FC = () => {
 
       {/* Quick Access Mini Vision Board - only show in vision-board tab */}
       {activeTab === 'vision-board' && (
-        <section className={`${styles.miniBoard} ${expandedMiniBoard ? styles.expanded : ''}`}>
-          <div className={styles.miniBoardHeader}>
-            <h2>Quick Vision</h2>
-            <div className={styles.miniBoardHeaderControls}>
-              <button
-                className={styles.dreamBoardButton}
-                onClick={() => setIsDreamBoardModalOpen(true)}
-              >
-                <span className={styles.dreamBoardButtonIcon}>🎨</span>
-                <span>My Dream Board</span>
-              </button>
-              <button
-                className={expandedMiniBoard ? styles.minimizeButton : styles.expandButton}
-                onClick={toggleMiniBoard}
-              >
-                <span>{expandedMiniBoard ? 'Minimize' : 'Expand'}</span>
-              </button>
-            </div>
-          </div>
-          <div className={styles.miniBoardContent}>
-            {dreams.slice(0, 3).map(dream => {
-              // Get icon based on category
-              const getIconForCategory = (category: string): string => {
-                const icons: Record<string, string> = {
-                  Travel: '✈️',
-                  Skills: '🎯',
-                  Finance: '💰',
-                  Health: '💪',
-                  Relationships: '❤️',
-                  Career: '💼',
-                  Education: '🎓',
-                  Spirituality: '✨',
-                };
-                return icons[category] || '🌟';
-              };
-
-              return (
-                <div key={dream.id} className={styles.miniDream}>
-                  <div className={styles.dreamIcon}>{getIconForCategory(dream.category)}</div>
-
-                  <div className={styles.dreamContentWrapper}>
-                    <div className={styles.dreamTitle}>{dream.title}</div>
-                    <div className={styles.progressContainer}>
-                      <div className={styles.progressBar}>
-                        <div
-                          className={styles.progressIndicator}
-                          style={{ width: `${dream.progress * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.dreamStatus}>
-                    <div className={styles.progressControls}>
-                      <button
-                        className={styles.progressButton}
-                        onClick={e => {
-                          e.stopPropagation();
-                          updateDreamProgress(dream.id, -0.1);
-                        }}
-                        disabled={dream.progress <= 0}
-                        aria-label="Decrease progress"
-                      >
-                        <span className={styles.buttonIcon}>-</span>
-                      </button>
-                      <div className={styles.progressValue}>
-                        {Math.round(dream.progress * 100)}%
-                      </div>
-                      <button
-                        className={styles.progressButton}
-                        onClick={e => {
-                          e.stopPropagation();
-                          updateDreamProgress(dream.id, 0.1);
-                        }}
-                        disabled={dream.progress >= 1}
-                        aria-label="Increase progress"
-                      >
-                        <span className={styles.buttonIcon}>+</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
+        <QuickVision
+          dreams={dreams}
+          expandedMiniBoard={expandedMiniBoard}
+          toggleMiniBoard={toggleMiniBoard}
+          updateDreamProgress={updateDreamProgress}
+          openDreamBoardModal={() => setIsDreamBoardModalOpen(true)}
+        />
       )}
 
       {/* Main Content Section */}
