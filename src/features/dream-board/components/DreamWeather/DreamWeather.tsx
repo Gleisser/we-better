@@ -50,16 +50,7 @@ const DreamWeather: React.FC<DreamWeatherProps> = ({ weather }) => {
     <div className={styles.dreamWeatherCard}>
       <div className={styles.weatherGlassmorphism}>
         <div className={styles.weatherCardHeader}>
-          <div className={styles.weatherTemp}>
-            <span className={styles.weatherIcon}>
-              <img
-                src={imagePath}
-                alt={`${weatherDisplayName} weather`}
-                className={styles.weatherIconImage}
-              />
-            </span>
-            <h3 className={styles.weatherTitle}>Dream Weather</h3>
-          </div>
+          <div className={styles.weatherTitle}>Dream Weather</div>
           <div className={styles.weatherCondition}>
             <span className={styles.weatherText}>{weatherDisplayName}</span>
           </div>
@@ -69,25 +60,13 @@ const DreamWeather: React.FC<DreamWeatherProps> = ({ weather }) => {
           <p className={styles.weatherMessage}>{weather.message}</p>
         </div>
 
-        {weather.categoryStatus && Object.keys(weather.categoryStatus).length > 0 && (
-          <div className={styles.weatherCategoryStatus}>
-            <div className={styles.weatherCategoryStatsHeader}>Category Status</div>
-            <div className={styles.weatherCategoryStatsGrid}>
-              {Object.entries(weather.categoryStatus)
-                .slice(0, 4)
-                .map(([category, status]) => (
-                  <div key={category} className={styles.weatherCategoryStat}>
-                    <span className={styles.weatherCategoryName}>{category}</span>
-                    <span
-                      className={`${styles.weatherCategoryValue} ${styles[`weather${status.replace('-', '')}`]}`}
-                    >
-                      {getWeatherDisplayName(status)}
-                    </span>
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
+        <div className={styles.weatherImageContainer}>
+          <img
+            src={imagePath}
+            alt={`${weatherDisplayName} weather`}
+            className={styles.weatherImageLarge}
+          />
+        </div>
       </div>
     </div>
   );
