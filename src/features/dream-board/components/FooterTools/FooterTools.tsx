@@ -28,16 +28,10 @@ interface FooterToolsProps {
   challenges: Challenge[];
 }
 
-const FooterTools: React.FC<FooterToolsProps> = ({ weather, notifications, challenges }) => {
+const FooterTools: React.FC<FooterToolsProps> = ({ weather, challenges }) => {
   return (
     <footer className={styles.toolsFooter}>
       <DreamWeather weather={weather} />
-
-      <div className={styles.toolSection}>
-        <h3>Notifications</h3>
-        <p>You have {notifications.filter(n => !n.read).length} unread notifications.</p>
-        <div className={styles.notificationPreview}>{notifications[0].description}</div>
-      </div>
 
       <div className={styles.toolSection}>
         <h3>Challenge Mode</h3>
