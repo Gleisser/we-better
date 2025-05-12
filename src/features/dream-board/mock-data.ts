@@ -312,6 +312,36 @@ export const mockChallenges: Challenge[] = [
     currentDay: 21,
     completed: true,
   },
+  {
+    id: 'c3',
+    title: 'Japan Trip Savings',
+    description: 'Save $100 every week towards your Japan trip',
+    dreamId: '1',
+    duration: 20,
+    startDate: '2023-07-01T00:00:00Z',
+    currentDay: 8,
+    completed: false,
+  },
+  {
+    id: 'c4',
+    title: 'House Down Payment',
+    description: 'Save $500 monthly for house down payment',
+    dreamId: '3',
+    duration: 24,
+    startDate: '2023-06-15T00:00:00Z',
+    currentDay: 3,
+    completed: false,
+  },
+  {
+    id: 'c5',
+    title: 'Family Dinner Nights',
+    description: 'Have a family dinner at least once a week',
+    dreamId: '6',
+    duration: 12,
+    startDate: '2023-07-05T00:00:00Z',
+    currentDay: 4,
+    completed: false,
+  },
 ];
 
 // Mock AI insights
