@@ -2135,3 +2135,163 @@
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
+
+.dreamChallengeContainer {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(217, 70, 239, 0.1));
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.2),
+    0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  backdrop-filter: blur(10px);
+  padding: 24px;
+  color: white;
+}
+
+.dreamChallengeContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(16, 24, 39, 0.8) 0%,
+    rgba(244, 63, 94, 0.3) 50%,
+    rgba(217, 70, 239, 0.2) 100%
+  );
+  z-index: -1;
+}
+
+.challengeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.challengeTitle {
+  font-size: 1.7rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+}
+
+.newChallengeButton {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 8px 16px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.newChallengeButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.activeChallengeCard {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.challengeInfo {
+  margin-bottom: 16px;
+}
+
+.challengeName {
+  font-size: 1.3rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 12px;
+  color: white;
+}
+
+.challengeProgress {
+  margin-top: 12px;
+}
+
+.progressText {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.progressBarContainer {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(to right, #f43f5e, #d946ef);
+  border-radius: 10px;
+  transition: width 0.3s ease-in-out;
+}
+
+.challengeActions {
+  display: flex;
+  justify-content: center;
+}
+
+.completeButton {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.8), rgba(217, 70, 239, 0.8));
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.completeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.noChallengeState {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.noChallengeState p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.moreChallenges {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.moreChallenges:hover {
+  color: white;
+  text-decoration: underline;
+}

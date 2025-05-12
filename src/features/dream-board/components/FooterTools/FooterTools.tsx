@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import DreamWeather from '../DreamWeather';
+import DreamChallenge from '../DreamChallenge';
 
 interface Weather {
   message: string;
@@ -32,19 +33,7 @@ const FooterTools: React.FC<FooterToolsProps> = ({ weather, challenges }) => {
   return (
     <footer className={styles.toolsFooter}>
       <DreamWeather weather={weather} />
-
-      <div className={styles.toolSection}>
-        <h3>Challenge Mode</h3>
-        {challenges.filter(c => !c.completed).length > 0 ? (
-          <p>
-            {challenges.filter(c => !c.completed)[0].title}: Day{' '}
-            {challenges.filter(c => !c.completed)[0].currentDay} of{' '}
-            {challenges.filter(c => !c.completed)[0].duration}
-          </p>
-        ) : (
-          <p>No active challenges. Start a new one!</p>
-        )}
-      </div>
+      <DreamChallenge challenges={challenges} />
     </footer>
   );
 };
