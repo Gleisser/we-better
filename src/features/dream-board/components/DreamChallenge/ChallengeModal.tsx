@@ -303,14 +303,18 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({ isOpen, onClose, onSave
 
               <div className={styles.formGroup}>
                 <div className={styles.reminderToggle}>
-                  <label htmlFor="enableReminders" className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      id="enableReminders"
-                      checked={enableReminders}
-                      onChange={e => setEnableReminders(e.target.checked)}
-                    />
-                    Enable Daily Reminders
+                  <label htmlFor="enableReminders" className={styles.switchLabel}>
+                    <span className={styles.switchLabelText}>Enable Daily Reminders</span>
+                    <div className={styles.switchWrapper}>
+                      <input
+                        type="checkbox"
+                        id="enableReminders"
+                        checked={enableReminders}
+                        onChange={e => setEnableReminders(e.target.checked)}
+                        className={styles.switchInput}
+                      />
+                      <span className={styles.switchSlider}></span>
+                    </div>
                   </label>
 
                   {enableReminders && (
