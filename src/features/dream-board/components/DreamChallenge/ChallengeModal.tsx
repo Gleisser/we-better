@@ -100,6 +100,14 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({ isOpen, onClose, onSave
     }
   };
 
+  // Calculate day total for display
+  const calculateTotalDays = (): number => {
+    const durationNum = parseInt(duration);
+    if (durationUnit === 'weeks') return durationNum * 7;
+    if (durationUnit === 'months') return durationNum * 30;
+    return durationNum;
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -150,21 +158,22 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({ isOpen, onClose, onSave
                 <h3 className={styles.sectionTitle}>Duration & Difficulty</h3>
               </div>
 
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label htmlFor="duration">Duration</label>
-                  <div className={styles.durationInputs}>
-                    <input
-                      type="number"
-                      id="duration"
-                      min="1"
-                      value={duration}
-                      onChange={e => setDuration(e.target.value)}
-                      required
-                    />
+              <div className={styles.formGroup}>
+                <label htmlFor="duration">Duration</label>
+                <div className={styles.durationInputs}>
+                  <input
+                    type="number"
+                    id="duration"
+                    min="1"
+                    value={duration}
+                    onChange={e => setDuration(e.target.value)}
+                    required
+                  />
+                  <div className={styles.unitSelectionWrapper}>
                     <select
                       value={durationUnit}
                       onChange={e => setDurationUnit(e.target.value as 'days' | 'weeks' | 'months')}
+                      className={styles.unitSelect}
                     >
                       <option value="days">Days</option>
                       <option value="weeks">Weeks</option>
@@ -172,32 +181,38 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({ isOpen, onClose, onSave
                     </select>
                   </div>
                 </div>
+                {durationUnit !== 'days' && (
+                  <div className={styles.durationHint}>{`Total: ${calculateTotalDays()} days`}</div>
+                )}
+              </div>
 
-                <div className={styles.formGroup}>
-                  <label>Difficulty Level</label>
-                  <div className={styles.difficultyInputs}>
-                    <button
-                      type="button"
-                      className={`${styles.difficultyBtn} ${styles.easyBtn} ${difficultyLevel === 'easy' ? styles.active : ''}`}
-                      onClick={() => setDifficultyLevel('easy')}
-                    >
-                      Easy
-                    </button>
-                    <button
-                      type="button"
-                      className={`${styles.difficultyBtn} ${styles.mediumBtn} ${difficultyLevel === 'medium' ? styles.active : ''}`}
-                      onClick={() => setDifficultyLevel('medium')}
-                    >
-                      Medium
-                    </button>
-                    <button
-                      type="button"
-                      className={`${styles.difficultyBtn} ${styles.hardBtn} ${difficultyLevel === 'hard' ? styles.active : ''}`}
-                      onClick={() => setDifficultyLevel('hard')}
-                    >
-                      Hard
-                    </button>
-                  </div>
+              <div className={styles.formGroup}>
+                <label>Difficulty Level</label>
+                <div className={styles.difficultyInputs}>
+                  <button
+                    type="button"
+                    className={`${styles.difficultyBtn} ${styles.easyBtn} ${difficultyLevel === 'easy' ? styles.active : ''}`}
+                    onClick={() => setDifficultyLevel('easy')}
+                  >
+                    <span className={styles.difficultyIcon}>🌱</span>
+                    Easy
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.difficultyBtn} ${styles.mediumBtn} ${difficultyLevel === 'medium' ? styles.active : ''}`}
+                    onClick={() => setDifficultyLevel('medium')}
+                  >
+                    <span className={styles.difficultyIcon}>🔄</span>
+                    Medium
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.difficultyBtn} ${styles.hardBtn} ${difficultyLevel === 'hard' ? styles.active : ''}`}
+                    onClick={() => setDifficultyLevel('hard')}
+                  >
+                    <span className={styles.difficultyIcon}>🔥</span>
+                    Hard
+                  </button>
                 </div>
               </div>
             </div>
