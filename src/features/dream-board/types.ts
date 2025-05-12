@@ -28,8 +28,13 @@ export interface Challenge {
   id: string;
   title: string;
   description: string;
-  dreamId: string;
+  dreamId: string | null;
   duration: number; // in days
+  frequency: 'daily' | 'weekly' | 'custom';
+  selectedDays: number[];
+  difficultyLevel: 'easy' | 'medium' | 'hard';
+  enableReminders: boolean;
+  reminderTime: string | null;
   startDate: string; // ISO date string
   currentDay: number;
   completed: boolean;

@@ -1,21 +1,33 @@
 import React, { useState, useRef, useEffect, TouchEvent } from 'react';
 import styles from '../../DreamBoardPage.module.css';
+import { Dream } from '../../types';
 
 interface Challenge {
   id: string;
   title: string;
   description: string;
-  dreamId: string;
+  dreamId: string | null;
   duration: number;
+  frequency: 'daily' | 'weekly' | 'custom';
+  selectedDays: number[];
+  difficultyLevel: 'easy' | 'medium' | 'hard';
+  enableReminders: boolean;
+  reminderTime: string | null;
+  startDate: string;
   currentDay: number;
   completed: boolean;
 }
 
 interface DreamChallengeProps {
   challenges: Challenge[];
+  dreams?: Dream[];
+  onOpenChallengeModal?: () => void;
 }
 
-const DreamChallenge: React.FC<DreamChallengeProps> = ({ challenges }) => {
+const DreamChallenge: React.FC<DreamChallengeProps> = ({
+  challenges,
+  onOpenChallengeModal = () => {},
+}) => {
   const activeChallenges = challenges.filter(c => !c.completed);
   const hasActiveChallenges = activeChallenges.length > 0;
 
@@ -79,7 +91,9 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({ challenges }) => {
     <div className={styles.dreamChallengeContainer}>
       <div className={styles.challengeHeader}>
         <h3 className={styles.challengeTitle}>Challenge Mode</h3>
-        <button className={styles.newChallengeButton}>New Challenge</button>
+        <button className={styles.newChallengeButton} onClick={onOpenChallengeModal}>
+          New Challenge
+        </button>
       </div>
 
       {hasActiveChallenges ? (

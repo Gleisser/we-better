@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './DreamBoardPage.module.css';
-import { Dream, JournalEntry, Milestone } from './types';
+import { Dream, JournalEntry, Milestone, Challenge } from './types';
 import {
   mockDreams,
   mockCategories,
@@ -22,6 +22,7 @@ import DetailedTimeline from './components/DetailedTimeline';
 import DreamJournal from './components/DreamJournal';
 import FooterTools from './components/FooterTools';
 import MilestonesPopup from './components/MilestonesPopup';
+import ChallengeModal from './components/DreamChallenge/ChallengeModal';
 
 type CategoryDetails = {
   icon: string;
@@ -67,6 +68,9 @@ const DreamBoardPage: React.FC = () => {
     Array<{ dreamId: string; milestoneId: string; action: string; timestamp: string }>
   >([]);
   const [showMilestonesPopup, setShowMilestonesPopup] = useState(false);
+
+  // New state for challenge modal
+  const [isChallengeModalOpen, setIsChallengeModalOpen] = useState(false);
 
   // New state for inline form display
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
@@ -215,6 +219,24 @@ const DreamBoardPage: React.FC = () => {
     setShowMilestoneForm(false);
     setMilestoneAction(null);
     setCurrentMilestone(null);
+  };
+
+  // Handle opening the challenge modal
+  const handleOpenChallengeModal = (): void => {
+    setIsChallengeModalOpen(true);
+  };
+
+  // Handle closing the challenge modal
+  const handleCloseChallengeModal = (): void => {
+    setIsChallengeModalOpen(false);
+  };
+
+  // Handle saving a new challenge
+  const handleSaveChallenge = (challengeData: Omit<Challenge, 'id'>): void => {
+    // In a real app, this would save to a database
+    console.info('New challenge created:', challengeData);
+    // You would then update mockChallenges or fetch updated challenges
+    handleCloseChallengeModal();
   };
 
   // Handle initiating add/edit milestone
@@ -492,6 +514,8 @@ const DreamBoardPage: React.FC = () => {
         weather={mockWeather}
         notifications={mockNotifications}
         challenges={mockChallenges}
+        dreams={dreams}
+        onOpenChallengeModal={handleOpenChallengeModal}
       />
 
       {/* Dream Board Modal */}
@@ -524,6 +548,14 @@ const DreamBoardPage: React.FC = () => {
           achievementBadges={achievementBadges}
         />
       )}
+
+      {/* Challenge Modal */}
+      <ChallengeModal
+        isOpen={isChallengeModalOpen}
+        onClose={handleCloseChallengeModal}
+        onSave={handleSaveChallenge}
+        dreams={dreams}
+      />
     </div>
   );
 };
