@@ -23,7 +23,7 @@ const EnhancedLifeWheelPage = (): JSX.Element => {
   }, []);
 
   return (
-    <div className={styles.lifeWheelPageContainer}>
+    <>
       <h1 className="text-3xl font-bold mb-6 text-white text-center">Life Wheel Assessment</h1>
 
       {isLoading ? (
@@ -34,7 +34,7 @@ const EnhancedLifeWheelPage = (): JSX.Element => {
       ) : (
         <EnhancedLifeWheel />
       )}
-    </div>
+    </>
   );
 };
 

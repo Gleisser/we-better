@@ -3,7 +3,6 @@ import { Dream } from '../../types';
 import styles from '../../DreamBoardPage.module.css';
 import DreamCategories from '../DreamCategories';
 import DreamProgress from '../DreamProgress';
-import DreamTimeline from '../DreamTimeline';
 import QuickVision from '../QuickVision';
 
 // Define CategoryDetails type
@@ -83,9 +82,6 @@ const VisionBoardTab: React.FC<VisionBoardTabProps> = ({
           handleOpenMilestoneManager={handleOpenMilestoneManager}
           getCategoryDetails={getCategoryDetails}
         />
-
-        {/* Dream Timeline Component */}
-        <DreamTimeline dreams={dreams} />
       </div>
     </>
   );

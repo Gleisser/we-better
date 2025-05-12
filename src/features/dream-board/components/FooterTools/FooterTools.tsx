@@ -1,9 +1,11 @@
 import React from 'react';
 import styles from '../../DreamBoardPage.module.css';
+import DreamWeather from '../DreamWeather';
 
 interface Weather {
   message: string;
-  overall: string;
+  overall: 'sunny' | 'partly-cloudy' | 'cloudy' | 'stormy';
+  categoryStatus?: Record<string, 'sunny' | 'partly-cloudy' | 'cloudy' | 'stormy'>;
 }
 
 interface Notification {
@@ -29,18 +31,14 @@ interface FooterToolsProps {
 const FooterTools: React.FC<FooterToolsProps> = ({ weather, notifications, challenges }) => {
   return (
     <footer className={styles.toolsFooter}>
-      <div className={styles.toolSection}>
-        <h3>Dream Weather</h3>
-        <p>{weather.message}</p>
-        <div className={styles.weatherStatus}>
-          Overall: <span className={styles.weatherIcon}>{weather.overall}</span>
-        </div>
-      </div>
+      <DreamWeather weather={weather} />
+
       <div className={styles.toolSection}>
         <h3>Notifications</h3>
         <p>You have {notifications.filter(n => !n.read).length} unread notifications.</p>
         <div className={styles.notificationPreview}>{notifications[0].description}</div>
       </div>
+
       <div className={styles.toolSection}>
         <h3>Challenge Mode</h3>
         {challenges.filter(c => !c.completed).length > 0 ? (

@@ -170,7 +170,7 @@ const LifeWheelWidget = (): JSX.Element => {
         <div className={styles.headerTop}>
           <div className={styles.headerLeft}>
             <span className={styles.headerIcon}>⚖️</span>
-            <span className={styles.headerText}>Life Balance</span>
+            <span className={styles.headerText}>Life Wheel</span>
           </div>
           <div className={styles.headerActions}>
             <Tooltip content="Go to Life Wheel details">

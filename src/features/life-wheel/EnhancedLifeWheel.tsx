@@ -7,6 +7,17 @@ import styles from './LifeWheel.module.css';
 import { getLatestLifeWheelData, saveLifeWheelData, getLifeWheelHistory } from './api/lifeWheelApi';
 import ReactDOM from 'react-dom';
 
+// Add keyframe animation for the background gradient
+const animatedGradientStyle: React.CSSProperties = {
+  background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #6366f1, #4f46e5, #3b82f6, #7c3aed)',
+  backgroundSize: '400% 400%',
+  animation: 'gradientAnimation 15s ease infinite',
+  borderRadius: '16px',
+  padding: '1.5rem',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+};
+
 type HistoryEntry = {
   id: string;
   date: string;
@@ -473,7 +484,7 @@ const EnhancedLifeWheel = ({
 
   if (isLoading) {
     return (
-      <div className={`${styles.lifeWheelContainer} ${className}`}>
+      <div className={`${styles.lifeWheelContainer} ${className}`} style={animatedGradientStyle}>
         <div className={styles.loadingState}>
           <div className={styles.spinner}></div>
           <p>Loading your life wheel data...</p>
@@ -484,7 +495,7 @@ const EnhancedLifeWheel = ({
 
   if (error) {
     return (
-      <div className={`${styles.lifeWheelContainer} ${className}`}>
+      <div className={`${styles.lifeWheelContainer} ${className}`} style={animatedGradientStyle}>
         <div className={styles.errorState}>
           <h3>Something went wrong</h3>
           <p>{error.message || 'Failed to load life wheel data'}</p>
@@ -497,7 +508,7 @@ const EnhancedLifeWheel = ({
   }
 
   return (
-    <div className={`${styles.lifeWheelContainer} ${className}`}>
+    <div className={`${styles.lifeWheelContainer} ${className}`} style={animatedGradientStyle}>
       {/* Main content container - no background image needed since the parent has it */}
       <div className={styles.glassCard}>
         {/* Navigation tabs */}
@@ -533,8 +544,6 @@ const EnhancedLifeWheel = ({
               transition={{ duration: 0.3 }}
               className={styles.tabContent}
             >
-              <h1 className={styles.title}>Life Wheel Assessment</h1>
-
               <div
                 style={{
                   width: '100%',
@@ -664,7 +673,7 @@ const EnhancedLifeWheel = ({
               transition={{ duration: 0.3 }}
               className={styles.tabContent}
             >
-              <h1 className={styles.title}>Progress Over Time</h1>
+              <h1 className={styles.titleAlt}>Progress Over Time</h1>
 
               {historyLoading ? (
                 <div className={styles.loadingState}>
@@ -674,7 +683,7 @@ const EnhancedLifeWheel = ({
               ) : historyEntries.length === 0 ? (
                 <div className={styles.emptyState}>
                   <p>
-                    No history entries yet. Save your first assessment to start tracking progress!
+                    No history entries yet. Save your first assessment to start tracking progress
                   </p>
                 </div>
               ) : (
