@@ -38,6 +38,7 @@ interface FooterToolsProps {
   challenges: Challenge[];
   dreams?: Dream[];
   onOpenChallengeModal?: () => void;
+  onUpdateChallenge?: (challengeId: string, updatedData: Partial<Challenge>) => void;
 }
 
 const FooterTools: React.FC<FooterToolsProps> = ({
@@ -45,6 +46,7 @@ const FooterTools: React.FC<FooterToolsProps> = ({
   challenges,
   dreams = [],
   onOpenChallengeModal = () => {},
+  onUpdateChallenge = () => {},
 }) => {
   return (
     <footer className={styles.toolsFooter}>
@@ -53,6 +55,7 @@ const FooterTools: React.FC<FooterToolsProps> = ({
         challenges={challenges}
         dreams={dreams}
         onOpenChallengeModal={onOpenChallengeModal}
+        onUpdateChallenge={onUpdateChallenge}
       />
     </footer>
   );

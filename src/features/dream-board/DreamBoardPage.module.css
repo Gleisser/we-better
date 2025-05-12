@@ -2268,6 +2268,21 @@
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
+/* Undo button style */
+.undoButton {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(79, 70, 229, 0.8));
+  position: relative;
+  padding-left: 35px;
+}
+
+.undoButton::before {
+  content: '↩';
+  position: absolute;
+  left: 15px;
+  font-size: 1.2rem;
+  animation: pulse 1.5s infinite;
+}
+
 .noChallengeState {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 16px;

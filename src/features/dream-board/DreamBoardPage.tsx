@@ -51,6 +51,7 @@ const DreamBoardPage: React.FC = () => {
   const [expandedMiniBoard, setExpandedMiniBoard] = useState(false);
   const [activeTab, setActiveTab] = useState('vision-board');
   const [dreams, setDreams] = useState<Dream[]>(mockDreams);
+  const [challenges, setChallenges] = useState<Challenge[]>(mockChallenges);
   const [journalEntries] = useState<JournalEntry[]>(mockJournalEntries);
   const [activeDream, setActiveDream] = useState<Dream | null>(null);
   const [isDreamBoardModalOpen, setIsDreamBoardModalOpen] = useState(false);
@@ -235,7 +236,14 @@ const DreamBoardPage: React.FC = () => {
   const handleSaveChallenge = (challengeData: Omit<Challenge, 'id'>): void => {
     // In a real app, this would save to a database
     console.info('New challenge created:', challengeData);
-    // You would then update mockChallenges or fetch updated challenges
+
+    // Add the new challenge to the state
+    const newChallenge: Challenge = {
+      ...challengeData,
+      id: `c${Date.now()}`, // Generate a simple ID
+    };
+
+    setChallenges(prevChallenges => [...prevChallenges, newChallenge]);
     handleCloseChallengeModal();
   };
 
@@ -427,6 +435,18 @@ const DreamBoardPage: React.FC = () => {
     return points;
   };
 
+  // Handle updating a challenge (for marking days complete/incomplete)
+  const handleUpdateChallenge = (challengeId: string, updatedData: Partial<Challenge>): void => {
+    setChallenges(prevChallenges =>
+      prevChallenges.map(challenge => {
+        if (challenge.id === challengeId) {
+          return { ...challenge, ...updatedData };
+        }
+        return challenge;
+      })
+    );
+  };
+
   return (
     <div className={styles.dreamBoardContainer}>
       <header className={styles.header}>
@@ -513,9 +533,10 @@ const DreamBoardPage: React.FC = () => {
       <FooterTools
         weather={mockWeather}
         notifications={mockNotifications}
-        challenges={mockChallenges}
+        challenges={challenges}
         dreams={dreams}
         onOpenChallengeModal={handleOpenChallengeModal}
+        onUpdateChallenge={handleUpdateChallenge}
       />
 
       {/* Dream Board Modal */}

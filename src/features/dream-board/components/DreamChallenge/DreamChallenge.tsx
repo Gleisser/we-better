@@ -22,11 +22,13 @@ interface DreamChallengeProps {
   challenges: Challenge[];
   dreams?: Dream[];
   onOpenChallengeModal?: () => void;
+  onUpdateChallenge?: (challengeId: string, updatedData: Partial<Challenge>) => void;
 }
 
 const DreamChallenge: React.FC<DreamChallengeProps> = ({
   challenges,
   onOpenChallengeModal = () => {},
+  onUpdateChallenge = () => {}, // Default empty function
 }) => {
   const activeChallenges = challenges.filter(c => !c.completed);
   const hasActiveChallenges = activeChallenges.length > 0;
@@ -35,6 +37,8 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  // Track which challenges have been marked as complete today
+  const [markedCompletedToday, setMarkedCompletedToday] = useState<Set<string>>(new Set());
 
   // For swiping functionality
   const handleTouchStart = (e: TouchEvent): void => {
@@ -85,7 +89,46 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
     }
   };
 
+  // Handle marking a day as complete
+  const handleMarkDayComplete = (challengeId: string, currentDay: number): void => {
+    // Add a day to the challenge progress
+    onUpdateChallenge(challengeId, { currentDay: currentDay + 1 });
+
+    // Add the challenge to the marked complete set
+    setMarkedCompletedToday(prev => {
+      const newSet = new Set(prev);
+      newSet.add(challengeId);
+      return newSet;
+    });
+
+    // Check if the challenge is now completed
+    const challenge = challenges.find(c => c.id === challengeId);
+    if (challenge && currentDay + 1 >= challenge.duration) {
+      // If currentDay + 1 equals or exceeds the duration, mark as completed
+      onUpdateChallenge(challengeId, { completed: true });
+    }
+  };
+
+  // Handle undoing a day as complete
+  const handleUndoMarkDayComplete = (challengeId: string, currentDay: number): void => {
+    // Only allow undo if currentDay is greater than 0
+    if (currentDay > 0) {
+      // Subtract a day from the challenge progress
+      onUpdateChallenge(challengeId, { currentDay: currentDay - 1 });
+
+      // Remove the challenge from the marked complete set
+      setMarkedCompletedToday(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(challengeId);
+        return newSet;
+      });
+    }
+  };
+
   const currentChallenge = hasActiveChallenges ? activeChallenges[currentChallengeIndex] : null;
+  const isCurrentChallengeMarkedComplete = currentChallenge
+    ? markedCompletedToday.has(currentChallenge.id)
+    : false;
 
   return (
     <div className={styles.dreamChallengeContainer}>
@@ -138,7 +181,26 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
             </div>
 
             <div className={styles.challengeActions}>
-              <button className={styles.completeButton}>Mark Today Complete</button>
+              {currentChallenge &&
+                (isCurrentChallengeMarkedComplete ? (
+                  <button
+                    className={`${styles.completeButton} ${styles.undoButton}`}
+                    onClick={() =>
+                      handleUndoMarkDayComplete(currentChallenge.id, currentChallenge.currentDay)
+                    }
+                  >
+                    Undo Today Complete
+                  </button>
+                ) : (
+                  <button
+                    className={styles.completeButton}
+                    onClick={() =>
+                      handleMarkDayComplete(currentChallenge.id, currentChallenge.currentDay)
+                    }
+                  >
+                    Mark Today Complete
+                  </button>
+                ))}
             </div>
           </div>
 
