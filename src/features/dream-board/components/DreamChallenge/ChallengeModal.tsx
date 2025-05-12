@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../../DreamBoardPage.module.css';
+import styles from './ChallengeModal.module.css';
 import { Dream } from '../../types';
 
 interface NewChallenge {
@@ -105,184 +105,236 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({ isOpen, onClose, onSave
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.challengeModal} onClick={e => e.stopPropagation()}>
-        <h2>Create New Challenge</h2>
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <label htmlFor="title">Challenge Title</label>
-            <input
-              type="text"
-              id="title"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="30-Day Meditation Challenge"
-              required
-            />
-          </div>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitle}>Create New Challenge</h2>
+          <button className={styles.closeButton} onClick={onClose} aria-label="Close modal">
+            ×
+          </button>
+        </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="description">Description</label>
-            <textarea
-              id="description"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Meditate for 10 minutes each day"
-              required
-            />
-          </div>
+        <div className={styles.modalContent}>
+          <form onSubmit={handleSubmit}>
+            <div className={styles.formSection}>
+              <div className={styles.formSectionHeader}>
+                <div className={styles.sectionIcon}>📝</div>
+                <h3 className={styles.sectionTitle}>Basic Information</h3>
+              </div>
 
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="duration">Duration</label>
-              <div className={styles.durationInputs}>
+              <div className={styles.formGroup}>
+                <label htmlFor="title">Challenge Title</label>
                 <input
-                  type="number"
-                  id="duration"
-                  min="1"
-                  value={duration}
-                  onChange={e => setDuration(e.target.value)}
+                  type="text"
+                  id="title"
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  placeholder="30-Day Meditation Challenge"
                   required
                 />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="description">Description</label>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  placeholder="Meditate for 10 minutes each day to build a consistent practice"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className={styles.formSection}>
+              <div className={styles.formSectionHeader}>
+                <div className={styles.sectionIcon}>⏱️</div>
+                <h3 className={styles.sectionTitle}>Duration & Difficulty</h3>
+              </div>
+
+              <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="duration">Duration</label>
+                  <div className={styles.durationInputs}>
+                    <input
+                      type="number"
+                      id="duration"
+                      min="1"
+                      value={duration}
+                      onChange={e => setDuration(e.target.value)}
+                      required
+                    />
+                    <select
+                      value={durationUnit}
+                      onChange={e => setDurationUnit(e.target.value as 'days' | 'weeks' | 'months')}
+                    >
+                      <option value="days">Days</option>
+                      <option value="weeks">Weeks</option>
+                      <option value="months">Months</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>Difficulty Level</label>
+                  <div className={styles.difficultyInputs}>
+                    <button
+                      type="button"
+                      className={`${styles.difficultyBtn} ${styles.easyBtn} ${difficultyLevel === 'easy' ? styles.active : ''}`}
+                      onClick={() => setDifficultyLevel('easy')}
+                    >
+                      Easy
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.difficultyBtn} ${styles.mediumBtn} ${difficultyLevel === 'medium' ? styles.active : ''}`}
+                      onClick={() => setDifficultyLevel('medium')}
+                    >
+                      Medium
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.difficultyBtn} ${styles.hardBtn} ${difficultyLevel === 'hard' ? styles.active : ''}`}
+                      onClick={() => setDifficultyLevel('hard')}
+                    >
+                      Hard
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.formSection}>
+              <div className={styles.formSectionHeader}>
+                <div className={styles.sectionIcon}>🔄</div>
+                <h3 className={styles.sectionTitle}>Frequency</h3>
+              </div>
+
+              <div className={styles.formGroup}>
+                <div className={styles.frequencyOptions}>
+                  <label
+                    className={`${styles.radioLabel} ${frequency === 'daily' ? styles.active : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="frequency"
+                      value="daily"
+                      checked={frequency === 'daily'}
+                      onChange={() => setFrequency('daily')}
+                    />
+                    Daily
+                  </label>
+                  <label
+                    className={`${styles.radioLabel} ${frequency === 'weekly' ? styles.active : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="frequency"
+                      value="weekly"
+                      checked={frequency === 'weekly'}
+                      onChange={() => setFrequency('weekly')}
+                    />
+                    Weekly
+                  </label>
+                  <label
+                    className={`${styles.radioLabel} ${frequency === 'custom' ? styles.active : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="frequency"
+                      value="custom"
+                      checked={frequency === 'custom'}
+                      onChange={() => setFrequency('custom')}
+                    />
+                    Custom
+                  </label>
+                </div>
+              </div>
+
+              {frequency === 'custom' && (
+                <div className={styles.formGroup}>
+                  <label>Select Days</label>
+                  <div className={styles.daySelector}>
+                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => (
+                      <button
+                        key={day}
+                        type="button"
+                        className={`${styles.dayButton} ${selectedDays.includes(index) ? styles.selectedDay : ''}`}
+                        onClick={() => handleDayToggle(index)}
+                      >
+                        {day}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.tipContainer}>
+                <div className={styles.tipIcon}>💡</div>
+                <div className={styles.tipText}>
+                  {frequency === 'daily'
+                    ? 'Daily challenges help build consistent habits and routines.'
+                    : frequency === 'weekly'
+                      ? 'Weekly challenges are great for activities that require more time or preparation.'
+                      : 'Custom scheduling gives you flexibility to fit challenges around your existing commitments.'}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.formSection}>
+              <div className={styles.formSectionHeader}>
+                <div className={styles.sectionIcon}>🔗</div>
+                <h3 className={styles.sectionTitle}>Connect & Remind</h3>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="linkedDream">Link to Dream (Optional)</label>
                 <select
-                  value={durationUnit}
-                  onChange={e => setDurationUnit(e.target.value as 'days' | 'weeks' | 'months')}
+                  id="linkedDream"
+                  value={linkedDream}
+                  onChange={e => setLinkedDream(e.target.value)}
                 >
-                  <option value="days">Days</option>
-                  <option value="weeks">Weeks</option>
-                  <option value="months">Months</option>
+                  <option value="">None</option>
+                  {dreams.map(dream => (
+                    <option key={dream.id} value={dream.id}>
+                      {dream.title}
+                    </option>
+                  ))}
                 </select>
               </div>
-            </div>
 
-            <div className={styles.formGroup}>
-              <label>Difficulty</label>
-              <div className={styles.difficultyInputs}>
-                <button
-                  type="button"
-                  className={`${styles.difficultyBtn} ${difficultyLevel === 'easy' ? styles.active : ''}`}
-                  onClick={() => setDifficultyLevel('easy')}
-                >
-                  Easy
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.difficultyBtn} ${difficultyLevel === 'medium' ? styles.active : ''}`}
-                  onClick={() => setDifficultyLevel('medium')}
-                >
-                  Medium
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.difficultyBtn} ${difficultyLevel === 'hard' ? styles.active : ''}`}
-                  onClick={() => setDifficultyLevel('hard')}
-                >
-                  Hard
-                </button>
+              <div className={styles.formGroup}>
+                <div className={styles.reminderToggle}>
+                  <label htmlFor="enableReminders" className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      id="enableReminders"
+                      checked={enableReminders}
+                      onChange={e => setEnableReminders(e.target.checked)}
+                    />
+                    Enable Daily Reminders
+                  </label>
+
+                  {enableReminders && (
+                    <input
+                      type="time"
+                      value={reminderTime}
+                      onChange={e => setReminderTime(e.target.value)}
+                      className={styles.timeInput}
+                    />
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className={styles.formGroup}>
-            <label>Frequency</label>
-            <div className={styles.frequencyOptions}>
-              <label className={styles.radioLabel}>
-                <input
-                  type="radio"
-                  name="frequency"
-                  value="daily"
-                  checked={frequency === 'daily'}
-                  onChange={() => setFrequency('daily')}
-                />
-                Daily
-              </label>
-              <label className={styles.radioLabel}>
-                <input
-                  type="radio"
-                  name="frequency"
-                  value="weekly"
-                  checked={frequency === 'weekly'}
-                  onChange={() => setFrequency('weekly')}
-                />
-                Weekly
-              </label>
-              <label className={styles.radioLabel}>
-                <input
-                  type="radio"
-                  name="frequency"
-                  value="custom"
-                  checked={frequency === 'custom'}
-                  onChange={() => setFrequency('custom')}
-                />
-                Custom
-              </label>
+            <div className={styles.modalFooter}>
+              <button type="button" onClick={onClose} className={styles.cancelButton}>
+                Cancel
+              </button>
+              <button type="submit" className={styles.saveButton}>
+                Create Challenge
+              </button>
             </div>
-          </div>
-
-          {frequency === 'custom' && (
-            <div className={styles.formGroup}>
-              <label>Select Days</label>
-              <div className={styles.daySelector}>
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => (
-                  <button
-                    key={day}
-                    type="button"
-                    className={`${styles.dayButton} ${selectedDays.includes(index) ? styles.selectedDay : ''}`}
-                    onClick={() => handleDayToggle(index)}
-                  >
-                    {day}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className={styles.formGroup}>
-            <label htmlFor="linkedDream">Link to Dream (Optional)</label>
-            <select
-              id="linkedDream"
-              value={linkedDream}
-              onChange={e => setLinkedDream(e.target.value)}
-            >
-              <option value="">None</option>
-              {dreams.map(dream => (
-                <option key={dream.id} value={dream.id}>
-                  {dream.title}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.formGroup}>
-            <div className={styles.reminderToggle}>
-              <label htmlFor="enableReminders" className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  id="enableReminders"
-                  checked={enableReminders}
-                  onChange={e => setEnableReminders(e.target.checked)}
-                />
-                Enable Daily Reminders
-              </label>
-
-              {enableReminders && (
-                <input
-                  type="time"
-                  value={reminderTime}
-                  onChange={e => setReminderTime(e.target.value)}
-                  className={styles.timeInput}
-                />
-              )}
-            </div>
-          </div>
-
-          <div className={styles.modalButtons}>
-            <button type="button" onClick={onClose} className={styles.cancelButton}>
-              Cancel
-            </button>
-            <button type="submit" className={styles.saveButton}>
-              Create Challenge
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
