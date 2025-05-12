@@ -329,58 +329,51 @@
 
 .frequencyOptions {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
-.radioLabel {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.frequencyBtn {
+  flex: 1;
+  padding: 0.85rem 1.25rem;
+  border-radius: 2rem;
+  background: rgba(30, 30, 39, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
   transition: all 0.2s ease;
-}
-
-.radioLabel:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.radioLabel.active {
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(217, 70, 239, 0.2));
-  border-color: rgba(244, 63, 94, 0.4);
-}
-
-.radioLabel input {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  outline: none;
+  text-align: center;
   position: relative;
-  margin: 0;
-  cursor: pointer;
+  overflow: hidden;
 }
 
-.radioLabel input:checked {
-  border-color: rgba(244, 63, 94, 0.8);
+.frequencyBtn:hover {
+  background: rgba(40, 40, 50, 0.8);
+  transform: translateY(-2px);
 }
 
-.radioLabel input:checked::after {
+.frequencyBtn.active {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.4), rgba(217, 70, 239, 0.4));
+  border-color: rgba(244, 63, 94, 0.5);
+  color: white;
+  box-shadow: 0 0 15px rgba(244, 63, 94, 0.3);
+  padding-left: 2rem;
+  text-align: left;
+}
+
+.frequencyBtn.active::before {
   content: '';
   position: absolute;
+  left: 0.75rem;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 0.625rem;
-  height: 0.625rem;
+  transform: translateY(-50%);
+  width: 0.75rem;
+  height: 0.75rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff6b6b, #f8a5c2);
+  background: rgba(244, 63, 94, 1);
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.6);
 }
 
 .daySelector {
@@ -559,6 +552,20 @@
   .frequencyOptions {
     flex-direction: column;
     gap: 0.75rem;
+  }
+
+  .frequencyBtn {
+    text-align: center;
+    padding: 0.85rem;
+  }
+
+  .frequencyBtn.active {
+    text-align: center;
+    padding-left: 0.85rem;
+  }
+
+  .frequencyBtn.active::before {
+    left: 1rem;
   }
 
   .reminderToggle {

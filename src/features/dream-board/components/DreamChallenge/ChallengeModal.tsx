@@ -225,42 +225,27 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({ isOpen, onClose, onSave
 
               <div className={styles.formGroup}>
                 <div className={styles.frequencyOptions}>
-                  <label
-                    className={`${styles.radioLabel} ${frequency === 'daily' ? styles.active : ''}`}
+                  <button
+                    type="button"
+                    className={`${styles.frequencyBtn} ${frequency === 'daily' ? styles.active : ''}`}
+                    onClick={() => setFrequency('daily')}
                   >
-                    <input
-                      type="radio"
-                      name="frequency"
-                      value="daily"
-                      checked={frequency === 'daily'}
-                      onChange={() => setFrequency('daily')}
-                    />
                     Daily
-                  </label>
-                  <label
-                    className={`${styles.radioLabel} ${frequency === 'weekly' ? styles.active : ''}`}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.frequencyBtn} ${frequency === 'weekly' ? styles.active : ''}`}
+                    onClick={() => setFrequency('weekly')}
                   >
-                    <input
-                      type="radio"
-                      name="frequency"
-                      value="weekly"
-                      checked={frequency === 'weekly'}
-                      onChange={() => setFrequency('weekly')}
-                    />
                     Weekly
-                  </label>
-                  <label
-                    className={`${styles.radioLabel} ${frequency === 'custom' ? styles.active : ''}`}
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.frequencyBtn} ${frequency === 'custom' ? styles.active : ''}`}
+                    onClick={() => setFrequency('custom')}
                   >
-                    <input
-                      type="radio"
-                      name="frequency"
-                      value="custom"
-                      checked={frequency === 'custom'}
-                      onChange={() => setFrequency('custom')}
-                    />
                     Custom
-                  </label>
+                  </button>
                 </div>
               </div>
 
