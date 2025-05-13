@@ -8,14 +8,6 @@ export interface Milestone {
   date?: string; // ISO date string
 }
 
-export interface JournalEntry {
-  id: string;
-  dreamId: string;
-  content: string;
-  date: string; // ISO date string
-  emotion?: 'excited' | 'optimistic' | 'anxious' | 'neutral' | 'discouraged';
-}
-
 export interface Resource {
   id: string;
   title: string;

@@ -91,7 +91,6 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
     <div className={styles.insightsTab}>
       {/* Header with filters */}
       <div className={styles.insightsHeader}>
-        <h2>Dream Insights</h2>
         <div className={styles.insightsFilters}>
           <button
             className={`${styles.filterButton} ${activeFilter === null ? styles.active : ''}`}

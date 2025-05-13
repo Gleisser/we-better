@@ -2,11 +2,6 @@ import QuoteWidget from '@/shared/components/widgets/QuoteWidget/QuoteWidget';
 import { AffirmationWidget } from '@/shared/components/widgets/AffirmationWidget';
 import HabitsWidget from '@/shared/components/widgets/HabitsWidget/HabitsWidget';
 import GoalsWidget from '@/shared/components/widgets/GoalsWidget/GoalsWidget';
-import PodcastWidget from '@/shared/components/widgets/PodcastWidget/PodcastWidget';
-import VideoWidget from '@/shared/components/widgets/VideoWidget/VideoWidget';
-import CourseWidget from '@/shared/components/widgets/CourseWidget/CourseWidget';
-import BookWidget from '@/shared/components/widgets/BookWidget/BookWidget';
-import ArticleWidget from '@/shared/components/widgets/ArticleWidget/ArticleWidget';
 import { Article } from '@/core/services/articleService';
 import styles from './DashboardGrid.module.css';
 import LifeWheelWidget from '../../widgets/LifeWheelWidget/LifeWheelWidget';
@@ -16,7 +11,7 @@ interface DashboardGridProps {
   isLoading?: boolean;
 }
 
-const DashboardGrid: React.FC<DashboardGridProps> = ({ featuredArticle, isLoading }) => {
+const DashboardGrid: React.FC<DashboardGridProps> = () => {
   return (
     <div className={styles.container}>
       <div className={styles.bentoGrid}>
@@ -43,31 +38,6 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({ featuredArticle, isLoadin
         {/* Goals Widget */}
         <div className={`${styles.widget} ${styles.goals}`}>
           <GoalsWidget />
-        </div>
-
-        {/* Podcast Widget */}
-        <div className={`${styles.widget} ${styles.podcast}`}>
-          <PodcastWidget />
-        </div>
-
-        {/* Videos Widget */}
-        <div className={`${styles.widget} ${styles.videos}`}>
-          <VideoWidget />
-        </div>
-
-        {/* Course Widget */}
-        <div className={`${styles.widget} ${styles.course}`}>
-          <CourseWidget />
-        </div>
-
-        {/* Book Widget */}
-        <div className={`${styles.widget} ${styles.book}`}>
-          <BookWidget />
-        </div>
-
-        {/* Article Widget - Hidden via CSS */}
-        <div className={`${styles.widget} ${styles.article}`}>
-          <ArticleWidget article={featuredArticle} isLoading={isLoading} />
         </div>
       </div>
     </div>

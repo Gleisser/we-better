@@ -4,10 +4,6 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/shared/hooks/useAuth';
 import {
   HomeIcon,
-  VideoIcon,
-  ArticleIcon,
-  CourseIcon,
-  PodcastIcon,
   SettingsIcon,
   LogoutIcon,
   CollapseIcon,
@@ -32,26 +28,26 @@ const menuItems = [
     label: 'Dream Board',
     icon: <DreamBoardIcon className={styles.icon} />,
   },
-  {
-    path: '/app/videos',
-    label: 'Videos',
-    icon: <VideoIcon className={styles.icon} />,
-  },
-  {
-    path: '/app/articles',
-    label: 'Articles',
-    icon: <ArticleIcon className={styles.icon} />,
-  },
-  {
-    path: '/app/courses',
-    label: 'Courses',
-    icon: <CourseIcon className={styles.icon} />,
-  },
-  {
-    path: '/app/podcasts',
-    label: 'Podcasts',
-    icon: <PodcastIcon className={styles.icon} />,
-  },
+  // {
+  //   path: '/app/videos',
+  //   label: 'Videos',
+  //   icon: <VideoIcon className={styles.icon} />,
+  // },
+  // {
+  //   path: '/app/articles',
+  //   label: 'Articles',
+  //   icon: <ArticleIcon className={styles.icon} />,
+  // },
+  // {
+  //   path: '/app/courses',
+  //   label: 'Courses',
+  //   icon: <CourseIcon className={styles.icon} />,
+  // },
+  // {
+  //   path: '/app/podcasts',
+  //   label: 'Podcasts',
+  //   icon: <PodcastIcon className={styles.icon} />,
+  // },
 ];
 
 const Sidebar = (): JSX.Element => {

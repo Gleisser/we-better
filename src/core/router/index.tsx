@@ -2,10 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 import App from '@/App';
 import WeBetterApp from '@/shared/components/layout/WeBetterApp';
 import Dashboard from '@/features/dashboard/Dashboard';
-import Videos from '@/features/videos/pages';
-import Articles from '@/features/articles/pages';
-import Courses from '@/features/courses/pages/Courses';
-import Podcasts from '@/features/podcasts/pages';
 import Login from '@/features/auth/pages/Login';
 import SignUp from '@/features/auth/pages/SignUp';
 import { BottomSheetProvider } from '@/shared/contexts/BottomSheetContext';
@@ -208,22 +204,6 @@ export const router = createBrowserRouter([
       {
         path: 'dream-board',
         element: <DreamBoardPage />,
-      },
-      {
-        path: 'videos',
-        element: <Videos />,
-      },
-      {
-        path: 'articles',
-        element: <Articles />,
-      },
-      {
-        path: 'courses',
-        element: <Courses />,
-      },
-      {
-        path: 'podcasts',
-        element: <Podcasts />,
       },
     ],
   },

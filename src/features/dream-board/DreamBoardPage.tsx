@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import styles from './DreamBoardPage.module.css';
-import { Dream, JournalEntry, Milestone, Challenge } from './types';
+import { Dream, Milestone, Challenge } from './types';
 import {
   mockDreams,
   mockCategories,
-  mockJournalEntries,
   mockResources,
   mockChallenges,
   mockInsights,
@@ -18,8 +17,6 @@ import categoryDetails from './components/constants/dreamboard';
 import achievementBadges from './components/constants/achievements';
 import VisionBoardTab from './components/VisionBoardTab';
 import DreamInsights from './components/DreamInsights';
-import DetailedTimeline from './components/DetailedTimeline';
-import DreamJournal from './components/DreamJournal';
 import FooterTools from './components/FooterTools';
 import MilestonesPopup from './components/MilestonesPopup';
 import ChallengeModal from './components/DreamChallenge/ChallengeModal';
@@ -52,7 +49,6 @@ const DreamBoardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('vision-board');
   const [dreams, setDreams] = useState<Dream[]>(mockDreams);
   const [challenges, setChallenges] = useState<Challenge[]>(mockChallenges);
-  const [journalEntries] = useState<JournalEntry[]>(mockJournalEntries);
   const [activeDream, setActiveDream] = useState<Dream | null>(null);
   const [isDreamBoardModalOpen, setIsDreamBoardModalOpen] = useState(false);
 
@@ -86,16 +82,6 @@ const DreamBoardPage: React.FC = () => {
   // Toggle mini vision board expansion
   const toggleMiniBoard = (): void => {
     setExpandedMiniBoard(!expandedMiniBoard);
-  };
-
-  // Helper to format date
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(date);
   };
 
   // Handle dream selection
@@ -470,18 +456,6 @@ const DreamBoardPage: React.FC = () => {
           >
             Insights
           </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'timeline' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('timeline')}
-          >
-            Timeline
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'journal' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('journal')}
-          >
-            Journal
-          </button>
         </div>
       </header>
 
@@ -520,12 +494,6 @@ const DreamBoardPage: React.FC = () => {
 
         {activeTab === 'insights' && (
           <DreamInsights dreams={dreams} insights={mockInsights} resources={mockResources} />
-        )}
-
-        {activeTab === 'timeline' && <DetailedTimeline />}
-
-        {activeTab === 'journal' && (
-          <DreamJournal dreams={dreams} journalEntries={journalEntries} formatDate={formatDate} />
         )}
       </main>
 
