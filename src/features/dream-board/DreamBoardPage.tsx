@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import styles from './DreamBoardPage.module.css';
 import { Dream, Milestone, Challenge } from './types';
 import {
-  mockDreams,
   mockCategories,
   mockResources,
-  mockChallenges,
   mockInsights,
   mockWeather,
   mockNotifications,
@@ -45,10 +43,11 @@ const getCategoryDetails = (category: string): CategoryDetails => {
 };
 
 const DreamBoardPage: React.FC = () => {
-  const [expandedMiniBoard, setExpandedMiniBoard] = useState(false);
+  // Add a state to track if the user has created a dream board yet
+  const [expandedMiniBoard, setExpandedMiniBoard] = useState(true);
   const [activeTab, setActiveTab] = useState('vision-board');
-  const [dreams, setDreams] = useState<Dream[]>(mockDreams);
-  const [challenges, setChallenges] = useState<Challenge[]>(mockChallenges);
+  const [dreams, setDreams] = useState<Dream[]>([]);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [activeDream, setActiveDream] = useState<Dream | null>(null);
   const [isDreamBoardModalOpen, setIsDreamBoardModalOpen] = useState(false);
 
@@ -76,8 +75,6 @@ const DreamBoardPage: React.FC = () => {
   const [activeVizTab, setActiveVizTab] = useState<'timeline' | 'chart' | 'achievements' | null>(
     null
   );
-
-  // Define achievement badge criteria
 
   // Toggle mini vision board expansion
   const toggleMiniBoard = (): void => {
@@ -216,6 +213,22 @@ const DreamBoardPage: React.FC = () => {
   // Handle closing the challenge modal
   const handleCloseChallengeModal = (): void => {
     setIsChallengeModalOpen(false);
+  };
+
+  // Handle opening the dream board modal
+  const handleOpenDreamBoardModal = (): void => {
+    setIsDreamBoardModalOpen(true);
+  };
+
+  // Handle closing the dream board modal
+  const handleCloseDreamBoardModal = (): void => {
+    setIsDreamBoardModalOpen(false);
+  };
+
+  // Handle creating a new dream board (after modal submission)
+  const handleCreateDreamBoard = (newDreams: Dream[]): void => {
+    setDreams(newDreams);
+    handleCloseDreamBoardModal();
   };
 
   // Handle saving a new challenge
@@ -433,84 +446,116 @@ const DreamBoardPage: React.FC = () => {
     );
   };
 
+  // Check if the user has any dreams
+  const hasNoDreams = dreams.length === 0;
+
+  // Empty state content
+  const renderEmptyState = (): JSX.Element => (
+    <div className={styles.emptyDreamBoardContainer}>
+      <div className={styles.emptyDreamBoardContent}>
+        <div className={styles.emptyDreamBoardIcon}>✨</div>
+        <h2 className={styles.emptyDreamBoardTitle}>Create Your Dream Board</h2>
+        <p className={styles.emptyDreamBoardDescription}>
+          Welcome to your dream journey! Start by creating your personal dream board. Visualize your
+          aspirations, track your progress, and turn your dreams into reality.
+        </p>
+        <button className={styles.createDreamBoardButton} onClick={handleOpenDreamBoardModal}>
+          <span className={styles.createButtonIcon}>+</span>
+          Create Dream Board
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className={styles.dreamBoardContainer}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Dream Board</h1>
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tab} ${activeTab === 'vision-board' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('vision-board')}
-          >
-            Vision Board
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'experience' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('experience')}
-          >
-            Experience
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'insights' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('insights')}
-          >
-            Insights
-          </button>
-        </div>
+        {!hasNoDreams && <h1 className={styles.title}>Dream Board</h1>}
+        {!hasNoDreams && (
+          <div className={styles.tabs}>
+            <button
+              className={`${styles.tab} ${activeTab === 'vision-board' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('vision-board')}
+            >
+              Vision Board
+            </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'experience' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('experience')}
+            >
+              Experience
+            </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'insights' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('insights')}
+            >
+              Insights
+            </button>
+          </div>
+        )}
       </header>
 
       {/* Main Content Section */}
       <main className={styles.mainContent}>
-        {activeTab === 'vision-board' && (
-          <VisionBoardTab
-            dreams={dreams}
-            expandedMiniBoard={expandedMiniBoard}
-            toggleMiniBoard={toggleMiniBoard}
-            updateDreamProgress={updateDreamProgress}
-            handleOpenMilestoneManager={handleOpenMilestoneManager}
-            openDreamBoardModal={() => setIsDreamBoardModalOpen(true)}
-            getCategoryDetails={getCategoryDetails}
-            calculateCategoryProgress={calculateCategoryProgress}
-            hoveredCategory={hoveredCategory}
-            setHoveredCategory={setHoveredCategory}
-            expandedCategory={expandedCategory}
-            toggleCategoryExpand={toggleCategoryExpand}
-            filterCategory={filterCategory}
-            setFilterCategory={setFilterCategory}
-            categories={mockCategories}
-          />
-        )}
+        {hasNoDreams ? (
+          renderEmptyState()
+        ) : (
+          <>
+            {activeTab === 'vision-board' && (
+              <VisionBoardTab
+                dreams={dreams}
+                expandedMiniBoard={expandedMiniBoard}
+                toggleMiniBoard={toggleMiniBoard}
+                updateDreamProgress={updateDreamProgress}
+                handleOpenMilestoneManager={handleOpenMilestoneManager}
+                openDreamBoardModal={handleOpenDreamBoardModal}
+                getCategoryDetails={getCategoryDetails}
+                calculateCategoryProgress={calculateCategoryProgress}
+                hoveredCategory={hoveredCategory}
+                setHoveredCategory={setHoveredCategory}
+                expandedCategory={expandedCategory}
+                toggleCategoryExpand={toggleCategoryExpand}
+                filterCategory={filterCategory}
+                setFilterCategory={setFilterCategory}
+                categories={mockCategories}
+              />
+            )}
 
-        {activeTab === 'experience' && (
-          <div className={styles.experienceTab}>
-            <CosmicDreamExperience
-              dreams={dreams}
-              categories={mockCategories}
-              onDreamSelect={handleDreamSelect}
-              activeDream={activeDream}
-            />
-          </div>
-        )}
+            {activeTab === 'experience' && (
+              <div className={styles.experienceTab}>
+                <CosmicDreamExperience
+                  dreams={dreams}
+                  categories={mockCategories}
+                  onDreamSelect={handleDreamSelect}
+                  activeDream={activeDream}
+                />
+              </div>
+            )}
 
-        {activeTab === 'insights' && (
-          <DreamInsights dreams={dreams} insights={mockInsights} resources={mockResources} />
+            {activeTab === 'insights' && (
+              <DreamInsights dreams={dreams} insights={mockInsights} resources={mockResources} />
+            )}
+          </>
         )}
       </main>
 
-      {/* Footer Tools Section */}
-      <FooterTools
-        weather={mockWeather}
-        notifications={mockNotifications}
-        challenges={challenges}
-        dreams={dreams}
-        onOpenChallengeModal={handleOpenChallengeModal}
-        onUpdateChallenge={handleUpdateChallenge}
-      />
+      {/* Footer Tools Section - Only show if the user has dreams */}
+      {!hasNoDreams && (
+        <FooterTools
+          weather={mockWeather}
+          notifications={mockNotifications}
+          challenges={challenges}
+          dreams={dreams}
+          onOpenChallengeModal={handleOpenChallengeModal}
+          onUpdateChallenge={handleUpdateChallenge}
+        />
+      )}
 
       {/* Dream Board Modal */}
       <DreamBoardModal
         isOpen={isDreamBoardModalOpen}
-        onClose={() => setIsDreamBoardModalOpen(false)}
+        onClose={handleCloseDreamBoardModal}
+        onSave={handleCreateDreamBoard}
         categories={DEFAULT_LIFE_CATEGORIES}
       />
 

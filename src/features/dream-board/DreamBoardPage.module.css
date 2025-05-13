@@ -3075,3 +3075,131 @@
     flex-wrap: wrap;
   }
 }
+
+/* Empty Dream Board State */
+.emptyDreamBoardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.emptyDreamBoardContent {
+  background: linear-gradient(135deg, rgba(30, 30, 60, 0.8), rgba(45, 35, 75, 0.8));
+  border-radius: 1.5rem;
+  padding: 3rem;
+  text-align: center;
+  max-width: 650px;
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.emptyDreamBoardIcon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  animation: sparkle 2s infinite;
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.emptyDreamBoardTitle {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+}
+
+.emptyDreamBoardDescription {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+}
+
+.createDreamBoardButton {
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow:
+    0 10px 25px rgba(139, 92, 246, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.createDreamBoardButton:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 15px 30px rgba(139, 92, 246, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+.createDreamBoardButton:active {
+  transform: translateY(-1px);
+  box-shadow:
+    0 5px 15px rgba(139, 92, 246, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.createButtonIcon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* Responsive adjustments for empty state */
+@media (max-width: 768px) {
+  .emptyDreamBoardContent {
+    padding: 2rem;
+  }
+
+  .emptyDreamBoardTitle {
+    font-size: 1.8rem;
+  }
+
+  .emptyDreamBoardDescription {
+    font-size: 1rem;
+  }
+
+  .createDreamBoardButton {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+}

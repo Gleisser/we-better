@@ -1,12 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { VisionBoard } from '@/features/vision-board/VisionBoard';
+import { DreamBoardContainer } from '@/features/vision-board/DreamBoardContainer';
 import styles from './DreamBoardModal.module.css';
 import { VisionBoardData, VisionBoardProps } from '@/features/vision-board/types';
 import { LifeCategory } from '@/features/life-wheel/types';
+import { Dream } from '../../types';
+
+// Define an interface for the vision board content item that extracts data from VisionBoardContent
+interface VisionBoardContentItem {
+  title?: string;
+  description?: string;
+  category?: string;
+  priority?: string;
+  imageUrl?: string;
+  src?: string;
+  caption?: string;
+}
 
 interface DreamBoardModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSave?: (dreams: Dream[]) => void;
   categories: LifeCategory[];
 }
 
@@ -35,10 +48,15 @@ const CustomVisionBoard = (props: VisionBoardProps): JSX.Element => {
     return () => clearTimeout(timer);
   }, []);
 
-  return <VisionBoard {...props} />;
+  return <DreamBoardContainer {...props} />;
 };
 
-const DreamBoardModal: React.FC<DreamBoardModalProps> = ({ isOpen, onClose, categories }) => {
+const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  categories,
+}) => {
   const [visionBoardData, setVisionBoardData] = useState<VisionBoardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,12 +110,62 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({ isOpen, onClose, cate
     try {
       // This would be an API call in a real implementation
       localStorage.setItem('visionBoardData', JSON.stringify(data));
+
+      // Convert vision board data to dreams array
+      if (onSave) {
+        // Create sample dreams from the vision board content
+        const newDreams: Dream[] = data.content.map((item, index) => {
+          // Extract data from the item with proper type handling
+          const contentItem: VisionBoardContentItem = {
+            title: item.caption || '',
+            description: item.caption || '',
+            category: item.categoryId || 'General',
+            priority: 'medium',
+            imageUrl: item.src,
+          };
+          const title = contentItem.title || 'Untitled Dream';
+          const description = contentItem.description || '';
+          const category = contentItem.category || 'General';
+          const priority = contentItem.priority || 'medium';
+          const imageUrl = contentItem.imageUrl;
+
+          return {
+            id: `dream-${Date.now()}-${index}`,
+            title,
+            description,
+            category,
+            timeframe: determineTimeframe(priority),
+            progress: 0,
+            createdAt: new Date().toISOString(),
+            milestones: [],
+            isShared: false,
+            imageUrl,
+          };
+        });
+
+        onSave(newDreams);
+      }
+
       // Close the modal after saving
       onClose();
       return true;
     } catch (error) {
       console.error('Error saving vision board:', error);
       return false;
+    }
+  };
+
+  // Helper function to determine timeframe based on priority
+  const determineTimeframe = (priority: string): 'short-term' | 'mid-term' | 'long-term' => {
+    switch (priority) {
+      case 'high':
+        return 'short-term';
+      case 'medium':
+        return 'mid-term';
+      case 'low':
+        return 'long-term';
+      default:
+        return 'mid-term';
     }
   };
 

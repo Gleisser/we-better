@@ -1,6 +1,5 @@
 import React from 'react';
 import styles from './Toolbar.module.css';
-import visionBoardStyles from '../VisionBoard.module.css';
 import { ToolbarMode } from '../types';
 
 export interface ToolbarProps {
@@ -26,16 +25,15 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onGenerateAI,
   onAutoArrange,
   onSave,
-  onShare,
   onComplete,
   onFilterByCategory,
   categories = [],
   selectedCategoryId = null,
   isSaving = false,
-  imageCount = 0
+  imageCount = 0,
 }) => {
   const imageLimit = 7;
-  
+
   return (
     <div className={styles.toolbar}>
       <div className={styles.toolbarSection}>
@@ -47,7 +45,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <span className={styles.buttonIcon}>➕</span>
           <span className={styles.buttonLabel}>Add</span>
         </button>
-        
+
         <button
           className={`${styles.toolbarButton} ${styles.modeButton} ${mode === ToolbarMode.FILTER ? styles.active : ''}`}
           onClick={() => onModeChange(ToolbarMode.FILTER)}
@@ -56,7 +54,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <span className={styles.buttonIcon}>🔍</span>
           <span className={styles.buttonLabel}>Filter</span>
         </button>
-        
+
         <button
           className={`${styles.toolbarButton} ${styles.modeButton} ${mode === ToolbarMode.ARRANGE ? styles.active : ''}`}
           onClick={() => onModeChange(ToolbarMode.ARRANGE)}
@@ -66,7 +64,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <span className={styles.buttonLabel}>Arrange</span>
         </button>
       </div>
-      
+
       {/* Mode-specific sections */}
       {mode === ToolbarMode.ADD && (
         <div className={styles.toolbarSection}>
@@ -86,7 +84,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               )}
             </span>
           </button>
-          
+
           <button
             className={`${styles.toolbarButton} ${styles.aiButton}`}
             onClick={onGenerateAI}
@@ -98,7 +96,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           </button>
         </div>
       )}
-      
+
       {mode === ToolbarMode.FILTER && categories.length > 0 && (
         <div className={styles.toolbarSection}>
           <button
@@ -109,7 +107,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             <span className={styles.buttonIcon}>🔄</span>
             <span className={styles.buttonLabel}>All</span>
           </button>
-          
+
           {categories.map(category => (
             <button
               key={category.id}
@@ -124,38 +122,16 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           ))}
         </div>
       )}
-      
+
       {mode === ToolbarMode.ARRANGE && (
         <div className={styles.toolbarSection}>
-          <button
-            className={styles.toolbarButton}
-            onClick={onAutoArrange}
-            title="Auto Arrange"
-          >
+          <button className={styles.toolbarButton} onClick={onAutoArrange} title="Auto Arrange">
             <span className={styles.buttonIcon}>📊</span>
             <span className={styles.buttonLabel}>Auto Arrange</span>
           </button>
-          
-          <button
-            className={styles.toolbarButton}
-            onClick={() => {
-              // Apply the swaying animation effect
-              const canvasContainer = document.querySelector(`.${visionBoardStyles.canvasContainer}`);
-              if (canvasContainer) {
-                canvasContainer.classList.add(visionBoardStyles.animate);
-                setTimeout(() => {
-                  canvasContainer.classList.remove(visionBoardStyles.animate);
-                }, 10000); // Animation duration
-              }
-            }}
-            title="Animate"
-          >
-            <span className={styles.buttonIcon}>🎬</span>
-            <span className={styles.buttonLabel}>Animate</span>
-          </button>
         </div>
       )}
-      
+
       {/* Action buttons - always visible */}
       <div className={styles.toolbarSection}>
         <button
@@ -167,18 +143,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <span className={styles.buttonIcon}>{isSaving ? '⏳' : '💾'}</span>
           <span className={styles.buttonLabel}>{isSaving ? 'Saving...' : 'Save'}</span>
         </button>
-        
-        {onShare && (
-          <button
-            className={`${styles.toolbarButton} ${styles.shareButton}`}
-            onClick={onShare}
-            title="Share Vision Board"
-          >
-            <span className={styles.buttonIcon}>📤</span>
-            <span className={styles.buttonLabel}>Share</span>
-          </button>
-        )}
-        
+
         {onComplete && (
           <button
             className={`${styles.toolbarButton} ${styles.completeButton}`}
@@ -192,4 +157,4 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </div>
     </div>
   );
-}; 
+};
