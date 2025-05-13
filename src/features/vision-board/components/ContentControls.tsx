@@ -308,6 +308,57 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   // Position & Size tab content
   const PositionTab = (): JSX.Element => (
     <div className={styles.tabContent}>
+      <div className={styles.imagePreview}>
+        {localContent.src && (
+          <img
+            src={localContent.src}
+            alt={localContent.alt || 'Preview'}
+            className={styles.previewImage}
+          />
+        )}
+      </div>
+      <button
+        className={styles.uploadButton}
+        onClick={() => {
+          const fileInput = document.createElement('input');
+          fileInput.type = 'file';
+          fileInput.accept = 'image/*';
+          fileInput.onchange = e => {
+            const target = e.target as HTMLInputElement;
+            if (target.files && target.files[0]) {
+              const reader = new FileReader();
+              reader.onload = event => {
+                if (event.target && typeof event.target.result === 'string') {
+                  handleChange({
+                    src: event.target.result,
+                    alt: target.files ? target.files[0].name : 'Replaced image',
+                  });
+                }
+              };
+              reader.readAsDataURL(target.files[0]);
+            }
+          };
+          fileInput.click();
+        }}
+        style={{ backgroundColor: getAccentColor() }}
+      >
+        Replace Image
+      </button>
+      <div className={styles.field}>
+        <label className={styles.label}>Title</label>
+        <CaptionInput
+          value={localContent.caption || ''}
+          onChange={value => handleChange({ caption: value })}
+          placeholder="Add a caption for this image..."
+        />
+      </div>
+
+      <InputField<string>
+        label="Alt Text"
+        value={localContent.alt || ''}
+        onChange={value => handleChange({ alt: value })}
+        placeholder="Image description for accessibility"
+      />
       <div className={styles.gridLayout}>
         <InputField<number>
           label="X Position"
@@ -374,44 +425,6 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
       case VisionBoardContentType.AI_GENERATED:
         return (
           <div className={styles.tabContent}>
-            <div className={styles.imagePreview}>
-              {localContent.src && (
-                <img
-                  src={localContent.src}
-                  alt={localContent.alt || 'Preview'}
-                  className={styles.previewImage}
-                />
-              )}
-            </div>
-
-            <button
-              className={styles.uploadButton}
-              onClick={() => {
-                const fileInput = document.createElement('input');
-                fileInput.type = 'file';
-                fileInput.accept = 'image/*';
-                fileInput.onchange = e => {
-                  const target = e.target as HTMLInputElement;
-                  if (target.files && target.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = event => {
-                      if (event.target && typeof event.target.result === 'string') {
-                        handleChange({
-                          src: event.target.result,
-                          alt: target.files ? target.files[0].name : 'Replaced image',
-                        });
-                      }
-                    };
-                    reader.readAsDataURL(target.files[0]);
-                  }
-                };
-                fileInput.click();
-              }}
-              style={{ backgroundColor: getAccentColor() }}
-            >
-              Replace Image
-            </button>
-
             {localContent.type === VisionBoardContentType.AI_GENERATED && (
               <InputField<string>
                 label="AI Prompt"
@@ -421,22 +434,6 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
                 placeholder="AI generation prompt..."
               />
             )}
-
-            <div className={styles.field}>
-              <label className={styles.label}>Caption</label>
-              <CaptionInput
-                value={localContent.caption || ''}
-                onChange={value => handleChange({ caption: value })}
-                placeholder="Add a caption for this image..."
-              />
-            </div>
-
-            <InputField<string>
-              label="Alt Text"
-              value={localContent.alt || ''}
-              onChange={value => handleChange({ alt: value })}
-              placeholder="Image description for accessibility"
-            />
 
             <div className={styles.controlGroup}>
               <label className={styles.controlLabel}>Category</label>
@@ -461,7 +458,6 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
                   ))}
                 </select>
               </div>
-
               {localContent.categoryId && (
                 <div className={styles.categoryPreview}>
                   <div
@@ -470,7 +466,13 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
                       backgroundColor: getCategoryColor(localContent.categoryId),
                     }}
                   ></div>
-                  <span>{getCategoryName(localContent.categoryId)}</span>
+                  <span
+                    style={{
+                      color: '#333',
+                    }}
+                  >
+                    {getCategoryName(localContent.categoryId)}
+                  </span>
                 </div>
               )}
             </div>
