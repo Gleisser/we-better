@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VisionBoardContent, VisionBoardContentType } from '../types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import styles from './ContentControls.module.css';
+import { Milestones } from './Milestones';
 
 interface ContentControlsProps {
   selectedContent: VisionBoardContent;
@@ -292,6 +293,15 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         <span className={styles.tabIcon}>🎨</span>
         <span className={styles.tabText}>Style</span>
       </button>
+
+      <button
+        className={`${styles.tab} ${activeTab === 'milestones' ? styles.activeTab : ''}`}
+        onClick={() => setActiveTab('milestones')}
+        style={activeTab === 'milestones' ? { borderColor: getAccentColor() } : undefined}
+      >
+        <span className={styles.tabIcon}>🏆</span>
+        <span className={styles.tabText}>Milestones</span>
+      </button>
     </div>
   );
 
@@ -527,6 +537,9 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         <div className={styles.content}>
           {activeTab === 'position' && <PositionTab />}
           {activeTab === 'style' && <StyleTab />}
+          {activeTab === 'milestones' && (
+            <Milestones content={localContent} onUpdate={handleChange} />
+          )}
         </div>
 
         <div className={styles.footer}>

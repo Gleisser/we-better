@@ -1,0 +1,165 @@
+.milestonesContainer {
+  padding: 1rem;
+}
+
+.milestonesTitle {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.milestonesDescription {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.addMilestoneForm {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.milestoneInput {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background-color: #f9fafb;
+  color: #333;
+}
+
+.milestoneDateInput {
+  width: 130px;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.addMilestoneButton {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.addMilestoneButton:hover {
+  background-color: #2563eb;
+}
+
+.addMilestoneButton:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.milestonesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.milestoneItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: #f9fafb;
+  transition: all 0.2s;
+  color: #333;
+}
+
+.milestoneItem:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.milestoneCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.milestoneCheckbox input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.milestoneTitle {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.completedMilestone {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+.editMilestoneInput {
+  border: none;
+  border-bottom: 1px solid #ddd;
+  padding: 0.25rem;
+  font-size: 0.95rem;
+  width: 100%;
+  background: transparent;
+}
+
+.editMilestoneInput:focus {
+  outline: none;
+  border-bottom-color: #3b82f6;
+}
+
+.milestoneActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.milestoneDueDate {
+  font-size: 0.8rem;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.deleteMilestoneButton {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.deleteMilestoneButton:hover {
+  background-color: #fee2e2;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #6b7280;
+  font-style: italic;
+  background-color: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+}
