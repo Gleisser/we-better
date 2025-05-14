@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import styles from './HabitsWidget.module.css';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
@@ -12,64 +12,153 @@ import {
   ChevronDownIcon,
 } from '@/shared/components/common/icons';
 import { StatusMenu } from './StatusMenu';
-import { HabitStatus, Habit } from './types';
-import { STATUS_CONFIG, CATEGORY_CONFIG, HabitCategory } from './config';
-import { updateHabitStreak, cleanupOldData } from './utils';
+import { HabitStatus as LocalHabitStatus, Habit as LocalHabit, HabitCategory } from './types';
+import { STATUS_CONFIG, CATEGORY_CONFIG } from './config';
+import { useHabits } from '@/shared/hooks/useHabits';
+import {
+  Habit as ApiHabit,
+  HabitLog,
+  HabitStatus as ApiHabitStatus,
+} from '@/core/services/habitsService';
 import { HabitForm } from './HabitForm';
 import { HabitActionsMenu } from './HabitActionsMenu';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-const MOCK_HABITS: Habit[] = [
-  {
-    id: 'habit_1',
-    name: 'Morning Meditation',
-    category: 'health',
-    streak: 5,
-    completedDays: [
-      { date: '2024-01-15', status: 'completed' },
-      { date: '2024-01-16', status: 'completed' },
-      { date: '2024-01-17', status: 'completed' },
-    ],
-  },
-  {
-    id: 'habit_2',
-    name: 'Read 30 minutes',
-    category: 'growth',
-    streak: 3,
-    completedDays: [],
-  },
-  {
-    id: 'habit_3',
-    name: 'Sleep by 11pm',
-    category: 'lifestyle',
-    streak: 2,
-    completedDays: [],
-  },
-];
+// Helper function to convert API status to local status
+const apiStatusToLocalStatus = (apiStatus: ApiHabitStatus): LocalHabitStatus => {
+  // Both use the same string values for common statuses
+  if (['completed', 'partial', 'rescheduled'].includes(apiStatus)) {
+    return apiStatus as LocalHabitStatus;
+  }
 
-const STORAGE_KEY = 'habits-data';
+  // Map other statuses to appropriate local ones or default to null
+  switch (apiStatus) {
+    case 'missed':
+      return null;
+    case 'skipped':
+      return 'rest';
+    default:
+      return null;
+  }
+};
+
+// Helper function to convert local status to API status
+const localStatusToApiStatus = (localStatus: LocalHabitStatus): ApiHabitStatus => {
+  if (!localStatus) return 'missed';
+
+  // Both use the same string values for common statuses
+  if (['completed', 'partial', 'rescheduled'].includes(localStatus)) {
+    return localStatus as ApiHabitStatus;
+  }
+
+  // Map other local statuses to API ones
+  switch (localStatus) {
+    case 'rest':
+    case 'break':
+    case 'medical':
+    case 'event':
+      return 'skipped';
+    case 'sick':
+    case 'weather':
+    case 'travel':
+    case 'half':
+      return 'partial';
+    default:
+      return 'partial';
+  }
+};
+
+// Helper function to transform API Habit to local Habit format
+const transformApiHabit = (apiHabit: ApiHabit, logs: HabitLog[] = []): LocalHabit => {
+  return {
+    id: apiHabit.id,
+    name: apiHabit.name,
+    category: apiHabit.category as HabitCategory,
+    streak: apiHabit.streak,
+    completedDays: logs.map(log => ({
+      date: log.date,
+      status: apiStatusToLocalStatus(log.status),
+    })),
+    createdAt: apiHabit.created_at,
+    updatedAt: apiHabit.updated_at,
+  };
+};
 
 const HabitsWidget = (): JSX.Element => {
   const [selectedCategory, setSelectedCategory] = useState<HabitCategory | 'all'>('all');
-  const [habits, setHabits] = useState<Habit[]>(() => {
-    const savedHabits = localStorage.getItem(STORAGE_KEY);
-    return savedHabits ? JSON.parse(savedHabits) : MOCK_HABITS;
-  });
   const { theme } = useTimeBasedTheme();
-  const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
+  const [selectedHabit, setSelectedHabit] = useState<LocalHabit | null>(null);
   const [showMonthlyView, setShowMonthlyView] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [showStatusMenu, setShowStatusMenu] = useState(false);
   const [showHabitForm, setShowHabitForm] = useState(false);
-  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const [editingHabit, setEditingHabit] = useState<LocalHabit | null>(null);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [actionMenuPosition, setActionMenuPosition] = useState({ x: 0, y: 0 });
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return window.innerWidth <= 768;
   });
   const [collapsedHabits, setCollapsedHabits] = useState<Set<string>>(new Set());
+  const [habitLogs, setHabitLogs] = useState<Record<string, HabitLog[]>>({});
+
+  // Use the habits hook for API integration
+  const {
+    habits: apiHabits,
+    isLoading,
+    error,
+    fetchHabits,
+    createHabit: apiCreateHabit,
+    updateHabit: apiUpdateHabit,
+    archiveHabit: apiArchiveHabit,
+    logHabitCompletion,
+    getHabitLogs,
+  } = useHabits();
+
+  // Fetch logs for each habit
+  const fetchLogsForHabit = useCallback(
+    async (habitId: string) => {
+      try {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 30); // Get logs for last 30 days
+
+        const logsResponse = await getHabitLogs(
+          habitId,
+          format(startDate, 'yyyy-MM-dd'),
+          format(new Date(), 'yyyy-MM-dd')
+        );
+
+        if (logsResponse) {
+          setHabitLogs(prev => ({
+            ...prev,
+            [habitId]: logsResponse.logs,
+          }));
+        }
+      } catch (err) {
+        console.error(`Failed to fetch logs for habit ${habitId}:`, err);
+      }
+    },
+    [getHabitLogs]
+  );
+
+  // Transform API habits to local format
+  const habits: LocalHabit[] = apiHabits.map(apiHabit =>
+    transformApiHabit(apiHabit, habitLogs[apiHabit.id] || [])
+  );
+
+  // Fetch logs for all habits when habits change
+  useEffect(() => {
+    const fetchAllLogs = async (): Promise<void> => {
+      for (const habit of apiHabits) {
+        await fetchLogsForHabit(habit.id);
+      }
+    };
+
+    if (apiHabits.length > 0) {
+      fetchAllLogs();
+    }
+  }, [apiHabits, fetchLogsForHabit]);
 
   useEffect(() => {
     const isMobile = window.innerWidth <= 768;
@@ -79,9 +168,10 @@ const HabitsWidget = (): JSX.Element => {
     }
   }, [habits]);
 
+  // Initialize based on selected category
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
-  }, [habits]);
+    fetchHabits(selectedCategory === 'all' ? undefined : selectedCategory);
+  }, [fetchHabits, selectedCategory]);
 
   const filteredHabits =
     selectedCategory === 'all'
@@ -95,13 +185,13 @@ const HabitsWidget = (): JSX.Element => {
 
   const weekDates = getCurrentWeekDates();
 
-  const getDateStatus = (habit: Habit, date: Date): HabitStatus => {
+  const getDateStatus = (habit: LocalHabit, date: Date): LocalHabitStatus => {
     const dateStr = format(date, 'yyyy-MM-dd');
     const completion = habit.completedDays.find(day => day.date === dateStr);
     return completion?.status || null;
   };
 
-  const handleDayClick = (event: React.MouseEvent, date: Date, habit: Habit): void => {
+  const handleDayClick = (event: React.MouseEvent, date: Date, habit: LocalHabit): void => {
     setSelectedDate(date);
     setSelectedHabit(habit);
 
@@ -124,73 +214,95 @@ const HabitsWidget = (): JSX.Element => {
     setShowStatusMenu(true);
   };
 
-  const handleStatusSelect = (status: HabitStatus): void => {
+  const handleStatusSelect = async (status: LocalHabitStatus): Promise<void> => {
     if (selectedDate && selectedHabit) {
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
-      setHabits(prevHabits => {
-        const updatedHabits = prevHabits.map(habit => {
-          if (habit.id === selectedHabit.id) {
-            const existingIndex = habit.completedDays.findIndex(day => day.date === dateStr);
-            const updatedDays = [...habit.completedDays];
+      const apiStatus = localStatusToApiStatus(status);
 
-            if (existingIndex >= 0) {
-              updatedDays[existingIndex] = { date: dateStr, status };
-            } else {
-              updatedDays.push({ date: dateStr, status });
-            }
+      // Optimistic UI update
+      setHabitLogs(prevLogs => {
+        const habitId = selectedHabit.id;
+        const currentLogs = [...(prevLogs[habitId] || [])];
+        const existingLogIndex = currentLogs.findIndex(log => log.date === dateStr);
 
-            return updateHabitStreak({
-              ...habit,
-              completedDays: updatedDays,
-              updatedAt: new Date().toISOString(),
-            });
-          }
-          return habit;
-        });
+        if (existingLogIndex >= 0) {
+          currentLogs[existingLogIndex] = {
+            ...currentLogs[existingLogIndex],
+            status: apiStatus,
+            updated_at: new Date().toISOString(),
+          };
+        } else {
+          currentLogs.push({
+            id: `temp_${Date.now()}`,
+            habit_id: habitId,
+            user_id: '', // Will be set by the server
+            date: dateStr,
+            status: apiStatus,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+        }
 
-        return updatedHabits;
+        return {
+          ...prevLogs,
+          [habitId]: currentLogs,
+        };
       });
+
+      // Call the API
+      try {
+        await logHabitCompletion(selectedHabit.id, dateStr, apiStatus);
+        // The habit will be updated automatically by the useHabits hook
+        // after successful log submission
+      } catch (error) {
+        console.error('Failed to log habit status:', error);
+        // Revert the optimistic update on error
+        fetchLogsForHabit(selectedHabit.id);
+      }
     }
   };
 
-  const handleCreateHabit = (habitData: { name: string; category: HabitCategory }): void => {
-    const newHabit: Habit = {
-      id: `habit_${Date.now()}`,
-      ...habitData,
-      streak: 0,
-      completedDays: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setHabits(prev => [...prev, newHabit]);
+  const handleCreateHabit = async (habitData: {
+    name: string;
+    category: HabitCategory;
+  }): Promise<void> => {
+    try {
+      await apiCreateHabit(
+        habitData.name,
+        habitData.category,
+        new Date().toISOString().split('T')[0] // Use today as start date
+      );
+      // The newly created habit will be included in the next fetchHabits call
+    } catch (error) {
+      console.error('Failed to create habit:', error);
+    }
   };
 
-  const handleEditHabit = (habitData: { name: string; category: HabitCategory }): void => {
+  const handleEditHabit = async (habitData: {
+    name: string;
+    category: HabitCategory;
+  }): Promise<void> => {
     if (!editingHabit) return;
 
-    setHabits(prev =>
-      prev.map(habit => (habit.id === editingHabit.id ? { ...habit, ...habitData } : habit))
-    );
-    setEditingHabit(null);
+    try {
+      await apiUpdateHabit(editingHabit.id, {
+        name: habitData.name,
+        category: habitData.category,
+      });
+      setEditingHabit(null);
+    } catch (error) {
+      console.error('Failed to update habit:', error);
+    }
   };
 
-  const handleDeleteHabit = (habitId: string): void => {
-    setHabits(prev => prev.filter(habit => habit.id !== habitId));
+  const handleDeleteHabit = async (habitId: string): Promise<void> => {
+    try {
+      await apiArchiveHabit(habitId);
+      // The habit will be removed from state by the useHabits hook
+    } catch (error) {
+      console.error('Failed to delete habit:', error);
+    }
   };
-
-  useEffect(() => {
-    const cleanup = (): void => {
-      setHabits(prevHabits => cleanupOldData(prevHabits));
-    };
-
-    // Run cleanup once a day
-    const interval = setInterval(cleanup, 24 * 60 * 60 * 1000);
-
-    // Run cleanup on mount
-    cleanup();
-
-    return () => clearInterval(interval);
-  }, []);
 
   const toggleHabit = (habitId: string): void => {
     setCollapsedHabits(prev => {
@@ -280,6 +392,18 @@ const HabitsWidget = (): JSX.Element => {
         </div>
 
         <div className={styles.content}>
+          {isLoading && <div className={styles.loadingIndicator}>Loading habits...</div>}
+          {error && <div className={styles.errorMessage}>Error: {error.message}</div>}
+
+          {!isLoading && !error && filteredHabits.length === 0 && (
+            <div className={styles.emptyState}>
+              <p>No habits found. Create your first habit to get started!</p>
+              <button className={styles.createButton} onClick={() => setShowHabitForm(true)}>
+                Create Habit
+              </button>
+            </div>
+          )}
+
           <div className={styles.habitsList}>
             {filteredHabits.map(habit => (
               <motion.div
