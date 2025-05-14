@@ -26,7 +26,29 @@ import { HabitActionsMenu } from './HabitActionsMenu';
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 // Helper function to convert API status to local status
-const apiStatusToLocalStatus = (apiStatus: ApiHabitStatus): LocalHabitStatus => {
+const apiStatusToLocalStatus = (apiStatus: ApiHabitStatus, notes?: string): LocalHabitStatus => {
+  // Check if there's a stored original status in notes
+  if (notes) {
+    const match = notes.match(/__originalStatus:([a-z]+)__/);
+    if (match && match[1]) {
+      const originalStatus = match[1] as LocalHabitStatus;
+      // Safe array of valid statuses
+      const validSpecialStatuses = [
+        'sick',
+        'weather',
+        'travel',
+        'half',
+        'medical',
+        'event',
+        'break',
+        'rest',
+      ];
+      if (originalStatus && validSpecialStatuses.includes(originalStatus)) {
+        return originalStatus;
+      }
+    }
+  }
+
   // Both use the same string values for common statuses
   if (['completed', 'partial', 'rescheduled'].includes(apiStatus)) {
     return apiStatus as LocalHabitStatus;
@@ -78,7 +100,7 @@ const transformApiHabit = (apiHabit: ApiHabit, logs: HabitLog[] = []): LocalHabi
     streak: apiHabit.streak,
     completedDays: logs.map(log => ({
       date: log.date,
-      status: apiStatusToLocalStatus(log.status),
+      status: apiStatusToLocalStatus(log.status, log.notes),
     })),
     createdAt: apiHabit.created_at,
     updatedAt: apiHabit.updated_at,
@@ -219,6 +241,15 @@ const HabitsWidget = (): JSX.Element => {
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
       const apiStatus = localStatusToApiStatus(status);
 
+      // The original status should be preserved if it doesn't directly map to API status
+      const originalStatus =
+        status &&
+        ['sick', 'weather', 'travel', 'half', 'medical', 'event', 'break', 'rest'].includes(
+          status as string
+        )
+          ? status
+          : undefined;
+
       // Optimistic UI update
       setHabitLogs(prevLogs => {
         const habitId = selectedHabit.id;
@@ -251,7 +282,13 @@ const HabitsWidget = (): JSX.Element => {
 
       // Call the API
       try {
-        await logHabitCompletion(selectedHabit.id, dateStr, apiStatus);
+        await logHabitCompletion(
+          selectedHabit.id,
+          dateStr,
+          apiStatus,
+          undefined,
+          originalStatus as string | undefined
+        );
         // The habit will be updated automatically by the useHabits hook
         // after successful log submission
       } catch (error) {

@@ -248,14 +248,21 @@ export const logHabitStatus = async (
   habitId: string,
   date: string,
   status: HabitStatus,
-  notes?: string
+  notes?: string,
+  originalStatus?: string
 ): Promise<HabitLog | null> => {
   try {
+    // If originalStatus is provided, store it in the notes field
+    // This allows us to preserve specific statuses that don't directly map to API statuses
+    const noteWithStatus = originalStatus
+      ? `${notes || ''}\n__originalStatus:${originalStatus}__`
+      : notes;
+
     return await apiRequest<HabitLog>(`${API_URL}/logs`, 'POST', {
       habit_id: habitId,
       date,
       status,
-      notes,
+      notes: noteWithStatus,
     });
   } catch (error) {
     console.error(`Error logging habit ${habitId}:`, error);

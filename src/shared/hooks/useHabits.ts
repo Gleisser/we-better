@@ -16,7 +16,8 @@ interface UseHabitsReturn {
     habitId: string,
     date: string,
     status: HabitStatus,
-    notes?: string
+    notes?: string,
+    originalStatus?: string
   ) => Promise<HabitLog | null>;
   getHabitLogs: (
     habitId: string,
@@ -160,7 +161,8 @@ export const useHabits = (): UseHabitsReturn => {
       habitId: string,
       date: string,
       status: HabitStatus,
-      notes?: string
+      notes?: string,
+      originalStatus?: string
     ): Promise<HabitLog | null> => {
       if (!isAuthenticated) {
         setError(new Error('User not authenticated'));
@@ -170,7 +172,13 @@ export const useHabits = (): UseHabitsReturn => {
       try {
         setError(null);
 
-        const log = await habitsService.logHabitStatus(habitId, date, status, notes);
+        const log = await habitsService.logHabitStatus(
+          habitId,
+          date,
+          status,
+          notes,
+          originalStatus
+        );
 
         if (log) {
           // After logging, fetch the updated habit to get the new streak
