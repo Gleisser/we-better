@@ -29,7 +29,20 @@ export interface HabitLog {
   updated_at: string;
 }
 
-export type HabitStatus = 'completed' | 'partial' | 'missed' | 'skipped' | 'rescheduled';
+export type HabitStatus =
+  | 'completed'
+  | 'partial'
+  | 'missed'
+  | 'skipped'
+  | 'rescheduled'
+  | 'sick'
+  | 'weather'
+  | 'travel'
+  | 'half'
+  | 'medical'
+  | 'event'
+  | 'break'
+  | 'rest';
 
 export interface HabitsResponse {
   habits: Habit[];
@@ -248,21 +261,14 @@ export const logHabitStatus = async (
   habitId: string,
   date: string,
   status: HabitStatus,
-  notes?: string,
-  originalStatus?: string
+  notes?: string
 ): Promise<HabitLog | null> => {
   try {
-    // If originalStatus is provided, store it in the notes field
-    // This allows us to preserve specific statuses that don't directly map to API statuses
-    const noteWithStatus = originalStatus
-      ? `${notes || ''}\n__originalStatus:${originalStatus}__`
-      : notes;
-
     return await apiRequest<HabitLog>(`${API_URL}/logs`, 'POST', {
       habit_id: habitId,
       date,
       status,
-      notes: noteWithStatus,
+      notes,
     });
   } catch (error) {
     console.error(`Error logging habit ${habitId}:`, error);

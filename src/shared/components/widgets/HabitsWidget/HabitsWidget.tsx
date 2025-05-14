@@ -12,7 +12,7 @@ import {
   ChevronDownIcon,
 } from '@/shared/components/common/icons';
 import { StatusMenu } from './StatusMenu';
-import { HabitStatus as LocalHabitStatus, Habit as LocalHabit, HabitCategory } from './types';
+import { HabitStatus, Habit as LocalHabit, HabitCategory } from './types';
 import { STATUS_CONFIG, CATEGORY_CONFIG } from './config';
 import { useHabits } from '@/shared/hooks/useHabits';
 import {
@@ -25,72 +25,6 @@ import { HabitActionsMenu } from './HabitActionsMenu';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-// Helper function to convert API status to local status
-const apiStatusToLocalStatus = (apiStatus: ApiHabitStatus, notes?: string): LocalHabitStatus => {
-  // Check if there's a stored original status in notes
-  if (notes) {
-    const match = notes.match(/__originalStatus:([a-z]+)__/);
-    if (match && match[1]) {
-      const originalStatus = match[1] as LocalHabitStatus;
-      // Safe array of valid statuses
-      const validSpecialStatuses = [
-        'sick',
-        'weather',
-        'travel',
-        'half',
-        'medical',
-        'event',
-        'break',
-        'rest',
-      ];
-      if (originalStatus && validSpecialStatuses.includes(originalStatus)) {
-        return originalStatus;
-      }
-    }
-  }
-
-  // Both use the same string values for common statuses
-  if (['completed', 'partial', 'rescheduled'].includes(apiStatus)) {
-    return apiStatus as LocalHabitStatus;
-  }
-
-  // Map other statuses to appropriate local ones or default to null
-  switch (apiStatus) {
-    case 'missed':
-      return null;
-    case 'skipped':
-      return 'rest';
-    default:
-      return null;
-  }
-};
-
-// Helper function to convert local status to API status
-const localStatusToApiStatus = (localStatus: LocalHabitStatus): ApiHabitStatus => {
-  if (!localStatus) return 'missed';
-
-  // Both use the same string values for common statuses
-  if (['completed', 'partial', 'rescheduled'].includes(localStatus)) {
-    return localStatus as ApiHabitStatus;
-  }
-
-  // Map other local statuses to API ones
-  switch (localStatus) {
-    case 'rest':
-    case 'break':
-    case 'medical':
-    case 'event':
-      return 'skipped';
-    case 'sick':
-    case 'weather':
-    case 'travel':
-    case 'half':
-      return 'partial';
-    default:
-      return 'partial';
-  }
-};
-
 // Helper function to transform API Habit to local Habit format
 const transformApiHabit = (apiHabit: ApiHabit, logs: HabitLog[] = []): LocalHabit => {
   return {
@@ -100,7 +34,7 @@ const transformApiHabit = (apiHabit: ApiHabit, logs: HabitLog[] = []): LocalHabi
     streak: apiHabit.streak,
     completedDays: logs.map(log => ({
       date: log.date,
-      status: apiStatusToLocalStatus(log.status, log.notes),
+      status: log.status as HabitStatus,
     })),
     createdAt: apiHabit.created_at,
     updatedAt: apiHabit.updated_at,
@@ -207,7 +141,7 @@ const HabitsWidget = (): JSX.Element => {
 
   const weekDates = getCurrentWeekDates();
 
-  const getDateStatus = (habit: LocalHabit, date: Date): LocalHabitStatus => {
+  const getDateStatus = (habit: LocalHabit, date: Date): HabitStatus => {
     const dateStr = format(date, 'yyyy-MM-dd');
     const completion = habit.completedDays.find(day => day.date === dateStr);
     return completion?.status || null;
@@ -236,19 +170,10 @@ const HabitsWidget = (): JSX.Element => {
     setShowStatusMenu(true);
   };
 
-  const handleStatusSelect = async (status: LocalHabitStatus): Promise<void> => {
+  const handleStatusSelect = async (status: HabitStatus): Promise<void> => {
     if (selectedDate && selectedHabit) {
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
-      const apiStatus = localStatusToApiStatus(status);
-
-      // The original status should be preserved if it doesn't directly map to API status
-      const originalStatus =
-        status &&
-        ['sick', 'weather', 'travel', 'half', 'medical', 'event', 'break', 'rest'].includes(
-          status as string
-        )
-          ? status
-          : undefined;
+      const apiStatus: ApiHabitStatus = status === null ? 'missed' : status;
 
       // Optimistic UI update
       setHabitLogs(prevLogs => {
@@ -282,13 +207,7 @@ const HabitsWidget = (): JSX.Element => {
 
       // Call the API
       try {
-        await logHabitCompletion(
-          selectedHabit.id,
-          dateStr,
-          apiStatus,
-          undefined,
-          originalStatus as string | undefined
-        );
+        await logHabitCompletion(selectedHabit.id, dateStr, apiStatus, undefined);
         // The habit will be updated automatically by the useHabits hook
         // after successful log submission
       } catch (error) {
