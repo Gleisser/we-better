@@ -1,0 +1,85 @@
+.container {
+  @apply fixed bottom-0 left-0 right-0 z-50
+         flex items-center justify-center
+         transition-all duration-300 ease-in-out;
+}
+
+.indicator {
+  @apply flex items-center gap-2 
+         px-4 py-2 rounded-t-lg
+         shadow-lg 
+         text-sm font-medium
+         transition-all duration-300 ease-in-out;
+}
+
+/* Status specific styles */
+.offline {
+  @apply bg-red-500 text-white;
+}
+
+.poor {
+  @apply bg-amber-500 text-white;
+}
+
+.fair {
+  @apply bg-blue-400 text-white;
+}
+
+.reconnecting {
+  @apply bg-green-500 text-white;
+}
+
+/* Enter/exit animations */
+.enter {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.enterActive {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.exit {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.exitActive {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+/* Icon animation */
+.icon {
+  @apply inline-flex items-center justify-center;
+}
+
+.iconPulse {
+  animation: pulse 1.5s infinite;
+}
+
+.iconSpin {
+  animation: spin 1.5s infinite linear;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

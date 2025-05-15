@@ -5,6 +5,7 @@ import HeaderActions from '@/shared/components/layout/Header/HeaderActions';
 import SearchBar from '@/shared/components/layout/SearchBar/SearchBar';
 import { HeaderProvider } from '@/shared/contexts/HeaderContext';
 import { MobileNav } from '@/shared/components/navigation/MobileNav/MobileNav';
+import { OfflineIndicator } from '@/shared/components/common/OfflineIndicator';
 import styles from './WeBetterApp.module.css';
 
 const WeBetterApp = (): JSX.Element => {
@@ -64,6 +65,9 @@ const WeBetterApp = (): JSX.Element => {
             },
           }}
         />
+
+        {/* Offline Status Indicator */}
+        <OfflineIndicator />
 
         {/* Mobile Navigation */}
         <MobileNav />

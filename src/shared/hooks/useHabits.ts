@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
+import { useNetworkStatus } from '@/shared/hooks/useNetworkStatus';
 import * as habitsService from '@/core/services/habitsService';
 import { Habit, HabitStatus, HabitLog, HabitStats } from '@/core/services/habitsService';
+import { habitsStorage } from '@/core/database';
 
 interface UseHabitsReturn {
   habits: Habit[];
   isLoading: boolean;
   error: Error | null;
   stats: HabitStats | null;
+  isOnline: boolean;
   fetchHabits: (category?: string, showArchived?: boolean) => Promise<void>;
   createHabit: (name: string, category: string, startDate?: string) => Promise<Habit | null>;
   updateHabit: (id: string, data: Partial<Habit>) => Promise<Habit | null>;
@@ -29,12 +32,13 @@ interface UseHabitsReturn {
 
 export const useHabits = (): UseHabitsReturn => {
   const { isAuthenticated } = useAuth();
+  const { status: networkStatus } = useNetworkStatus();
   const [habits, setHabits] = useState<Habit[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
   const [stats, setStats] = useState<HabitStats | null>(null);
 
-  // Fetch habits from the API
+  // Fetch habits from the API or local storage if offline
   const fetchHabits = useCallback(
     async (category?: string, showArchived = false) => {
       if (!isAuthenticated) {
@@ -46,20 +50,114 @@ export const useHabits = (): UseHabitsReturn => {
         setIsLoading(true);
         setError(null);
 
+        // If offline, use IndexedDB
+        if (!networkStatus.isOnline) {
+          // Get user ID from auth context if available, or use a fallback
+          const userId = 'current_user'; // Replace with actual user ID
+
+          // Fetch from IndexedDB
+          const offlineHabits = await habitsStorage.getHabits(userId, {
+            category,
+            archived: showArchived,
+          });
+
+          setHabits(offlineHabits);
+          return;
+        }
+
+        // If online, fetch from API
         const response = await habitsService.getHabits(category, true, showArchived);
 
         if (response) {
           setHabits(response.habits);
+
+          // Also update IndexedDB for offline access
+          await habitsStorage.saveHabits(response.habits);
         }
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to fetch habits'));
-        console.error('Error fetching habits:', err);
+        // If offline, don't show an error, just try to use cached data
+        if (!networkStatus.isOnline) {
+          setError(new Error('You are offline. Using cached data.'));
+
+          try {
+            // Try to get cached data as a fallback
+            const userId = 'current_user'; // Replace with actual user ID
+            const offlineHabits = await habitsStorage.getHabits(userId, {
+              category,
+              archived: showArchived,
+            });
+
+            if (offlineHabits.length > 0) {
+              setHabits(offlineHabits);
+              setError(null); // Clear error if we found cached data
+            }
+          } catch (cacheErr) {
+            console.error('Failed to load from cache:', cacheErr);
+          }
+        } else {
+          setError(err instanceof Error ? err : new Error('Failed to fetch habits'));
+          console.error('Error fetching habits:', err);
+        }
       } finally {
         setIsLoading(false);
       }
     },
-    [isAuthenticated]
+    [isAuthenticated, networkStatus.isOnline]
   );
+
+  // Refresh habit statistics
+  const refreshStats = useCallback(async (): Promise<void> => {
+    if (!isAuthenticated) {
+      setError(new Error('User not authenticated'));
+      return;
+    }
+
+    try {
+      setError(null);
+
+      // If offline, try to get cached stats
+      if (!networkStatus.isOnline) {
+        const userId = 'current_user'; // Replace with actual user ID
+        const cachedStats = await habitsStorage.getCachedHabitStats(userId);
+        if (cachedStats) {
+          setStats(cachedStats);
+        }
+        return;
+      }
+
+      // If online, get fresh stats from API
+      const habitStats = await habitsService.getHabitStats();
+      if (habitStats) {
+        setStats(habitStats);
+
+        // Cache the stats for offline use
+        const userId = 'current_user'; // Replace with actual user ID
+        await habitsStorage.cacheHabitStats(userId, habitStats);
+      }
+    } catch (err) {
+      if (!networkStatus.isOnline) {
+        setError(new Error('Unable to fetch stats while offline'));
+      } else {
+        setError(err instanceof Error ? err : new Error('Failed to fetch habit stats'));
+        console.error('Error fetching habit stats:', err);
+      }
+    }
+  }, [isAuthenticated, networkStatus.isOnline]);
+
+  // Listen for online status changes
+  useEffect(() => {
+    // When coming back online after being offline, refresh data
+    if (networkStatus.isOnline && networkStatus.wasOffline && isAuthenticated) {
+      fetchHabits();
+      refreshStats();
+    }
+  }, [
+    networkStatus.isOnline,
+    networkStatus.wasOffline,
+    isAuthenticated,
+    fetchHabits,
+    refreshStats,
+  ]);
 
   // Create a new habit
   const createHabit = useCallback(
@@ -236,41 +334,12 @@ export const useHabits = (): UseHabitsReturn => {
     [isAuthenticated]
   );
 
-  // Refresh habit statistics
-  const refreshStats = useCallback(async (): Promise<void> => {
-    if (!isAuthenticated) {
-      setError(new Error('User not authenticated'));
-      return;
-    }
-
-    try {
-      setError(null);
-      const habitStats = await habitsService.getHabitStats();
-      if (habitStats) {
-        setStats(habitStats);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to fetch habit stats'));
-      console.error('Error fetching habit stats:', err);
-    }
-  }, [isAuthenticated]);
-
-  // Initialize data on component mount or when user auth changes
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchHabits();
-      refreshStats();
-    } else {
-      setHabits([]);
-      setStats(null);
-    }
-  }, [isAuthenticated, fetchHabits, refreshStats]);
-
   return {
     habits,
     isLoading,
     error,
     stats,
+    isOnline: networkStatus.isOnline,
     fetchHabits,
     createHabit,
     updateHabit,
