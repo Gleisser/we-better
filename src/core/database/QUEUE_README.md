@@ -12,6 +12,8 @@ This module provides a robust request queuing system for handling API requests, 
 - **Request Status Tracking**: Monitor request status (PENDING, PROCESSING, FAILED, COMPLETED).
 - **Request Serialization**: Serialize and deserialize requests for storage or transmission.
 - **Explicit Enqueue/Dequeue Operations**: Direct control over adding and retrieving requests from the queue.
+- **Background Processing**: Intelligent background processing that respects network status and browser state.
+- **Smart Retry Mechanisms**: Configurable retry strategies with exponential backoff and jitter.
 
 ## How It Works
 
@@ -205,6 +207,67 @@ await queueUtils.queuePost('/api/data', data, {
 
 ## Advanced Usage
 
+### Background Processing Configuration
+
+Configure the queue processor's behavior for background processing:
+
+```typescript
+import { queueProcessor } from '@/core/database/queueProcessor';
+
+// Start with custom retry configuration
+queueProcessor.start({
+  interval: 5000, // Check every 5 seconds
+  maxConcurrent: 3, // Process up to 3 requests at a time
+  retryConfig: {
+    maxRetries: 8, // Maximum number of retry attempts
+    initialBackoffMs: 2000, // Start with 2 seconds
+    maxBackoffMs: 120000, // Max 2 minutes
+    backoffFactor: 1.5, // Exponential factor
+    jitter: true, // Add randomness to prevent thundering herd
+  },
+});
+```
+
+### Monitoring Queue Status
+
+Get detailed information about the queue's status:
+
+```typescript
+// Get current queue status
+const status = await queueUtils.getQueueStats();
+console.log(`Pending: ${status.stats.pending}, Processing: ${status.stats.processing}`);
+console.log(`Failed: ${status.stats.failed}, Completed: ${status.stats.completed}`);
+
+// Get processor status
+const processorStatus = queueProcessor.getStatus();
+console.log(`Active requests: ${processorStatus.activeRequests}/${processorStatus.maxConcurrent}`);
+console.log(`Network status: ${processorStatus.isOnline ? 'Online' : 'Offline'}`);
+```
+
+### Manual Retry of Failed Requests
+
+Manually retry a specific failed request:
+
+```typescript
+// Retry a specific request
+const wasRetried = await queueProcessor.manualRetry('request-id-123');
+if (wasRetried) {
+  console.log('Request was retried successfully');
+} else {
+  console.log('Request could not be retried (not found or not failed)');
+}
+```
+
+### Waiting for Queue Idle
+
+Wait for all in-progress requests to complete (useful for testing or shutdown):
+
+```typescript
+// Wait for all in-flight requests to complete
+await queueProcessor.waitForIdle();
+console.log('All requests are now complete');
+```
+
 ### Direct Access to Queue Service
 
 For more advanced operations, you can use the queue service directly:
@@ -240,7 +303,35 @@ queueProcessor.start({
 
 // Get processor status
 const status = queueProcessor.getStatus();
+
+// Reset the processor state (for error recovery)
+queueProcessor.reset();
 ```
+
+## Retry Mechanism
+
+The queue processor implements a sophisticated retry mechanism with the following features:
+
+1. **Exponential Backoff**: Retry intervals increase exponentially with each attempt.
+2. **Jitter**: Random variation in retry times to prevent the "thundering herd" problem.
+3. **Smart Error Categorization**: Some errors are marked as non-retryable.
+4. **Maximum Retries**: Configurable maximum number of retry attempts.
+5. **Request-specific State**: Each request tracks its own attempt count and error state.
+
+### Error Classification
+
+The processor intelligently categorizes errors:
+
+- **Retryable Errors**: Server errors (HTTP 5xx), network timeouts, and specific client errors (408, 429).
+- **Non-retryable Errors**: Most client errors (HTTP 4xx), CORS errors, invalid URLs.
+
+### Browser State Awareness
+
+The queue processor is aware of the browser's state:
+
+- **Network Status**: Pauses processing when offline, resumes when back online.
+- **Tab Visibility**: Adjusts processing when the tab is not active.
+- **Page Unload**: Preserves state when the page is closed/reloaded.
 
 ## Schema Migration
 
@@ -250,13 +341,13 @@ The queue schema is versioned and can be updated with the migration system. Curr
 
 Failed requests are automatically retried with exponential backoff:
 
-- 1st retry: 2 seconds after failure
-- 2nd retry: 4 seconds after failure
-- 3rd retry: 8 seconds after failure
-- 4th retry: 16 seconds after failure
-- 5th retry: 30 seconds after failure (capped)
+- 1st retry: Initial backoff (default: 1 second, with jitter)
+- 2nd retry: 2x initial backoff
+- 3rd retry: 4x initial backoff
+- 4th retry: 8x initial backoff
+- 5th retry: 16x initial backoff (capped at 1 minute by default)
 
-After 5 retries, the request is marked as permanently failed.
+After the maximum retries (default: 5), the request is marked as permanently failed.
 
 ## Queue Maintenance
 
