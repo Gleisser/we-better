@@ -8,6 +8,20 @@ export interface CachedItem<T> {
   expiresAt: number;
 }
 
+export enum RequestPriority {
+  LOW = 0,
+  MEDIUM = 5,
+  HIGH = 10,
+  CRITICAL = 15,
+}
+
+export enum RequestStatus {
+  PENDING = 'pending',
+  PROCESSING = 'processing',
+  FAILED = 'failed',
+  COMPLETED = 'completed',
+}
+
 export interface QueuedRequest {
   id: string;
   endpoint: string;
@@ -15,7 +29,13 @@ export interface QueuedRequest {
   body?: Record<string, unknown>;
   createdAt: number;
   attempts: number;
-  priority: number; // Higher number = higher priority
+  priority: RequestPriority; // Using the enum for priority
+  status: RequestStatus; // Current status of the request
+  lastAttempt?: number; // Timestamp of the last attempt
+  errorMessage?: string; // Last error message if failed
+  retryAfter?: number; // Timestamp to retry after (for backoff)
+  tags?: string[]; // Optional tags for categorizing requests
+  groupId?: string; // Group ID for related requests
 }
 
 // Extend Habit type for optimistic updates

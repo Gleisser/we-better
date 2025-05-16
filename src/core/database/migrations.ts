@@ -13,25 +13,35 @@ export const migrations = {
      * Initial schema (v1) already defined in db.ts
      */
     /**
-     * Version 2: Add new fields to habits table
-     * This is a template for future migrations
+     * Version 2: Enhance the requestQueue table with additional fields
      */
-    /*
-    db.version(2).stores({
-      // Keep the schema for previously existing tables
-      habits: '++id, user_id, category, active, archived, [user_id+category], _synced, _localId, newField',
-      habitLogs: '++id, habit_id, user_id, date, status, [habit_id+date], [user_id+date], _synced, _localId',
-      habitStreaks: '++id, habit_id, user_id, [habit_id+user_id]',
-      requestQueue: '++id, endpoint, method, createdAt, attempts, priority',
-      cache: 'id, timestamp, expiresAt',
-    }).upgrade(tx => {
-      // This function will be called when upgrading from v1 to v2
-      return tx.table('habits').toCollection().modify(habit => {
-        // Set default values for new fields
-        habit.newField = 'default value';
+    db.version(2)
+      .stores({
+        // Keep the schema for previously existing tables
+        habits: '++id, user_id, category, active, archived, [user_id+category], _synced, _localId',
+        habitLogs:
+          '++id, habit_id, user_id, date, status, [habit_id+date], [user_id+date], _synced, _localId',
+        habitStreaks: '++id, habit_id, user_id, [habit_id+user_id]',
+        requestQueue:
+          '++id, endpoint, method, createdAt, attempts, priority, status, lastAttempt, retryAfter, groupId, [status+priority], [groupId+status]',
+        cache: 'id, timestamp, expiresAt',
+      })
+      .upgrade(tx => {
+        // This function will be called when upgrading from v1 to v2
+        return tx
+          .table('requestQueue')
+          .toCollection()
+          .modify(request => {
+            // Set default values for new fields
+            request.status = 'pending';
+            request.lastAttempt = null;
+            request.errorMessage = null;
+            request.retryAfter = null;
+            request.tags = [];
+            request.groupId = null;
+          });
       });
-    });
-    */
+
     /**
      * Example Version 3: Add new logs table
      */
