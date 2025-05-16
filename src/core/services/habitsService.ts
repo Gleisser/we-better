@@ -83,7 +83,22 @@ export interface HabitStreak {
 const getAuthToken = async (): Promise<string | null> => {
   try {
     const { data } = await supabase.auth.getSession();
-    return data.session?.access_token || null;
+    if (data.session?.access_token) {
+      return data.session.access_token;
+    }
+
+    // If no session, check if we have a stored token
+    const storedToken = localStorage.getItem('supabase.auth.token');
+    if (storedToken) {
+      try {
+        const parsed = JSON.parse(storedToken);
+        return parsed.access_token || null;
+      } catch (e) {
+        console.error('Failed to parse stored token:', e);
+      }
+    }
+
+    return null;
   } catch (error) {
     console.error('Error getting auth token:', error);
     return null;
@@ -127,6 +142,14 @@ const apiRequest = async <T>(
     while (true) {
       try {
         response = await fetch(endpoint, config);
+
+        // Log request details for debugging
+        console.info(`API ${method} request to ${endpoint}`, {
+          status: response.status,
+          headers: Object.fromEntries([...response.headers.entries()]),
+          ok: response.ok,
+        });
+
         break;
       } catch (error) {
         retries++;
@@ -140,8 +163,12 @@ const apiRequest = async <T>(
       // Handle specific error cases
       if (response.status === 401) {
         // Trigger auth refresh or redirect to login
+        console.error('Authentication expired or invalid');
         throw new Error('Authentication expired');
       }
+
+      const errorText = await response.text();
+      console.error(`API error (${response.status}):`, errorText);
       throw new Error(`API request failed: ${response.statusText}`);
     }
 

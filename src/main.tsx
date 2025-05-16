@@ -2,21 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { AuthProvider } from '@/shared/contexts/AuthContext';
 import { RouterProvider } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { router } from './core/router/index';
-import { initializeDatabase } from './core/database';
+import { initializeDatabase } from './core/database/db';
 import { NetworkStatusProvider } from '@/shared/contexts/NetworkStatusContext';
+import { queryClient } from './core/query/queryClient';
 import './styles/index.css';
-
-// Create a client
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-    },
-  },
-});
 
 // Initialize the database
 initializeDatabase()

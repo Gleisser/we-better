@@ -20,6 +20,22 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       proxy: {
+        '/api/habits': {
+          target: userServiceUrl,
+          changeOrigin: true,
+          secure: false,
+          configure: proxy => {
+            proxy.on('error', err => {
+              console.info('proxy error', err);
+            });
+            proxy.on('proxyReq', (_proxyReq, req) => {
+              console.info('Sending Request to the Target:', req.method, req.url);
+            });
+            proxy.on('proxyRes', (proxyRes, req) => {
+              console.info('Received Response from the Target:', proxyRes.statusCode, req.url);
+            });
+          },
+        },
         '/api/life-wheel': {
           target: userServiceUrl,
           changeOrigin: true,

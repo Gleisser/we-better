@@ -17,14 +17,43 @@ const DEFAULT_CACHE_TTL = {
 export const toLocalHabit = (habit: Habit, synced = true): LocalHabit => ({
   ...habit,
   _synced: synced,
+  _deleted: false,
+  _version: 1,
+  _modified: Date.now(),
 });
 
 /**
  * Convert a local habit to a server habit
  */
 export const toServerHabit = (habit: LocalHabit): Habit => {
-  const { _synced, _localId, _deleted, ...serverHabit } = habit;
-  return serverHabit as Habit;
+  // Extract only the fields that should be in the server model
+  const {
+    id,
+    user_id,
+    name,
+    category,
+    streak,
+    start_date,
+    active,
+    archived,
+    archive_date,
+    created_at,
+    updated_at,
+  } = habit;
+
+  return {
+    id,
+    user_id,
+    name,
+    category,
+    streak,
+    start_date,
+    active,
+    archived,
+    archive_date,
+    created_at,
+    updated_at,
+  };
 };
 
 /**
@@ -33,13 +62,16 @@ export const toServerHabit = (habit: LocalHabit): Habit => {
 export const toLocalHabitLog = (log: HabitLog, synced = true): LocalHabitLog => ({
   ...log,
   _synced: synced,
+  _deleted: false,
+  _modified: Date.now(),
+  _version: 1,
 });
 
 /**
  * Convert a local habit log to a server habit log
  */
 export const toServerHabitLog = (log: LocalHabitLog): HabitLog => {
-  const { _synced, _localId, _deleted, ...serverLog } = log;
+  const { _synced, _deleted, _modified, _version, ...serverLog } = log;
   return serverLog as HabitLog;
 };
 
@@ -84,45 +116,53 @@ export const habitsStorage = {
   },
 
   /**
-   * Get all habits for a user
+   * Get habits with optional filtering
    * @param userId The user ID
-   * @param options Query options
+   * @param filters Optional filters
    */
   async getHabits(
     userId: string,
-    options: {
+    filters: {
       category?: string;
-      active?: boolean;
       archived?: boolean;
-      includeDeleted?: boolean;
+      active?: boolean;
+      limit?: number;
+      offset?: number;
     } = {}
   ): Promise<Habit[]> {
-    let query = db.habits.where('user_id').equals(userId);
+    let query = db.habits
+      .where('user_id')
+      .equals(userId)
+      .and(h => !h._deleted);
 
-    // Apply filters
-    if (options.category) {
-      query = db.habits.where('[user_id+category]').equals([userId, options.category]);
+    if (filters.category) {
+      query = query.and(h => h.category === filters.category);
     }
 
-    // Execute query
-    let habits = await query.toArray();
-
-    // Apply additional filters
-    if (options.active !== undefined) {
-      habits = habits.filter(h => h.active === options.active);
+    if (filters.archived !== undefined) {
+      query = query.and(h => h.archived === filters.archived);
     }
 
-    if (options.archived !== undefined) {
-      habits = habits.filter(h => h.archived === options.archived);
+    if (filters.active !== undefined) {
+      query = query.and(h => h.active === filters.active);
     }
 
-    // Exclude deleted items unless specifically requested
-    if (!options.includeDeleted) {
-      habits = habits.filter(h => !h._deleted);
-    }
-
-    // Convert to server format
+    const habits = await query.toArray();
     return habits.map(toServerHabit);
+  },
+
+  /**
+   * Mark a habit as deleted locally
+   * @param id The habit ID
+   */
+  async markHabitAsDeleted(id: string): Promise<void> {
+    const habit = await db.habits.get(id);
+    if (habit) {
+      habit._deleted = true;
+      habit._synced = false;
+      habit._modified = Date.now();
+      await db.habits.put(habit);
+    }
   },
 
   /**
@@ -133,16 +173,14 @@ export const habitsStorage = {
   },
 
   /**
-   * Mark a habit as deleted (for sync)
+   * Mark a habit as synced
    * @param id The habit ID
    */
-  async markHabitAsDeleted(id: string): Promise<void> {
+  async markHabitAsSynced(id: string): Promise<void> {
     const habit = await db.habits.get(id);
     if (habit) {
-      await db.habits.update(id, {
-        _deleted: true,
-        _synced: false,
-      });
+      habit._synced = true;
+      await db.habits.put(habit);
     }
   },
 
@@ -164,7 +202,13 @@ export const habitsStorage = {
    * @param synced Whether this log is synced with the server
    */
   async saveHabitLog(log: HabitLog, synced = true): Promise<string> {
-    const localLog = toLocalHabitLog(log, synced);
+    const localLog: LocalHabitLog = {
+      ...log,
+      _synced: synced,
+      _deleted: false,
+      _version: 1,
+      _modified: Date.now(),
+    };
     const id = await db.habitLogs.put(localLog);
     return id.toString();
   },
@@ -175,91 +219,75 @@ export const habitsStorage = {
    * @param synced Whether these logs are synced with the server
    */
   async saveHabitLogs(logs: HabitLog[], synced = true): Promise<void> {
-    const localLogs = logs.map(log => toLocalHabitLog(log, synced));
+    const localLogs: LocalHabitLog[] = logs.map(log => ({
+      ...log,
+      _synced: synced,
+      _deleted: false,
+      _version: 1,
+      _modified: Date.now(),
+    }));
     await db.habitLogs.bulkPut(localLogs);
-  },
-
-  /**
-   * Get a habit log by ID
-   * @param id The log ID
-   */
-  async getHabitLog(id: string): Promise<HabitLog | undefined> {
-    const log = await db.habitLogs.get(id);
-    if (!log || log._deleted) return undefined;
-    return toServerHabitLog(log);
   },
 
   /**
    * Get logs for a habit
    * @param habitId The habit ID
-   * @param options Query options
+   * @param startDate Optional start date
+   * @param endDate Optional end date
    */
-  async getHabitLogs(
-    habitId: string,
-    options: {
-      startDate?: string;
-      endDate?: string;
-      includeDeleted?: boolean;
-    } = {}
-  ): Promise<HabitLog[]> {
-    const query = db.habitLogs.where('habit_id').equals(habitId);
+  async getHabitLogs(habitId: string, startDate?: string, endDate?: string): Promise<HabitLog[]> {
+    let query = db.habitLogs
+      .where('habit_id')
+      .equals(habitId)
+      .and(log => !log._deleted);
 
-    // Execute query
-    let logs = await query.toArray();
-
-    // Apply date filters
-    if (options.startDate !== undefined) {
-      const startDate = options.startDate;
-      logs = logs.filter(log => log.date >= startDate);
+    if (startDate && endDate) {
+      query = query.and(log => log.date >= startDate && log.date <= endDate);
+    } else if (startDate) {
+      query = query.and(log => log.date >= startDate);
+    } else if (endDate) {
+      query = query.and(log => log.date <= endDate);
     }
 
-    if (options.endDate !== undefined) {
-      const endDate = options.endDate;
-      logs = logs.filter(log => log.date <= endDate);
-    }
+    const logs = await query.toArray();
 
-    // Exclude deleted items unless specifically requested
-    if (!options.includeDeleted) {
-      logs = logs.filter(log => !log._deleted);
-    }
-
-    // Convert to server format
-    return logs.map(toServerHabitLog);
+    // Convert to server format (remove local properties)
+    return logs.map(log => {
+      const { _synced, _deleted, _version, _modified, ...serverLog } = log;
+      return serverLog;
+    });
   },
 
   /**
-   * Get logs for a user on a specific date
-   * @param userId The user ID
-   * @param date The date string (YYYY-MM-DD)
+   * Mark a log as deleted locally
+   * @param id The log ID
    */
-  async getHabitLogsByDate(userId: string, date: string): Promise<HabitLog[]> {
-    const logs = await db.habitLogs
-      .where('[user_id+date]')
-      .equals([userId, date])
-      .filter(log => !log._deleted)
-      .toArray();
-
-    return logs.map(toServerHabitLog);
+  async markLogAsDeleted(id: string): Promise<void> {
+    const log = await db.habitLogs.get(id);
+    if (log) {
+      log._deleted = true;
+      log._synced = false;
+      log._modified = Date.now();
+      await db.habitLogs.put(log);
+    }
   },
 
   /**
-   * Get all unsynced habit logs
+   * Get all unsynced logs
    */
-  async getUnsyncedHabitLogs(): Promise<LocalHabitLog[]> {
+  async getUnsyncedLogs(): Promise<LocalHabitLog[]> {
     return db.habitLogs.where('_synced').equals(0).toArray();
   },
 
   /**
-   * Mark a habit log as deleted (for sync)
+   * Mark a log as synced
    * @param id The log ID
    */
-  async markHabitLogAsDeleted(id: string): Promise<void> {
+  async markLogAsSynced(id: string): Promise<void> {
     const log = await db.habitLogs.get(id);
     if (log) {
-      await db.habitLogs.update(id, {
-        _deleted: true,
-        _synced: false,
-      });
+      log._synced = true;
+      await db.habitLogs.put(log);
     }
   },
 
@@ -311,14 +339,17 @@ export const habitsStorage = {
    * @param key Cache key
    */
   async cacheGet<T>(key: string): Promise<T | null> {
-    const item = await db.cache.get(key);
+    const cacheItem = await db.cache.get(key);
 
-    // Return null if item doesn't exist or is expired
-    if (!item || item.expiresAt < Date.now()) {
+    if (!cacheItem) return null;
+
+    // Check if cache is still valid
+    if (cacheItem.expiresAt < Date.now()) {
+      await db.cache.delete(key);
       return null;
     }
 
-    return item.data as T;
+    return cacheItem.data as T;
   },
 
   /**
@@ -327,14 +358,6 @@ export const habitsStorage = {
    */
   async cacheDelete(key: string): Promise<void> {
     await db.cache.delete(key);
-  },
-
-  /**
-   * Clear expired cache items
-   */
-  async clearExpiredCache(): Promise<void> {
-    const now = Date.now();
-    await db.cache.where('expiresAt').below(now).delete();
   },
 
   /**
