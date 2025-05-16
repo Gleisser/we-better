@@ -10,6 +10,8 @@ This module provides a robust request queuing system for handling API requests, 
 - **Request Grouping**: Group related requests together for batch operations.
 - **Concurrency Control**: Limit the number of concurrent API requests.
 - **Request Status Tracking**: Monitor request status (PENDING, PROCESSING, FAILED, COMPLETED).
+- **Request Serialization**: Serialize and deserialize requests for storage or transmission.
+- **Explicit Enqueue/Dequeue Operations**: Direct control over adding and retrieving requests from the queue.
 
 ## How It Works
 
@@ -19,6 +21,7 @@ The request queue system consists of several components:
 2. **Queue Service**: Methods for adding, retrieving, and managing requests.
 3. **Queue Processor**: Background process that executes queued requests.
 4. **Queue Utilities**: Helper functions for common queue operations.
+5. **Request Serializer**: Utilities for serializing and deserializing requests.
 
 ## Basic Usage
 
@@ -61,6 +64,97 @@ const putRequestId = await queueUtils.queuePut('/api/users/123', {
 
 // Queue a DELETE request
 const deleteRequestId = await queueUtils.queueDelete('/api/users/123');
+```
+
+### Explicit Enqueue Operations
+
+For more control, you can use the explicit enqueue methods:
+
+```typescript
+import { RequestPriority } from '@/core/database/db';
+
+// Enqueue a request with specific properties
+const requestId = await queueService.enqueue({
+  endpoint: '/api/users',
+  method: 'POST',
+  body: { name: 'John' },
+  priority: RequestPriority.HIGH,
+  tags: ['user', 'create'],
+});
+
+// Enqueue a native fetch Request
+const fetchRequest = new Request('/api/data', {
+  method: 'POST',
+  body: JSON.stringify({ data: 'value' }),
+});
+const requestId = await queueUtils.enqueueFetchRequest(fetchRequest, {
+  priority: RequestPriority.HIGH,
+});
+
+// Enqueue multiple requests at once
+const requestIds = await queueService.enqueueBatch([
+  { endpoint: '/api/users/1', method: 'GET' },
+  { endpoint: '/api/users/2', method: 'GET' },
+]);
+```
+
+### Dequeue Operations
+
+Retrieve requests from the queue:
+
+```typescript
+// Dequeue a single request
+const request = await queueUtils.dequeue({
+  priority: RequestPriority.HIGH,
+  markAsProcessing: true,
+});
+
+// Dequeue multiple requests
+const requests = await queueUtils.dequeueBatch(5, {
+  groupId: 'batch-1',
+  markAsProcessing: true,
+});
+
+// Process dequeued requests
+if (request) {
+  const response = await fetch(request.endpoint, {
+    method: request.method,
+    body: request.body ? JSON.stringify(request.body) : undefined,
+  });
+
+  if (response.ok) {
+    await queueService.markAsCompleted(request.id);
+  } else {
+    await queueService.markAsFailed(request.id, 'API Error');
+  }
+}
+```
+
+### Request Serialization
+
+Serialize requests for storage or transmission:
+
+```typescript
+// Serialize a request to JSON
+const serialized = queueUtils.serializeRequest(request);
+
+// Deserialize a request from JSON
+const request = queueUtils.deserializeRequest(serialized);
+
+// Store a request in localStorage
+queueUtils.storeRequestLocally('pending-request', request);
+
+// Retrieve a request from localStorage
+const storedRequest = queueUtils.retrieveRequestLocally('pending-request');
+
+// Convert a QueuedRequest to a native fetch Request
+const fetchRequest = queueUtils.toFetchRequest(queuedRequest);
+
+// Enqueue a serialized request
+const requestId = await queueUtils.enqueueFromSerialized(serializedRequest);
+
+// Enqueue multiple serialized requests
+const requestIds = await queueUtils.enqueueBatchFromSerialized(serializedRequests);
 ```
 
 ### Request Prioritization
@@ -117,6 +211,7 @@ For more advanced operations, you can use the queue service directly:
 
 ```typescript
 import { queueService } from '@/core/database/queueService';
+import { RequestStatus } from '@/core/database/db';
 
 // Get requests with a specific status
 const pendingRequests = await queueService.getRequests({

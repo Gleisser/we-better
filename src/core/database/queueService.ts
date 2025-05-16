@@ -43,6 +43,176 @@ export const queueService = {
   },
 
   /**
+   * Enqueue a request - explicit method for adding a request to the queue
+   *
+   * @param request The request to enqueue (partial, will be completed with defaults)
+   * @returns The ID of the queued request
+   */
+  async enqueue(request: Partial<QueuedRequest>): Promise<string> {
+    const completeRequest: QueuedRequest = {
+      id: request.id || uuidv4(),
+      endpoint: request.endpoint || '',
+      method: request.method || 'GET',
+      body: request.body,
+      createdAt: request.createdAt || Date.now(),
+      attempts: request.attempts || 0,
+      priority: request.priority ?? RequestPriority.MEDIUM,
+      status: request.status || RequestStatus.PENDING,
+      tags: request.tags || [],
+      groupId: request.groupId,
+      lastAttempt: request.lastAttempt,
+      errorMessage: request.errorMessage,
+      retryAfter: request.retryAfter,
+    };
+
+    if (!completeRequest.endpoint) {
+      throw new Error('Request must include an endpoint');
+    }
+
+    await db.requestQueue.add(completeRequest);
+    return completeRequest.id;
+  },
+
+  /**
+   * Enqueue multiple requests at once
+   *
+   * @param requests Array of requests to enqueue
+   * @returns Array of request IDs
+   */
+  async enqueueBatch(requests: Partial<QueuedRequest>[]): Promise<string[]> {
+    const completeRequests: QueuedRequest[] = requests.map(request => ({
+      id: request.id || uuidv4(),
+      endpoint: request.endpoint || '',
+      method: request.method || 'GET',
+      body: request.body,
+      createdAt: request.createdAt || Date.now(),
+      attempts: request.attempts || 0,
+      priority: request.priority ?? RequestPriority.MEDIUM,
+      status: request.status || RequestStatus.PENDING,
+      tags: request.tags || [],
+      groupId: request.groupId,
+      lastAttempt: request.lastAttempt,
+      errorMessage: request.errorMessage,
+      retryAfter: request.retryAfter,
+    }));
+
+    // Validate all requests
+    const invalidRequests = completeRequests.filter(req => !req.endpoint);
+    if (invalidRequests.length > 0) {
+      throw new Error(`${invalidRequests.length} requests are missing endpoints`);
+    }
+
+    // Add all requests to the queue in a transaction
+    const ids: string[] = [];
+    await db.transaction('rw', db.requestQueue, async () => {
+      for (const request of completeRequests) {
+        await db.requestQueue.add(request);
+        ids.push(request.id);
+      }
+    });
+
+    return ids;
+  },
+
+  /**
+   * Dequeue a request - remove it from the queue and return it
+   *
+   * @param options Options for dequeuing
+   * @returns The dequeued request or null if none available
+   */
+  async dequeue(
+    options: {
+      priority?: RequestPriority;
+      groupId?: string;
+      tag?: string;
+      markAsProcessing?: boolean;
+    } = {}
+  ): Promise<QueuedRequest | null> {
+    // Start a transaction to ensure atomic operations
+    let dequeuedRequest: QueuedRequest | null = null;
+
+    await db.transaction('rw', db.requestQueue, async () => {
+      // Get next request based on options
+      const collection = db.requestQueue.where('status').equals(RequestStatus.PENDING);
+
+      const now = Date.now();
+
+      // Apply filters
+      let requests = await collection
+        .filter(req => !req.retryAfter || req.retryAfter <= now)
+        .toArray();
+
+      // Further filter by options
+      if (options.groupId) {
+        requests = requests.filter(req => req.groupId === options.groupId);
+      }
+
+      if (options.tag) {
+        requests = requests.filter(req => req.tags?.includes(options.tag as string));
+      }
+
+      // If priority specified, only consider requests with equal or higher priority
+      if (options.priority !== undefined) {
+        const priorityValue = options.priority; // Explicit assignment to avoid 'possibly undefined'
+        requests = requests.filter(req => req.priority >= priorityValue);
+      }
+
+      // Sort by priority (highest first) and then by creation time (oldest first)
+      requests.sort((a, b) => {
+        if (b.priority !== a.priority) {
+          return b.priority - a.priority;
+        }
+        return a.createdAt - b.createdAt;
+      });
+
+      // Get the highest priority request
+      const nextRequest = requests[0];
+      if (!nextRequest) return;
+
+      dequeuedRequest = nextRequest;
+
+      // Mark as processing if requested
+      if (options.markAsProcessing) {
+        await db.requestQueue.update(nextRequest.id, {
+          status: RequestStatus.PROCESSING,
+          lastAttempt: Date.now(),
+          attempts: (nextRequest.attempts || 0) + 1,
+        });
+      }
+    });
+
+    return dequeuedRequest;
+  },
+
+  /**
+   * Dequeue multiple requests at once
+   *
+   * @param count Maximum number of requests to dequeue
+   * @param options Options for dequeuing
+   * @returns Array of dequeued requests
+   */
+  async dequeueBatch(
+    count: number,
+    options: {
+      priority?: RequestPriority;
+      groupId?: string;
+      tag?: string;
+      markAsProcessing?: boolean;
+    } = {}
+  ): Promise<QueuedRequest[]> {
+    const dequeuedRequests: QueuedRequest[] = [];
+
+    // Dequeue requests one by one up to count
+    for (let i = 0; i < count; i++) {
+      const request = await this.dequeue(options);
+      if (!request) break;
+      dequeuedRequests.push(request);
+    }
+
+    return dequeuedRequests;
+  },
+
+  /**
    * Get the next request to process from the queue
    * Prioritizes requests by priority and then by creation time
    *
