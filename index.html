@@ -28,17 +28,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="index, follow">
     <meta name="author" content="We Better">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#7e22ce">
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://webetter.ai/">
 
     <!-- Favicon and App Icons -->
-    <link rel="icon" type="image/svg+xml" href="/assets/images/logo/we-better-logo-v3-mobile.svg">
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- PWA Support -->
+    <meta name="theme-color" content="#7e22ce">
+    <meta name="description" content="Track habits, set goals, and improve yourself every day">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Add to home screen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="We Better">
+    
+    <!-- Add icons for iOS -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
     <!-- Preload critical assets -->
     <link 
@@ -72,5 +86,14 @@
     <div id="root"></div>
     <div id="portal-root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <noscript>
+      <div style="padding: 2rem; text-align: center;">
+        <h1>JavaScript Required</h1>
+        <p>
+          We're sorry, but We Better requires JavaScript to function properly.
+          Please enable JavaScript in your browser to continue.
+        </p>
+      </div>
+    </noscript>
   </body>
 </html>

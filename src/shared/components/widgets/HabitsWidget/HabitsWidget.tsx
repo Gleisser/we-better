@@ -15,6 +15,7 @@ import { StatusMenu } from './StatusMenu';
 import { HabitStatus, Habit as LocalHabit, HabitCategory } from './types';
 import { STATUS_CONFIG, CATEGORY_CONFIG } from './config';
 import { useHabits } from '@/shared/hooks/useHabits';
+//import { useSyncOnReconnect } from '@/shared/hooks/useSyncOnReconnect';
 import {
   Habit as ApiHabit,
   HabitLog,
@@ -64,6 +65,7 @@ const HabitsWidget = (): JSX.Element => {
     habits: apiHabits,
     isLoading,
     error,
+    //isOnline,
     fetchHabits,
     createHabit: apiCreateHabit,
     updateHabit: apiUpdateHabit,
@@ -71,6 +73,9 @@ const HabitsWidget = (): JSX.Element => {
     logHabitCompletion,
     getHabitLogs,
   } = useHabits();
+
+  // Use sync on reconnect hook
+  //const { wasOffline } = useSyncOnReconnect();
 
   // Fetch logs for each habit
   const fetchLogsForHabit = useCallback(

@@ -7,6 +7,7 @@ import { router } from './core/router/index';
 import { initializeDatabase } from './core/database/db';
 import { NetworkStatusProvider } from '@/shared/contexts/NetworkStatusContext';
 import { queryClient } from './core/query/queryClient';
+import * as serviceWorker from './core/serviceWorker/register';
 import './styles/index.css';
 
 // Initialize the database
@@ -17,6 +18,23 @@ initializeDatabase()
   .catch(error => {
     console.error('Failed to initialize database:', error);
   });
+
+// Register service worker
+serviceWorker.register({
+  onSuccess: _registration => {
+    console.info('Service worker registered successfully');
+  },
+  onUpdate: registration => {
+    // Show update notification in a more user-friendly way if needed
+    const updateApp = window.confirm(
+      'A new version of the app is available. Would you like to update now?'
+    );
+
+    if (updateApp && registration.waiting) {
+      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+  },
+});
 
 const rootElement = document.getElementById('root');
 if (rootElement) {

@@ -601,3 +601,46 @@
            text-white;
   }
 }
+
+/* Offline indicator styles */
+.offlineIndicator {
+  display: flex;
+  align-items: center;
+  background: rgba(var(--accent-rgb), 0.15);
+  border-radius: 16px;
+  padding: 4px 12px;
+  margin-left: auto;
+  margin-right: 12px;
+}
+
+.offlineIcon {
+  font-size: 14px;
+  margin-right: 6px;
+}
+
+.offlineText {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(var(--accent-rgb), 1);
+}
+
+.reconnectedIndicator {
+  display: flex;
+  align-items: center;
+  background: rgba(16, 185, 129, 0.15);
+  border-radius: 16px;
+  padding: 4px 12px;
+  margin-left: auto;
+  margin-right: 12px;
+}
+
+.reconnectedIcon {
+  font-size: 14px;
+  margin-right: 6px;
+}
+
+.reconnectedText {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgb(16, 185, 129);
+}
