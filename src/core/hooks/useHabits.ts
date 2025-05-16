@@ -82,7 +82,7 @@ export function useHabit(id: string): UseQueryResult<Habit, unknown> {
 }
 
 /**
- * Hook to create a new habit
+ * Hook to create a new habit with optimistic updates
  */
 export function useCreateHabit(): UseMutationResult<
   Habit | null,
@@ -92,37 +92,86 @@ export function useCreateHabit(): UseMutationResult<
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      name,
-      category,
-      startDate,
-    }: {
-      name: string;
-      category: string;
-      startDate?: string;
-    }) => createHabit(name, category, startDate),
-    onSuccess: newHabit => {
-      // Invalidate habits list to trigger refetch
-      queryClient.invalidateQueries({ queryKey: habitsKeys.lists() });
+    mutationFn: ({ name, category, startDate }) => createHabit(name, category, startDate),
 
-      // Invalidate stats as creating a habit changes total counts
-      queryClient.invalidateQueries({ queryKey: habitsKeys.stats() });
+    // Optimistically update the habits list
+    onMutate: async newHabitData => {
+      // Cancel any outgoing refetches to avoid overwriting our optimistic update
+      await queryClient.cancelQueries({ queryKey: habitsKeys.lists() });
 
-      // If the new habit is returned with an ID, add it to the cache
-      if (newHabit?.id) {
+      // Get current habits list
+      const previousHabits = queryClient.getQueryData<HabitsResponse>(
+        habitsKeys.list({ active: true, archived: false })
+      );
+
+      // Create an optimistic habit with temporary ID
+      const optimisticHabit: Habit = {
+        id: `temp-${Date.now()}`,
+        user_id: 'current-user', // Will be assigned by the server
+        name: newHabitData.name,
+        category: newHabitData.category,
+        streak: 0,
+        start_date: newHabitData.startDate || new Date().toISOString().split('T')[0],
+        active: true,
+        archived: false,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      // Update the cache with optimistic data
+      if (previousHabits) {
+        queryClient.setQueryData(habitsKeys.list({ active: true, archived: false }), {
+          habits: [optimisticHabit, ...previousHabits.habits],
+          total: previousHabits.total + 1,
+        });
+      }
+
+      // Return context for potential rollback
+      return { previousHabits, optimisticHabit };
+    },
+
+    onSuccess: (newHabit, _, context) => {
+      // If we have a real habit from the server and an optimistic one, update the cache
+      if (newHabit?.id && context?.optimisticHabit) {
+        // Replace the optimistic habit with the real one in any lists
+        const listsQueries = queryClient.getQueriesData<HabitsResponse>({
+          queryKey: habitsKeys.lists(),
+        });
+
+        listsQueries.forEach(([queryKey, queryData]) => {
+          if (queryData?.habits) {
+            queryClient.setQueryData(queryKey, {
+              ...queryData,
+              habits: queryData.habits.map(habit =>
+                habit.id === context.optimisticHabit.id ? newHabit : habit
+              ),
+            });
+          }
+        });
+
+        // Add the real habit to its detail cache
         queryClient.setQueryData(habitsKeys.detail(newHabit.id), newHabit);
       }
 
-      // Invalidate today's habits to update the view if applicable
-      queryClient.invalidateQueries({
-        queryKey: habitsKeys.list({ active: true, archived: false }),
-      });
+      // Invalidate relevant queries to ensure consistency
+      queryClient.invalidateQueries({ queryKey: habitsKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: habitsKeys.stats() });
+    },
+
+    onError: (_, __, context) => {
+      // If the mutation fails, revert to the previous state
+      if (context?.previousHabits) {
+        queryClient.setQueryData(
+          habitsKeys.list({ active: true, archived: false }),
+          context.previousHabits
+        );
+      }
     },
   });
 }
 
 /**
- * Hook to update an existing habit
+ * Hook to update an existing habit with optimistic updates
  */
 export function useUpdateHabit(): UseMutationResult<
   Habit | null,
@@ -132,72 +181,231 @@ export function useUpdateHabit(): UseMutationResult<
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Habit> }) => updateHabit(id, data),
-    onSuccess: (updatedHabit, variables) => {
-      if (updatedHabit?.id) {
-        // Update the specific habit in cache
-        queryClient.setQueryData(habitsKeys.detail(updatedHabit.id), updatedHabit);
+    mutationFn: ({ id, data }) => updateHabit(id, data),
 
-        // Also invalidate lists that might contain this habit
-        queryClient.invalidateQueries({ queryKey: habitsKeys.lists() });
+    // Optimistically update the habit
+    onMutate: async ({ id, data }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: habitsKeys.detail(id) });
+      await queryClient.cancelQueries({ queryKey: habitsKeys.lists() });
 
-        // If active status changed, invalidate active habits queries
-        if ('active' in variables.data) {
-          queryClient.invalidateQueries({
-            queryKey: habitsKeys.list({ active: true }),
+      // Get the current habit
+      const previousHabit = queryClient.getQueryData<Habit>(habitsKeys.detail(id));
+
+      // If we don't have the habit in cache, we can't do an optimistic update
+      if (!previousHabit) return { previousHabit: null };
+
+      // Create an optimistic habit by merging the current habit with updates
+      const optimisticHabit: Habit = {
+        ...previousHabit,
+        ...data,
+        updated_at: new Date().toISOString(),
+      };
+
+      // Update the habit in the cache
+      queryClient.setQueryData(habitsKeys.detail(id), optimisticHabit);
+
+      // Also update any lists that contain this habit
+      const listsQueries = queryClient.getQueriesData<HabitsResponse>({
+        queryKey: habitsKeys.lists(),
+      });
+
+      const previousLists: Record<string, HabitsResponse | undefined> = {};
+
+      listsQueries.forEach(([queryKey, queryData]) => {
+        previousLists[queryKey.toString()] = queryData;
+
+        if (queryData?.habits) {
+          const updatedHabits = queryData.habits.map(habit =>
+            habit.id === id ? optimisticHabit : habit
+          );
+
+          // If archiving or changing active status, we might need to filter it out
+          let filteredHabits = updatedHabits;
+          if (typeof data.archived !== 'undefined' || typeof data.active !== 'undefined') {
+            // Extract filter from query key to determine if habit should be included
+            const filterKey = queryKey[2] as { active?: boolean; archived?: boolean };
+            if (filterKey) {
+              if (
+                typeof filterKey.active !== 'undefined' &&
+                data.active !== undefined &&
+                data.active !== filterKey.active
+              ) {
+                filteredHabits = updatedHabits.filter(h => h.id !== id);
+              }
+
+              if (
+                typeof filterKey.archived !== 'undefined' &&
+                data.archived !== undefined &&
+                data.archived !== filterKey.archived
+              ) {
+                filteredHabits = updatedHabits.filter(h => h.id !== id);
+              }
+            }
+          }
+
+          queryClient.setQueryData(queryKey, {
+            ...queryData,
+            habits: filteredHabits,
+            // Adjust total if the habit was filtered out
+            total:
+              filteredHabits.length !== updatedHabits.length
+                ? queryData.total - 1
+                : queryData.total,
           });
         }
+      });
 
-        // If archived status changed, invalidate archived habits queries
-        if ('archived' in variables.data) {
-          queryClient.invalidateQueries({
-            queryKey: habitsKeys.list({ archived: true }),
-          });
-          queryClient.invalidateQueries({
-            queryKey: habitsKeys.list({ archived: false }),
-          });
-        }
+      return { previousHabit, previousLists };
+    },
 
-        // Update stats if relevant properties changed
-        if ('active' in variables.data || 'archived' in variables.data) {
-          queryClient.invalidateQueries({ queryKey: habitsKeys.stats() });
-        }
+    onSuccess: (updatedHabit, { id }, _context) => {
+      if (updatedHabit) {
+        // Update the specific habit in cache with server data
+        queryClient.setQueryData(habitsKeys.detail(id), updatedHabit);
+      }
+
+      // Invalidate necessary queries
+      queryClient.invalidateQueries({ queryKey: habitsKeys.lists() });
+
+      // Check if active or archived properties exist and are not null before accessing
+      const hasActiveChange = updatedHabit && 'active' in updatedHabit;
+      const hasArchivedChange = updatedHabit && 'archived' in updatedHabit;
+
+      if (hasActiveChange || hasArchivedChange) {
+        queryClient.invalidateQueries({ queryKey: habitsKeys.stats() });
+      }
+    },
+
+    onError: (_, { id }, context) => {
+      // Revert the habit to its previous state
+      if (context?.previousHabit) {
+        queryClient.setQueryData(habitsKeys.detail(id), context.previousHabit);
+      }
+
+      // Revert any lists
+      if (context?.previousLists) {
+        Object.entries(context.previousLists).forEach(([queryKeyStr, queryData]) => {
+          if (queryData) {
+            // Parse the string back to a query key
+            const queryKey = JSON.parse(queryKeyStr);
+            queryClient.setQueryData(queryKey, queryData);
+          }
+        });
       }
     },
   });
 }
 
 /**
- * Hook to archive a habit
+ * Hook to archive a habit with optimistic updates
  */
 export function useArchiveHabit(): UseMutationResult<boolean, unknown, string> {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => archiveHabit(id),
+    mutationFn: id => archiveHabit(id),
+
+    // Optimistically update the habit
+    onMutate: async id => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: habitsKeys.detail(id) });
+      await queryClient.cancelQueries({ queryKey: habitsKeys.lists() });
+
+      // Get the current habit
+      const previousHabit = queryClient.getQueryData<Habit>(habitsKeys.detail(id));
+
+      // If we don't have the habit in cache, we can't do an optimistic update
+      if (!previousHabit) return { previousHabit: null };
+
+      // Create an optimistic archived habit
+      const optimisticHabit: Habit = {
+        ...previousHabit,
+        archived: true,
+        active: false,
+        archive_date: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      // Update the habit in the cache
+      queryClient.setQueryData(habitsKeys.detail(id), optimisticHabit);
+
+      // Store previous lists for potential rollback
+      const listsQueries = queryClient.getQueriesData<HabitsResponse>({
+        queryKey: habitsKeys.lists(),
+      });
+
+      const previousLists: Record<string, HabitsResponse | undefined> = {};
+
+      // Update habit in lists or remove it if it no longer matches filters
+      listsQueries.forEach(([queryKey, queryData]) => {
+        previousLists[queryKey.toString()] = queryData;
+
+        if (queryData?.habits) {
+          // Extract filter from query key to determine if habit should be included
+          const filterKey = queryKey[2] as { active?: boolean; archived?: boolean };
+
+          let updatedHabits = queryData.habits;
+
+          if (
+            filterKey &&
+            ((typeof filterKey.active !== 'undefined' && filterKey.active === true) ||
+              (typeof filterKey.archived !== 'undefined' && filterKey.archived === false))
+          ) {
+            // Remove habit from active or non-archived lists
+            updatedHabits = queryData.habits.filter(h => h.id !== id);
+          } else if (
+            filterKey &&
+            typeof filterKey.archived !== 'undefined' &&
+            filterKey.archived === true
+          ) {
+            // Add or update habit in archived lists
+            const habitIndex = queryData.habits.findIndex(h => h.id === id);
+            if (habitIndex >= 0) {
+              updatedHabits = [
+                ...queryData.habits.slice(0, habitIndex),
+                optimisticHabit,
+                ...queryData.habits.slice(habitIndex + 1),
+              ];
+            } else {
+              updatedHabits = [optimisticHabit, ...queryData.habits];
+            }
+          }
+
+          queryClient.setQueryData(queryKey, {
+            ...queryData,
+            habits: updatedHabits,
+            total: updatedHabits.length, // Update total count
+          });
+        }
+      });
+
+      return { previousHabit, previousLists };
+    },
+
     onSuccess: (_, id) => {
-      // Invalidate the specific habit
+      // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: habitsKeys.detail(id) });
-
-      // Invalidate all habit lists
       queryClient.invalidateQueries({ queryKey: habitsKeys.lists() });
-
-      // Specifically invalidate active and archived habit lists
-      queryClient.invalidateQueries({
-        queryKey: habitsKeys.list({ active: true }),
-      });
-      queryClient.invalidateQueries({
-        queryKey: habitsKeys.list({ archived: true }),
-      });
-      queryClient.invalidateQueries({
-        queryKey: habitsKeys.list({ archived: false }),
-      });
-
-      // Invalidate stats since archiving affects totals
       queryClient.invalidateQueries({ queryKey: habitsKeys.stats() });
-
-      // Invalidate any streak data for this habit
       queryClient.invalidateQueries({ queryKey: habitsKeys.habitStreak(id) });
+    },
+
+    onError: (_, id, context) => {
+      // Revert the habit to its previous state
+      if (context?.previousHabit) {
+        queryClient.setQueryData(habitsKeys.detail(id), context.previousHabit);
+      }
+
+      // Revert any lists
+      if (context?.previousLists) {
+        Object.entries(context.previousLists).forEach(([queryKeyStr, queryData]) => {
+          if (queryData) {
+            const queryKey = JSON.parse(queryKeyStr);
+            queryClient.setQueryData(queryKey, queryData);
+          }
+        });
+      }
     },
   });
 }
@@ -225,7 +433,7 @@ export function useHabitLogs(
 }
 
 /**
- * Hook to log a habit completion
+ * Hook to log a habit completion with optimistic updates
  */
 export function useLogHabit(): UseMutationResult<
   HabitLog | null,
@@ -240,57 +448,157 @@ export function useLogHabit(): UseMutationResult<
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      habitId,
-      date,
-      status,
-      notes,
-    }: {
-      habitId: string;
-      date: string;
-      status: HabitStatus;
-      notes?: string;
-    }) => logHabitStatus(habitId, date, status, notes),
+    mutationFn: ({ habitId, date, status, notes }) => logHabitStatus(habitId, date, status, notes),
+
+    // Optimistically update the log
+    onMutate: async newLog => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: habitsKeys.habitLogs(newLog.habitId),
+      });
+
+      // Get existing logs and habit
+      const previousLogs = queryClient.getQueryData<HabitLogsResponse>(
+        habitsKeys.habitLogs(newLog.habitId)
+      );
+
+      const previousHabit = queryClient.getQueryData<Habit>(habitsKeys.detail(newLog.habitId));
+
+      // Create an optimistic log
+      const optimisticLog: HabitLog = {
+        id: `temp-${Date.now()}`,
+        habit_id: newLog.habitId,
+        user_id: previousHabit?.user_id || 'current-user',
+        date: newLog.date,
+        status: newLog.status,
+        notes: newLog.notes,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      // Check if we're updating an existing log or creating a new one
+      const existingLogIndex =
+        previousLogs?.logs?.findIndex(
+          log => log.habit_id === newLog.habitId && log.date === newLog.date
+        ) ?? -1;
+
+      // Update logs in the cache
+      if (previousLogs) {
+        const updatedLogs =
+          existingLogIndex >= 0
+            ? [
+                ...previousLogs.logs.slice(0, existingLogIndex),
+                optimisticLog,
+                ...previousLogs.logs.slice(existingLogIndex + 1),
+              ]
+            : [optimisticLog, ...(previousLogs.logs || [])];
+
+        queryClient.setQueryData(habitsKeys.habitLogs(newLog.habitId), {
+          ...previousLogs,
+          logs: updatedLogs,
+          total: existingLogIndex >= 0 ? previousLogs.total : previousLogs.total + 1,
+        });
+      }
+
+      // Update today's habits if this is a log for today
+      const today = new Date().toISOString().split('T')[0];
+      if (newLog.date === today) {
+        const todayHabitsQueryKey = habitsKeys.list({ active: true, archived: false });
+        const previousTodayHabits = queryClient.getQueryData<HabitsResponse>(todayHabitsQueryKey);
+
+        if (previousTodayHabits && previousHabit) {
+          const updatedHabits = previousTodayHabits.habits.map(habit => {
+            if (habit.id === newLog.habitId) {
+              // Calculate potential new streak
+              let updatedStreak = habit.streak;
+              if (newLog.status === 'completed') {
+                updatedStreak = updatedStreak + 1;
+              }
+
+              return {
+                ...habit,
+                streak: updatedStreak,
+                todayLog: optimisticLog,
+              };
+            }
+            return habit;
+          });
+
+          queryClient.setQueryData(todayHabitsQueryKey, {
+            ...previousTodayHabits,
+            habits: updatedHabits,
+          });
+        }
+      }
+
+      return {
+        previousLogs,
+        previousHabit,
+        optimisticLog,
+      };
+    },
+
     onSuccess: (result, variables) => {
       if (result) {
-        // Invalidate logs for the specific habit
-        queryClient.invalidateQueries({
-          queryKey: habitsKeys.habitLogs(variables.habitId),
-        });
+        // Update the cache with the real log
+        const logsQueryKey = habitsKeys.habitLogs(variables.habitId);
+        const currentLogs = queryClient.getQueryData<HabitLogsResponse>(logsQueryKey);
 
-        // Also invalidate the habit itself since streak might have changed
-        queryClient.invalidateQueries({
-          queryKey: habitsKeys.detail(variables.habitId),
-        });
+        if (currentLogs) {
+          // Find and replace optimistic log with real one
+          const updatedLogs = currentLogs.logs.map(log =>
+            log.date === variables.date && log.habit_id === variables.habitId ? result : log
+          );
 
-        // Invalidate streak data
-        queryClient.invalidateQueries({
-          queryKey: habitsKeys.habitStreak(variables.habitId),
-        });
+          queryClient.setQueryData(logsQueryKey, {
+            ...currentLogs,
+            logs: updatedLogs,
+          });
+        }
 
-        // Invalidate overall stats
-        queryClient.invalidateQueries({
-          queryKey: habitsKeys.stats(),
-        });
+        // Invalidate queries that might have changed
+        queryClient.invalidateQueries({ queryKey: habitsKeys.detail(variables.habitId) });
+        queryClient.invalidateQueries({ queryKey: habitsKeys.habitStreak(variables.habitId) });
+        queryClient.invalidateQueries({ queryKey: habitsKeys.stats() });
 
-        // If logging today's habit, invalidate today's habits view
+        // If logging today's habit, ensure today's habits view is refreshed
         const today = new Date().toISOString().split('T')[0];
         if (variables.date === today) {
-          // This will refresh the useTodayHabits hook data
           queryClient.invalidateQueries({
             queryKey: habitsKeys.list({ active: true, archived: false }),
           });
         }
+      }
+    },
 
-        // Add the log to the cache if needed
-        const existingLogs = queryClient.getQueryData<HabitLogsResponse>(
-          habitsKeys.habitLogs(variables.habitId)
-        );
+    onError: (_, variables, context) => {
+      // Revert logs to their previous state
+      if (context?.previousLogs) {
+        queryClient.setQueryData(habitsKeys.habitLogs(variables.habitId), context.previousLogs);
+      }
 
-        if (existingLogs?.logs) {
-          queryClient.setQueryData(habitsKeys.habitLogs(variables.habitId), {
-            ...existingLogs,
-            logs: [result, ...existingLogs.logs.filter(log => log.id !== result.id)],
+      // Also revert today's habits if this was for today
+      const today = new Date().toISOString().split('T')[0];
+      if (variables.date === today && context?.previousHabit) {
+        const todayHabitsQueryKey = habitsKeys.list({ active: true, archived: false });
+        const currentTodayHabits = queryClient.getQueryData<HabitsResponse>(todayHabitsQueryKey);
+
+        if (currentTodayHabits) {
+          const revertedHabits = currentTodayHabits.habits.map(habit =>
+            habit.id === variables.habitId
+              ? {
+                  ...context.previousHabit,
+                  todayLog:
+                    context.previousLogs?.logs.find(
+                      log => log.habit_id === variables.habitId && log.date === today
+                    ) || null,
+                }
+              : habit
+          );
+
+          queryClient.setQueryData(todayHabitsQueryKey, {
+            ...currentTodayHabits,
+            habits: revertedHabits,
           });
         }
       }
@@ -299,7 +607,7 @@ export function useLogHabit(): UseMutationResult<
 }
 
 /**
- * Hook to delete a habit log
+ * Hook to delete a habit log with optimistic updates
  */
 export function useDeleteHabitLog(): UseMutationResult<
   { result: boolean; habitId: string },
@@ -309,57 +617,94 @@ export function useDeleteHabitLog(): UseMutationResult<
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ logId, habitId }: { logId: string; habitId: string }) => {
-      // Delete the log and return both the result and the habitId for cache invalidation
+    mutationFn: ({ logId, habitId }) => {
       return deleteHabitLog(logId).then(result => ({
         result,
         habitId,
       }));
     },
+
+    // Optimistically remove the log
+    onMutate: async ({ logId, habitId }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: habitsKeys.habitLogs(habitId),
+      });
+
+      // Get existing logs
+      const previousLogs = queryClient.getQueryData<HabitLogsResponse>(
+        habitsKeys.habitLogs(habitId)
+      );
+
+      if (!previousLogs) return { previousLogs: null };
+
+      // Find the log to be deleted - we'll need its info for potential rollback
+      const logToDelete = previousLogs.logs.find(log => log.id === logId);
+
+      if (!logToDelete) return { previousLogs };
+
+      // Update logs in the cache (remove the log)
+      queryClient.setQueryData(habitsKeys.habitLogs(habitId), {
+        ...previousLogs,
+        logs: previousLogs.logs.filter(log => log.id !== logId),
+        total: Math.max(0, previousLogs.total - 1),
+      });
+
+      // If this is today's log, update today's habits
+      const today = new Date().toISOString().split('T')[0];
+      let previousTodayHabits = null;
+
+      if (logToDelete.date === today) {
+        const todayHabitsQueryKey = habitsKeys.list({ active: true, archived: false });
+        previousTodayHabits = queryClient.getQueryData<HabitsResponse>(todayHabitsQueryKey);
+
+        if (previousTodayHabits) {
+          const updatedHabits = previousTodayHabits.habits.map(habit => {
+            if (habit.id === habitId) {
+              return {
+                ...habit,
+                todayLog: null,
+              };
+            }
+            return habit;
+          });
+
+          queryClient.setQueryData(todayHabitsQueryKey, {
+            ...previousTodayHabits,
+            habits: updatedHabits,
+          });
+        }
+      }
+
+      return {
+        previousLogs,
+        previousTodayHabits,
+        logToDelete,
+      };
+    },
+
     onSuccess: (data, variables) => {
-      if (data.result && data.habitId) {
-        // Remove the deleted log from the cache if it exists
-        const existingLogs = queryClient.getQueryData<HabitLogsResponse>(
-          habitsKeys.habitLogs(data.habitId)
-        );
+      if (data.result) {
+        // Invalidate relevant queries
+        queryClient.invalidateQueries({ queryKey: habitsKeys.detail(variables.habitId) });
+        queryClient.invalidateQueries({ queryKey: habitsKeys.habitStreak(variables.habitId) });
+        queryClient.invalidateQueries({ queryKey: habitsKeys.stats() });
+      }
+    },
 
-        if (existingLogs?.logs) {
-          queryClient.setQueryData(habitsKeys.habitLogs(data.habitId), {
-            ...existingLogs,
-            logs: existingLogs.logs.filter(log => log.id !== variables.logId),
-            total: Math.max(0, existingLogs.total - 1),
-          });
-        }
+    onError: (_, variables, context) => {
+      // Revert logs to their previous state
+      if (context?.previousLogs) {
+        queryClient.setQueryData(habitsKeys.habitLogs(variables.habitId), context.previousLogs);
+      }
 
-        // Invalidate logs for the specific habit
-        queryClient.invalidateQueries({
-          queryKey: habitsKeys.habitLogs(data.habitId),
-        });
-
-        // Also invalidate the habit itself since streak might have changed
-        queryClient.invalidateQueries({
-          queryKey: habitsKeys.detail(data.habitId),
-        });
-
-        // Invalidate streak data
-        queryClient.invalidateQueries({
-          queryKey: habitsKeys.habitStreak(data.habitId),
-        });
-
-        // Invalidate overall stats
-        queryClient.invalidateQueries({
-          queryKey: habitsKeys.stats(),
-        });
-
-        // Invalidate today's habits if this might affect them
-        const today = new Date().toISOString().split('T')[0];
-        const existingLog = existingLogs?.logs?.find(log => log.id === variables.logId);
-
-        if (existingLog?.date === today) {
-          queryClient.invalidateQueries({
-            queryKey: habitsKeys.list({ active: true, archived: false }),
-          });
-        }
+      // Also revert today's habits if this was for today
+      if (
+        context?.logToDelete?.date === new Date().toISOString().split('T')[0] &&
+        context.previousTodayHabits
+      ) {
+        const todayHabitsQueryKey = habitsKeys.list({ active: true, archived: false });
+        queryClient.setQueryData(todayHabitsQueryKey, context.previousTodayHabits);
       }
     },
   });
