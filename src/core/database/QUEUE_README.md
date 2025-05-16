@@ -366,3 +366,187 @@ requestQueue: '++id, endpoint, method, createdAt, attempts, priority, status, la
 ```
 
 This enables efficient queries for processing the queue based on status and priority.
+
+# Queue System Documentation
+
+## Queue Monitoring
+
+The queue monitoring system provides real-time metrics and health monitoring for the request queue. It helps track queue performance, identify issues, and ensure the system is operating correctly.
+
+### Features
+
+- **Real-time status tracking**: Monitor pending, processing, failed, and completed requests
+- **Health monitoring**: Automatic detection of queue health issues
+- **Stuck request detection**: Identify and recover requests stuck in processing
+- **Performance metrics**: Track processing time, failure rates, and retry statistics
+- **Auto-recovery**: Automatically recover from common failure scenarios
+
+### Usage
+
+The queue monitoring is integrated with the queue system and is enabled by default when initializing the queue:
+
+```typescript
+import { queueUtils } from './core/database/queueUtils';
+
+// Initialize queue with monitoring
+queueUtils.initialize({
+  // Queue processor options
+  autoStart: true,
+  processingInterval: 5000,
+  maxConcurrent: 3,
+
+  // Monitoring options
+  monitoringEnabled: true,
+  monitorInterval: 30000, // 30 seconds
+
+  // Custom health check thresholds
+  healthCheckThresholds: {
+    maxHealthyPendingCount: 100,
+    maxHealthyFailedCount: 20,
+    stuckRequestThresholdMs: 5 * 60 * 1000, // 5 minutes
+    highFailureRateThreshold: 0.25, // 25%
+  },
+});
+```
+
+### Monitoring API
+
+The monitoring API is available through the `queueUtils` interface:
+
+```typescript
+// Get current queue status metrics
+const status = await queueUtils.getQueueStatus();
+console.log('Pending requests:', status.pending);
+console.log('Processing requests:', status.processing);
+console.log('Failed requests:', status.failed);
+console.log('Avg processing time:', status.avgProcessingTime);
+
+// Check queue health
+const health = await queueUtils.checkQueueHealth();
+if (!health.isHealthy) {
+  console.warn('Queue health issues:', health.issues);
+}
+
+// Manually recover stuck requests
+const recovered = await queueUtils.recoverStuckRequests();
+console.log(`Recovered ${recovered} stuck requests`);
+
+// Get retry statistics
+const retryStats = await queueUtils.getRetryStats();
+console.log('Success rate after retry:', retryStats.successRateAfterRetry);
+```
+
+### Advanced Usage: Custom Event Handling
+
+For more advanced usage, you can directly interact with the queue monitor and register custom event handlers:
+
+```typescript
+import { queueMonitor, QueueMonitorEvent } from './core/database/queueMonitor';
+
+// Listen for queue health changes
+queueMonitor.events.on(QueueMonitorEvent.QUEUE_HEALTH_CHANGED, health => {
+  if (!health.isHealthy) {
+    // Send notification to administrators
+    notifyAdmins(`Queue issues detected: ${health.issues.join(', ')}`);
+  }
+});
+
+// Listen for stuck requests
+queueMonitor.events.on(QueueMonitorEvent.REQUEST_STUCK, request => {
+  // Log detailed information about stuck request
+  logStuckRequest(request);
+
+  // Attempt custom recovery procedure
+  customRecoveryProcedure(request);
+});
+
+// Listen for high failure rates
+queueMonitor.events.on(QueueMonitorEvent.HIGH_FAILURE_RATE, rate => {
+  // Alert ops team about high failure rate
+  alertOpsTeam(`API failure rate: ${(rate * 100).toFixed(1)}%`);
+});
+```
+
+### Status Metrics
+
+The queue status includes the following metrics:
+
+- **pending**: Number of pending requests
+- **processing**: Number of requests currently being processed
+- **failed**: Number of failed requests
+- **completed**: Number of completed requests
+- **total**: Total number of requests in the queue
+- **oldestPendingTimestamp**: Timestamp of the oldest pending request
+- **newestPendingTimestamp**: Timestamp of the newest pending request
+- **failureRate**: Rate of request failures (failed / total attempted)
+- **avgProcessingTime**: Average time to process requests
+- **byEndpoint**: Request counts grouped by endpoint
+- **byPriority**: Request counts grouped by priority
+
+### Health Status
+
+The queue health status includes:
+
+- **isHealthy**: Boolean indicating if the queue is healthy
+- **issues**: Array of detected issues as descriptive strings
+- **pendingCount**: Number of pending requests
+- **failedCount**: Number of failed requests
+- **stuckCount**: Number of stuck requests
+- **oldestPendingAge**: Age of the oldest pending request (ms)
+
+### Integration with UI
+
+You can integrate queue monitoring with your application's UI to provide real-time status information to users or administrators. For example:
+
+```typescript
+// In a React component
+import { useEffect, useState } from 'react';
+import { queueUtils } from './core/database/queueUtils';
+import { QueueStatusMetrics } from './core/database/queueMonitor';
+
+function QueueStatusDisplay() {
+  const [status, setStatus] = useState<QueueStatusMetrics | null>(null);
+
+  useEffect(() => {
+    // Initial status fetch
+    queueUtils.getQueueStatus().then(setStatus);
+
+    // Regular updates
+    const intervalId = setInterval(() => {
+      queueUtils.getQueueStatus().then(setStatus);
+    }, 10000); // Update every 10 seconds
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  if (!status) return <div>Loading queue status...</div>;
+
+  return (
+    <div className="queue-status">
+      <h2>Queue Status</h2>
+      <div className="metrics">
+        <div className="metric">
+          <span className="label">Pending:</span>
+          <span className="value">{status.pending}</span>
+        </div>
+        <div className="metric">
+          <span className="label">Processing:</span>
+          <span className="value">{status.processing}</span>
+        </div>
+        <div className="metric">
+          <span className="label">Failed:</span>
+          <span className="value">{status.failed}</span>
+        </div>
+        <div className="metric">
+          <span className="label">Completed:</span>
+          <span className="value">{status.completed}</span>
+        </div>
+        <div className="metric">
+          <span className="label">Failure Rate:</span>
+          <span className="value">{(status.failureRate * 100).toFixed(1)}%</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+```

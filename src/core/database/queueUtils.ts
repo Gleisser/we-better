@@ -3,6 +3,7 @@ import { queueService } from './queueService';
 import { queueProcessor } from './queueProcessor';
 import { RequestPriority, QueuedRequest } from './db';
 import { requestSerializer } from './requestSerializer';
+import { queueMonitor, QueueMonitorEvent } from './queueMonitor';
 
 /**
  * Helper utilities for working with the request queue.
@@ -20,9 +21,24 @@ export const queueUtils = {
       autoStart?: boolean;
       processingInterval?: number;
       maxConcurrent?: number;
+      monitoringEnabled?: boolean;
+      monitorInterval?: number;
+      healthCheckThresholds?: {
+        maxHealthyPendingCount?: number;
+        maxHealthyFailedCount?: number;
+        stuckRequestThresholdMs?: number;
+        highFailureRateThreshold?: number;
+      };
     } = {}
   ): void {
-    const { autoStart = true, processingInterval, maxConcurrent } = options;
+    const {
+      autoStart = true,
+      processingInterval,
+      maxConcurrent,
+      monitoringEnabled = true,
+      monitorInterval = 30000,
+      healthCheckThresholds = {},
+    } = options;
 
     // Auto-start the queue processor if requested
     if (autoStart) {
@@ -32,7 +48,79 @@ export const queueUtils = {
       });
     }
 
+    // Initialize monitoring if enabled
+    if (monitoringEnabled) {
+      queueMonitor.initialize({
+        monitorInterval,
+        ...healthCheckThresholds,
+      });
+
+      // Setup monitoring event listeners
+      this._setupMonitoringListeners();
+    }
+
     console.info('Queue system initialized');
+  },
+
+  /**
+   * Set up event listeners for monitoring events
+   */
+  _setupMonitoringListeners(): void {
+    // Listen for health status changes
+    queueMonitor.events.on(QueueMonitorEvent.QUEUE_HEALTH_CHANGED, health => {
+      if (!health.isHealthy) {
+        console.warn('Queue health issues detected:', health.issues);
+      }
+    });
+
+    // Listen for stuck requests
+    queueMonitor.events.on(QueueMonitorEvent.REQUEST_STUCK, request => {
+      console.warn(`Request stuck in processing: ${request.id} (${request.endpoint})`);
+
+      // Optionally auto-recover stuck requests
+      this.recoverStuckRequests();
+    });
+
+    // Listen for high failure rate
+    queueMonitor.events.on(QueueMonitorEvent.HIGH_FAILURE_RATE, rate => {
+      console.error(`High request failure rate detected: ${(rate * 100).toFixed(1)}%`);
+    });
+  },
+
+  /**
+   * Get current queue status metrics
+   *
+   * @returns Current queue status
+   */
+  async getQueueStatus() {
+    return queueMonitor.updateQueueStatus();
+  },
+
+  /**
+   * Check queue health
+   *
+   * @returns Queue health status
+   */
+  async checkQueueHealth() {
+    return queueMonitor.checkQueueHealth();
+  },
+
+  /**
+   * Recover stuck requests
+   *
+   * @returns Number of requests recovered
+   */
+  async recoverStuckRequests() {
+    return queueMonitor.recoverStuckRequests();
+  },
+
+  /**
+   * Get detailed statistics about retry attempts
+   *
+   * @returns Retry statistics
+   */
+  async getRetryStats() {
+    return queueMonitor.getRetryStats();
   },
 
   /**
