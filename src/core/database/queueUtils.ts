@@ -376,4 +376,33 @@ export const queueUtils = {
   toFetchRequest(queuedRequest: QueuedRequest): Request {
     return requestSerializer.toFetchRequest(queuedRequest);
   },
+
+  /**
+   * Get a request by its ID
+   *
+   * @param requestId ID of the request to retrieve
+   * @returns The request or null if not found
+   */
+  async getQueuedRequest(requestId: string): Promise<QueuedRequest | null> {
+    return queueService.getRequestById(requestId);
+  },
+
+  /**
+   * Get multiple requests by their IDs
+   *
+   * @param requestIds Array of request IDs to retrieve
+   * @returns Array of found requests (might be fewer than IDs if some not found)
+   */
+  async getQueuedRequests(requestIds: string[]): Promise<QueuedRequest[]> {
+    const requests: QueuedRequest[] = [];
+
+    for (const id of requestIds) {
+      const request = await queueService.getRequestById(id);
+      if (request) {
+        requests.push(request);
+      }
+    }
+
+    return requests;
+  },
 };

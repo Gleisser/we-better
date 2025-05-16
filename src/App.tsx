@@ -20,6 +20,7 @@ import { GalleryErrorFallback } from './shared/components/layout/Gallery/Gallery
 import { CommunityErrorFallback } from './shared/components/layout/Community/CommunityErrorFallback';
 import { TestimoniesErrorFallback } from './shared/components/layout/Testimonies/TestimoniesErrorFallback';
 import { PartnersErrorFallback } from './shared/components/layout/Partners/PartnersErrorFallback';
+import { ReactQueryProvider } from './core/query/ReactQueryProvider';
 
 function App(): JSX.Element {
   const queryClient = useQueryClient();
@@ -29,59 +30,61 @@ function App(): JSX.Element {
   }, [queryClient]);
 
   return (
-    <ErrorBoundary section="Application">
-      <div className="h-full w-full max-w-[100%] overflow-x-hidden bg-black">
-        <ErrorBoundary section="Header">
-          <Header />
-        </ErrorBoundary>
-
-        <main className="w-full max-w-[100%] overflow-x-hidden">
-          <ErrorBoundary section="Hero">
-            <Hero />
+    <ReactQueryProvider>
+      <ErrorBoundary section="Application">
+        <div className="h-full w-full max-w-[100%] overflow-x-hidden bg-black">
+          <ErrorBoundary section="Header">
+            <Header />
           </ErrorBoundary>
 
-          <ErrorBoundary section="Features" fallback={<FeaturesErrorFallback />}>
-            <Features />
-          </ErrorBoundary>
+          <main className="w-full max-w-[100%] overflow-x-hidden">
+            <ErrorBoundary section="Hero">
+              <Hero />
+            </ErrorBoundary>
 
-          <ErrorBoundary section="Highlights" fallback={<HighlightsErrorFallback />}>
-            <Highlights />
-          </ErrorBoundary>
+            <ErrorBoundary section="Features" fallback={<FeaturesErrorFallback />}>
+              <Features />
+            </ErrorBoundary>
 
-          <ErrorBoundary section="Tools" fallback={<ToolsErrorFallback />}>
-            <Tools />
-          </ErrorBoundary>
+            <ErrorBoundary section="Highlights" fallback={<HighlightsErrorFallback />}>
+              <Highlights />
+            </ErrorBoundary>
 
-          <ErrorBoundary section="Showcase" fallback={<ShowcaseErrorFallback />}>
-            <Showcase />
-          </ErrorBoundary>
+            <ErrorBoundary section="Tools" fallback={<ToolsErrorFallback />}>
+              <Tools />
+            </ErrorBoundary>
 
-          <ErrorBoundary section="Gallery" fallback={<GalleryErrorFallback />}>
-            <Gallery />
-          </ErrorBoundary>
+            <ErrorBoundary section="Showcase" fallback={<ShowcaseErrorFallback />}>
+              <Showcase />
+            </ErrorBoundary>
 
-          <ErrorBoundary section="Community" fallback={<CommunityErrorFallback />}>
-            <Community />
-          </ErrorBoundary>
+            <ErrorBoundary section="Gallery" fallback={<GalleryErrorFallback />}>
+              <Gallery />
+            </ErrorBoundary>
 
-          <ErrorBoundary section="Testimonies" fallback={<TestimoniesErrorFallback />}>
-            <Testimonies />
-          </ErrorBoundary>
+            <ErrorBoundary section="Community" fallback={<CommunityErrorFallback />}>
+              <Community />
+            </ErrorBoundary>
 
-          <ErrorBoundary section="Partners" fallback={<PartnersErrorFallback />}>
-            <Partners />
-          </ErrorBoundary>
+            <ErrorBoundary section="Testimonies" fallback={<TestimoniesErrorFallback />}>
+              <Testimonies />
+            </ErrorBoundary>
 
-          <ErrorBoundary section="Pre-Footer">
-            <PreFooter />
-          </ErrorBoundary>
-        </main>
+            <ErrorBoundary section="Partners" fallback={<PartnersErrorFallback />}>
+              <Partners />
+            </ErrorBoundary>
 
-        <ErrorBoundary section="Footer">
-          <Footer />
-        </ErrorBoundary>
-      </div>
-    </ErrorBoundary>
+            <ErrorBoundary section="Pre-Footer">
+              <PreFooter />
+            </ErrorBoundary>
+          </main>
+
+          <ErrorBoundary section="Footer">
+            <Footer />
+          </ErrorBoundary>
+        </div>
+      </ErrorBoundary>
+    </ReactQueryProvider>
   );
 }
 

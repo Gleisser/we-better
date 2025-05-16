@@ -414,4 +414,15 @@ export const queueService = {
 
     return completedRequests.length;
   },
+
+  /**
+   * Get a specific request by ID
+   *
+   * @param requestId ID of the request to retrieve
+   * @returns The request or null if not found
+   */
+  async getRequestById(requestId: string): Promise<QueuedRequest | null> {
+    const request = await db.requestQueue.get(requestId);
+    return request || null;
+  },
 };
