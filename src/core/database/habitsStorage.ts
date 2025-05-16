@@ -14,13 +14,26 @@ const DEFAULT_CACHE_TTL = {
 /**
  * Convert a server habit to a local habit
  */
-export const toLocalHabit = (habit: Habit, synced = true): LocalHabit => ({
-  ...habit,
-  _synced: synced,
-  _deleted: false,
-  _version: 1,
-  _modified: Date.now(),
-});
+export const toLocalHabit = (habit: Habit, synced = true): LocalHabit => {
+  if (!habit || typeof habit !== 'object') {
+    console.error('Invalid habit object provided to toLocalHabit:', habit);
+    throw new Error('Invalid habit object provided');
+  }
+
+  // Ensure the habit has the required fields
+  if (!habit.id) {
+    console.warn('Habit missing ID, generating a temporary one');
+    habit.id = `temp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  }
+
+  return {
+    ...habit,
+    _synced: synced,
+    _deleted: false,
+    _version: 1,
+    _modified: Date.now(),
+  };
+};
 
 /**
  * Convert a local habit to a server habit
@@ -101,6 +114,10 @@ export const habitsStorage = {
    * @param synced Whether these habits are synced with the server
    */
   async saveHabits(habits: Habit[], synced = true): Promise<void> {
+    if (!habits || !Array.isArray(habits) || habits.length === 0) {
+      console.warn('saveHabits called with invalid or empty habits array');
+      return;
+    }
     const localHabits = habits.map(habit => toLocalHabit(habit, synced));
     await db.habits.bulkPut(localHabits);
   },

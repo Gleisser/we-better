@@ -1,4 +1,6 @@
 import { supabase } from './supabaseClient';
+import { offlineFetch } from '../query/queryClient';
+import { enhancedFetch } from '../utils/networkInterceptor';
 
 // Define the API URL
 const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/habits`;
@@ -119,45 +121,40 @@ const apiRequest = async <T>(
       throw new Error('Not authenticated');
     }
 
+    // Use offlineFetch for GET requests to benefit from React Query caching
+    if (method === 'GET') {
+      return await offlineFetch<T>({
+        url: endpoint,
+        method,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    }
+
+    // For write operations (POST, PUT, DELETE), use enhancedFetch directly
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     };
 
-    const config: RequestInit = {
+    const options: RequestInit = {
       method,
       headers,
       credentials: 'include',
     };
 
     if (body && (method === 'POST' || method === 'PUT')) {
-      config.body = JSON.stringify(body);
+      options.body = JSON.stringify(body);
     }
 
-    // Implement exponential backoff for retries
-    const MAX_RETRIES = 3;
-    let retries = 0;
-    let response: Response;
+    // Use enhanced fetch for better offline handling
+    const response = await enhancedFetch(endpoint, options);
 
-    while (true) {
-      try {
-        response = await fetch(endpoint, config);
-
-        // Log request details for debugging
-        console.info(`API ${method} request to ${endpoint}`, {
-          status: response.status,
-          headers: Object.fromEntries([...response.headers.entries()]),
-          ok: response.ok,
-        });
-
-        break;
-      } catch (error) {
-        retries++;
-        if (retries >= MAX_RETRIES) throw error;
-        // Exponential backoff: 1s, 2s, 4s, etc.
-        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, retries - 1)));
-      }
-    }
+    // Log request details for debugging
+    console.info(`API ${method} request to ${endpoint}`, {
+      status: response.status,
+      headers: Object.fromEntries([...response.headers.entries()]),
+      ok: response.ok,
+    });
 
     if (!response.ok) {
       // Handle specific error cases

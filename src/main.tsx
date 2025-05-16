@@ -8,6 +8,7 @@ import { initializeDatabase } from './core/database/db';
 import { NetworkStatusProvider } from '@/shared/contexts/NetworkStatusContext';
 import { queryClient } from './core/query/queryClient';
 import * as serviceWorker from './core/serviceWorker/register';
+import { initNetworkInterceptor } from './core/utils/networkInterceptor';
 import './styles/index.css';
 
 // Initialize the database
@@ -18,6 +19,9 @@ initializeDatabase()
   .catch(error => {
     console.error('Failed to initialize database:', error);
   });
+
+// Initialize network interceptor for offline support
+initNetworkInterceptor();
 
 // Register service worker
 serviceWorker.register({
