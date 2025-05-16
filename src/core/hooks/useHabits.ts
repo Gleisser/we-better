@@ -1,16 +1,8 @@
-import { useQuery, useMutation, useQueryClient, UseQueryResult } from '@tanstack/react-query';
+import { useQueryClient, UseQueryResult } from '@tanstack/react-query';
 import type { UseMutationResult } from '@tanstack/react-query';
+import { useQueuedQuery } from './useQueuedQuery';
+import { useQueuedMutation } from './useQueuedMutation';
 import {
-  getHabits,
-  getHabitById,
-  createHabit,
-  updateHabit,
-  archiveHabit,
-  getHabitLogs,
-  getHabitStats,
-  getHabitStreak,
-  logHabitStatus,
-  deleteHabitLog,
   Habit,
   HabitStatus,
   HabitsResponse,
@@ -19,6 +11,7 @@ import {
   HabitStats,
   HabitStreak,
 } from '../services/habitsService';
+import { RequestPriority } from '../database/db';
 
 // Query keys
 export const habitsKeys = {
@@ -62,10 +55,18 @@ export function useHabits(
 ): UseQueryResult<HabitsResponse, unknown> {
   const { category, active, archived, limit = 20, offset = 0 } = filters;
 
-  return useQuery({
-    queryKey: habitsKeys.list(filters),
-    queryFn: () => getHabits(category, active, archived, limit, offset),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+  let url = `/api/habits?limit=${limit}&offset=${offset}`;
+  if (category) url += `&category=${category}`;
+  if (active !== undefined) url += `&active=${active}`;
+  if (archived !== undefined) url += `&archived=${archived}`;
+
+  return useQueuedQuery<HabitsResponse>({
+    queryKey: habitsKeys.list(filters) as unknown as string[],
+    endpoint: url,
+    queue: {
+      cacheDuration: 5 * 60 * 1000, // 5 minutes
+      priority: RequestPriority.HIGH,
+    },
   });
 }
 
@@ -73,11 +74,14 @@ export function useHabits(
  * Hook to fetch a single habit by ID
  */
 export function useHabit(id: string): UseQueryResult<Habit, unknown> {
-  return useQuery({
-    queryKey: habitsKeys.detail(id),
-    queryFn: () => getHabitById(id),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+  return useQueuedQuery<Habit>({
+    queryKey: habitsKeys.detail(id) as unknown as string[],
+    endpoint: `/api/habits/${id}`,
     enabled: !!id, // Only run query if id is provided
+    queue: {
+      cacheDuration: 5 * 60 * 1000, // 5 minutes
+      priority: RequestPriority.HIGH,
+    },
   });
 }
 
@@ -91,9 +95,13 @@ export function useCreateHabit(): UseMutationResult<
 > {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ name, category, startDate }) => createHabit(name, category, startDate),
-
+  return useQueuedMutation({
+    endpoint: '/api/habits',
+    method: 'POST',
+    queue: {
+      priority: RequestPriority.HIGH,
+      tags: ['habit', 'create'],
+    },
     // Optimistically update the habits list
     onMutate: async newHabitData => {
       // Cancel any outgoing refetches to avoid overwriting our optimistic update
@@ -180,8 +188,29 @@ export function useUpdateHabit(): UseMutationResult<
 > {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ id, data }) => updateHabit(id, data),
+  return useQueuedMutation({
+    endpoint: '/api/habits',
+    method: 'PUT',
+    queue: {
+      priority: RequestPriority.HIGH,
+      tags: ['habit', 'update'],
+    },
+    mutationFn: ({ id, data }) => {
+      // Custom mutationFn that includes the id in the endpoint
+      const endpoint = `/api/habits/${id}`;
+      return fetch(endpoint, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      });
+    },
 
     // Optimistically update the habit
     onMutate: async ({ id, data }) => {
@@ -303,8 +332,28 @@ export function useUpdateHabit(): UseMutationResult<
 export function useArchiveHabit(): UseMutationResult<boolean, unknown, string> {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: id => archiveHabit(id),
+  return useQueuedMutation({
+    endpoint: '/api/habits',
+    method: 'PUT',
+    queue: {
+      priority: RequestPriority.HIGH,
+      tags: ['habit', 'archive'],
+    },
+    mutationFn: id => {
+      // Custom mutationFn that includes the id in the endpoint
+      const endpoint = `/api/habits/${id}/archive`;
+      return fetch(endpoint, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      });
+    },
 
     // Optimistically update the habit
     onMutate: async id => {
@@ -424,11 +473,23 @@ export function useHabitLogs(
 ): UseQueryResult<HabitLogsResponse | null, unknown> {
   const { startDate, endDate, limit = 30, offset = 0 } = options || {};
 
-  return useQuery({
-    queryKey: habitsKeys.habitLogs(habitId, { startDate, endDate, limit, offset }),
-    queryFn: () => getHabitLogs(habitId, startDate, endDate, limit, offset),
+  let url = `/api/habits/logs?habit_id=${habitId}&limit=${limit}&offset=${offset}`;
+  if (startDate) url += `&start_date=${startDate}`;
+  if (endDate) url += `&end_date=${endDate}`;
+
+  return useQueuedQuery<HabitLogsResponse | null>({
+    queryKey: habitsKeys.habitLogs(habitId, {
+      startDate,
+      endDate,
+      limit,
+      offset,
+    }) as unknown as string[],
+    endpoint: url,
     enabled: !!habitId, // Only run query if habitId is provided
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queue: {
+      cacheDuration: 5 * 60 * 1000, // 5 minutes
+      priority: RequestPriority.MEDIUM,
+    },
   });
 }
 
@@ -447,8 +508,27 @@ export function useLogHabit(): UseMutationResult<
 > {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ habitId, date, status, notes }) => logHabitStatus(habitId, date, status, notes),
+  return useQueuedMutation({
+    endpoint: '/api/habits/logs',
+    method: 'POST',
+    queue: {
+      priority: RequestPriority.HIGH,
+      tags: ['habit', 'log'],
+    },
+    mutationFn: ({ habitId, date, status, notes }) => {
+      return fetch('/api/habits/logs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ habitId, date, status, notes }),
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      });
+    },
 
     // Optimistically update the log
     onMutate: async newLog => {
@@ -616,12 +696,27 @@ export function useDeleteHabitLog(): UseMutationResult<
 > {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useQueuedMutation({
+    endpoint: '/api/habits/logs',
+    method: 'DELETE',
+    queue: {
+      priority: RequestPriority.HIGH,
+      tags: ['habit', 'delete-log'],
+    },
     mutationFn: ({ logId, habitId }) => {
-      return deleteHabitLog(logId).then(result => ({
-        result,
-        habitId,
-      }));
+      // Custom mutationFn that includes the id in the endpoint
+      const endpoint = `/api/habits/logs/${logId}`;
+      return fetch(endpoint, {
+        method: 'DELETE',
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status} ${response.statusText}`);
+        }
+        return response.json().then(result => ({
+          result,
+          habitId,
+        }));
+      });
     },
 
     // Optimistically remove the log
@@ -714,10 +809,13 @@ export function useDeleteHabitLog(): UseMutationResult<
  * Hook to fetch habit statistics
  */
 export function useHabitStats(): UseQueryResult<HabitStats | null, unknown> {
-  return useQuery({
-    queryKey: habitsKeys.stats(),
-    queryFn: () => getHabitStats(),
-    staleTime: 10 * 60 * 1000, // 10 minutes
+  return useQueuedQuery<HabitStats | null>({
+    queryKey: habitsKeys.stats() as unknown as string[],
+    endpoint: '/api/habits/stats',
+    queue: {
+      cacheDuration: 10 * 60 * 1000, // 10 minutes
+      priority: RequestPriority.LOW, // Lower priority for stats
+    },
   });
 }
 
@@ -725,11 +823,14 @@ export function useHabitStats(): UseQueryResult<HabitStats | null, unknown> {
  * Hook to fetch streak information for a specific habit
  */
 export function useHabitStreak(habitId: string): UseQueryResult<HabitStreak | null, unknown> {
-  return useQuery({
-    queryKey: habitsKeys.habitStreak(habitId),
-    queryFn: () => getHabitStreak(habitId),
+  return useQueuedQuery<HabitStreak | null>({
+    queryKey: habitsKeys.habitStreak(habitId) as unknown as string[],
+    endpoint: `/api/habits/${habitId}/streak`,
     enabled: !!habitId, // Only run query if habitId is provided
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queue: {
+      cacheDuration: 5 * 60 * 1000, // 5 minutes
+      priority: RequestPriority.MEDIUM,
+    },
   });
 }
 
