@@ -101,9 +101,22 @@ export function useCreateHabit(): UseMutationResult<
       category: string;
       startDate?: string;
     }) => createHabit(name, category, startDate),
-    onSuccess: () => {
+    onSuccess: newHabit => {
       // Invalidate habits list to trigger refetch
       queryClient.invalidateQueries({ queryKey: habitsKeys.lists() });
+
+      // Invalidate stats as creating a habit changes total counts
+      queryClient.invalidateQueries({ queryKey: habitsKeys.stats() });
+
+      // If the new habit is returned with an ID, add it to the cache
+      if (newHabit?.id) {
+        queryClient.setQueryData(habitsKeys.detail(newHabit.id), newHabit);
+      }
+
+      // Invalidate today's habits to update the view if applicable
+      queryClient.invalidateQueries({
+        queryKey: habitsKeys.list({ active: true, archived: false }),
+      });
     },
   });
 }
@@ -120,12 +133,35 @@ export function useUpdateHabit(): UseMutationResult<
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<Habit> }) => updateHabit(id, data),
-    onSuccess: updatedHabit => {
+    onSuccess: (updatedHabit, variables) => {
       if (updatedHabit?.id) {
         // Update the specific habit in cache
-        queryClient.invalidateQueries({ queryKey: habitsKeys.detail(updatedHabit.id) });
+        queryClient.setQueryData(habitsKeys.detail(updatedHabit.id), updatedHabit);
+
         // Also invalidate lists that might contain this habit
         queryClient.invalidateQueries({ queryKey: habitsKeys.lists() });
+
+        // If active status changed, invalidate active habits queries
+        if ('active' in variables.data) {
+          queryClient.invalidateQueries({
+            queryKey: habitsKeys.list({ active: true }),
+          });
+        }
+
+        // If archived status changed, invalidate archived habits queries
+        if ('archived' in variables.data) {
+          queryClient.invalidateQueries({
+            queryKey: habitsKeys.list({ archived: true }),
+          });
+          queryClient.invalidateQueries({
+            queryKey: habitsKeys.list({ archived: false }),
+          });
+        }
+
+        // Update stats if relevant properties changed
+        if ('active' in variables.data || 'archived' in variables.data) {
+          queryClient.invalidateQueries({ queryKey: habitsKeys.stats() });
+        }
       }
     },
   });
@@ -140,9 +176,28 @@ export function useArchiveHabit(): UseMutationResult<boolean, unknown, string> {
   return useMutation({
     mutationFn: (id: string) => archiveHabit(id),
     onSuccess: (_, id) => {
-      // Invalidate the specific habit and lists
+      // Invalidate the specific habit
       queryClient.invalidateQueries({ queryKey: habitsKeys.detail(id) });
+
+      // Invalidate all habit lists
       queryClient.invalidateQueries({ queryKey: habitsKeys.lists() });
+
+      // Specifically invalidate active and archived habit lists
+      queryClient.invalidateQueries({
+        queryKey: habitsKeys.list({ active: true }),
+      });
+      queryClient.invalidateQueries({
+        queryKey: habitsKeys.list({ archived: true }),
+      });
+      queryClient.invalidateQueries({
+        queryKey: habitsKeys.list({ archived: false }),
+      });
+
+      // Invalidate stats since archiving affects totals
+      queryClient.invalidateQueries({ queryKey: habitsKeys.stats() });
+
+      // Invalidate any streak data for this habit
+      queryClient.invalidateQueries({ queryKey: habitsKeys.habitStreak(id) });
     },
   });
 }
@@ -202,18 +257,42 @@ export function useLogHabit(): UseMutationResult<
         queryClient.invalidateQueries({
           queryKey: habitsKeys.habitLogs(variables.habitId),
         });
+
         // Also invalidate the habit itself since streak might have changed
         queryClient.invalidateQueries({
           queryKey: habitsKeys.detail(variables.habitId),
         });
+
         // Invalidate streak data
         queryClient.invalidateQueries({
           queryKey: habitsKeys.habitStreak(variables.habitId),
         });
+
         // Invalidate overall stats
         queryClient.invalidateQueries({
           queryKey: habitsKeys.stats(),
         });
+
+        // If logging today's habit, invalidate today's habits view
+        const today = new Date().toISOString().split('T')[0];
+        if (variables.date === today) {
+          // This will refresh the useTodayHabits hook data
+          queryClient.invalidateQueries({
+            queryKey: habitsKeys.list({ active: true, archived: false }),
+          });
+        }
+
+        // Add the log to the cache if needed
+        const existingLogs = queryClient.getQueryData<HabitLogsResponse>(
+          habitsKeys.habitLogs(variables.habitId)
+        );
+
+        if (existingLogs?.logs) {
+          queryClient.setQueryData(habitsKeys.habitLogs(variables.habitId), {
+            ...existingLogs,
+            logs: [result, ...existingLogs.logs.filter(log => log.id !== result.id)],
+          });
+        }
       }
     },
   });
@@ -237,24 +316,50 @@ export function useDeleteHabitLog(): UseMutationResult<
         habitId,
       }));
     },
-    onSuccess: data => {
+    onSuccess: (data, variables) => {
       if (data.result && data.habitId) {
+        // Remove the deleted log from the cache if it exists
+        const existingLogs = queryClient.getQueryData<HabitLogsResponse>(
+          habitsKeys.habitLogs(data.habitId)
+        );
+
+        if (existingLogs?.logs) {
+          queryClient.setQueryData(habitsKeys.habitLogs(data.habitId), {
+            ...existingLogs,
+            logs: existingLogs.logs.filter(log => log.id !== variables.logId),
+            total: Math.max(0, existingLogs.total - 1),
+          });
+        }
+
         // Invalidate logs for the specific habit
         queryClient.invalidateQueries({
           queryKey: habitsKeys.habitLogs(data.habitId),
         });
+
         // Also invalidate the habit itself since streak might have changed
         queryClient.invalidateQueries({
           queryKey: habitsKeys.detail(data.habitId),
         });
+
         // Invalidate streak data
         queryClient.invalidateQueries({
           queryKey: habitsKeys.habitStreak(data.habitId),
         });
+
         // Invalidate overall stats
         queryClient.invalidateQueries({
           queryKey: habitsKeys.stats(),
         });
+
+        // Invalidate today's habits if this might affect them
+        const today = new Date().toISOString().split('T')[0];
+        const existingLog = existingLogs?.logs?.find(log => log.id === variables.logId);
+
+        if (existingLog?.date === today) {
+          queryClient.invalidateQueries({
+            queryKey: habitsKeys.list({ active: true, archived: false }),
+          });
+        }
       }
     },
   });
