@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
 import { Portal } from '@/shared/components/common/Portal/Portal';
@@ -91,10 +91,30 @@ export const GoalFormModal = ({
     milestones: initialGoal?.milestones || [],
   });
 
+  // Reset form when initialGoal changes (switching between create/edit modes)
+  useEffect(() => {
+    setFormData({
+      title: initialGoal?.title || '',
+      category: initialGoal?.category || 'personal',
+      progress: initialGoal?.progress || 0,
+      targetDate: initialGoal?.targetDate || '',
+      milestones: initialGoal?.milestones || [],
+    });
+    // Reset editing states when goal changes
+    setEditingMilestoneId(null);
+    setEditingMilestoneTitle('');
+  }, [initialGoal]);
+
   /**
    * State for managing new milestone input.
    */
   const [newMilestone, setNewMilestone] = useState('');
+
+  /**
+   * State for tracking milestone being edited (inline editing).
+   */
+  const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(null);
+  const [editingMilestoneTitle, setEditingMilestoneTitle] = useState('');
 
   /**
    * Adds a new milestone to the goal if the input is not empty.
@@ -122,6 +142,55 @@ export const GoalFormModal = ({
       ...prev,
       milestones: prev.milestones.filter(m => m.id !== id),
     }));
+  };
+
+  /**
+   * Toggle milestone completion status.
+   * @param {string} id - The ID of the milestone to toggle
+   */
+  const handleToggleMilestone = (id: string): void => {
+    setFormData(prev => ({
+      ...prev,
+      milestones: prev.milestones.map(milestone =>
+        milestone.id === id ? { ...milestone, completed: !milestone.completed } : milestone
+      ),
+    }));
+  };
+
+  /**
+   * Start editing a milestone title.
+   * @param {string} id - The ID of the milestone to edit
+   * @param {string} currentTitle - The current title of the milestone
+   */
+  const handleStartEditMilestone = (id: string, currentTitle: string): void => {
+    setEditingMilestoneId(id);
+    setEditingMilestoneTitle(currentTitle);
+  };
+
+  /**
+   * Save the edited milestone title.
+   */
+  const handleSaveEditMilestone = (): void => {
+    if (editingMilestoneId && editingMilestoneTitle.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        milestones: prev.milestones.map(milestone =>
+          milestone.id === editingMilestoneId
+            ? { ...milestone, title: editingMilestoneTitle.trim() }
+            : milestone
+        ),
+      }));
+    }
+    setEditingMilestoneId(null);
+    setEditingMilestoneTitle('');
+  };
+
+  /**
+   * Cancel editing a milestone.
+   */
+  const handleCancelEditMilestone = (): void => {
+    setEditingMilestoneId(null);
+    setEditingMilestoneTitle('');
   };
 
   /**
@@ -243,8 +312,61 @@ export const GoalFormModal = ({
               </div>
               <ul className={styles.milestoneList}>
                 {formData.milestones.map(milestone => (
-                  <li key={milestone.id} className={styles.milestoneItem}>
-                    <span>{milestone.title}</span>
+                  <li
+                    key={milestone.id}
+                    className={`${styles.milestoneItem} ${milestone.completed ? styles.completed : ''}`}
+                  >
+                    <div className={styles.milestoneContent}>
+                      <label className={styles.checkboxContainer}>
+                        <input
+                          type="checkbox"
+                          checked={milestone.completed}
+                          onChange={() => handleToggleMilestone(milestone.id)}
+                          className={styles.checkbox}
+                        />
+                        <span className={styles.checkmark}></span>
+                      </label>
+
+                      {editingMilestoneId === milestone.id ? (
+                        <div className={styles.editingContainer}>
+                          <input
+                            type="text"
+                            value={editingMilestoneTitle}
+                            onChange={e => setEditingMilestoneTitle(e.target.value)}
+                            className={styles.editInput}
+                            onKeyPress={e => {
+                              if (e.key === 'Enter') handleSaveEditMilestone();
+                              if (e.key === 'Escape') handleCancelEditMilestone();
+                            }}
+                            autoFocus
+                          />
+                          <div className={styles.editActions}>
+                            <button
+                              type="button"
+                              onClick={handleSaveEditMilestone}
+                              className={styles.saveEditButton}
+                            >
+                              ✓
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleCancelEditMilestone}
+                              className={styles.cancelEditButton}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <span
+                          className={styles.milestoneTitle}
+                          onClick={() => handleStartEditMilestone(milestone.id, milestone.title)}
+                        >
+                          {milestone.title}
+                        </span>
+                      )}
+                    </div>
+
                     <button
                       type="button"
                       className={styles.removeButton}

@@ -23,6 +23,9 @@ import {
   GoalWithMilestones as ApiGoalWithMilestones,
   UserReviewSettings as ApiReviewSettings,
   ReviewFrequency as ApiReviewFrequency,
+  createMilestone,
+  updateMilestone,
+  deleteMilestone,
 } from '@/core/services/goalsService';
 
 const INITIAL_GOALS_TO_SHOW = 3; // Start with 3 goals on mobile
@@ -198,17 +201,77 @@ const GoalsWidget = (): JSX.Element => {
     [apiDeleteGoal]
   );
 
+  /**
+   * Handle milestone changes during goal editing
+   */
+  const handleMilestoneChanges = async (
+    goalId: string,
+    originalMilestones: Goal['milestones'],
+    newMilestones: Goal['milestones']
+  ): Promise<void> => {
+    // Create maps for easier comparison
+    const originalMap = new Map(originalMilestones.map(m => [m.id, m]));
+    const newMap = new Map(newMilestones.map(m => [m.id, m]));
+
+    // Find milestones to create (new temporary IDs starting with 'm-')
+    const toCreate = newMilestones.filter(m => m.id.startsWith('m-'));
+
+    // Find milestones to update (existing IDs with changes)
+    const toUpdate = newMilestones.filter(m => {
+      if (m.id.startsWith('m-')) return false; // Skip new ones
+      const original = originalMap.get(m.id);
+      return original && (original.title !== m.title || original.completed !== m.completed);
+    });
+
+    // Find milestones to delete (in original but not in new)
+    const toDelete = originalMilestones.filter(m => !newMap.has(m.id));
+
+    try {
+      // Create new milestones
+      for (const milestone of toCreate) {
+        await createMilestone(goalId, milestone.title, milestone.completed);
+      }
+
+      // Update existing milestones
+      for (const milestone of toUpdate) {
+        await updateMilestone(goalId, milestone.id, {
+          title: milestone.title,
+          completed: milestone.completed,
+        });
+      }
+
+      // Delete removed milestones
+      for (const milestone of toDelete) {
+        await deleteMilestone(goalId, milestone.id);
+      }
+    } catch (error) {
+      console.error('Error handling milestone changes:', error);
+      throw error;
+    }
+  };
+
   const handleEditGoal = useCallback(
     async (updatedGoal: Omit<Goal, 'id'>): Promise<void> => {
-      if (!editingGoal) return;
+      if (!editingGoal || editingGoal.id === 'temp') return;
 
       try {
+        // Update the goal itself
         await apiUpdateGoal(editingGoal.id, {
           title: updatedGoal.title,
           category: updatedGoal.category,
           progress: updatedGoal.progress,
           target_date: updatedGoal.targetDate,
         });
+
+        // Handle milestone changes
+        await handleMilestoneChanges(
+          editingGoal.id,
+          editingGoal.milestones || [],
+          updatedGoal.milestones || []
+        );
+
+        // Refetch goals to get updated milestones
+        await fetchGoals(selectedCategory === 'all' ? undefined : selectedCategory, true);
 
         toast.success('Goal updated successfully!', {
           duration: 4000,
@@ -230,13 +293,31 @@ const GoalsWidget = (): JSX.Element => {
         toast.error('Failed to update goal');
       }
     },
-    [apiUpdateGoal, editingGoal]
+    [apiUpdateGoal, editingGoal, fetchGoals, selectedCategory]
   );
 
   const handleCreateGoal = useCallback(
     async (goalData: Omit<Goal, 'id'>): Promise<void> => {
       try {
-        await apiCreateGoal(goalData.title, goalData.category, goalData.targetDate);
+        // First create the goal
+        const newGoal = await apiCreateGoal(goalData.title, goalData.category, goalData.targetDate);
+
+        if (!newGoal) {
+          throw new Error('Failed to create goal');
+        }
+
+        // Then create milestones if any exist
+        if (goalData.milestones && goalData.milestones.length > 0) {
+          for (const milestone of goalData.milestones) {
+            try {
+              await createMilestone(newGoal.id, milestone.title, milestone.completed);
+            } catch (milestoneError) {
+              console.error('Failed to create milestone:', milestone.title, milestoneError);
+              // Continue creating other milestones even if one fails
+            }
+          }
+        }
+
         toast.success('New goal created successfully!', {
           duration: 4000,
           position: 'top-right',
@@ -453,6 +534,12 @@ const GoalsWidget = (): JSX.Element => {
                     <div className={styles.goalHeader}>
                       <span className={styles.goalIcon}>{CATEGORY_CONFIG[goal.category].icon}</span>
                       <h3 className={styles.goalTitle}>{goal.title}</h3>
+                      {goal.milestones && goal.milestones.length > 0 && (
+                        <span className={styles.milestoneCount}>
+                          {goal.milestones.filter(m => m.completed).length}/{goal.milestones.length}{' '}
+                          milestones
+                        </span>
+                      )}
                     </div>
                     <div className={styles.goalActions}>
                       <button

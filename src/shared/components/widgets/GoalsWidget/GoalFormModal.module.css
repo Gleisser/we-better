@@ -59,13 +59,13 @@
 }
 
 /* Add specific styles for date input */
-input[type="date"].input {
+input[type='date'].input {
   @apply text-white/90 cursor-pointer;
   color-scheme: dark;
 }
 
 /* Make the calendar icon more visible */
-input[type="date"].input::-webkit-calendar-picker-indicator {
+input[type='date'].input::-webkit-calendar-picker-indicator {
   @apply cursor-pointer;
   filter: invert(1) brightness(150%); /* Make it bright white */
   opacity: 0.9;
@@ -77,18 +77,18 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
 }
 
 /* For Firefox */
-input[type="date"].input::-moz-calendar-picker-indicator {
+input[type='date'].input::-moz-calendar-picker-indicator {
   filter: invert(1) brightness(150%);
   opacity: 0.9;
 }
 
 /* Add placeholder style */
-input[type="date"].input::placeholder {
+input[type='date'].input::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
 
 /* Style for the date text */
-input[type="date"].input:valid {
+input[type='date'].input:valid {
   @apply text-white;
 }
 
@@ -139,7 +139,86 @@ input[type="date"].input:valid {
          px-4 py-2 rounded-xl
          bg-black/40
          border border-white/[0.08]
-         text-sm text-white;
+         text-sm text-white
+         transition-all duration-200;
+}
+
+.milestoneItem.completed {
+  @apply bg-emerald-500/10 border-emerald-500/30;
+}
+
+.milestoneContent {
+  @apply flex items-center gap-3 flex-1;
+}
+
+.checkboxContainer {
+  @apply relative flex items-center cursor-pointer;
+}
+
+.checkbox {
+  @apply sr-only;
+}
+
+.checkmark {
+  @apply w-4 h-4 rounded
+         border border-white/20
+         flex items-center justify-center
+         transition-all duration-200
+         relative;
+}
+
+.checkbox:checked + .checkmark {
+  @apply bg-emerald-500 border-emerald-500;
+}
+
+.checkbox:checked + .checkmark::after {
+  content: '✓';
+  @apply text-white text-xs font-bold
+         absolute inset-0
+         flex items-center justify-center;
+}
+
+.milestoneTitle {
+  @apply cursor-pointer hover:text-white/80
+         transition-colors duration-200;
+}
+
+.milestoneItem.completed .milestoneTitle {
+  @apply line-through opacity-70;
+}
+
+.editingContainer {
+  @apply flex items-center gap-2 flex-1;
+}
+
+.editInput {
+  @apply flex-1 px-2 py-1 rounded
+         bg-black/60
+         border border-white/20
+         text-sm text-white
+         focus:outline-none focus:border-primary-purple;
+}
+
+.editActions {
+  @apply flex items-center gap-1;
+}
+
+.saveEditButton,
+.cancelEditButton {
+  @apply w-6 h-6 rounded
+         flex items-center justify-center
+         text-xs font-bold
+         transition-all duration-200;
+}
+
+.saveEditButton {
+  @apply bg-emerald-500/20 text-emerald-400
+         hover:bg-emerald-500/30;
+}
+
+.cancelEditButton {
+  @apply bg-red-500/20 text-red-400
+         hover:bg-red-500/30;
 }
 
 .removeButton {
@@ -183,7 +262,7 @@ input[type="date"].input:valid {
 }
 
 /* Hide the default calendar icon */
-input[type="date"].input::-webkit-calendar-picker-indicator {
+input[type='date'].input::-webkit-calendar-picker-indicator {
   opacity: 0;
   width: 0;
   padding: 0;
@@ -191,7 +270,7 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   position: absolute;
 }
 
-input[type="date"].input {
+input[type='date'].input {
   @apply flex-1;
 }
 

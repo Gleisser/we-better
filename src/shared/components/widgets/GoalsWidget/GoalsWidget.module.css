@@ -189,6 +189,13 @@
   @apply text-base text-white font-plus-jakarta;
 }
 
+.milestoneCount {
+  @apply text-xs text-white/60
+         px-2 py-1 rounded-lg
+         bg-black/30
+         border border-white/[0.05];
+}
+
 .goalActions {
   @apply flex items-center gap-2;
 }
