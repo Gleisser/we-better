@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   PlusIcon,
@@ -10,7 +10,7 @@ import {
 } from '@/shared/components/common/icons';
 import styles from './GoalsWidget.module.css';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
-import { Goal, GoalCategory, ReviewSettings } from './types.js';
+import { Goal, GoalCategory, ReviewSettings, ReviewFrequency } from './types.js';
 import { CATEGORY_CONFIG } from './config.js';
 import { ReviewSettingsModal } from './ReviewSettings.js';
 import { GoalFormModal } from './GoalFormModal.js';
@@ -18,35 +18,80 @@ import { toast } from 'react-hot-toast';
 import { GoalActionsMenu } from './GoalActionsMenu.js';
 import { ConfirmationModal } from './ConfirmationModal.js';
 import { ReviewTimer } from './ReviewTimer.js';
-
-const MOCK_GOALS: Goal[] = [
-  {
-    id: 'goal_1',
-    title: 'Learn React Native',
-    category: 'learning',
-    progress: 45,
-    targetDate: '2024-06-30',
-    milestones: [
-      { id: '1', title: 'Complete basic tutorial', completed: true },
-      { id: '2', title: 'Build first app', completed: false },
-      { id: '3', title: 'Publish to App Store', completed: false },
-    ],
-  },
-  {
-    id: 'goal_2',
-    title: 'Run a Marathon',
-    category: 'fitness',
-    progress: 30,
-    targetDate: '2024-12-31',
-    milestones: [
-      { id: '1', title: 'Run 5K', completed: true },
-      { id: '2', title: 'Run 10K', completed: false },
-      { id: '3', title: 'Run Half Marathon', completed: false },
-    ],
-  },
-];
+import { useGoals } from '@/shared/hooks/useGoals';
+import {
+  GoalWithMilestones as ApiGoalWithMilestones,
+  UserReviewSettings as ApiReviewSettings,
+  ReviewFrequency as ApiReviewFrequency,
+} from '@/core/services/goalsService';
 
 const INITIAL_GOALS_TO_SHOW = 3; // Start with 3 goals on mobile
+
+// Helper function to transform API Goal to local Goal format
+const transformApiGoal = (apiGoal: ApiGoalWithMilestones): Goal => {
+  return {
+    id: apiGoal.id,
+    title: apiGoal.title,
+    category: apiGoal.category as GoalCategory,
+    progress: apiGoal.progress,
+    targetDate: apiGoal.target_date || '',
+    milestones: apiGoal.milestones.map(milestone => ({
+      id: milestone.id,
+      title: milestone.title,
+      completed: milestone.completed,
+    })),
+  };
+};
+
+// Helper function to transform API ReviewSettings to local format
+const transformApiReviewSettings = (apiSettings: ApiReviewSettings): ReviewSettings => {
+  const notificationMethods = Object.entries(apiSettings.notification_preferences)
+    .filter(([_, enabled]) => enabled)
+    .map(([method, _]) => method as 'email' | 'sms' | 'push' | 'none');
+
+  // Map API frequency to local frequency (API has 'daily', 'weekly', 'monthly' vs local 'daily', 'weekly', 'biweekly', 'monthly', 'quarterly')
+  const localFrequency =
+    apiSettings.frequency === 'weekly'
+      ? 'weekly'
+      : apiSettings.frequency === 'monthly'
+        ? 'monthly'
+        : 'weekly';
+
+  return {
+    frequency: localFrequency as ReviewFrequency,
+    notifications: notificationMethods as ('email' | 'sms' | 'push' | 'none')[],
+    nextReviewDate: apiSettings.next_review_date || '',
+    reminderDays: apiSettings.reminder_days || 3,
+  };
+};
+
+// Helper function to transform local ReviewSettings to API format
+const transformToApiReviewSettings = (
+  localSettings: ReviewSettings
+): {
+  frequency: ApiReviewFrequency;
+  notification_preferences: Record<string, boolean>;
+  next_review_date?: string;
+  reminder_days?: number;
+} => {
+  const notification_preferences: Record<string, boolean> = {
+    email: false,
+    sms: false,
+    push: false,
+    none: false,
+  };
+
+  localSettings.notifications.forEach(method => {
+    notification_preferences[method] = true;
+  });
+
+  return {
+    frequency: localSettings.frequency as ApiReviewFrequency,
+    notification_preferences,
+    next_review_date: localSettings.nextReviewDate,
+    reminder_days: localSettings.reminderDays,
+  };
+};
 
 const GoalsWidget = (): JSX.Element => {
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -65,15 +110,8 @@ const GoalsWidget = (): JSX.Element => {
   }, []);
 
   const [selectedCategory, setSelectedCategory] = useState<GoalCategory | 'all'>('all');
-  const [goals, setGoals] = useState<Goal[]>(MOCK_GOALS);
   const { theme } = useTimeBasedTheme();
   const [showSettings, setShowSettings] = useState(false);
-  const [reviewSettings, setReviewSettings] = useState<ReviewSettings>({
-    frequency: 'weekly',
-    notifications: ['email'],
-    nextReviewDate: '2024-03-24',
-    reminderDays: 3,
-  });
   const [showGoalForm, setShowGoalForm] = useState(false);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [actionMenuPosition, setActionMenuPosition] = useState({ x: 0, y: 0 });
@@ -82,6 +120,45 @@ const GoalsWidget = (): JSX.Element => {
   const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [visibleGoals, setVisibleGoals] = useState(INITIAL_GOALS_TO_SHOW);
+
+  // Use the goals hook for API integration
+  const {
+    goals: apiGoals,
+    reviewSettings: apiReviewSettings,
+    isLoading,
+    error,
+    fetchGoals,
+    createGoal: apiCreateGoal,
+    updateGoal: apiUpdateGoal,
+    deleteGoal: apiDeleteGoal,
+    increaseGoalProgress,
+    decreaseGoalProgress,
+    saveReviewSettings,
+    fetchReviewSettings,
+  } = useGoals();
+
+  // Transform API goals to local format
+  const goals: Goal[] = apiGoals.map(transformApiGoal);
+
+  // Transform API review settings to local format
+  const reviewSettings: ReviewSettings = apiReviewSettings
+    ? transformApiReviewSettings(apiReviewSettings)
+    : {
+        frequency: 'weekly',
+        notifications: ['email'],
+        nextReviewDate: '2024-03-24',
+        reminderDays: 3,
+      };
+
+  // Initialize based on selected category
+  useEffect(() => {
+    fetchGoals(selectedCategory === 'all' ? undefined : selectedCategory, true);
+  }, [fetchGoals, selectedCategory]);
+
+  // Fetch review settings on mount
+  useEffect(() => {
+    fetchReviewSettings();
+  }, [fetchReviewSettings]);
 
   const filteredGoals =
     selectedCategory === 'all' ? goals : goals.filter(goal => goal.category === selectedCategory);
@@ -92,48 +169,96 @@ const GoalsWidget = (): JSX.Element => {
     setVisibleGoals(prev => prev + 3); // Load 3 more goals
   };
 
-  const nextReviewDate = new Date('2025-01-08'); // This would come from your settings/backend
+  const nextReviewDate = new Date(reviewSettings.nextReviewDate || '2025-01-08');
 
-  const handleDeleteGoal = (goalId: string): void => {
-    setGoals(prev => prev.filter(goal => goal.id !== goalId));
-    toast.success('Goal deleted successfully', {
-      icon: '🗑️',
-      duration: 4000,
-      position: 'top-right',
-      style: {
-        background: '#1A1A1A',
-        color: '#fff',
-        border: '1px solid rgba(139, 92, 246, 0.3)',
-        borderRadius: '12px',
-        padding: '16px 24px',
-        fontSize: '14px',
-        maxWidth: '400px',
-        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
-      },
-    });
-  };
+  const handleDeleteGoal = useCallback(
+    async (goalId: string): Promise<void> => {
+      try {
+        await apiDeleteGoal(goalId);
+        toast.success('Goal deleted successfully', {
+          icon: '🗑️',
+          duration: 4000,
+          position: 'top-right',
+          style: {
+            background: '#1A1A1A',
+            color: '#fff',
+            border: '1px solid rgba(139, 92, 246, 0.3)',
+            borderRadius: '12px',
+            padding: '16px 24px',
+            fontSize: '14px',
+            maxWidth: '400px',
+            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+          },
+        });
+      } catch (error) {
+        console.error('Failed to delete goal:', error);
+        toast.error('Failed to delete goal');
+      }
+    },
+    [apiDeleteGoal]
+  );
 
-  const handleEditGoal = (updatedGoal: Omit<Goal, 'id'>): void => {
-    setGoals(prev =>
-      prev.map(goal => (goal.id === editingGoal?.id ? { ...updatedGoal, id: goal.id } : goal))
-    );
+  const handleEditGoal = useCallback(
+    async (updatedGoal: Omit<Goal, 'id'>): Promise<void> => {
+      if (!editingGoal) return;
 
-    toast.success('Goal updated successfully!', {
-      duration: 4000,
-      position: 'top-right',
-      style: {
-        background: '#1A1A1A',
-        color: '#fff',
-        border: '1px solid rgba(139, 92, 246, 0.3)',
-        borderRadius: '12px',
-        padding: '16px 24px',
-        fontSize: '14px',
-        maxWidth: '400px',
-        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
-      },
-      icon: '✏️',
-    });
-  };
+      try {
+        await apiUpdateGoal(editingGoal.id, {
+          title: updatedGoal.title,
+          category: updatedGoal.category,
+          progress: updatedGoal.progress,
+          target_date: updatedGoal.targetDate,
+        });
+
+        toast.success('Goal updated successfully!', {
+          duration: 4000,
+          position: 'top-right',
+          style: {
+            background: '#1A1A1A',
+            color: '#fff',
+            border: '1px solid rgba(139, 92, 246, 0.3)',
+            borderRadius: '12px',
+            padding: '16px 24px',
+            fontSize: '14px',
+            maxWidth: '400px',
+            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+          },
+          icon: '✏️',
+        });
+      } catch (error) {
+        console.error('Failed to update goal:', error);
+        toast.error('Failed to update goal');
+      }
+    },
+    [apiUpdateGoal, editingGoal]
+  );
+
+  const handleCreateGoal = useCallback(
+    async (goalData: Omit<Goal, 'id'>): Promise<void> => {
+      try {
+        await apiCreateGoal(goalData.title, goalData.category, goalData.targetDate);
+        toast.success('New goal created successfully!', {
+          duration: 4000,
+          position: 'top-right',
+          style: {
+            background: '#1A1A1A',
+            color: '#fff',
+            border: '1px solid rgba(139, 92, 246, 0.3)',
+            borderRadius: '12px',
+            padding: '16px 24px',
+            fontSize: '14px',
+            maxWidth: '400px',
+            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+          },
+          icon: '🎯',
+        });
+      } catch (error) {
+        console.error('Failed to create goal:', error);
+        toast.error('Failed to create goal');
+      }
+    },
+    [apiCreateGoal]
+  );
 
   return (
     <div
@@ -217,6 +342,75 @@ const GoalsWidget = (): JSX.Element => {
         </div>
 
         <div className={styles.content}>
+          {isLoading && <div className={styles.loadingIndicator}>Loading goals...</div>}
+          {error && <div className={styles.errorMessage}>Error: {error.message}</div>}
+
+          {!isLoading && !error && filteredGoals.length === 0 && (
+            <motion.div
+              className={styles.emptyState}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              {selectedCategory === 'all' ? (
+                <>
+                  <motion.div
+                    className={styles.emptyStateIcon}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                    🎯
+                  </motion.div>
+                  <p>No goals found. Create your first goal to get started!</p>
+                  <motion.button
+                    className={styles.createButton}
+                    onClick={() => {
+                      setEditingGoal(null);
+                      setShowGoalForm(true);
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Create Goal
+                  </motion.button>
+                </>
+              ) : (
+                <>
+                  <motion.div
+                    className={styles.emptyStateIcon}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                    {CATEGORY_CONFIG[selectedCategory as GoalCategory]?.icon || '🎯'}
+                  </motion.div>
+                  <p>No {selectedCategory} goals found.</p>
+                  <motion.button
+                    className={styles.createButton}
+                    onClick={() => {
+                      // Pre-populate with selected category
+                      setEditingGoal({
+                        id: 'temp',
+                        title: '',
+                        category: selectedCategory as GoalCategory,
+                        progress: 0,
+                        targetDate: '',
+                        milestones: [],
+                      });
+                      setShowGoalForm(true);
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Create {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}{' '}
+                    Goal
+                  </motion.button>
+                </>
+              )}
+            </motion.div>
+          )}
+
           <div className={styles.goalsList}>
             {displayedGoals.map(goal => (
               <motion.div
@@ -263,33 +457,31 @@ const GoalsWidget = (): JSX.Element => {
                     <div className={styles.goalActions}>
                       <button
                         className={styles.actionButton}
-                        onClick={() => {
-                          setGoals(prev =>
-                            prev.map(g =>
-                              g.id === goal.id
-                                ? { ...g, progress: Math.min(100, g.progress + 5) }
-                                : g
-                            )
-                          );
-
-                          toast.success(
-                            `Progress increased to ${Math.min(100, goal.progress + 5)}%`,
-                            {
-                              duration: 2000,
-                              position: 'top-right',
-                              style: {
-                                background: '#1A1A1A',
-                                color: '#fff',
-                                border: '1px solid rgba(139, 92, 246, 0.3)',
-                                borderRadius: '12px',
-                                padding: '16px 24px',
-                                fontSize: '14px',
-                                maxWidth: '400px',
-                                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
-                              },
-                              icon: '📈',
-                            }
-                          );
+                        onClick={async () => {
+                          try {
+                            await increaseGoalProgress(goal.id, 5);
+                            toast.success(
+                              `Progress increased to ${Math.min(100, goal.progress + 5)}%`,
+                              {
+                                duration: 2000,
+                                position: 'top-right',
+                                style: {
+                                  background: '#1A1A1A',
+                                  color: '#fff',
+                                  border: '1px solid rgba(139, 92, 246, 0.3)',
+                                  borderRadius: '12px',
+                                  padding: '16px 24px',
+                                  fontSize: '14px',
+                                  maxWidth: '400px',
+                                  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+                                },
+                                icon: '📈',
+                              }
+                            );
+                          } catch (error) {
+                            console.error('Failed to increase progress:', error);
+                            toast.error('Failed to update progress');
+                          }
                         }}
                         aria-label="Increase progress by 5%"
                       >
@@ -297,31 +489,31 @@ const GoalsWidget = (): JSX.Element => {
                       </button>
                       <button
                         className={styles.actionButton}
-                        onClick={() => {
-                          setGoals(prev =>
-                            prev.map(g =>
-                              g.id === goal.id ? { ...g, progress: Math.max(0, g.progress - 5) } : g
-                            )
-                          );
-
-                          toast.success(
-                            `Progress decreased to ${Math.max(0, goal.progress - 5)}%`,
-                            {
-                              duration: 2000,
-                              position: 'top-right',
-                              style: {
-                                background: '#1A1A1A',
-                                color: '#fff',
-                                border: '1px solid rgba(139, 92, 246, 0.3)',
-                                borderRadius: '12px',
-                                padding: '16px 24px',
-                                fontSize: '14px',
-                                maxWidth: '400px',
-                                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
-                              },
-                              icon: '📉',
-                            }
-                          );
+                        onClick={async () => {
+                          try {
+                            await decreaseGoalProgress(goal.id, 5);
+                            toast.success(
+                              `Progress decreased to ${Math.max(0, goal.progress - 5)}%`,
+                              {
+                                duration: 2000,
+                                position: 'top-right',
+                                style: {
+                                  background: '#1A1A1A',
+                                  color: '#fff',
+                                  border: '1px solid rgba(139, 92, 246, 0.3)',
+                                  borderRadius: '12px',
+                                  padding: '16px 24px',
+                                  fontSize: '14px',
+                                  maxWidth: '400px',
+                                  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+                                },
+                                icon: '📉',
+                              }
+                            );
+                          } catch (error) {
+                            console.error('Failed to decrease progress:', error);
+                            toast.error('Failed to update progress');
+                          }
                         }}
                         aria-label="Decrease progress by 5%"
                       >
@@ -368,9 +560,14 @@ const GoalsWidget = (): JSX.Element => {
           isOpen={showSettings}
           onClose={() => setShowSettings(false)}
           settings={reviewSettings}
-          onSave={newSettings => {
-            setReviewSettings(newSettings);
-            // TODO: Save to backend
+          onSave={async newSettings => {
+            try {
+              await saveReviewSettings(transformToApiReviewSettings(newSettings));
+              toast.success('Review settings saved successfully');
+            } catch (error) {
+              console.error('Failed to save review settings:', error);
+              toast.error('Failed to save review settings');
+            }
           }}
         />
       )}
@@ -382,38 +579,22 @@ const GoalsWidget = (): JSX.Element => {
             setShowGoalForm(false);
             setEditingGoal(null);
           }}
-          onSave={goalData => {
-            if (editingGoal) {
-              handleEditGoal(goalData);
+          onSave={async goalData => {
+            if (editingGoal && editingGoal.id !== 'temp') {
+              await handleEditGoal(goalData);
             } else {
-              setGoals(prev => [
-                ...prev,
-                {
-                  ...goalData,
-                  id: `goal-${Date.now()}`,
-                },
-              ]);
-
-              toast.success('New goal created successfully!', {
-                duration: 4000,
-                position: 'top-right',
-                style: {
-                  background: '#1A1A1A',
-                  color: '#fff',
-                  border: '1px solid rgba(139, 92, 246, 0.3)',
-                  borderRadius: '12px',
-                  padding: '16px 24px',
-                  fontSize: '14px',
-                  maxWidth: '400px',
-                  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
-                },
-                icon: '🎯',
-              });
+              await handleCreateGoal(goalData);
             }
             setShowGoalForm(false);
             setEditingGoal(null);
           }}
-          initialGoal={editingGoal}
+          initialGoal={
+            editingGoal && editingGoal.id !== 'temp'
+              ? editingGoal
+              : editingGoal
+                ? { ...editingGoal, id: '' }
+                : null
+          }
         />
       )}
 
