@@ -7,26 +7,24 @@ import {
   MicrophoneIcon,
   StopIcon,
   XIcon,
-  BellIcon,
+  // BellIcon, // TODO: Re-enable when reminder settings are integrated
   PlusIcon,
   PencilIcon,
   TrashIcon,
   BookmarkIcon,
 } from '@/shared/components/common/icons';
 import ParticleEffect from './ParticleEffect';
-import { useAffirmationStreak } from '@/shared/hooks/useAffirmationStreak';
 import { useVoiceRecorder } from '@/shared/hooks/useVoiceRecorder';
 import { Tooltip } from '@/shared/components/common/Tooltip';
-import { useAffirmationReminder } from '@/shared/hooks/useAffirmationReminder';
-import { ReminderSettings } from './ReminderSettings';
+// import { ReminderSettings } from './ReminderSettings'; // TODO: Re-enable when integration is fixed
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/shared/hooks/useTiltEffect';
 import { CreateAffirmationModal } from './CreateAffirmationModal';
-import { usePersonalAffirmation } from '@/shared/hooks/usePersonalAffirmation';
 import { ConfirmDialog } from '@/shared/components/common/ConfirmDialog/ConfirmDialog';
 import { Toast } from '@/shared/components/common/Toast/Toast';
 import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
 import { affirmationService } from '@/core/services/affirmationService';
+import { useAffirmations } from '@/shared/hooks/useAffirmations';
 
 type AffirmationCategory =
   | 'personal'
@@ -117,7 +115,7 @@ const AffirmationWidget = (): JSX.Element => {
   const categorySelectorRef = useRef<HTMLDivElement>(null);
   const [isAffirming, setIsAffirming] = useState(false);
   const [showParticles, setShowParticles] = useState(false);
-  const { streak, isNewMilestone, incrementStreak, resetMilestone } = useAffirmationStreak();
+  const [isNewMilestone, setIsNewMilestone] = useState(false);
   const {
     isRecording,
     audioUrl,
@@ -126,17 +124,19 @@ const AffirmationWidget = (): JSX.Element => {
     stopRecording,
     clearRecording,
   } = useVoiceRecorder();
-  const [showReminderSettings, setShowReminderSettings] = useState(false);
-  const {
-    settings: reminderSettings,
-    permission,
-    requestPermission,
-    updateSettings,
-  } = useAffirmationReminder();
   const { theme } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5); // Lower intensity for subtlety
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const { personalAffirmation, saveAffirmation, deleteAffirmation } = usePersonalAffirmation();
+
+  // Backend integration using useAffirmations hook
+  const {
+    personalAffirmation,
+    streak,
+    createPersonalAffirmation,
+    updatePersonalAffirmation,
+    deletePersonalAffirmation,
+    logAffirmation,
+  } = useAffirmations();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations();
@@ -152,15 +152,23 @@ const AffirmationWidget = (): JSX.Element => {
 
         if (category === 'personal') {
           if (personalAffirmation) {
-            setCurrentAffirmation(personalAffirmation);
+            // Convert backend personal affirmation to widget format
+            setCurrentAffirmation({
+              id: personalAffirmation.id,
+              text: personalAffirmation.text,
+              category: 'personal',
+              intensity: personalAffirmation.intensity,
+            });
             setCheckedPersonal(true);
           } else if (!checkedPersonal) {
+            // No personal affirmation, switch to beauty category
             setSelectedCategory('beauty');
             setCheckedPersonal(true);
             setLoading(false);
             return;
           }
         } else {
+          // Use external service for non-personal affirmations
           const response = await affirmationService.getAffirmationsByCategory(category, {
             sort: 'publishedAt:desc',
             pagination: {
@@ -211,7 +219,13 @@ const AffirmationWidget = (): JSX.Element => {
 
   const getRandomAffirmation = (): UserAffirmation | null => {
     if (selectedCategory === 'personal' && personalAffirmation) {
-      return personalAffirmation;
+      // Convert backend personal affirmation to widget format
+      return {
+        id: personalAffirmation.id,
+        text: personalAffirmation.text,
+        category: 'personal',
+        intensity: personalAffirmation.intensity,
+      };
     }
 
     if (affirmations.length === 0) {
@@ -259,12 +273,28 @@ const AffirmationWidget = (): JSX.Element => {
     }
   };
 
-  const handleAffirm = (): void => {
-    const didIncrementStreak = incrementStreak();
-    if (didIncrementStreak) {
+  const handleAffirm = async (): Promise<void> => {
+    if (!currentAffirmation) return;
+
+    try {
+      // Log the affirmation to backend
+      await logAffirmation(
+        currentAffirmation.text,
+        selectedCategory === 'personal' ? personalAffirmation?.id : undefined
+      );
+
+      // Show visual feedback
       setIsAffirming(true);
       setShowParticles(true);
+
+      // Check for new milestone (simple check based on streak)
+      if (streak && (streak.current_streak + 1) % 7 === 0) {
+        setIsNewMilestone(true);
+      }
+
       setTimeout(() => setIsAffirming(false), 1000);
+    } catch (error) {
+      console.error('Failed to log affirmation:', error);
     }
   };
 
@@ -272,25 +302,37 @@ const AffirmationWidget = (): JSX.Element => {
     setShowParticles(false);
   };
 
-  const handleSavePersonalAffirmation = (text: string): void => {
-    saveAffirmation(text);
-    setSelectedCategory('personal');
-    setCurrentAffirmation({
-      id: 'personal_1',
-      text,
-      category: 'personal',
-      intensity: 2,
-    });
+  const handleSavePersonalAffirmation = async (text: string): Promise<void> => {
+    try {
+      if (personalAffirmation) {
+        // Update existing
+        await updatePersonalAffirmation(personalAffirmation.id, { text });
+      } else {
+        // Create new
+        await createPersonalAffirmation(text, 'personal', 2);
+      }
+
+      setSelectedCategory('personal');
+      // The hook will update personalAffirmation state automatically
+    } catch (error) {
+      console.error('Failed to save personal affirmation:', error);
+    }
   };
 
-  const handleDelete = (): void => {
-    deleteAffirmation();
-    setShowDeleteConfirm(false);
-    setShowSuccessToast(true);
-    setTimeout(() => setShowSuccessToast(false), 3000);
+  const handleDelete = async (): Promise<void> => {
+    if (!personalAffirmation) return;
 
-    setSelectedCategory('beauty');
-    setCurrentAffirmation(getRandomAffirmation());
+    try {
+      await deletePersonalAffirmation(personalAffirmation.id);
+      setShowDeleteConfirm(false);
+      setShowSuccessToast(true);
+      setTimeout(() => setShowSuccessToast(false), 3000);
+
+      setSelectedCategory('beauty');
+      setCurrentAffirmation(getRandomAffirmation());
+    } catch (error) {
+      console.error('Failed to delete personal affirmation:', error);
+    }
   };
 
   return (
@@ -460,7 +502,8 @@ const AffirmationWidget = (): JSX.Element => {
                 </button>
               </Tooltip>
 
-              <Tooltip content="Set reminder">
+              {/* TODO: Re-enable reminder settings button when integration is fixed */}
+              {/* <Tooltip content="Set reminder">
                 <button
                   className={styles.voiceButton}
                   onClick={() => setShowReminderSettings(true)}
@@ -468,7 +511,7 @@ const AffirmationWidget = (): JSX.Element => {
                 >
                   <BellIcon className={styles.voiceIcon} />
                 </button>
-              </Tooltip>
+              </Tooltip> */}
 
               <Tooltip content="Days streaking">
                 <motion.div
@@ -481,10 +524,10 @@ const AffirmationWidget = (): JSX.Element => {
                         }
                       : {}
                   }
-                  onAnimationComplete={resetMilestone}
+                  onAnimationComplete={() => setIsNewMilestone(false)}
                 >
                   <span className={styles.streakIcon}>🔥</span>
-                  <span className={styles.streakCount}>{streak}</span>
+                  <span className={styles.streakCount}>{streak?.current_streak || 0}</span>
                 </motion.div>
               </Tooltip>
 
@@ -550,14 +593,15 @@ const AffirmationWidget = (): JSX.Element => {
         </div>
       </div>
 
-      <ReminderSettings
+      {/* TODO: Fix ReminderSettings integration - disabled temporarily */}
+      {/* <ReminderSettings
         isOpen={showReminderSettings}
         onClose={() => setShowReminderSettings(false)}
         settings={reminderSettings}
         onUpdate={updateSettings}
         onRequestPermission={requestPermission}
         permission={permission}
-      />
+      /> */}
 
       <CreateAffirmationModal
         isOpen={showCreateModal}
