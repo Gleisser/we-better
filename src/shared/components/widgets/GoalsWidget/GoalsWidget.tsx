@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { format } from 'date-fns';
 import {
   PlusIcon,
   ChevronDownIcon,
@@ -375,8 +376,11 @@ const GoalsWidget = (): JSX.Element => {
               nextReviewDate={nextReviewDate}
               onCompleteReview={async () => {
                 try {
-                  await completeReview();
-                  toast.success('Review completed! Next review scheduled.', {
+                  const updatedSettings = await completeReview();
+                  const nextReview = new Date(updatedSettings.next_review_date || '');
+                  const formattedDate = format(nextReview, 'MMM d, yyyy');
+
+                  toast.success(`Review completed! Next review: ${formattedDate}`, {
                     duration: 4000,
                     position: 'top-right',
                     style: {

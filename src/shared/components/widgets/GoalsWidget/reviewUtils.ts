@@ -13,20 +13,25 @@ export const calculateNextReviewDate = (
   lastReviewDate?: string | Date
 ): string => {
   const baseDate = lastReviewDate ? new Date(lastReviewDate) : new Date();
+
+  // Set to start of day to avoid timezone issues
+  const startOfDay = new Date(baseDate);
+  startOfDay.setHours(0, 0, 0, 0);
+
   let nextDate: Date;
 
   switch (frequency) {
     case 'daily':
-      nextDate = addDays(baseDate, 1);
+      nextDate = addDays(startOfDay, 1);
       break;
     case 'weekly':
-      nextDate = addWeeks(baseDate, 1);
+      nextDate = addWeeks(startOfDay, 1);
       break;
     case 'monthly':
-      nextDate = addMonths(baseDate, 1);
+      nextDate = addMonths(startOfDay, 1);
       break;
     default:
-      nextDate = addWeeks(baseDate, 1); // Default to weekly
+      nextDate = addWeeks(startOfDay, 1); // Default to weekly
   }
 
   return format(nextDate, 'yyyy-MM-dd');
