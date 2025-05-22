@@ -333,6 +333,10 @@ export const useGoals = (): UseGoalsReturn => {
 
         const updatedMilestone = await updateMilestone(goalId, milestoneId, updates);
 
+        if (!updatedMilestone) {
+          throw new Error('Failed to update milestone');
+        }
+
         // Update with server response
         updateGoalInState(goalId, goal => ({
           ...goal,
@@ -412,6 +416,9 @@ export const useGoals = (): UseGoalsReturn => {
       try {
         setError(null);
         const savedSettings = await upsertReviewSettings(settings);
+        if (!savedSettings) {
+          throw new Error('Failed to save review settings');
+        }
         setReviewSettings(savedSettings);
         return savedSettings;
       } catch (err) {
@@ -433,6 +440,9 @@ export const useGoals = (): UseGoalsReturn => {
       try {
         setError(null);
         const updatedSettings = await updateReviewSettings(settings);
+        if (!updatedSettings) {
+          throw new Error('Failed to update review settings');
+        }
         setReviewSettings(updatedSettings);
         return updatedSettings;
       } catch (err) {

@@ -52,13 +52,8 @@ const transformApiReviewSettings = (apiSettings: ApiReviewSettings): ReviewSetti
     .filter(([_, enabled]) => enabled)
     .map(([method, _]) => method as 'email' | 'sms' | 'push' | 'none');
 
-  // Map API frequency to local frequency (API has 'daily', 'weekly', 'monthly' vs local 'daily', 'weekly', 'biweekly', 'monthly', 'quarterly')
-  const localFrequency =
-    apiSettings.frequency === 'weekly'
-      ? 'weekly'
-      : apiSettings.frequency === 'monthly'
-        ? 'monthly'
-        : 'weekly';
+  // Map API frequency to local frequency (both now use 'daily', 'weekly', 'monthly')
+  const localFrequency = apiSettings.frequency;
 
   return {
     frequency: localFrequency as ReviewFrequency,

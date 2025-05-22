@@ -13,10 +13,9 @@ interface ReviewSettingsModalProps {
 }
 
 const FREQUENCY_OPTIONS: { value: ReviewFrequency; label: string }[] = [
+  { value: 'daily', label: 'Daily' },
   { value: 'weekly', label: 'Weekly' },
-  { value: 'biweekly', label: 'Every 2 Weeks' },
   { value: 'monthly', label: 'Monthly' },
-  { value: 'quarterly', label: 'Every 3 Months' },
 ];
 
 const NOTIFICATION_OPTIONS: { value: NotificationMethod; label: string; icon: string }[] = [
