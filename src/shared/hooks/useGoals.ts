@@ -23,6 +23,7 @@ import {
   fetchReviewSettings,
   upsertReviewSettings,
   updateReviewSettings,
+  completeReview,
   fetchGoalStats,
   increaseProgress,
   decreaseProgress,
@@ -81,6 +82,7 @@ export interface UseGoalsReturn {
     next_review_date?: string;
     reminder_days?: number;
   }) => Promise<UserReviewSettings>;
+  completeReview: () => Promise<UserReviewSettings>;
 
   // Statistics
   fetchStats: () => Promise<void>;
@@ -453,6 +455,22 @@ export const useGoals = (): UseGoalsReturn => {
     [handleError]
   );
 
+  // Complete review
+  const completeReviewData = useCallback(async (): Promise<UserReviewSettings> => {
+    try {
+      setError(null);
+      const completedReview = await completeReview();
+      if (!completedReview) {
+        throw new Error('Failed to complete review');
+      }
+      setReviewSettings(completedReview);
+      return completedReview;
+    } catch (err) {
+      handleError(err);
+      throw err;
+    }
+  }, [handleError]);
+
   // Fetch statistics
   const fetchStatsData = useCallback(async (): Promise<void> => {
     try {
@@ -512,6 +530,7 @@ export const useGoals = (): UseGoalsReturn => {
     fetchReviewSettings: fetchReviewSettingsData,
     saveReviewSettings,
     updateReviewSettings: updateReviewSettingsData,
+    completeReview: completeReviewData,
 
     // Statistics
     fetchStats: fetchStatsData,

@@ -362,6 +362,16 @@ export const updateReviewSettings = async (settings: {
   }
 };
 
+// Complete a review and update next review date
+export const completeReview = async (): Promise<UserReviewSettings | null> => {
+  try {
+    return await apiRequest<UserReviewSettings>(`${API_URL}/settings/complete-review`, 'POST');
+  } catch (error) {
+    console.error('Error completing review:', error);
+    return null;
+  }
+};
+
 /**
  * STATISTICS API FUNCTIONS
  */

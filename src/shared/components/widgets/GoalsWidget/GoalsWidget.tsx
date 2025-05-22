@@ -133,6 +133,7 @@ const GoalsWidget = (): JSX.Element => {
     decreaseGoalProgress,
     saveReviewSettings,
     fetchReviewSettings,
+    completeReview,
   } = useGoals();
 
   // Transform API goals to local format
@@ -144,7 +145,7 @@ const GoalsWidget = (): JSX.Element => {
     : {
         frequency: 'weekly',
         notifications: ['email'],
-        nextReviewDate: '2024-03-24',
+        nextReviewDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Default to 1 week from now
         reminderDays: 3,
       };
 
@@ -370,7 +371,32 @@ const GoalsWidget = (): JSX.Element => {
               <SettingsIcon className={styles.actionIcon} />
             </button>
 
-            <ReviewTimer nextReviewDate={nextReviewDate} />
+            <ReviewTimer
+              nextReviewDate={nextReviewDate}
+              onCompleteReview={async () => {
+                try {
+                  await completeReview();
+                  toast.success('Review completed! Next review scheduled.', {
+                    duration: 4000,
+                    position: 'top-right',
+                    style: {
+                      background: '#1A1A1A',
+                      color: '#fff',
+                      border: '1px solid rgba(139, 92, 246, 0.3)',
+                      borderRadius: '12px',
+                      padding: '16px 24px',
+                      fontSize: '14px',
+                      maxWidth: '400px',
+                      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+                    },
+                    icon: '✅',
+                  });
+                } catch (error) {
+                  console.error('Failed to complete review:', error);
+                  toast.error('Failed to complete review');
+                }
+              }}
+            />
 
             <button
               className={`${styles.collapseButton} ${isCollapsed ? styles.collapsed : ''}`}

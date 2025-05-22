@@ -4,6 +4,7 @@ import { XIcon } from '@/shared/components/common/icons';
 import styles from './ReviewSettings.module.css';
 import { ReviewSettings, ReviewFrequency, NotificationMethod } from './types';
 import { Portal } from '@/shared/components/common/Portal/Portal';
+import { calculateInitialReviewDate } from './reviewUtils';
 
 interface ReviewSettingsModalProps {
   isOpen: boolean;
@@ -33,7 +34,12 @@ export const ReviewSettingsModal = ({
   const [localSettings, setLocalSettings] = useState<ReviewSettings>(settings);
 
   const handleFrequencyChange = (frequency: ReviewFrequency): void => {
-    setLocalSettings(prev => ({ ...prev, frequency }));
+    setLocalSettings(prev => ({
+      ...prev,
+      frequency,
+      // Recalculate next review date when frequency changes
+      nextReviewDate: calculateInitialReviewDate(frequency),
+    }));
   };
 
   const toggleNotification = (method: NotificationMethod): void => {

@@ -31,16 +31,42 @@
   @apply text-[8px] text-white/30 font-plus-jakarta;
 }
 
-/* Enhanced active state styles */
+/* Enhanced state styles */
+.reviewTimer.today,
 .reviewTimer.active {
   @apply border-transparent bg-black/60;
   padding: calc(0.375rem + 8px) calc(0.75rem + 8px);
   border-radius: 16px;
 }
 
+.reviewTimer.overdue {
+  @apply border-red-500/50 bg-red-900/20;
+}
+
+.reviewTimer.overdue .timerValue {
+  @apply text-red-400;
+}
+
+.reviewTimer.overdue .timerIcon {
+  @apply bg-red-900/40 border-red-500/30;
+}
+
+.reviewTimer.soon {
+  @apply border-yellow-500/50 bg-yellow-900/20;
+}
+
+.reviewTimer.soon .timerValue {
+  @apply text-yellow-400;
+}
+
+.reviewTimer.soon .timerIcon {
+  @apply bg-yellow-900/40 border-yellow-500/30;
+}
+
 /* Animated colorful border */
+.reviewTimer.today::before,
 .reviewTimer.active::before {
-  content: "";
+  content: '';
   @apply absolute;
   inset: -6px;
   border-radius: 20px;
@@ -58,28 +84,31 @@
   background-size: 400% 100%;
   animation: border-flow 3s linear infinite;
   z-index: -1;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   mask-composite: exclude;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   filter: brightness(1.5) saturate(1.5);
   box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
 }
 
 /* Notification dot */
+.reviewTimer.today::after,
 .reviewTimer.active::after {
-  content: "";
+  content: '';
   @apply absolute rounded-full;
   width: 10px;
   height: 10px;
   top: -8px;
   right: -8px;
-  background: linear-gradient(
-    45deg,
-    rgba(255, 0, 0, 0.9),
-    rgba(255, 0, 255, 0.9)
-  );
-  box-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 0 0 20px rgba(255, 0, 255, 0.4);
+  background: linear-gradient(45deg, rgba(255, 0, 0, 0.9), rgba(255, 0, 255, 0.9));
+  box-shadow:
+    0 0 10px rgba(255, 0, 0, 0.8),
+    0 0 20px rgba(255, 0, 255, 0.4);
   animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   z-index: 2;
 }
