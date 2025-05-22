@@ -7,7 +7,7 @@ import {
   MicrophoneIcon,
   StopIcon,
   XIcon,
-  // BellIcon, // TODO: Re-enable when reminder settings are integrated
+  BellIcon,
   PlusIcon,
   PencilIcon,
   TrashIcon,
@@ -16,7 +16,7 @@ import {
 import ParticleEffect from './ParticleEffect';
 import { useVoiceRecorder } from '@/shared/hooks/useVoiceRecorder';
 import { Tooltip } from '@/shared/components/common/Tooltip';
-// import { ReminderSettings } from './ReminderSettings'; // TODO: Re-enable when integration is fixed
+import { ReminderSettings } from './ReminderSettings';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/shared/hooks/useTiltEffect';
 import { CreateAffirmationModal } from './CreateAffirmationModal';
@@ -127,16 +127,70 @@ const AffirmationWidget = (): JSX.Element => {
   const { theme } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5); // Lower intensity for subtlety
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showReminderSettings, setShowReminderSettings] = useState(false);
 
   // Backend integration using useAffirmations hook
   const {
     personalAffirmation,
+    reminderSettings: backendReminderSettings,
     streak,
     createPersonalAffirmation,
     updatePersonalAffirmation,
     deletePersonalAffirmation,
     logAffirmation,
+    updateReminderSettings,
   } = useAffirmations();
+
+  // Notification permission state
+  const [permission, setPermission] = useState<NotificationPermission>('default');
+
+  // Request notification permission
+  const requestPermission = async (): Promise<boolean> => {
+    try {
+      const result = await Notification.requestPermission();
+      setPermission(result);
+      return result === 'granted';
+    } catch (error) {
+      console.error('Error requesting notification permission:', error);
+      return false;
+    }
+  };
+
+  // Transform backend reminder settings to component format
+  const reminderSettings = backendReminderSettings
+    ? {
+        enabled: backendReminderSettings.is_enabled,
+        time: backendReminderSettings.reminder_time,
+        days: backendReminderSettings.days_of_week || [1, 2, 3, 4, 5, 6, 0],
+      }
+    : {
+        enabled: false,
+        time: '09:00',
+        days: [1, 2, 3, 4, 5, 6, 0],
+      };
+
+  // Update settings handler - transform component format to backend format
+  const updateSettings = async (newSettings: {
+    enabled: boolean;
+    time: string;
+    days: number[];
+  }): Promise<void> => {
+    try {
+      await updateReminderSettings({
+        is_enabled: newSettings.enabled,
+        reminder_time: newSettings.time,
+        frequency: 'custom', // Default to custom when updating via component
+        days_of_week: newSettings.days,
+      });
+    } catch (error) {
+      console.error('Failed to update reminder settings:', error);
+    }
+  };
+
+  // Initialize notification permission on mount
+  useEffect(() => {
+    setPermission(Notification.permission);
+  }, []);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations();
@@ -502,8 +556,7 @@ const AffirmationWidget = (): JSX.Element => {
                 </button>
               </Tooltip>
 
-              {/* TODO: Re-enable reminder settings button when integration is fixed */}
-              {/* <Tooltip content="Set reminder">
+              <Tooltip content="Set reminder">
                 <button
                   className={styles.voiceButton}
                   onClick={() => setShowReminderSettings(true)}
@@ -511,7 +564,7 @@ const AffirmationWidget = (): JSX.Element => {
                 >
                   <BellIcon className={styles.voiceIcon} />
                 </button>
-              </Tooltip> */}
+              </Tooltip>
 
               <Tooltip content="Days streaking">
                 <motion.div
@@ -593,15 +646,14 @@ const AffirmationWidget = (): JSX.Element => {
         </div>
       </div>
 
-      {/* TODO: Fix ReminderSettings integration - disabled temporarily */}
-      {/* <ReminderSettings
+      <ReminderSettings
         isOpen={showReminderSettings}
         onClose={() => setShowReminderSettings(false)}
         settings={reminderSettings}
         onUpdate={updateSettings}
         onRequestPermission={requestPermission}
         permission={permission}
-      /> */}
+      />
 
       <CreateAffirmationModal
         isOpen={showCreateModal}
