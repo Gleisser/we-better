@@ -1,106 +1,25 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import LifeStories from '../Stories/LifeStories';
-import { XIcon, PlayIcon } from '@/shared/components/common/icons';
+import LifeStories from '../Stories/LifeStories/LifeStories'; // Adjusted path
+import { XIcon, PlayIcon, LoadingSpinner } from '@/shared/components/common/icons'; // Added LoadingSpinner
 import styles from './StoriesBar.module.css';
 import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
+import { useStories } from '@/shared/hooks/useStories'; // Import the new hook
 
-const MOCK_CATEGORIES = [
-  {
-    id: 'social',
-    name: 'Social',
-    color: {
-      from: '#8B5CF6',
-      to: '#D946EF',
-    },
-    icon: '👥',
-    score: 85,
-    hasUpdate: true,
-  },
-  {
-    id: 'health',
-    name: 'Health',
-    color: {
-      from: '#10B981',
-      to: '#34D399',
-    },
-    icon: '💪',
-    score: 70,
-    hasUpdate: true,
-  },
-  {
-    id: 'selfCare',
-    name: 'Self Care',
-    color: {
-      from: '#F59E0B',
-      to: '#FBBF24',
-    },
-    icon: '🧘‍♂️',
-    score: 65,
-    hasUpdate: false,
-  },
-  {
-    id: 'money',
-    name: 'Money',
-    color: {
-      from: '#3B82F6',
-      to: '#60A5FA',
-    },
-    icon: '💰',
-    score: 75,
-    hasUpdate: true,
-  },
-  {
-    id: 'family',
-    name: 'Family',
-    color: {
-      from: '#EC4899',
-      to: '#F472B6',
-    },
-    icon: '👨‍👩‍👧‍👦',
-    score: 90,
-    hasUpdate: true,
-  },
-  {
-    id: 'spirituality',
-    name: 'Spirituality',
-    color: {
-      from: '#8B5CF6',
-      to: '#A78BFA',
-    },
-    icon: '🧘‍♀️',
-    score: 60,
-    hasUpdate: false,
-  },
-  {
-    id: 'relationship',
-    name: 'Relationship',
-    color: {
-      from: '#EF4444',
-      to: '#F87171',
-    },
-    icon: '❤️',
-    score: 80,
-    hasUpdate: true,
-  },
-  {
-    id: 'career',
-    name: 'Career',
-    color: {
-      from: '#6366F1',
-      to: '#818CF8',
-    },
-    icon: '💼',
-    score: 85,
-    hasUpdate: true,
-  },
-];
+// MOCK_CATEGORIES is now removed as data will come from the hook
 
 const StoriesBar = (): JSX.Element => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const isMobile = window.innerWidth <= 768;
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const { activeSheet, setActiveSheet, closeSheet } = useBottomSheet();
+  const storiesQuery = useStories(); // Use the hook
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
   const handleOpen = (): void => {
     setActiveSheet('stories');
     setIsExpanded(true);
@@ -119,7 +38,11 @@ const StoriesBar = (): JSX.Element => {
 
   const handleCategorySelect = (): void => {
     // TODO: Implement category selection
+    // This function will likely receive a category or story ID
+    console.log('Category selected (to be implemented)');
   };
+  
+  const storiesData = storiesQuery.data?.categories || [];
 
   return (
     <>
@@ -150,7 +73,26 @@ const StoriesBar = (): JSX.Element => {
               >
                 <XIcon className={styles.collapseIcon} />
               </button>
-              <LifeStories categories={MOCK_CATEGORIES} onCategorySelect={handleCategorySelect} />
+              {storiesQuery.isLoading && (
+                <div className={styles.loadingContainer}>
+                  <LoadingSpinner />
+                  <p>Loading stories...</p>
+                </div>
+              )}
+              {storiesQuery.isError && (
+                <div className={styles.errorContainer}>
+                  <p>Could not load stories.</p>
+                  <button onClick={() => storiesQuery.refetch()}>Try again</button>
+                </div>
+              )}
+              {storiesQuery.isSuccess && storiesData.length > 0 && (
+                <LifeStories categories={storiesData} onCategorySelect={handleCategorySelect} />
+              )}
+               {storiesQuery.isSuccess && storiesData.length === 0 && (
+                <div className={styles.emptyContainer}>
+                  <p>No stories available at the moment.</p>
+                </div>
+              )}
             </motion.div>
           ) : (
             <motion.button

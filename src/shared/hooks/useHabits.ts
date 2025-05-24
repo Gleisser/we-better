@@ -7,6 +7,8 @@ import {
   QueryKey,
   UseQueryResult,
   UseMutationResult,
+  InitialDataFunction,
+  InitialDataFunction, // Make sure InitialDataFunction is imported
 } from '@tanstack/react-query';
 import * as habitsService from '@/core/services/habitsService';
 import {
@@ -19,9 +21,9 @@ import {
 } from '@/core/services/habitsService';
 
 // Query Keys
-const HABITS_QUERY_KEY = 'habits';
-const HABIT_STATS_QUERY_KEY = 'habitStats';
-const HABIT_LOGS_QUERY_KEY = 'habitLogs'; // For individual log fetches
+export const HABITS_QUERY_KEY = 'habits'; // Exported
+export const HABIT_STATS_QUERY_KEY = 'habitStats';
+export const HABIT_LOGS_QUERY_KEY = 'habitLogs'; // For individual log fetches
 const BATCH_HABIT_LOGS_KEY = 'batchHabitLogs'; // For batch log fetches
 
 // New type for Habit with embedded logs
@@ -34,7 +36,7 @@ export interface HabitsWithLogsResponse {
   total: number;
 }
 interface UseHabitsReturn {
-  habitsWithLogsQuery: UseQueryResult<HabitsWithLogsResponse | null, Error>; // Updated
+  habitsWithLogsQuery: UseQueryResult<HabitsWithLogsResponse | null, Error>; 
   statsQuery: UseQueryResult<HabitStats | null, Error>;
   createHabitMutation: UseMutationResult<Habit | null, Error, { name: string; category: string; startDate?: string }>;
   updateHabitMutation: UseMutationResult<Habit | null, Error, { id: string; data: Partial<Habit> }>;
@@ -52,9 +54,16 @@ interface UseHabitsReturn {
   ) => Promise<HabitLogsResponse | null>;
 }
 
-export const useHabits = (category?: string, showArchived = false): UseHabitsReturn => {
+interface UseHabitsProps {
+  initialHabitsData?: HabitsWithLogsResponse | null | InitialDataFunction<HabitsWithLogsResponse | null>; // Changed prop name and type
+  category?: string;
+  showArchived?: boolean;
+}
+
+export const useHabits = ({ initialHabitsData, category, showArchived = false }: UseHabitsProps = {}): UseHabitsReturn => {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
+  const STALE_TIME = 1000 * 60 * 5; // 5 minutes
 
   const defaultLogStartDate = useMemo(() => {
     const date = new Date();
@@ -66,25 +75,48 @@ export const useHabits = (category?: string, showArchived = false): UseHabitsRet
     return new Date().toISOString().split('T')[0]; // Today
   }, []);
 
-  // Step 1: Fetch habits
-  const habitsQueryKey: QueryKey = [HABITS_QUERY_KEY, category, showArchived];
+  // Prepare initial data for underlying queries if initialHabitsData is provided
+  const initialRawHabits = useMemo(() => {
+    if (!initialHabitsData) return undefined;
+    return {
+      habits: initialHabitsData.habits.map(h => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { logs, ...rawHabit } = h; // Strip logs from the habit object for rawHabitsQuery
+        return rawHabit;
+      }),
+      total: initialHabitsData.total,
+    };
+  }, [initialHabitsData]);
+
+  const initialBatchLogs = useMemo(() => {
+    if (!initialHabitsData) return undefined;
+    return initialHabitsData.habits.reduce((acc, h) => {
+      acc[h.id] = h.logs;
+      return acc;
+    }, {} as Record<string, HabitLog[]>);
+  }, [initialHabitsData]);
+
+
+  // Step 1: Fetch habits (raw habits, logs are fetched separately)
+  const habitsQueryKey: QueryKey = [HABITS_QUERY_KEY, category, showArchived]; 
   const rawHabitsQuery = useQuery<HabitsResponse | null, Error, HabitsResponse | null, QueryKey>(
     habitsQueryKey,
-    () => habitsService.getHabits(category, true, showArchived),
+    () => habitsService.getHabits(category, true, showArchived), 
     {
-      enabled: isAuthenticated,
+      enabled: isAuthenticated && !initialHabitsData, // Disable if initialData is provided and fresh
+      initialData: initialRawHabits, // Use prepared initial raw habits
+      staleTime: STALE_TIME,
     }
   );
 
-  // Step 2: Fetch logs for these habits in batch
   const habitIds = useMemo(
-    () => rawHabitsQuery.data?.habits.map(h => h.id) || [],
-    [rawHabitsQuery.data]
+    () => (initialHabitsData?.habits || rawHabitsQuery.data?.habits || []).map(h => h.id),
+    [initialHabitsData, rawHabitsQuery.data]
   );
 
   const batchHabitLogsQueryKey: QueryKey = [
     BATCH_HABIT_LOGS_KEY,
-    habitIds.join(','), // Create a stable key from habitIds
+    habitIds.join(','),
     defaultLogStartDate,
     defaultLogEndDate,
   ];
@@ -92,71 +124,69 @@ export const useHabits = (category?: string, showArchived = false): UseHabitsRet
   const batchHabitLogsQuery = useQuery<Record<string, HabitLog[]>, Error>(
     batchHabitLogsQueryKey,
     async () => {
-      if (!habitIds.length) {
-        return {};
-      }
+      if (!habitIds.length) return {};
       const logPromises = habitIds.map(id =>
         habitsService.getHabitLogs(id, defaultLogStartDate, defaultLogEndDate)
       );
       const results = await Promise.all(logPromises);
       const logsMap: Record<string, HabitLog[]> = {};
       results.forEach((response, index) => {
-        if (response) {
-          logsMap[habitIds[index]] = response.logs;
-        } else {
-          logsMap[habitIds[index]] = [];
-        }
+        logsMap[habitIds[index]] = response?.logs || [];
       });
       return logsMap;
     },
     {
-      enabled: isAuthenticated && rawHabitsQuery.isSuccess && habitIds.length > 0,
+      enabled: isAuthenticated && habitIds.length > 0 && !initialHabitsData, // Disable if initialData is provided and fresh
+      initialData: initialBatchLogs, // Use prepared initial batch logs
+      staleTime: STALE_TIME,
     }
   );
-
+  
   // Step 3: Combine habits and their logs
   const habitsWithLogsQuery = useMemo((): UseQueryResult<HabitsWithLogsResponse | null, Error> => {
-    const { data: habitsData, isLoading: habitsLoading, error: habitsError, ...restHabitsQuery } = rawHabitsQuery;
-    const { data: logsData, isLoading: logsLoading, error: logsError, ...restLogsQuery } = batchHabitLogsQuery;
+    if (initialHabitsData && queryClient.getQueryState(habitsQueryKey)?.dataUpdatedAt && Date.now() - (queryClient.getQueryState(habitsQueryKey)?.dataUpdatedAt || 0) < STALE_TIME && queryClient.getQueryState(batchHabitLogsQueryKey)?.dataUpdatedAt && Date.now() - (queryClient.getQueryState(batchHabitLogsQueryKey)?.dataUpdatedAt || 0) < STALE_TIME) {
+      return {
+        data: initialHabitsData,
+        isLoading: false,
+        isSuccess: true,
+        isError: false,
+        error: null,
+        // ... other necessary UseQueryResult properties
+      } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
+    }
 
-    if (habitsLoading) {
-      return { isLoading: true, data: null, error: null, ...restHabitsQuery, ...restLogsQuery } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
+    // Fallback to fetching if initialData is not present or stale
+    const { data: habitsData, isLoading: habitsLoading, error: habitsError, ...restRawHabits } = rawHabitsQuery;
+    const { data: logsData, isLoading: logsLoading, error: logsError, ...restBatchLogs } = batchHabitLogsQuery;
+
+    if (habitsLoading || (habitIds.length > 0 && logsLoading && !initialBatchLogs)) { // Consider initialBatchLogs for loading state
+      return { isLoading: true, data: null, error: null, ...restRawHabits, ...restBatchLogs } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
     }
     if (habitsError) {
-      return { isLoading: false, data: null, error: habitsError, ...restHabitsQuery, ...restLogsQuery } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
+      return { isLoading: false, data: null, error: habitsError, ...restRawHabits, ...restBatchLogs } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
+    }
+     if (logsError && habitIds.length > 0 && !initialBatchLogs) { // Consider logsError only if logs were meant to be fetched
+      return { isLoading: false, data: null, error: logsError, ...restRawHabits, ...restBatchLogs } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
     }
     if (!habitsData) {
-      return { isLoading: false, data: null, error: null, ...restHabitsQuery, ...restLogsQuery } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
+      return { isLoading: false, data: null, error: null, ...restRawHabits, ...restBatchLogs } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
     }
 
-    // If logs are still loading but habits are fetched, we can show habits without logs yet, or show loading.
-    // For simplicity here, let's consider it loading if logs are not ready for combining.
-    if (habitIds.length > 0 && logsLoading && !logsData) {
-       return { isLoading: true, data: null, error: null, ...restHabitsQuery, ...restLogsQuery,  refetch: rawHabitsQuery.refetch } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
-    }
-    if (logsError) {
-       return { isLoading: false, data: null, error: logsError, ...restHabitsQuery, ...restLogsQuery, refetch: rawHabitsQuery.refetch } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
-    }
-
+    const actualLogsData = initialBatchLogs && !logsError ? initialBatchLogs : logsData;
 
     const combinedHabits: HabitWithLogs[] = habitsData.habits.map(habit => ({
       ...habit,
-      logs: logsData?.[habit.id] || [],
+      logs: actualLogsData?.[habit.id] || [],
     }));
 
     return {
       data: { habits: combinedHabits, total: habitsData.total },
-      isLoading: false, // Becomes false once habits are loaded and logs attempt has settled (even if logsData is empty)
+      isLoading: false,
       error: null,
-      ...restHabitsQuery, // Spread other properties like status, refetch, etc.
-       // Manually merging other relevant properties from batchHabitLogsQuery if needed,
-      // but typically the primary query's (rawHabitsQuery) properties are dominant.
-      isSuccess: rawHabitsQuery.isSuccess && (habitIds.length === 0 || batchHabitLogsQuery.isSuccess),
-      isFetching: rawHabitsQuery.isFetching || batchHabitLogsQuery.isFetching,
-      // Add other relevant properties from rawHabitsQuery or batchHabitLogsQuery as needed
+      isSuccess: true, // Assuming success if we reach here
+      ...restRawHabits, // Spread other properties like status, refetch, etc.
     } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
-  }, [rawHabitsQuery, batchHabitLogsQuery, habitIds]);
-
+  }, [initialHabitsData, rawHabitsQuery, batchHabitLogsQuery, habitIds, queryClient, habitsQueryKey, batchHabitLogsQueryKey, initialBatchLogs]);
 
   // Fetch habit statistics
   const statsQueryKey: QueryKey = [HABIT_STATS_QUERY_KEY];
@@ -305,7 +335,7 @@ export const useHabits = (category?: string, showArchived = false): UseHabitsRet
   // useQuery handles fetching when the component mounts and when `enabled` status changes.
 
   return {
-    habitsQuery,
+    habitsWithLogsQuery, 
     statsQuery,
     createHabitMutation,
     updateHabitMutation,

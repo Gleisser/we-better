@@ -6,6 +6,7 @@ import {
   QueryKey,
   UseQueryResult,
   UseMutationResult,
+  InitialDataFunction,
 } from '@tanstack/react-query';
 import { useAuth } from './useAuth';
 import * as affirmationsService from '@/core/services/affirmationsService';
@@ -19,12 +20,13 @@ import {
   AffirmationIntensity,
   ReminderFrequency,
   AffirmationLogsResponse,
+  AffirmationLogsResponse,
 } from '@/core/services/affirmationsService';
 
 // Query Keys
-const PERSONAL_AFFIRMATION_KEY = 'personalAffirmation';
-const AFFIRMATION_REMINDER_SETTINGS_KEY = 'affirmationReminderSettings';
-const AFFIRMATION_STREAK_KEY = 'affirmationStreak';
+export const PERSONAL_AFFIRMATION_KEY = 'personalAffirmation'; // Exported
+export const AFFIRMATION_REMINDER_SETTINGS_KEY = 'affirmationReminderSettings';
+export const AFFIRMATION_STREAK_KEY = 'affirmationStreak';
 const AFFIRMATION_STATS_KEY = 'affirmationStats';
 const AFFIRMATION_LOGS_KEY = 'affirmationLogs';
 const AFFIRMATION_TODAY_STATUS_KEY = 'affirmationTodayStatus';
@@ -101,15 +103,24 @@ export interface UseAffirmationsReturn {
   refetchAll: () => Promise<void>;
 }
 
-export const useAffirmations = (): UseAffirmationsReturn => {
+interface UseAffirmationsProps {
+  initialPersonalAffirmation?: PersonalAffirmation | null | InitialDataFunction<PersonalAffirmation | null>;
+}
+
+export const useAffirmations = ({ initialPersonalAffirmation }: UseAffirmationsProps = {}): UseAffirmationsReturn => {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
+  const STALE_TIME = 1000 * 60 * 5; // 5 minutes
 
   // --- Queries ---
   const personalAffirmationQuery = useQuery<PersonalAffirmation | null, Error, PersonalAffirmation | null, QueryKey>(
     [PERSONAL_AFFIRMATION_KEY],
     affirmationsService.fetchPersonalAffirmation,
-    { enabled: isAuthenticated }
+    { 
+      enabled: isAuthenticated,
+      initialData: initialPersonalAffirmation,
+      staleTime: STALE_TIME,
+    }
   );
 
   const reminderSettingsQuery = useQuery<AffirmationReminderSettings | null, Error, AffirmationReminderSettings | null, QueryKey>(

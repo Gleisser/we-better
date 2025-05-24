@@ -6,6 +6,7 @@ import {
   QueryKey,
   UseQueryResult,
   UseMutationResult,
+  InitialDataFunction,
 } from '@tanstack/react-query';
 import { useAuth } from './useAuth'; // Assuming useAuth is in the same directory or appropriately aliased
 import * as goalsService from '@/core/services/goalsService';
@@ -21,9 +22,9 @@ import {
 } from '@/core/services/goalsService';
 
 // Query Keys
-const GOALS_QUERY_KEY = 'goals';
-const GOAL_DETAILS_QUERY_KEY = 'goalDetails'; // For individual goal fetching if needed
-const GOAL_STATS_QUERY_KEY = 'goalStats';
+export const GOALS_QUERY_KEY = 'goals'; // Exported
+export const GOAL_DETAILS_QUERY_KEY = 'goalDetails'; // For individual goal fetching if needed
+export const GOAL_STATS_QUERY_KEY = 'goalStats';
 const GOAL_REVIEW_SETTINGS_QUERY_KEY = 'goalReviewSettings';
 
 // Type for goal creation variables
@@ -86,12 +87,20 @@ export interface UseGoalsReturn {
   refetchAllGoals: (category?: GoalCategory, includeMilestones?: boolean) => Promise<void>;
 }
 
-export const useGoals = (
-  initialCategory?: GoalCategory,
-  initialIncludeMilestones = true
-): UseGoalsReturn => {
+interface UseGoalsProps {
+  initialGoals?: GoalsResponse | null | InitialDataFunction<GoalsResponse | null>;
+  initialCategory?: GoalCategory;
+  initialIncludeMilestones?: boolean;
+}
+
+export const useGoals = ({
+  initialGoals,
+  initialCategory,
+  initialIncludeMilestones = true,
+}: UseGoalsProps = {}): UseGoalsReturn => {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
+  const STALE_TIME = 1000 * 60 * 5; // 5 minutes
 
   // --- Queries ---
 
@@ -101,6 +110,8 @@ export const useGoals = (
     () => goalsService.fetchGoals(initialCategory, initialIncludeMilestones),
     {
       enabled: isAuthenticated,
+      initialData: initialGoals,
+      staleTime: STALE_TIME,
       select: (data) => {
         if (!data) return null;
         // Ensure milestones array exists
