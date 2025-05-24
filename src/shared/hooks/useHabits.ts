@@ -1,283 +1,347 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAuth } from './useAuth';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryKey,
+  UseQueryResult,
+  UseMutationResult,
+  InitialDataFunction,
+  InitialDataFunction, // Make sure InitialDataFunction is imported
+} from '@tanstack/react-query';
 import * as habitsService from '@/core/services/habitsService';
-import { Habit, HabitStatus, HabitLog, HabitStats } from '@/core/services/habitsService';
+import {
+  Habit,
+  HabitStatus,
+  HabitLog,
+  HabitStats,
+  HabitsResponse,
+  HabitLogsResponse,
+} from '@/core/services/habitsService';
 
+// Query Keys
+export const HABITS_QUERY_KEY = 'habits'; // Exported
+export const HABIT_STATS_QUERY_KEY = 'habitStats';
+export const HABIT_LOGS_QUERY_KEY = 'habitLogs'; // For individual log fetches
+const BATCH_HABIT_LOGS_KEY = 'batchHabitLogs'; // For batch log fetches
+
+// New type for Habit with embedded logs
+export interface HabitWithLogs extends Habit {
+  logs: HabitLog[];
+}
+
+export interface HabitsWithLogsResponse {
+  habits: HabitWithLogs[];
+  total: number;
+}
 interface UseHabitsReturn {
-  habits: Habit[];
-  isLoading: boolean;
-  error: Error | null;
-  stats: HabitStats | null;
-  fetchHabits: (category?: string, showArchived?: boolean) => Promise<void>;
-  createHabit: (name: string, category: string, startDate?: string) => Promise<Habit | null>;
-  updateHabit: (id: string, data: Partial<Habit>) => Promise<Habit | null>;
-  archiveHabit: (id: string) => Promise<boolean>;
-  logHabitCompletion: (
-    habitId: string,
-    date: string,
-    status: HabitStatus,
-    notes?: string
-  ) => Promise<HabitLog | null>;
+  habitsWithLogsQuery: UseQueryResult<HabitsWithLogsResponse | null, Error>; 
+  statsQuery: UseQueryResult<HabitStats | null, Error>;
+  createHabitMutation: UseMutationResult<Habit | null, Error, { name: string; category: string; startDate?: string }>;
+  updateHabitMutation: UseMutationResult<Habit | null, Error, { id: string; data: Partial<Habit> }>;
+  archiveHabitMutation: UseMutationResult<boolean, Error, string>;
+  logHabitCompletionMutation: UseMutationResult<
+    HabitLog | null,
+    Error,
+    { habitId: string; date: string; status: HabitStatus; notes?: string }
+  >;
+  deleteHabitLogMutation: UseMutationResult<boolean, Error, string>;
   getHabitLogs: (
     habitId: string,
     startDate?: string,
     endDate?: string
-  ) => Promise<habitsService.HabitLogsResponse | null>;
-  deleteHabitLog: (logId: string) => Promise<boolean>;
-  refreshStats: () => Promise<void>;
+  ) => Promise<HabitLogsResponse | null>;
 }
 
-export const useHabits = (): UseHabitsReturn => {
+interface UseHabitsProps {
+  initialHabitsData?: HabitsWithLogsResponse | null | InitialDataFunction<HabitsWithLogsResponse | null>; // Changed prop name and type
+  category?: string;
+  showArchived?: boolean;
+}
+
+export const useHabits = ({ initialHabitsData, category, showArchived = false }: UseHabitsProps = {}): UseHabitsReturn => {
   const { isAuthenticated } = useAuth();
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [stats, setStats] = useState<HabitStats | null>(null);
+  const queryClient = useQueryClient();
+  const STALE_TIME = 1000 * 60 * 5; // 5 minutes
 
-  // Fetch habits from the API
-  const fetchHabits = useCallback(
-    async (category?: string, showArchived = false) => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
-        return;
-      }
+  const defaultLogStartDate = useMemo(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30); // Last 30 days
+    return date.toISOString().split('T')[0];
+  }, []);
 
-      try {
-        setIsLoading(true);
-        setError(null);
+  const defaultLogEndDate = useMemo(() => {
+    return new Date().toISOString().split('T')[0]; // Today
+  }, []);
 
-        const response = await habitsService.getHabits(category, true, showArchived);
+  // Prepare initial data for underlying queries if initialHabitsData is provided
+  const initialRawHabits = useMemo(() => {
+    if (!initialHabitsData) return undefined;
+    return {
+      habits: initialHabitsData.habits.map(h => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { logs, ...rawHabit } = h; // Strip logs from the habit object for rawHabitsQuery
+        return rawHabit;
+      }),
+      total: initialHabitsData.total,
+    };
+  }, [initialHabitsData]);
 
-        if (response) {
-          setHabits(response.habits);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to fetch habits'));
-        console.error('Error fetching habits:', err);
-      } finally {
-        setIsLoading(false);
-      }
+  const initialBatchLogs = useMemo(() => {
+    if (!initialHabitsData) return undefined;
+    return initialHabitsData.habits.reduce((acc, h) => {
+      acc[h.id] = h.logs;
+      return acc;
+    }, {} as Record<string, HabitLog[]>);
+  }, [initialHabitsData]);
+
+
+  // Step 1: Fetch habits (raw habits, logs are fetched separately)
+  const habitsQueryKey: QueryKey = [HABITS_QUERY_KEY, category, showArchived]; 
+  const rawHabitsQuery = useQuery<HabitsResponse | null, Error, HabitsResponse | null, QueryKey>(
+    habitsQueryKey,
+    () => habitsService.getHabits(category, true, showArchived), 
+    {
+      enabled: isAuthenticated && !initialHabitsData, // Disable if initialData is provided and fresh
+      initialData: initialRawHabits, // Use prepared initial raw habits
+      staleTime: STALE_TIME,
+    }
+  );
+
+  const habitIds = useMemo(
+    () => (initialHabitsData?.habits || rawHabitsQuery.data?.habits || []).map(h => h.id),
+    [initialHabitsData, rawHabitsQuery.data]
+  );
+
+  const batchHabitLogsQueryKey: QueryKey = [
+    BATCH_HABIT_LOGS_KEY,
+    habitIds.join(','),
+    defaultLogStartDate,
+    defaultLogEndDate,
+  ];
+
+  const batchHabitLogsQuery = useQuery<Record<string, HabitLog[]>, Error>(
+    batchHabitLogsQueryKey,
+    async () => {
+      if (!habitIds.length) return {};
+      const logPromises = habitIds.map(id =>
+        habitsService.getHabitLogs(id, defaultLogStartDate, defaultLogEndDate)
+      );
+      const results = await Promise.all(logPromises);
+      const logsMap: Record<string, HabitLog[]> = {};
+      results.forEach((response, index) => {
+        logsMap[habitIds[index]] = response?.logs || [];
+      });
+      return logsMap;
     },
-    [isAuthenticated]
+    {
+      enabled: isAuthenticated && habitIds.length > 0 && !initialHabitsData, // Disable if initialData is provided and fresh
+      initialData: initialBatchLogs, // Use prepared initial batch logs
+      staleTime: STALE_TIME,
+    }
+  );
+  
+  // Step 3: Combine habits and their logs
+  const habitsWithLogsQuery = useMemo((): UseQueryResult<HabitsWithLogsResponse | null, Error> => {
+    if (initialHabitsData && queryClient.getQueryState(habitsQueryKey)?.dataUpdatedAt && Date.now() - (queryClient.getQueryState(habitsQueryKey)?.dataUpdatedAt || 0) < STALE_TIME && queryClient.getQueryState(batchHabitLogsQueryKey)?.dataUpdatedAt && Date.now() - (queryClient.getQueryState(batchHabitLogsQueryKey)?.dataUpdatedAt || 0) < STALE_TIME) {
+      return {
+        data: initialHabitsData,
+        isLoading: false,
+        isSuccess: true,
+        isError: false,
+        error: null,
+        // ... other necessary UseQueryResult properties
+      } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
+    }
+
+    // Fallback to fetching if initialData is not present or stale
+    const { data: habitsData, isLoading: habitsLoading, error: habitsError, ...restRawHabits } = rawHabitsQuery;
+    const { data: logsData, isLoading: logsLoading, error: logsError, ...restBatchLogs } = batchHabitLogsQuery;
+
+    if (habitsLoading || (habitIds.length > 0 && logsLoading && !initialBatchLogs)) { // Consider initialBatchLogs for loading state
+      return { isLoading: true, data: null, error: null, ...restRawHabits, ...restBatchLogs } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
+    }
+    if (habitsError) {
+      return { isLoading: false, data: null, error: habitsError, ...restRawHabits, ...restBatchLogs } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
+    }
+     if (logsError && habitIds.length > 0 && !initialBatchLogs) { // Consider logsError only if logs were meant to be fetched
+      return { isLoading: false, data: null, error: logsError, ...restRawHabits, ...restBatchLogs } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
+    }
+    if (!habitsData) {
+      return { isLoading: false, data: null, error: null, ...restRawHabits, ...restBatchLogs } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
+    }
+
+    const actualLogsData = initialBatchLogs && !logsError ? initialBatchLogs : logsData;
+
+    const combinedHabits: HabitWithLogs[] = habitsData.habits.map(habit => ({
+      ...habit,
+      logs: actualLogsData?.[habit.id] || [],
+    }));
+
+    return {
+      data: { habits: combinedHabits, total: habitsData.total },
+      isLoading: false,
+      error: null,
+      isSuccess: true, // Assuming success if we reach here
+      ...restRawHabits, // Spread other properties like status, refetch, etc.
+    } as UseQueryResult<HabitsWithLogsResponse | null, Error>;
+  }, [initialHabitsData, rawHabitsQuery, batchHabitLogsQuery, habitIds, queryClient, habitsQueryKey, batchHabitLogsQueryKey, initialBatchLogs]);
+
+  // Fetch habit statistics
+  const statsQueryKey: QueryKey = [HABIT_STATS_QUERY_KEY];
+  const statsQuery = useQuery<HabitStats | null, Error, HabitStats | null, QueryKey>(
+    statsQueryKey,
+    habitsService.getHabitStats,
+    {
+      enabled: isAuthenticated,
+    }
   );
 
   // Create a new habit
-  const createHabit = useCallback(
-    async (name: string, category: string, startDate?: string): Promise<Habit | null> => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
-        return null;
-      }
-
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const newHabit = await habitsService.createHabit(name, category, startDate);
-
-        if (newHabit) {
-          setHabits(prevHabits => [...prevHabits, newHabit]);
-          return newHabit;
-        }
-        return null;
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to create habit'));
-        console.error('Error creating habit:', err);
-        return null;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [isAuthenticated]
+  const createHabitMutation = useMutation<
+    Habit | null,
+    Error,
+    { name: string; category: string; startDate?: string }
+  >(
+    async ({ name, category: cat, startDate }) => habitsService.createHabit(name, cat, startDate),
+    {
+      enabled: isAuthenticated,
+      onSuccess: () => {
+        queryClient.invalidateQueries(habitsQueryKey);
+        queryClient.invalidateQueries(statsQueryKey);
+      },
+    }
   );
 
   // Update an existing habit
-  const updateHabit = useCallback(
-    async (id: string, data: Partial<Habit>): Promise<Habit | null> => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
-        return null;
-      }
-
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const updatedHabit = await habitsService.updateHabit(id, data);
-
+  const updateHabitMutation = useMutation<
+    Habit | null,
+    Error,
+    { id: string; data: Partial<Habit> }
+  >(
+    async ({ id, data }) => habitsService.updateHabit(id, data),
+    {
+      enabled: isAuthenticated,
+      onSuccess: (updatedHabit, variables) => {
+        queryClient.invalidateQueries(habitsQueryKey);
+        queryClient.invalidateQueries(statsQueryKey);
+        // Optionally, update the specific habit in the cache
         if (updatedHabit) {
-          setHabits(prevHabits =>
-            prevHabits.map(habit => (habit.id === id ? updatedHabit : habit))
-          );
-          return updatedHabit;
+          queryClient.setQueryData<HabitsResponse | null>(habitsQueryKey, oldData => {
+            if (!oldData) return null;
+            return {
+              ...oldData,
+              habits: oldData.habits.map(h => (h.id === variables.id ? updatedHabit : h)),
+            };
+          });
         }
-        return null;
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to update habit'));
-        console.error('Error updating habit:', err);
-        return null;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [isAuthenticated]
+      },
+    }
   );
 
-  // Archive a habit (soft delete)
-  const archiveHabit = useCallback(
-    async (id: string): Promise<boolean> => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
-        return false;
-      }
-
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const success = await habitsService.archiveHabit(id);
-
+  // Archive a habit
+  const archiveHabitMutation = useMutation<boolean, Error, string>(
+    async (id) => habitsService.archiveHabit(id),
+    {
+      enabled: isAuthenticated,
+      onSuccess: (success, id) => {
         if (success) {
-          // Remove habit from local state or mark as archived
-          setHabits(prevHabits => prevHabits.filter(habit => habit.id !== id));
-          return true;
+          queryClient.invalidateQueries(habitsQueryKey);
+          queryClient.invalidateQueries(statsQueryKey);
+          // Optimistically remove from cache or refetch
+          queryClient.setQueryData<HabitsResponse | null>(habitsQueryKey, oldData => {
+            if (!oldData) return null;
+            return {
+              ...oldData,
+              habits: oldData.habits.filter(h => h.id !== id),
+            };
+          });
         }
-        return false;
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to archive habit'));
-        console.error('Error archiving habit:', err);
-        return false;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [isAuthenticated]
+      },
+    }
   );
 
-  // Log a habit completion or update an existing log
-  const logHabitCompletion = useCallback(
-    async (
-      habitId: string,
-      date: string,
-      status: HabitStatus,
-      notes?: string
-    ): Promise<HabitLog | null> => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
-        return null;
-      }
-
-      try {
-        setError(null);
-
-        const log = await habitsService.logHabitStatus(habitId, date, status, notes);
-
+  // Log a habit completion
+  const logHabitCompletionMutation = useMutation<
+    HabitLog | null,
+    Error,
+    { habitId: string; date: string; status: HabitStatus; notes?: string }
+  >(
+    async ({ habitId, date, status, notes }) =>
+      habitsService.logHabitStatus(habitId, date, status, notes),
+    {
+      enabled: isAuthenticated,
+      onSuccess: (log, variables) => {
         if (log) {
-          // After logging, fetch the updated habit to get the new streak
-          const updatedHabit = await habitsService.getHabitById(habitId);
-          if (updatedHabit) {
-            setHabits(prevHabits =>
-              prevHabits.map(habit => (habit.id === habitId ? updatedHabit : habit))
-            );
-          }
-          return log;
+          queryClient.invalidateQueries(habitsQueryKey); // Invalidate all habits as streaks might change
+          queryClient.invalidateQueries(statsQueryKey);
+          queryClient.invalidateQueries([HABIT_LOGS_QUERY_KEY, variables.habitId]);
         }
-        return null;
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to log habit completion'));
-        console.error('Error logging habit completion:', err);
-        return null;
-      }
-    },
-    [isAuthenticated]
+      },
+    }
   );
 
-  // Get logs for a specific habit
+  // Delete a habit log
+  const deleteHabitLogMutation = useMutation<boolean, Error, string>(
+    async (logId) => habitsService.deleteHabitLog(logId),
+    {
+      enabled: isAuthenticated,
+      onSuccess: (success, logId) => {
+        if (success) {
+          // Need to know which habit this log belonged to for invalidation,
+          // or invalidate all logs, or all habits (as streaks could change)
+          queryClient.invalidateQueries([HABIT_LOGS_QUERY_KEY]); // Broad invalidation
+          queryClient.invalidateQueries(habitsQueryKey);
+          queryClient.invalidateQueries(statsQueryKey);
+        }
+      },
+    }
+  );
+
+  // Get logs for a specific habit - uses queryClient.fetchQuery as per recommendation
   const getHabitLogs = useCallback(
     async (
       habitId: string,
       startDate?: string,
       endDate?: string
-    ): Promise<habitsService.HabitLogsResponse | null> => {
+    ): Promise<HabitLogsResponse | null> => {
       if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
+        // Or throw an error, React Query will catch it if this function is used in a queryFn
+        console.error('User not authenticated - getHabitLogs');
         return null;
       }
-
+      const queryKey: QueryKey = [HABIT_LOGS_QUERY_KEY, habitId, startDate, endDate];
       try {
-        setError(null);
-        return await habitsService.getHabitLogs(habitId, startDate, endDate);
+        return await queryClient.fetchQuery(
+          queryKey,
+          () => habitsService.getHabitLogs(habitId, startDate, endDate),
+          {
+            staleTime: 1000 * 60 * 1, // Logs might change, but not as rapidly as habits list
+          }
+        );
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to get habit logs'));
-        console.error('Error getting habit logs:', err);
-        return null;
+        // queryClient.fetchQuery throws, so this catch might not be strictly necessary
+        // unless we want to do specific error handling here before re-throwing or returning null.
+        console.error('Error fetching habit logs via queryClient:', err);
+        throw err; // Re-throw to be caught by component or error boundary
       }
     },
-    [isAuthenticated]
+    [isAuthenticated, queryClient]
   );
 
-  // Delete a habit log
-  const deleteHabitLog = useCallback(
-    async (logId: string): Promise<boolean> => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
-        return false;
-      }
 
-      try {
-        setError(null);
-        return await habitsService.deleteHabitLog(logId);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to delete habit log'));
-        console.error('Error deleting habit log:', err);
-        return false;
-      }
-    },
-    [isAuthenticated]
-  );
-
-  // Refresh habit statistics
-  const refreshStats = useCallback(async (): Promise<void> => {
-    if (!isAuthenticated) {
-      setError(new Error('User not authenticated'));
-      return;
-    }
-
-    try {
-      setError(null);
-      const habitStats = await habitsService.getHabitStats();
-      if (habitStats) {
-        setStats(habitStats);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to fetch habit stats'));
-      console.error('Error fetching habit stats:', err);
-    }
-  }, [isAuthenticated]);
-
-  // Initialize data on component mount or when user auth changes
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchHabits();
-      refreshStats();
-    } else {
-      setHabits([]);
-      setStats(null);
-    }
-  }, [isAuthenticated, fetchHabits, refreshStats]);
+  // The old useEffect for initial data fetching is no longer needed.
+  // useQuery handles fetching when the component mounts and when `enabled` status changes.
 
   return {
-    habits,
-    isLoading,
-    error,
-    stats,
-    fetchHabits,
-    createHabit,
-    updateHabit,
-    archiveHabit,
-    logHabitCompletion,
+    habitsWithLogsQuery, 
+    statsQuery,
+    createHabitMutation,
+    updateHabitMutation,
+    archiveHabitMutation,
+    logHabitCompletionMutation,
+    deleteHabitLogMutation,
     getHabitLogs,
-    deleteHabitLog,
-    refreshStats,
   };
 };
