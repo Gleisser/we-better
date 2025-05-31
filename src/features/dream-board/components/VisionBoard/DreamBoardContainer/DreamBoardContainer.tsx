@@ -7,10 +7,10 @@ import {
   VisionBoardContent,
   Position,
   ToolbarMode,
-} from './types';
-import { ContentItem } from './components/ContentItem';
-import { ContentControls } from './components/ContentControls';
-import { Toolbar } from './components/Toolbar';
+} from '../types';
+import { ContentItem } from '../ContentItem/ContentItem';
+import { ContentControls } from '../ContentControls/ContentControls';
+import { Toolbar } from '../Toolbar/Toolbar';
 import showToast from '@/utils/helpers/toast';
 import styles from './DreamBoardContainer.module.css';
 

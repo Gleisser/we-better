@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { VisionBoardContent, VisionBoardContentType } from '../types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import styles from './ContentControls.module.css';
-import { Milestones } from './Milestones';
+import { Milestones } from '../Milestones/Milestones';
 
 interface ContentControlsProps {
   selectedContent: VisionBoardContent;

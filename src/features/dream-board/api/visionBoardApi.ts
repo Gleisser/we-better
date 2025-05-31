@@ -1,7 +1,7 @@
 import { VisionBoardData } from '../types';
 
 // API base URL - using import.meta.env for Vite
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_USER_API_BASE_URL || 'http://localhost:3000/api';
 
 /**
  * Get the latest vision board for the current user
@@ -11,9 +11,9 @@ export const getLatestVisionBoardData = async (): Promise<VisionBoardData | null
     const response = await fetch(`${API_BASE_URL}/vision-board`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -40,9 +40,9 @@ export const getVisionBoardById = async (id: string): Promise<VisionBoardData | 
     const response = await fetch(`${API_BASE_URL}/vision-board/${id}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -67,9 +67,9 @@ export const getVisionBoardHistory = async (limit = 10, offset = 0): Promise<Vis
       {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        credentials: 'include'
+        credentials: 'include',
       }
     );
 
@@ -92,19 +92,19 @@ export const getVisionBoardHistory = async (limit = 10, offset = 0): Promise<Vis
  */
 export const saveVisionBoardData = async (data: VisionBoardData): Promise<boolean> => {
   try {
-    const url = data.id 
+    const url = data.id
       ? `${API_BASE_URL}/vision-board/${data.id}`
       : `${API_BASE_URL}/vision-board`;
-      
+
     const method = data.id ? 'PUT' : 'POST';
-    
+
     const response = await fetch(url, {
       method,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {
@@ -126,9 +126,9 @@ export const deleteVisionBoard = async (id: string): Promise<boolean> => {
     const response = await fetch(`${API_BASE_URL}/vision-board/${id}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -148,15 +148,15 @@ export const deleteVisionBoard = async (id: string): Promise<boolean> => {
 export const getAllVisionBoards = async (): Promise<VisionBoardData[]> => {
   try {
     const response = await fetch('/api/vision-board/all');
-    
+
     if (!response.ok) {
       throw new Error(`Failed to fetch vision boards: ${response.statusText}`);
     }
-    
+
     const data = await response.json();
     return data;
   } catch (error) {
     console.error('Error fetching all vision boards:', error);
     return [];
   }
-}; 
+};

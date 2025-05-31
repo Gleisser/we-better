@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VisionBoardContent } from '../types';
+import { VisionBoardContent } from '../../../../vision-board/types';
 import styles from './Milestones.module.css';
 
 interface Milestone {

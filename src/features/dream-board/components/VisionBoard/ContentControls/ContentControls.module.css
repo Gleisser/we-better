@@ -10,7 +10,11 @@
   display: flex;
   flex-direction: column;
   z-index: 1000;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -147,7 +151,9 @@
   margin-bottom: 6px;
 }
 
-.input, .select, .textarea {
+.input,
+.select,
+.textarea {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #e2e8f0;
@@ -155,10 +161,14 @@
   font-size: 14px;
   color: #1e293b;
   background-color: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
-.input:focus, .select:focus, .textarea:focus {
+.input:focus,
+.select:focus,
+.textarea:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -307,7 +317,9 @@
 
 .progressBar {
   height: 100%;
-  transition: width 0.3s ease, background-color 0.3s ease;
+  transition:
+    width 0.3s ease,
+    background-color 0.3s ease;
 }
 
 /* Image Specific styles */
@@ -407,7 +419,9 @@
   background-color: white;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
   animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   transform-origin: center;
 }
@@ -478,8 +492,12 @@
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Responsive adjustments */
@@ -538,4 +556,4 @@
 
 .select option {
   padding: 8px;
-} 
+}

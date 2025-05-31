@@ -1,10 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { 
-  VisionBoardContent, 
-  VisionBoardContentType,
-  VisionBoardData,
-} from '../types';
-import { LifeCategory } from '../../life-wheel/life-wheel/types';
+import { VisionBoardContent, VisionBoardContentType, VisionBoardData } from '../types';
+import { LifeCategory } from '@/features/life-wheel/types';
 
 /**
  * Creates a new Vision Board with default content based on Life Wheel categories
@@ -15,32 +11,32 @@ export const createNewVisionBoard = (
 ): VisionBoardData => {
   const sortedCategories = [...lifeWheelCategories].sort((a, b) => a.value - b.value);
   const now = new Date();
-  
+
   // Create default content (one text item per category)
   const content: VisionBoardContent[] = sortedCategories.map((category, index) => {
     const gridSize = Math.ceil(Math.sqrt(sortedCategories.length));
     const row = Math.floor(index / gridSize);
     const col = index % gridSize;
-    
+
     // Calculate position based on grid layout
-    const x = 100 + (col * 300);
-    const y = 100 + (row * 300);
-    
+    const x = 100 + col * 300;
+    const y = 100 + row * 300;
+
     return createTextContent(
       category.id,
       `My ${category.name} Goals`,
       {
         x,
         y,
-        z: 0
+        z: 0,
       },
       {
         width: 250,
-        height: 100
+        height: 100,
       }
     );
   });
-  
+
   return {
     id: uuidv4(),
     userId,
@@ -48,7 +44,7 @@ export const createNewVisionBoard = (
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
     categories: lifeWheelCategories.map(category => category.id),
-    content
+    content,
   };
 };
 
@@ -81,7 +77,7 @@ export const createTextContent = (
   categoryId: string,
   text: string,
   position: { x: number; y: number; z: number },
-  size: { width: number; height: number },
+  size: { width: number; height: number }
 ): VisionBoardContent => {
   return {
     id: uuidv4(),
@@ -106,7 +102,6 @@ export const createAIGeneratedContent = (
   position: { x: number; y: number; z: number },
   size: { width: number; height: number }
 ): VisionBoardContent => {
-  
   return {
     id: uuidv4(),
     type: VisionBoardContentType.AI_GENERATED,
@@ -116,7 +111,7 @@ export const createAIGeneratedContent = (
     alt,
     position,
     size,
-    rotation: 0
+    rotation: 0,
   };
 };
 
@@ -132,25 +127,25 @@ export const calculateSuggestedLayout = (
   const itemsPerRow = Math.ceil(Math.sqrt(content.length));
   const itemWidth = Math.min(300, canvasWidth / itemsPerRow - 40);
   const itemHeight = Math.min(300, canvasHeight / itemsPerRow - 40);
-  
+
   return content.map((item, index) => {
     const row = Math.floor(index / itemsPerRow);
     const col = index % itemsPerRow;
-    
+
     const x = 20 + col * (itemWidth + 40) + itemWidth / 2;
     const y = 20 + row * (itemHeight + 40) + itemHeight / 2;
-    
+
     return {
       ...item,
       position: {
         ...item.position,
         x,
-        y
+        y,
       },
       size: {
         width: itemWidth,
-        height: itemHeight
-      }
+        height: itemHeight,
+      },
     };
   });
 };
@@ -164,4 +159,4 @@ export const filterContentByCategory = (
 ): VisionBoardContent[] => {
   if (!categoryId) return content;
   return content.filter(item => item.categoryId === categoryId);
-}; 
+};

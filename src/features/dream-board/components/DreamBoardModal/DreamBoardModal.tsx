@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { DreamBoardContainer } from '@/features/vision-board/DreamBoardContainer';
+import { DreamBoardContainer } from '@/features/dream-board/components/VisionBoard/DreamBoardContainer';
 import styles from './DreamBoardModal.module.css';
-import { VisionBoardData, VisionBoardProps } from '@/features/vision-board/types';
+import {
+  VisionBoardData,
+  VisionBoardProps,
+} from '@/features/dream-board/components/VisionBoard/types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import { Dream } from '../../types';
 

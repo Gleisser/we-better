@@ -51,7 +51,7 @@
 }
 
 .toolbarButton.active {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   font-weight: 500;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -122,7 +122,7 @@
 }
 
 .completeButton::after {
-  content: "";
+  content: '';
   position: absolute;
   top: -50%;
   left: -50%;
@@ -187,7 +187,7 @@
     padding: 8px;
     gap: 8px;
   }
-  
+
   .toolbarSection {
     flex-wrap: wrap;
     justify-content: center;
@@ -196,11 +196,11 @@
     border-right: none;
     border-bottom: 1px solid #444;
   }
-  
+
   .toolbarSection:last-child {
     border-bottom: none;
   }
-  
+
   .buttonLabel {
     font-size: 10px;
   }
@@ -211,11 +211,11 @@
     min-width: 60px;
     padding: 6px 8px;
   }
-  
+
   .buttonIcon {
     font-size: 18px;
   }
-  
+
   .buttonLabel {
     font-size: 10px;
   }
@@ -233,4 +233,4 @@
 .toolbarButton:disabled:hover {
   transform: none;
   background-color: #e5e7eb;
-} 
+}

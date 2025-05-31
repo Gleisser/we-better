@@ -8,10 +8,10 @@ import {
   Position,
   ToolbarMode,
 } from './types';
-import { ContentItem } from './components/ContentItem';
-import { ContentControls } from './components/ContentControls';
-import { Toolbar } from './components/Toolbar';
-import { IntroScreen } from './components/IntroScreen';
+import { ContentItem } from './ContentItem/ContentItem';
+import { ContentControls } from './ContentControls/ContentControls';
+import { Toolbar } from './Toolbar/Toolbar';
+import { IntroScreen } from './IntroScreen/IntroScreen';
 import showToast from '@/utils/helpers/toast';
 import styles from './VisionBoard.module.css';
 
