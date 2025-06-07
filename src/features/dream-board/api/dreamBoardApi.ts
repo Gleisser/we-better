@@ -1,31 +1,95 @@
 import { DreamBoardData } from '../types';
+import { supabase } from '@/core/services/supabaseClient';
 
-// API base URL - using import.meta.env for Vite
-const API_BASE_URL = import.meta.env.VITE_USER_API_BASE_URL || 'http://localhost:3000/api';
+// Define the API URL
+const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/dream-board`;
+
+/**
+ * Get the auth token from Supabase session or storage
+ */
+const getAuthToken = async (): Promise<string | null> => {
+  try {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token || null;
+  } catch (error) {
+    console.error('Error getting auth token:', error);
+    return null;
+  }
+};
+
+/**
+ * Handle API requests with proper authentication and error handling
+ */
+const apiRequest = async <T>(
+  endpoint: string,
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
+  body?: Record<string, unknown> | DreamBoardData
+): Promise<T | null> => {
+  try {
+    const token = await getAuthToken();
+    if (!token) {
+      throw new Error('Not authenticated');
+    }
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    };
+
+    const config: RequestInit = {
+      method,
+      headers,
+      credentials: 'include',
+    };
+
+    if (body && (method === 'POST' || method === 'PUT')) {
+      config.body = JSON.stringify(body);
+    }
+
+    // Implement exponential backoff for retries
+    const MAX_RETRIES = 3;
+    let retries = 0;
+    let response: Response;
+
+    while (true) {
+      try {
+        response = await fetch(endpoint, config);
+        break;
+      } catch (error) {
+        retries++;
+        if (retries >= MAX_RETRIES) throw error;
+        // Exponential backoff: 1s, 2s, 4s, etc.
+        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, retries - 1)));
+      }
+    }
+
+    if (!response.ok) {
+      // Handle specific error cases
+      if (response.status === 401) {
+        // Trigger auth refresh or redirect to login
+        throw new Error('Authentication expired');
+      }
+      throw new Error(`API request failed: ${response.statusText}`);
+    }
+
+    // For DELETE operations that don't return content
+    if (method === 'DELETE' && response.status === 204) {
+      return { success: true } as unknown as T;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`API ${method} request to ${endpoint} failed:`, error);
+    throw error;
+  }
+};
 
 /**
  * Get the latest dream board for the current user
  */
 export const getLatestDreamBoardData = async (): Promise<DreamBoardData | null> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/dream-board`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        // No dream board found - not an error
-        return null;
-      }
-      throw new Error(`Error fetching dream board: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return await apiRequest<DreamBoardData>(API_URL);
   } catch (error) {
     console.error('Error getting dream board data:', error);
     return null;
@@ -37,20 +101,7 @@ export const getLatestDreamBoardData = async (): Promise<DreamBoardData | null> 
  */
 export const getDreamBoardById = async (id: string): Promise<DreamBoardData | null> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/dream-board/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error fetching dream board: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return await apiRequest<DreamBoardData>(`${API_URL}/${id}`);
   } catch (error) {
     console.error(`Error getting dream board with ID ${id}:`, error);
     return null;
@@ -62,23 +113,10 @@ export const getDreamBoardById = async (id: string): Promise<DreamBoardData | nu
  */
 export const getDreamBoardHistory = async (limit = 10, offset = 0): Promise<DreamBoardData[]> => {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/dream-board/history?limit=${limit}&offset=${offset}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      }
+    const response = await apiRequest<{ entries: DreamBoardData[]; total: number }>(
+      `${API_URL}/history?limit=${limit}&offset=${offset}`
     );
-
-    if (!response.ok) {
-      throw new Error(`Error fetching dream board history: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return response?.entries || [];
   } catch (error) {
     console.error('Error getting dream board history:', error);
     return [];
@@ -92,24 +130,11 @@ export const getDreamBoardHistory = async (limit = 10, offset = 0): Promise<Drea
  */
 export const saveVisionBoardData = async (data: DreamBoardData): Promise<boolean> => {
   try {
-    const url = data.id ? `${API_BASE_URL}/dream-board/${data.id}` : `${API_BASE_URL}/dream-board`;
-
+    const endpoint = data.id ? `${API_URL}/${data.id}` : API_URL;
     const method = data.id ? 'PUT' : 'POST';
 
-    const response = await fetch(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error saving dream board: ${response.statusText}`);
-    }
-
-    return true;
+    const result = await apiRequest<DreamBoardData>(endpoint, method, data);
+    return result !== null;
   } catch (error) {
     console.error('Error saving dream board data:', error);
     return false;
@@ -121,19 +146,8 @@ export const saveVisionBoardData = async (data: DreamBoardData): Promise<boolean
  */
 export const deleteDreamBoard = async (id: string): Promise<boolean> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/dream-board/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error deleting dream board: ${response.statusText}`);
-    }
-
-    return true;
+    const result = await apiRequest<{ success: boolean }>(`${API_URL}/${id}`, 'DELETE');
+    return result?.success || false;
   } catch (error) {
     console.error(`Error deleting dream board with ID ${id}:`, error);
     return false;
@@ -145,14 +159,10 @@ export const deleteDreamBoard = async (id: string): Promise<boolean> => {
  */
 export const getAllDreamBoards = async (): Promise<DreamBoardData[]> => {
   try {
-    const response = await fetch('/api/dream-board/all');
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch dream boards: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data;
+    const response = await apiRequest<{ entries: DreamBoardData[]; total: number }>(
+      `${API_URL}/history?limit=100&offset=0`
+    );
+    return response?.entries || [];
   } catch (error) {
     console.error('Error fetching all dream boards:', error);
     return [];

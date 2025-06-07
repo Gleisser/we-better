@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import styles from './DreamBoardPage.module.css';
-import { Dream, Milestone, Challenge } from './types';
+import {
+  Dream,
+  Milestone,
+  Challenge,
+  DreamBoardData,
+  DreamBoardContent,
+  DreamBoardContentType,
+} from './types';
+import { saveVisionBoardData } from './api/dreamBoardApi';
 import {
   mockCategories,
   mockResources,
@@ -50,6 +58,8 @@ const DreamBoardPage: React.FC = () => {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [activeDream, setActiveDream] = useState<Dream | null>(null);
   const [isDreamBoardModalOpen, setIsDreamBoardModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // New state variables for Dream Categories section
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
@@ -225,10 +235,50 @@ const DreamBoardPage: React.FC = () => {
     setIsDreamBoardModalOpen(false);
   };
 
+  // Convert Dreams to DreamBoardData format for API
+  const convertDreamsToDreamBoardData = (dreams: Dream[]): DreamBoardData => {
+    const categories = [...new Set(dreams.map(dream => dream.category))];
+    const content: DreamBoardContent[] = dreams.map((dream, index) => ({
+      id: dream.id,
+      type: DreamBoardContentType.IMAGE,
+      position: { x: index * 100, y: index * 100 }, // Simple positioning
+      size: { width: 200, height: 150 },
+      rotation: 0,
+      categoryId: dream.category,
+      src: dream.imageUrl,
+      alt: dream.title,
+      caption: dream.description,
+    }));
+
+    return {
+      title: 'My Dream Board',
+      description: 'Vision board created with my dreams and goals',
+      categories,
+      content,
+    };
+  };
+
   // Handle creating a new dream board (after modal submission)
-  const handleCreateDreamBoard = (newDreams: Dream[]): void => {
-    setDreams(newDreams);
-    handleCloseDreamBoardModal();
+  const handleCreateDreamBoard = async (newDreams: Dream[]): Promise<void> => {
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const dreamBoardData = convertDreamsToDreamBoardData(newDreams);
+      const success = await saveVisionBoardData(dreamBoardData);
+
+      if (success) {
+        setDreams(newDreams);
+        handleCloseDreamBoardModal();
+      } else {
+        setSaveError('Failed to save dream board. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error saving dream board:', error);
+      setSaveError('Failed to save dream board. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handle saving a new challenge
@@ -558,6 +608,24 @@ const DreamBoardPage: React.FC = () => {
         onSave={handleCreateDreamBoard}
         categories={DEFAULT_LIFE_CATEGORIES}
       />
+
+      {/* Save Error Notification */}
+      {saveError && (
+        <div className={styles.errorNotification}>
+          <p>{saveError}</p>
+          <button onClick={() => setSaveError(null)}>×</button>
+        </div>
+      )}
+
+      {/* Loading Overlay */}
+      {isSaving && (
+        <div className={styles.loadingOverlay}>
+          <div className={styles.loadingSpinner}>
+            <div className={styles.spinner}></div>
+            <p>Saving your dream board...</p>
+          </div>
+        </div>
+      )}
 
       {/* Milestones Management Popup */}
       {showMilestonesPopup && selectedDream && (
