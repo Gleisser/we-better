@@ -3,7 +3,6 @@ import { LifeCategory } from '@/features/life-wheel/types';
 // Content types
 export enum DreamBoardContentType {
   IMAGE = 'image',
-  AI_GENERATED = 'ai_generated',
 }
 
 // Position interface
@@ -62,7 +61,6 @@ export interface DreamBoardProps {
   error?: string;
   onSave: (data: DreamBoardData) => Promise<boolean>;
   onShare?: (data: DreamBoardData) => void;
-  onComplete?: () => void;
   onDelete?: () => void;
   className?: string;
   readOnly?: boolean;

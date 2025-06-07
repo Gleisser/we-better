@@ -6,11 +6,9 @@ export interface ToolbarProps {
   mode: ToolbarMode;
   onModeChange: (mode: ToolbarMode) => void;
   onAddImage: () => void;
-  onGenerateAI: () => void;
   onAutoArrange: () => void;
   onSave: () => void;
   onShare?: () => void;
-  onComplete?: () => void;
   onDelete?: () => void;
   onFilterByCategory?: (categoryId: string | null) => void;
   categories?: { id: string; name: string; color: string }[];
@@ -23,10 +21,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   mode,
   onModeChange,
   onAddImage,
-  onGenerateAI,
   onAutoArrange,
   onSave,
-  onComplete,
   onDelete,
   onFilterByCategory,
   categories = [],
@@ -86,16 +82,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               )}
             </span>
           </button>
-
-          <button
-            className={`${styles.toolbarButton} ${styles.aiButton}`}
-            onClick={onGenerateAI}
-            title="Generate AI Image"
-          >
-            <span className={styles.buttonIcon}>🤖</span>
-            <span className={styles.buttonLabel}>AI Image</span>
-            <span className={styles.comingSoonBadge}>Coming Soon</span>
-          </button>
         </div>
       )}
 
@@ -145,17 +131,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <span className={styles.buttonIcon}>{isSaving ? '⏳' : '💾'}</span>
           <span className={styles.buttonLabel}>{isSaving ? 'Saving...' : 'Save'}</span>
         </button>
-
-        {onComplete && (
-          <button
-            className={`${styles.toolbarButton} ${styles.completeButton}`}
-            onClick={onComplete}
-            title="Complete & Go to Dashboard"
-          >
-            <span className={styles.buttonIcon}>✅</span>
-            <span className={styles.buttonLabel}>Complete</span>
-          </button>
-        )}
 
         {onDelete && (
           <button

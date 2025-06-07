@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { DreamBoardContent, DreamBoardContentType } from '../types';
+import { DreamBoardContent, DreamBoardContentType } from '../../../types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import styles from './ContentControls.module.css';
 import { Milestones } from '../Milestones/Milestones';
@@ -92,8 +92,6 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   const getAccentColor = (): string => {
     switch (localContent.type) {
       case DreamBoardContentType.IMAGE:
-        return '#10b981'; // Green
-      case DreamBoardContentType.AI_GENERATED:
         return '#8b5cf6'; // Purple
       default:
         return '#3b82f6';
@@ -104,8 +102,6 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
     switch (localContent.type) {
       case DreamBoardContentType.IMAGE:
         return '🖼️';
-      case DreamBoardContentType.AI_GENERATED:
-        return '🤖';
       default:
         return '📌';
     }
@@ -115,8 +111,6 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
     switch (localContent.type) {
       case DreamBoardContentType.IMAGE:
         return 'Image';
-      case DreamBoardContentType.AI_GENERATED:
-        return 'AI Image';
       default:
         return 'Item';
     }
@@ -422,19 +416,8 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   const StyleTab = (): JSX.Element => {
     switch (localContent.type) {
       case DreamBoardContentType.IMAGE:
-      case DreamBoardContentType.AI_GENERATED:
         return (
           <div className={styles.tabContent}>
-            {localContent.type === DreamBoardContentType.AI_GENERATED && (
-              <InputField<string>
-                label="AI Prompt"
-                value={localContent.prompt || ''}
-                onChange={value => handleChange({ prompt: value })}
-                type="textarea"
-                placeholder="AI generation prompt..."
-              />
-            )}
-
             <div className={styles.controlGroup}>
               <label className={styles.controlLabel}>Category</label>
               <div className={styles.categoryDropdown}>

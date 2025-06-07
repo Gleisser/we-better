@@ -79,7 +79,6 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
   error,
   onSave,
   onShare,
-  onComplete,
   className = '',
   readOnly = false,
 }) => {
@@ -220,26 +219,6 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
     }));
     setSelectedContentId(null);
     setShowControls(false);
-  };
-
-  // Handle save and complete - first save the board, then call onComplete callback
-  const handleComplete = async (): Promise<void> => {
-    // First save the current state
-    const saved = await handleSave();
-
-    if (saved) {
-      showToast.success('Dream board completed!');
-
-      // If the save was successful and we have a completion callback, call it
-      if (onComplete) {
-        // Add a small delay to show the success message
-        setTimeout(() => {
-          onComplete();
-        }, 1000);
-      }
-    } else {
-      showToast.error('Please save your dream board before completing');
-    }
   };
 
   // Handle save
@@ -423,11 +402,6 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
     };
 
     fileInput.click();
-  };
-
-  // Handle AI image generation
-  const handleGenerateAIImage = (): void => {
-    showToast.info('AI image generation is coming soon! Stay tuned for updates.');
   };
 
   // Handle auto arrange
@@ -622,11 +596,9 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
                 mode={toolbarMode}
                 onModeChange={setToolbarMode}
                 onAddImage={handleImageUpload}
-                onGenerateAI={handleGenerateAIImage}
                 onAutoArrange={handleAutoArrange}
                 onSave={handleSave}
                 onShare={shareHandler}
-                onComplete={onComplete ? handleComplete : undefined}
                 onFilterByCategory={handleFilterByCategory}
                 categories={lifeWheelCategories}
                 selectedCategoryId={selectedCategoryId}
