@@ -142,14 +142,17 @@ export const saveVisionBoardData = async (data: DreamBoardData): Promise<DreamBo
 };
 
 /**
- * Delete a dream board
+ * Delete ALL dream boards for the current user
  */
-export const deleteDreamBoard = async (id: string): Promise<boolean> => {
+export const deleteDreamBoard = async (_id: string): Promise<boolean> => {
   try {
-    const result = await apiRequest<{ success: boolean }>(`${API_URL}/${id}`, 'DELETE');
+    // We ignore the ID parameter and delete all dream boards for the user
+    // This is intentional - when a user deletes "their dream board",
+    // we delete all versions/history to prevent confusion
+    const result = await apiRequest<{ success: boolean }>(`${API_URL}/all`, 'DELETE');
     return result?.success || false;
   } catch (error) {
-    console.error(`Error deleting dream board with ID ${id}:`, error);
+    console.error('Error deleting all dream boards:', error);
     return false;
   }
 };
