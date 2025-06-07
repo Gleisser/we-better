@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './DreamBoardPage.module.css';
 import {
   Dream,
@@ -8,7 +8,7 @@ import {
   DreamBoardContent,
   DreamBoardContentType,
 } from './types';
-import { saveVisionBoardData } from './api/dreamBoardApi';
+import { saveVisionBoardData, getLatestDreamBoardData } from './api/dreamBoardApi';
 import {
   mockCategories,
   mockResources,
@@ -60,6 +60,8 @@ const DreamBoardPage: React.FC = () => {
   const [isDreamBoardModalOpen, setIsDreamBoardModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // New state variables for Dream Categories section
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
@@ -235,6 +237,22 @@ const DreamBoardPage: React.FC = () => {
     setIsDreamBoardModalOpen(false);
   };
 
+  // Convert DreamBoardData to Dreams format for frontend
+  const convertDreamBoardDataToDreams = (data: DreamBoardData): Dream[] => {
+    return data.content.map((contentItem, index) => ({
+      id: contentItem.id,
+      title: contentItem.caption || contentItem.alt || `Dream ${index + 1}`,
+      description: contentItem.caption || '',
+      category: contentItem.categoryId || 'General',
+      timeframe: 'mid-term' as const,
+      progress: 0,
+      createdAt: data.createdAt || new Date().toISOString(),
+      imageUrl: contentItem.src,
+      milestones: [],
+      isShared: false,
+    }));
+  };
+
   // Convert Dreams to DreamBoardData format for API
   const convertDreamsToDreamBoardData = (dreams: Dream[]): DreamBoardData => {
     const categories = [...new Set(dreams.map(dream => dream.category))];
@@ -257,6 +275,29 @@ const DreamBoardPage: React.FC = () => {
       content,
     };
   };
+
+  // Load existing dream board data on component mount
+  useEffect(() => {
+    const loadDreamBoardData = async (): Promise<void> => {
+      setIsLoading(true);
+      setLoadError(null);
+
+      try {
+        const data = await getLatestDreamBoardData();
+        if (data && data.content && data.content.length > 0) {
+          const convertedDreams = convertDreamBoardDataToDreams(data);
+          setDreams(convertedDreams);
+        }
+      } catch (error) {
+        console.error('Error loading dream board:', error);
+        setLoadError('Failed to load your dream board. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDreamBoardData();
+  }, []);
 
   // Handle creating a new dream board (after modal submission)
   const handleCreateDreamBoard = async (newDreams: Dream[]): Promise<void> => {
@@ -547,7 +588,19 @@ const DreamBoardPage: React.FC = () => {
 
       {/* Main Content Section */}
       <main className={styles.mainContent}>
-        {hasNoDreams ? (
+        {isLoading ? (
+          <div className={styles.loadingOverlay}>
+            <div className={styles.loadingSpinner}>
+              <div className={styles.spinner}></div>
+              <p>Loading your dream board...</p>
+            </div>
+          </div>
+        ) : loadError ? (
+          <div className={styles.errorNotification}>
+            <p>{loadError}</p>
+            <button onClick={() => setLoadError(null)}>×</button>
+          </div>
+        ) : hasNoDreams ? (
           renderEmptyState()
         ) : (
           <>
