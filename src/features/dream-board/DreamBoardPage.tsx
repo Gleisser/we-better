@@ -1,0 +1,817 @@
+import React, { useState, useEffect } from 'react';
+import styles from './DreamBoardPage.module.css';
+import {
+  Dream,
+  Milestone,
+  Challenge,
+  DreamBoardData,
+  DreamBoardContent,
+  DreamBoardContentType,
+} from './types';
+import { saveDreamBoardData, getLatestDreamBoardData, deleteDreamBoard } from './api/dreamBoardApi';
+import {
+  mockCategories,
+  mockResources,
+  mockInsights,
+  mockWeather,
+  mockNotifications,
+} from './mock-data';
+import { CosmicDreamExperience } from './components/CosmicDreamExperience/CosmicDreamExperience';
+import { DreamBoardModal } from './components/DreamBoardModal';
+import { DEFAULT_LIFE_CATEGORIES } from '../life-wheel/constants/categories';
+import categoryDetails from './components/constants/dreamboard';
+import achievementBadges from './components/constants/achievements';
+import VisionBoardTab from './components/VisionBoardTab';
+import DreamInsights from './components/DreamInsights';
+import FooterTools from './components/FooterTools';
+import MilestonesPopup from './components/MilestonesPopup';
+import ChallengeModal from './components/DreamChallenge/ChallengeModal';
+
+type CategoryDetails = {
+  icon: string;
+  illustration: string;
+  gradient: string;
+  hoverGradient: string;
+  shadowColor: string;
+  color: string;
+};
+
+// Utility function to get category details
+const getCategoryDetails = (category: string): CategoryDetails => {
+  return (
+    categoryDetails[category as keyof typeof categoryDetails] || {
+      icon: '🌟',
+      illustration: '/assets/images/dreamboard/spirituality.webp', // Default placeholder image
+      gradient: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+      hoverGradient: 'linear-gradient(135deg, #A78BFA 0%, #8B5CF6 100%)',
+      shadowColor: 'rgba(139, 92, 246, 0.4)',
+      color: '#8B5CF6',
+    }
+  );
+};
+
+const DreamBoardPage: React.FC = () => {
+  // Add a state to track if the user has created a dream board yet
+  const [expandedMiniBoard, setExpandedMiniBoard] = useState(true);
+  const [activeTab, setActiveTab] = useState('vision-board');
+  const [dreams, setDreams] = useState<Dream[]>([]);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [activeDream, setActiveDream] = useState<Dream | null>(null);
+  const [isDreamBoardModalOpen, setIsDreamBoardModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [dreamBoardId, setDreamBoardId] = useState<string | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  // New state variables for Dream Categories section
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [filterCategory, setFilterCategory] = useState<string | null>(null);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
+  // New state variables for milestone management
+  const [selectedDreamForMilestones, setSelectedDreamForMilestones] = useState<string | null>(null);
+  const [milestoneAction, setMilestoneAction] = useState<'add' | 'edit' | null>(null);
+  const [currentMilestone, setCurrentMilestone] = useState<Milestone | null>(null);
+  const [milestoneHistory, setMilestoneHistory] = useState<
+    Array<{ dreamId: string; milestoneId: string; action: string; timestamp: string }>
+  >([]);
+  const [showMilestonesPopup, setShowMilestonesPopup] = useState(false);
+
+  // New state for challenge modal
+  const [isChallengeModalOpen, setIsChallengeModalOpen] = useState(false);
+
+  // New state for inline form display
+  const [showMilestoneForm, setShowMilestoneForm] = useState(false);
+
+  // New state variables for visualizations
+  const [activeVizTab, setActiveVizTab] = useState<'timeline' | 'chart' | 'achievements' | null>(
+    null
+  );
+
+  // Toggle mini vision board expansion
+  const toggleMiniBoard = (): void => {
+    setExpandedMiniBoard(!expandedMiniBoard);
+  };
+
+  // Handle dream selection
+  const handleDreamSelect = (dream: Dream | null): void => {
+    setActiveDream(dream);
+  };
+
+  // Update dream progress
+  const updateDreamProgress = (dreamId: string, adjustment: number): void => {
+    setDreams(prevDreams => {
+      const updatedDreams = prevDreams.map(dream => {
+        if (dream.id === dreamId) {
+          // Calculate new progress and ensure it stays between 0 and 1
+          const newProgress = Math.min(1, Math.max(0, dream.progress + adjustment));
+          return { ...dream, progress: newProgress };
+        }
+        return dream;
+      });
+
+      // Auto-save the changes
+      setHasUnsavedChanges(true);
+      saveDreamBoardUpdates(updatedDreams);
+
+      return updatedDreams;
+    });
+  };
+
+  // Calculate the overall progress for a category
+  const calculateCategoryProgress = (category: string): number => {
+    const categoryDreams = dreams.filter(dream => dream.category === category);
+    if (categoryDreams.length === 0) return 0;
+
+    const totalProgress = categoryDreams.reduce((sum, dream) => sum + dream.progress, 0);
+    return totalProgress / categoryDreams.length;
+  };
+
+  // Handle category card expansion
+  const toggleCategoryExpand = (category: string): void => {
+    if (expandedCategory === category) {
+      setExpandedCategory(null);
+    } else {
+      setExpandedCategory(category);
+    }
+  };
+
+  // Milestone Management Functions
+  const handleMilestoneComplete = (
+    dreamId: string,
+    milestoneId: string,
+    isComplete: boolean
+  ): void => {
+    setDreams(prevDreams => {
+      const updatedDreams = prevDreams.map(dream => {
+        if (dream.id === dreamId) {
+          const updatedMilestones = dream.milestones.map(milestone =>
+            milestone.id === milestoneId ? { ...milestone, completed: isComplete } : milestone
+          );
+
+          // Add to history
+          setMilestoneHistory(prev => [
+            ...prev,
+            {
+              dreamId,
+              milestoneId,
+              action: isComplete ? 'completed' : 'uncompleted',
+              timestamp: new Date().toISOString(),
+            },
+          ]);
+
+          // Recalculate progress based on milestones
+          const completedCount = updatedMilestones.filter(m => m.completed).length;
+          const totalCount = updatedMilestones.length;
+          const newProgress = totalCount > 0 ? completedCount / totalCount : 0;
+
+          return {
+            ...dream,
+            milestones: updatedMilestones,
+            progress: newProgress,
+          };
+        }
+        return dream;
+      });
+
+      // Auto-save the changes
+      setHasUnsavedChanges(true);
+      saveDreamBoardUpdates(updatedDreams);
+
+      return updatedDreams;
+    });
+  };
+
+  const handleDeleteMilestone = (dreamId: string, milestoneId: string): void => {
+    if (window.confirm('Are you sure you want to delete this milestone?')) {
+      setDreams(prevDreams => {
+        const updatedDreams = prevDreams.map(dream => {
+          if (dream.id === dreamId) {
+            const updatedMilestones = dream.milestones.filter(
+              milestone => milestone.id !== milestoneId
+            );
+
+            // Add to history
+            setMilestoneHistory(prev => [
+              ...prev,
+              {
+                dreamId,
+                milestoneId,
+                action: 'deleted',
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+
+            // Recalculate progress
+            const completedCount = updatedMilestones.filter(m => m.completed).length;
+            const totalCount = updatedMilestones.length;
+            const newProgress = totalCount > 0 ? completedCount / totalCount : 0;
+
+            return {
+              ...dream,
+              milestones: updatedMilestones,
+              progress: newProgress,
+            };
+          }
+          return dream;
+        });
+
+        // Auto-save the changes
+        setHasUnsavedChanges(true);
+        saveDreamBoardUpdates(updatedDreams);
+
+        return updatedDreams;
+      });
+    }
+  };
+
+  // Handle opening the milestone management popup
+  const handleOpenMilestoneManager = (dreamId: string): void => {
+    setSelectedDreamForMilestones(dreamId);
+    setShowMilestonesPopup(true);
+    // Reset milestone form view whenever popup opens
+    setShowMilestoneForm(false);
+    setMilestoneAction(null);
+    setCurrentMilestone(null);
+  };
+
+  // Handle opening the challenge modal
+  const handleOpenChallengeModal = (): void => {
+    setIsChallengeModalOpen(true);
+  };
+
+  // Handle closing the challenge modal
+  const handleCloseChallengeModal = (): void => {
+    setIsChallengeModalOpen(false);
+  };
+
+  // Handle opening the dream board modal
+  const handleOpenDreamBoardModal = (): void => {
+    setIsDreamBoardModalOpen(true);
+  };
+
+  // Handle closing the dream board modal
+  const handleCloseDreamBoardModal = (): void => {
+    setIsDreamBoardModalOpen(false);
+  };
+
+  // Convert DreamBoardData to Dreams format for frontend
+  const convertDreamBoardDataToDreams = (data: DreamBoardData): Dream[] => {
+    return data.content.map((contentItem, index) => ({
+      id: contentItem.id,
+      title: contentItem.caption || contentItem.alt || `Dream ${index + 1}`,
+      description: contentItem.caption || '',
+      category: contentItem.categoryId || 'General',
+      timeframe: 'mid-term' as const,
+      progress: 0,
+      createdAt: data.createdAt || new Date().toISOString(),
+      imageUrl: contentItem.src,
+      milestones: [],
+      isShared: false,
+      // Preserve position data from dream board
+      position: contentItem.position,
+      size: contentItem.size,
+      rotation: contentItem.rotation,
+    }));
+  };
+
+  // Convert Dreams to DreamBoardData format for API
+  const convertDreamsToDreamBoardData = (dreams: Dream[]): DreamBoardData => {
+    const categories = [...new Set(dreams.map(dream => dream.category))];
+    const content: DreamBoardContent[] = dreams.map((dream, index) => ({
+      id: dream.id,
+      type: DreamBoardContentType.IMAGE,
+      // Use preserved position data if available, otherwise use default positioning
+      position: dream.position || { x: index * 100, y: index * 100 },
+      size: dream.size || { width: 200, height: 150 },
+      rotation: dream.rotation || 0,
+      categoryId: dream.category,
+      src: dream.imageUrl,
+      alt: dream.title,
+      caption: dream.description,
+    }));
+
+    return {
+      title: 'My Dream Board',
+      description: 'Vision board created with my dreams and goals',
+      categories,
+      content,
+    };
+  };
+
+  // Load existing dream board data on component mount
+  useEffect(() => {
+    const loadDreamBoardData = async (): Promise<void> => {
+      setIsLoading(true);
+      setLoadError(null);
+
+      try {
+        const data = await getLatestDreamBoardData();
+        if (data && data.content && data.content.length > 0) {
+          const convertedDreams = convertDreamBoardDataToDreams(data);
+          setDreams(convertedDreams);
+          setDreamBoardId(data.id || null);
+        }
+      } catch (error) {
+        console.error('Error loading dream board:', error);
+        setLoadError('Failed to load your dream board. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDreamBoardData();
+  }, []);
+
+  // Auto-save dream board changes to backend
+  const saveDreamBoardUpdates = async (updatedDreams: Dream[]): Promise<void> => {
+    if (!dreamBoardId) {
+      // If no ID exists, this is a new dream board
+      return;
+    }
+
+    try {
+      const dreamBoardData = convertDreamsToDreamBoardData(updatedDreams);
+      dreamBoardData.id = dreamBoardId; // Include the ID for update
+
+      const result = await saveDreamBoardData(dreamBoardData);
+      if (result) {
+        setHasUnsavedChanges(false);
+      } else {
+        console.error('Failed to auto-save dream board');
+      }
+    } catch (error) {
+      console.error('Error auto-saving dream board:', error);
+    }
+  };
+
+  // Handle creating a new dream board (after modal submission)
+  const handleCreateDreamBoard = async (newDreams: Dream[]): Promise<void> => {
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const dreamBoardData = convertDreamsToDreamBoardData(newDreams);
+      const result = await saveDreamBoardData(dreamBoardData);
+
+      if (result) {
+        setDreams(newDreams);
+        setDreamBoardId(result.id || null); // Store the ID for future updates
+        setHasUnsavedChanges(false);
+        handleCloseDreamBoardModal();
+      } else {
+        setSaveError('Failed to save dream board. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error saving dream board:', error);
+      setSaveError('Failed to save dream board. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle deleting the current dream board
+  const handleDeleteDreamBoard = async (): Promise<void> => {
+    if (!dreamBoardId) {
+      // No dream board to delete
+      return;
+    }
+
+    // Show confirmation dialog
+    const confirmed = window.confirm(
+      'Are you sure you want to delete your dream board? This action cannot be undone.'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const success = await deleteDreamBoard(dreamBoardId);
+
+      if (success) {
+        // Reset state to show empty state
+        setDreams([]);
+        setDreamBoardId(null);
+        setHasUnsavedChanges(false);
+        handleCloseDreamBoardModal();
+      } else {
+        setSaveError('Failed to delete dream board. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error deleting dream board:', error);
+      setSaveError('Failed to delete dream board. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle saving a new challenge
+  const handleSaveChallenge = (challengeData: Omit<Challenge, 'id'>): void => {
+    // In a real app, this would save to a database
+    console.info('New challenge created:', challengeData);
+
+    // Add the new challenge to the state
+    const newChallenge: Challenge = {
+      ...challengeData,
+      id: `c${Date.now()}`, // Generate a simple ID
+    };
+
+    setChallenges(prevChallenges => [...prevChallenges, newChallenge]);
+    handleCloseChallengeModal();
+  };
+
+  // Handle initiating add/edit milestone
+  const handleInitiateMilestoneAction = (
+    action: 'add' | 'edit',
+    milestone: Milestone | null = null
+  ): void => {
+    setMilestoneAction(action);
+    setCurrentMilestone(milestone);
+    setShowMilestoneForm(true);
+  };
+
+  // Handle save milestone with integrated form
+  const handleSaveMilestone = (e: React.FormEvent): void => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const title = (form.elements.namedItem('title') as HTMLInputElement).value;
+    const description = (form.elements.namedItem('description') as HTMLTextAreaElement).value;
+    const date = (form.elements.namedItem('date') as HTMLInputElement).value;
+
+    if (!selectedDreamForMilestones) return;
+
+    const milestoneData: Milestone = {
+      id: currentMilestone?.id || '',
+      title,
+      description,
+      completed: currentMilestone?.completed || false,
+      date: date ? new Date(date).toISOString() : undefined,
+    };
+
+    setDreams(prevDreams =>
+      prevDreams.map(dream => {
+        if (dream.id === selectedDreamForMilestones) {
+          let updatedMilestones;
+
+          if (milestoneAction === 'add') {
+            // Generate a unique ID for new milestone
+            const newMilestone = {
+              ...milestoneData,
+              id: `m${Date.now()}`,
+              completed: false,
+            };
+            updatedMilestones = [...dream.milestones, newMilestone];
+
+            // Add to history
+            setMilestoneHistory(prev => [
+              ...prev,
+              {
+                dreamId: dream.id,
+                milestoneId: newMilestone.id,
+                action: 'added',
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+          } else if (milestoneAction === 'edit' && currentMilestone) {
+            updatedMilestones = dream.milestones.map(m =>
+              m.id === currentMilestone.id ? milestoneData : m
+            );
+
+            // Add to history
+            setMilestoneHistory(prev => [
+              ...prev,
+              {
+                dreamId: dream.id,
+                milestoneId: milestoneData.id,
+                action: 'edited',
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+          } else {
+            updatedMilestones = dream.milestones;
+          }
+
+          // Recalculate progress
+          const completedCount = updatedMilestones.filter(m => m.completed).length;
+          const totalCount = updatedMilestones.length;
+          const newProgress = totalCount > 0 ? completedCount / totalCount : 0;
+
+          return {
+            ...dream,
+            milestones: updatedMilestones,
+            progress: newProgress,
+          };
+        }
+        return dream;
+      })
+    );
+
+    // Reset form state
+    setShowMilestoneForm(false);
+    setMilestoneAction(null);
+    setCurrentMilestone(null);
+
+    // Auto-save changes
+    setHasUnsavedChanges(true);
+    saveDreamBoardUpdates(dreams);
+  };
+
+  // Cancel milestone editing/adding
+  const handleCancelMilestoneForm = (): void => {
+    setShowMilestoneForm(false);
+    setMilestoneAction(null);
+    setCurrentMilestone(null);
+  };
+
+  // Format date for display
+  const formatDisplayDate = (dateString?: string): string => {
+    if (!dateString) return 'No date set';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
+  };
+
+  // Get selected dream object
+  const selectedDream = dreams.find(dream => dream.id === selectedDreamForMilestones);
+
+  // Generate path for the progress chart
+  const generateProgressChartPath = (
+    dataPoints: Array<{ date: Date; percentage: number }>,
+    width: number,
+    height: number
+  ): string => {
+    if (dataPoints.length === 0) return '';
+
+    // Find min and max dates for scaling
+    const minDate = dataPoints[0].date;
+    const maxDate = dataPoints[dataPoints.length - 1].date;
+    const timeRange = maxDate.getTime() - minDate.getTime();
+
+    // Create SVG path
+    return dataPoints
+      .map((point, index) => {
+        const x = width * ((point.date.getTime() - minDate.getTime()) / timeRange);
+        const y = height - (point.percentage / 100) * height;
+        return `${index === 0 ? 'M' : 'L'} ${x},${y}`;
+      })
+      .join(' ');
+  };
+
+  // Get completion events from history to create progress chart data
+  const getProgressChartData = (dreamId: string): Array<{ date: Date; percentage: number }> => {
+    const relevantEvents = milestoneHistory
+      .filter(
+        h => h.dreamId === dreamId && (h.action === 'completed' || h.action === 'uncompleted')
+      )
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+    if (relevantEvents.length === 0) {
+      const dream = dreams.find(d => d.id === dreamId);
+      if (!dream) return [];
+
+      // If no events but we have current progress, add a single data point
+      return [
+        {
+          date: new Date(),
+          percentage: dream.progress * 100,
+        },
+      ];
+    }
+
+    // Calculate progress at each event
+    const dream = dreams.find(d => d.id === dreamId);
+    if (!dream) return [];
+
+    const totalMilestones = dream.milestones.length;
+    const points: Array<{ date: Date; percentage: number }> = [];
+    let currentCompleted = 0;
+
+    // Add starting point if we have events
+    points.push({
+      date: new Date(relevantEvents[0].timestamp),
+      percentage: 0,
+    });
+
+    relevantEvents.forEach(event => {
+      if (event.action === 'completed') {
+        currentCompleted++;
+      } else if (event.action === 'uncompleted') {
+        currentCompleted = Math.max(0, currentCompleted - 1);
+      }
+
+      const percentage = totalMilestones > 0 ? (currentCompleted / totalMilestones) * 100 : 0;
+      points.push({
+        date: new Date(event.timestamp),
+        percentage,
+      });
+    });
+
+    return points;
+  };
+
+  // Handle updating a challenge (for marking days complete/incomplete)
+  const handleUpdateChallenge = (challengeId: string, updatedData: Partial<Challenge>): void => {
+    setChallenges(prevChallenges =>
+      prevChallenges.map(challenge => {
+        if (challenge.id === challengeId) {
+          return { ...challenge, ...updatedData };
+        }
+        return challenge;
+      })
+    );
+  };
+
+  // Check if the user has any dreams
+  const hasNoDreams = dreams.length === 0;
+
+  // Empty state content
+  const renderEmptyState = (): JSX.Element => (
+    <div className={styles.emptyDreamBoardContainer}>
+      <div className={styles.emptyDreamBoardContent}>
+        <div className={styles.emptyDreamBoardIcon}>✨</div>
+        <h2 className={styles.emptyDreamBoardTitle}>Create Your Dream Board</h2>
+        <p className={styles.emptyDreamBoardDescription}>
+          Welcome to your dream journey! Start by creating your personal dream board. Visualize your
+          aspirations, track your progress, and turn your dreams into reality.
+        </p>
+        <button className={styles.createDreamBoardButton} onClick={handleOpenDreamBoardModal}>
+          <span className={styles.createButtonIcon}>+</span>
+          Create Dream Board
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={styles.dreamBoardContainer}>
+      <header className={styles.header}>
+        {!hasNoDreams && (
+          <div className={styles.titleContainer}>
+            <h1 className={styles.title}>Dream Board</h1>
+            {hasUnsavedChanges && <span className={styles.unsavedIndicator}>●</span>}
+          </div>
+        )}
+        {!hasNoDreams && (
+          <div className={styles.tabs}>
+            <button
+              className={`${styles.tab} ${activeTab === 'vision-board' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('vision-board')}
+            >
+              Vision Board
+            </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'experience' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('experience')}
+            >
+              Experience
+            </button>
+            <button
+              className={`${styles.tab} ${activeTab === 'insights' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('insights')}
+            >
+              Insights
+            </button>
+          </div>
+        )}
+      </header>
+
+      {/* Main Content Section */}
+      <main className={styles.mainContent}>
+        {isLoading ? (
+          <div className={styles.loadingOverlay}>
+            <div className={styles.loadingSpinner}>
+              <div className={styles.spinner}></div>
+              <p>Loading your dream board...</p>
+            </div>
+          </div>
+        ) : loadError ? (
+          <div className={styles.errorNotification}>
+            <p>{loadError}</p>
+            <button onClick={() => setLoadError(null)}>×</button>
+          </div>
+        ) : hasNoDreams ? (
+          renderEmptyState()
+        ) : (
+          <>
+            {activeTab === 'vision-board' && (
+              <VisionBoardTab
+                dreams={dreams}
+                expandedMiniBoard={expandedMiniBoard}
+                toggleMiniBoard={toggleMiniBoard}
+                updateDreamProgress={updateDreamProgress}
+                handleOpenMilestoneManager={handleOpenMilestoneManager}
+                openDreamBoardModal={handleOpenDreamBoardModal}
+                getCategoryDetails={getCategoryDetails}
+                calculateCategoryProgress={calculateCategoryProgress}
+                hoveredCategory={hoveredCategory}
+                setHoveredCategory={setHoveredCategory}
+                expandedCategory={expandedCategory}
+                toggleCategoryExpand={toggleCategoryExpand}
+                filterCategory={filterCategory}
+                setFilterCategory={setFilterCategory}
+                categories={mockCategories}
+              />
+            )}
+
+            {activeTab === 'experience' && (
+              <div className={styles.experienceTab}>
+                <CosmicDreamExperience
+                  dreams={dreams}
+                  categories={mockCategories}
+                  onDreamSelect={handleDreamSelect}
+                  activeDream={activeDream}
+                />
+              </div>
+            )}
+
+            {activeTab === 'insights' && (
+              <DreamInsights dreams={dreams} insights={mockInsights} resources={mockResources} />
+            )}
+          </>
+        )}
+      </main>
+
+      {/* Footer Tools Section - Only show if the user has dreams */}
+      {!hasNoDreams && (
+        <FooterTools
+          weather={mockWeather}
+          notifications={mockNotifications}
+          challenges={challenges}
+          dreams={dreams}
+          onOpenChallengeModal={handleOpenChallengeModal}
+          onUpdateChallenge={handleUpdateChallenge}
+        />
+      )}
+
+      {/* Dream Board Modal */}
+      <DreamBoardModal
+        isOpen={isDreamBoardModalOpen}
+        onClose={handleCloseDreamBoardModal}
+        onSave={handleCreateDreamBoard}
+        onDelete={dreamBoardId ? handleDeleteDreamBoard : undefined}
+        categories={DEFAULT_LIFE_CATEGORIES}
+      />
+
+      {/* Save Error Notification */}
+      {saveError && (
+        <div className={styles.errorNotification}>
+          <p>{saveError}</p>
+          <button onClick={() => setSaveError(null)}>×</button>
+        </div>
+      )}
+
+      {/* Loading Overlay */}
+      {isSaving && (
+        <div className={styles.loadingOverlay}>
+          <div className={styles.loadingSpinner}>
+            <div className={styles.spinner}></div>
+            <p>Saving your dream board...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Milestones Management Popup */}
+      {showMilestonesPopup && selectedDream && (
+        <MilestonesPopup
+          selectedDream={selectedDream}
+          showMilestonesPopup={showMilestonesPopup}
+          showMilestoneForm={showMilestoneForm}
+          setShowMilestonesPopup={setShowMilestonesPopup}
+          milestoneAction={milestoneAction}
+          currentMilestone={currentMilestone}
+          activeVizTab={activeVizTab}
+          setActiveVizTab={setActiveVizTab}
+          handleMilestoneComplete={handleMilestoneComplete}
+          handleDeleteMilestone={handleDeleteMilestone}
+          handleInitiateMilestoneAction={handleInitiateMilestoneAction}
+          handleSaveMilestone={handleSaveMilestone}
+          handleCancelMilestoneForm={handleCancelMilestoneForm}
+          formatDisplayDate={formatDisplayDate}
+          generateProgressChartPath={generateProgressChartPath}
+          getProgressChartData={getProgressChartData}
+          milestoneHistory={milestoneHistory}
+          achievementBadges={achievementBadges}
+        />
+      )}
+
+      {/* Challenge Modal */}
+      <ChallengeModal
+        isOpen={isChallengeModalOpen}
+        onClose={handleCloseChallengeModal}
+        onSave={handleSaveChallenge}
+        dreams={dreams}
+      />
+    </div>
+  );
+};
+
+export default DreamBoardPage;

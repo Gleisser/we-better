@@ -1,0 +1,124 @@
+.wrapper {
+  @apply w-full h-full flex items-center justify-center;
+  position: relative;
+  /* Testing containment */
+  isolation: isolate;
+  padding-top: 0;
+  margin-top: -10px; /* Pull up the wheel slightly to center it */
+}
+
+.container {
+  @apply relative w-full h-full
+         flex items-center justify-center;
+  position: relative;
+  min-height: 240px;
+}
+
+.centerPiece {
+  @apply absolute w-24 h-24
+         rounded-full bg-black/40 backdrop-blur-xl
+         border border-white/10
+         flex items-center justify-center
+         cursor-pointer
+         transition-all duration-300
+         z-50;
+  position: absolute;
+  left: calc(50% - 48px);
+  top: calc(50% - 48px);
+}
+
+.scoreRing {
+  @apply w-[88px] h-[88px] rounded-full
+         bg-gradient-to-br from-[#8B5CF6] to-[#D946EF]
+         flex items-center justify-center;
+}
+
+.initials {
+  @apply text-3xl font-bold text-white;
+}
+
+.scoreValue {
+  @apply text-2xl font-bold text-white;
+}
+
+.scoreLabel {
+  @apply text-[10px] text-white/70
+         font-medium tracking-wider uppercase;
+}
+
+/* Container for all category bubbles */
+.categoriesContainer {
+  @apply absolute w-full h-full;
+  position: relative;
+}
+
+/* Individual category bubble - CSS Transitions */
+.categoryBubble {
+  @apply w-16 h-16
+         rounded-full bg-black/40 backdrop-blur-xl
+         border border-white/10
+         flex items-center justify-center
+         cursor-pointer;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -32px; /* half width */
+  margin-top: -32px; /* half height */
+  transition:
+    transform 0.3s ease,
+    opacity 0.2s ease,
+    visibility 0.2s;
+  opacity: 0;
+  visibility: hidden;
+  background: var(--category-bg);
+  transform: translate(0, 0);
+  transition-delay: 0ms;
+}
+
+/* When wheel is open */
+.categoryBubble.open {
+  transform: translate(var(--category-x), var(--category-y));
+  opacity: 1;
+  visibility: visible;
+  transition-delay: var(--category-delay);
+}
+
+.categoryIcon {
+  @apply text-xl;
+}
+
+/* Tooltip style - shown with calculated positioning */
+.tooltip {
+  @apply px-3 py-1.5 rounded-lg
+         bg-gray-900/95 backdrop-blur-md
+         border border-purple-500/50
+         flex items-center gap-2
+         whitespace-nowrap
+         z-50;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.categoryName {
+  @apply text-sm text-white font-medium;
+}
+
+.categoryScore {
+  @apply text-xs text-white/90 font-medium;
+}
+
+.updateDot {
+  @apply w-1.5 h-1.5 rounded-full
+         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF];
+}
+
+/* Hover effects */
+.categoryBubble:hover {
+  @apply border-white/20 bg-white/10;
+  z-index: 5;
+}
+
+.centerPiece:hover {
+  @apply border-white/20;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}

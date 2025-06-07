@@ -1,0 +1,667 @@
+.cosmicContainer {
+  position: relative;
+  width: 100%;
+  height: 700px;
+  background: linear-gradient(125deg, #0c0e13, #1a1e3a, #25163b);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Header and controls */
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.title {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.viewModeToggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.viewModeButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.activeViewMode {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.fullscreenButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+  backdrop-filter: blur(5px);
+}
+
+.fullscreenButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Navigation controls */
+.navigationControls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 40px;
+  backdrop-filter: blur(8px);
+}
+
+.zoomControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controlButton {
+  background: none;
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.controlButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.categorySelector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  padding-left: 16px;
+}
+
+.categoryLabel {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.categoryDropdown {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.categoryDropdown option {
+  background: #1a1e3a;
+}
+
+/* Category Legend */
+.categoryLegend {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  padding: 12px;
+  border-radius: 8px;
+  z-index: 10;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+}
+
+.legendTitle {
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.legendItems {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendColor {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legendLabel {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.legendCount {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+}
+
+/* Dream Detail Card */
+.dreamDetailCard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  background: rgba(20, 25, 45, 0.85);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 450px;
+  z-index: 50;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(137, 87, 255, 0.1);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.4s,
+    transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.dreamDetailCardVisible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+.closeDetailButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  color: white;
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.closeDetailButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dreamDetailTitle {
+  color: white;
+  font-size: 24px;
+  margin: 0 0 12px 0;
+  padding-right: 24px;
+}
+
+.dreamDetailCategory {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.dreamDetailDescription {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.dreamDetailProgress {
+  margin: 16px 0;
+}
+
+.dreamDetailProgressHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.dreamDetailProgressLabel {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.dreamDetailProgressValue {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dreamDetailProgressBar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dreamDetailProgressFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s;
+}
+
+.dreamDetailMilestonesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.dreamDetailMilestonesTitle {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.dreamDetailMilestonesSummary {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+}
+
+.dreamDetailMilestones {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding-right: 8px;
+}
+
+.dreamDetailMilestones::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dreamDetailMilestones::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.dreamDetailMilestones::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.dreamDetailMilestone {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dreamDetailMilestone:last-child {
+  border-bottom: none;
+}
+
+.milestoneCheckbox {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.milestoneCheckbox:hover {
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.completedMilestone .milestoneCheckbox {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: transparent;
+}
+
+.milestoneContent {
+  flex: 1;
+}
+
+.milestoneName {
+  color: white;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.milestoneDate {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+}
+
+.dreamDetailFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
+}
+
+.dreamDetailTimeframe {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+}
+
+.dreamDetailCreated {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+}
+
+.dreamDetailSharing {
+  margin-bottom: 20px;
+}
+
+.dreamDetailSharingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.dreamDetailSharingTitle {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.dreamDetailAvatars {
+  display: flex;
+}
+
+.dreamDetailAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-left: -8px;
+  border: 2px solid rgba(20, 25, 45, 0.85);
+}
+
+.dreamDetailAvatar:first-child {
+  margin-left: 0;
+}
+
+/* Celebration animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes supernova {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(7);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(10);
+    opacity: 0;
+  }
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(40px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(40px) rotate(-360deg);
+  }
+}
+
+.supernova {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: supernova 2s forwards;
+}
+
+.badge {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: gold;
+  box-shadow: 0 0 10px gold;
+  animation: orbit 4s linear infinite;
+  z-index: 2;
+}
+
+/* Loading and empty states */
+.loadingContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 12, 20, 0.5);
+  z-index: 100;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.loadingText {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.emptyStateContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 12, 20, 0.5);
+  z-index: 100;
+}
+
+.emptyStateIcon {
+  font-size: 48px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 16px;
+}
+
+.emptyStateText {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 18px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.addDreamButton {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.addDreamButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .cosmicContainer {
+    height: 600px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .dreamDetailCard {
+    width: 95%;
+  }
+
+  .categoryLegend {
+    display: none;
+  }
+
+  .legendToggle {
+    display: block;
+  }
+
+  .zoomControls {
+    gap: 4px;
+  }
+
+  .controlButton {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cosmicContainer {
+    height: 500px;
+  }
+
+  .navigationControls {
+    padding: 8px 12px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .categorySelector {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 8px;
+    width: 100%;
+  }
+
+  .dreamDetailCard {
+    padding: 16px;
+  }
+}
