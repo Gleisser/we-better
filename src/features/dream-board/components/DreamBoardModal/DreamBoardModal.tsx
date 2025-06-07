@@ -4,6 +4,7 @@ import styles from './DreamBoardModal.module.css';
 import { DreamBoardData, DreamBoardProps } from '@/features/dream-board/components/Board/types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import { Dream } from '../../types';
+import { getLatestDreamBoardData } from '../../api/dreamBoardApi';
 
 // Define an interface for the vision board content item that extracts data from VisionBoardContent
 interface DreamBoardContentItem {
@@ -77,19 +78,21 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
     };
   }, [isOpen]);
 
-  // Fetch vision board data (mock for now, would be replaced with actual API call)
+  // Load existing vision board data from API
   useEffect(() => {
     if (isOpen) {
-      // Simulate loading from API
       setLoading(true);
-      setTimeout(() => {
+
+      const loadExistingData = async (): Promise<void> => {
         try {
-          // This would be an API call in a real implementation
-          const savedData = localStorage.getItem('visionBoardData');
-          if (savedData) {
-            setVisionBoardData(JSON.parse(savedData));
+          // Fetch existing dream board data from API
+          const existingData = await getLatestDreamBoardData();
+
+          if (existingData) {
+            // Use existing data if available
+            setVisionBoardData(existingData);
           } else {
-            // Default empty board
+            // Start with empty board if no existing data
             setVisionBoardData({
               title: 'My Dream Board',
               description: 'Visualize • Believe • Achieve',
@@ -103,17 +106,16 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
           setError('Failed to load vision board data');
           setLoading(false);
         }
-      }, 1000);
+      };
+
+      loadExistingData();
     }
   }, [isOpen, categories]);
 
   // Handle save board
   const handleSaveBoard = async (data: DreamBoardData): Promise<boolean> => {
     try {
-      // This would be an API call in a real implementation
-      localStorage.setItem('visionBoardData', JSON.stringify(data));
-
-      // Convert vision board data to dreams array
+      // Convert vision board data to dreams array and pass to parent
       if (onSave) {
         // Create sample dreams from the vision board content
         const newDreams: Dream[] = data.content.map((item, index) => {

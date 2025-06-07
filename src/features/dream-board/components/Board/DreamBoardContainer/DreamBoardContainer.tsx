@@ -114,7 +114,11 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   // Initialize board data
   useEffect(() => {
     if (data) {
-      setBoardData(data);
+      // Ensure content is always an array to prevent undefined errors
+      setBoardData({
+        ...data,
+        content: data.content || [],
+      });
     } else {
       setBoardData({
         title: 'My Dream Board',
@@ -186,14 +190,14 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   }, [startAnimation]);
 
   // Get the selected content
-  const selectedContent = boardData.content.find(item => item.id === selectedContentId);
+  const selectedContent = boardData.content?.find(item => item.id === selectedContentId);
 
   // Filter content based on selected category
   const filteredContent = useMemo(() => {
     if (!selectedCategoryId) {
-      return boardData.content;
+      return boardData.content || [];
     }
-    return boardData.content.filter(item => item.categoryId === selectedCategoryId);
+    return (boardData.content || []).filter(item => item.categoryId === selectedCategoryId);
   }, [boardData.content, selectedCategoryId]);
 
   // Handle content selection
@@ -206,7 +210,9 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   const handleUpdateContent = (updatedContent: DreamBoardContent): void => {
     setBoardData(prev => ({
       ...prev,
-      content: prev.content.map(item => (item.id === updatedContent.id ? updatedContent : item)),
+      content: (prev.content || []).map(item =>
+        item.id === updatedContent.id ? updatedContent : item
+      ),
     }));
   };
 
@@ -214,7 +220,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   const handleDeleteContent = (id: string): void => {
     setBoardData(prev => ({
       ...prev,
-      content: prev.content.filter(item => item.id !== id),
+      content: (prev.content || []).filter(item => item.id !== id),
     }));
     setSelectedContentId(null);
     setShowControls(false);
@@ -249,7 +255,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
     try {
       // Compress images in content array before saving
       const compressedContent = await Promise.all(
-        boardData.content.map(async item => {
+        (boardData.content || []).map(async item => {
           if (
             item.type === DreamBoardContentType.IMAGE &&
             item.src &&
@@ -348,7 +354,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
 
     setBoardData(prev => ({
       ...prev,
-      content: [...prev.content, newContent],
+      content: [...(prev.content || []), newContent],
     }));
 
     // Select the newly added content
@@ -383,7 +389,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   // Modify the handleImageUpload function to use correct handleAddContent call
   const handleImageUpload = (): void => {
     // Count the number of image and AI-generated content items
-    const imageCount = boardData.content.filter(
+    const imageCount = (boardData.content || []).filter(
       item =>
         item.type === DreamBoardContentType.IMAGE ||
         item.type === DreamBoardContentType.AI_GENERATED
@@ -440,7 +446,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
     const columns = Math.floor(safeAreaWidth / (itemWidth + 20)) || 2; // Ensure at least 2 columns
     const gutter = 20;
 
-    const arrangedContent = boardData.content.map((item, index) => {
+    const arrangedContent = (boardData.content || []).map((item, index) => {
       const row = Math.floor(index / columns);
       const col = index % columns;
 
@@ -467,7 +473,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
 
   // Inside the VisionBoard component, add a useMemo to calculate the image count
   const imageCount = useMemo(() => {
-    return boardData.content.filter(
+    return (boardData.content || []).filter(
       item =>
         item.type === DreamBoardContentType.IMAGE ||
         item.type === DreamBoardContentType.AI_GENERATED
