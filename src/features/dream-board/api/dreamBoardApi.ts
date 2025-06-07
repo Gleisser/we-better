@@ -128,16 +128,16 @@ export const getDreamBoardHistory = async (limit = 10, offset = 0): Promise<Drea
  * If no ID is provided, it will create a new dream board
  * If an ID is provided, it will update the existing dream board
  */
-export const saveVisionBoardData = async (data: DreamBoardData): Promise<boolean> => {
+export const saveVisionBoardData = async (data: DreamBoardData): Promise<DreamBoardData | null> => {
   try {
     const endpoint = data.id ? `${API_URL}/${data.id}` : API_URL;
     const method = data.id ? 'PUT' : 'POST';
 
     const result = await apiRequest<DreamBoardData>(endpoint, method, data);
-    return result !== null;
+    return result;
   } catch (error) {
     console.error('Error saving dream board data:', error);
-    return false;
+    return null;
   }
 };
 
