@@ -274,6 +274,10 @@ const DreamBoardPage: React.FC = () => {
       imageUrl: contentItem.src,
       milestones: [],
       isShared: false,
+      // Preserve position data from dream board
+      position: contentItem.position,
+      size: contentItem.size,
+      rotation: contentItem.rotation,
     }));
   };
 
@@ -283,9 +287,10 @@ const DreamBoardPage: React.FC = () => {
     const content: DreamBoardContent[] = dreams.map((dream, index) => ({
       id: dream.id,
       type: DreamBoardContentType.IMAGE,
-      position: { x: index * 100, y: index * 100 }, // Simple positioning
-      size: { width: 200, height: 150 },
-      rotation: 0,
+      // Use preserved position data if available, otherwise use default positioning
+      position: dream.position || { x: index * 100, y: index * 100 },
+      size: dream.size || { width: 200, height: 150 },
+      rotation: dream.rotation || 0,
       categoryId: dream.category,
       src: dream.imageUrl,
       alt: dream.title,

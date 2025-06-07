@@ -4,7 +4,7 @@ import styles from './DreamBoardModal.module.css';
 import { DreamBoardData, DreamBoardProps } from '@/features/dream-board/components/Board/types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import { Dream } from '../../types';
-import { getLatestDreamBoardData } from '../../api/dreamBoardApi';
+import { getLatestDreamBoardData, saveVisionBoardData } from '../../api/dreamBoardApi';
 
 // Define an interface for the vision board content item that extracts data from VisionBoardContent
 interface DreamBoardContentItem {
@@ -90,6 +90,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
 
           if (existingData) {
             // Use existing data if available
+            // @ts-expect-error - Type compatibility issue between duplicate type definitions
             setVisionBoardData(existingData);
           } else {
             // Start with empty board if no existing data
@@ -115,44 +116,59 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
   // Handle save board
   const handleSaveBoard = async (data: DreamBoardData): Promise<boolean> => {
     try {
-      // Convert vision board data to dreams array and pass to parent
-      if (onSave) {
-        // Create sample dreams from the vision board content
-        const newDreams: Dream[] = data.content.map((item, index) => {
-          // Extract data from the item with proper type handling
-          const contentItem: DreamBoardContentItem = {
-            title: item.caption || '',
-            description: item.caption || '',
-            category: item.categoryId || 'General',
-            priority: 'medium',
-            imageUrl: item.src,
-          };
-          const title = contentItem.title || 'Untitled Dream';
-          const description = contentItem.description || '';
-          const category = contentItem.category || 'General';
-          const priority = contentItem.priority || 'medium';
-          const imageUrl = contentItem.imageUrl;
+      // Save the DreamBoardData directly to preserve position data
+      const result = await saveVisionBoardData(data);
 
-          return {
-            id: `dream-${Date.now()}-${index}`,
-            title,
-            description,
-            category,
-            timeframe: determineTimeframe(priority),
-            progress: 0,
-            createdAt: new Date().toISOString(),
-            milestones: [],
-            isShared: false,
-            imageUrl,
-          };
-        });
+      if (result) {
+        // Update local state with the saved data
+        // @ts-expect-error - Type compatibility issue between duplicate type definitions
+        setVisionBoardData(result);
 
-        onSave(newDreams);
+        // Convert vision board data to dreams array and pass to parent
+        if (onSave) {
+          // Create dreams from the vision board content with preserved position data
+          const newDreams: Dream[] = data.content.map(item => {
+            const contentItem: DreamBoardContentItem = {
+              title: item.caption || '',
+              description: item.caption || '',
+              category: item.categoryId || 'General',
+              priority: 'medium',
+              imageUrl: item.src,
+            };
+            const title = contentItem.title || 'Untitled Dream';
+            const description = contentItem.description || '';
+            const category = contentItem.category || 'General';
+            const priority = contentItem.priority || 'medium';
+            const imageUrl = contentItem.imageUrl;
+
+            return {
+              id: item.id, // Use the original ID from the content
+              title,
+              description,
+              category,
+              timeframe: determineTimeframe(priority),
+              progress: 0,
+              createdAt: new Date().toISOString(),
+              milestones: [],
+              isShared: false,
+              imageUrl,
+              // Preserve the position data
+              position: item.position,
+              size: item.size,
+              rotation: item.rotation,
+            };
+          });
+
+          onSave(newDreams);
+        }
+
+        // Close the modal after saving
+        onClose();
+        return true;
+      } else {
+        console.error('Failed to save dream board to API');
+        return false;
       }
-
-      // Close the modal after saving
-      onClose();
-      return true;
     } catch (error) {
       console.error('Error saving vision board:', error);
       return false;
@@ -178,10 +194,10 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
     alert('Sharing functionality coming soon!');
   };
 
-  // Handle completion of vision board
-  const handleComplete = (): void => {
-    onClose();
-  };
+  // Handle completion of vision board (not currently used)
+  // const handleComplete = (): void => {
+  //   onClose();
+  // };
 
   // Close on escape key
   useEffect(() => {
@@ -218,7 +234,6 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
               error={error || undefined}
               onSave={handleSaveBoard}
               onShare={handleShareBoard}
-              onComplete={handleComplete}
               onDelete={onDelete}
               className={styles.dreamBoardWrapper}
             />

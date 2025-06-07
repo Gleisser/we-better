@@ -45,6 +45,11 @@ export interface Dream {
   isShared: boolean;
   sharedWith?: string[]; // user IDs
   voiceMemo?: string; // URL to voice memo
+
+  // Visual positioning data for dream board (optional)
+  position?: Position;
+  size?: Size;
+  rotation?: number;
 }
 
 export interface DreamboardState {
