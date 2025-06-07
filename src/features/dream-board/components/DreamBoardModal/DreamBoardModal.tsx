@@ -20,6 +20,7 @@ interface DreamBoardModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave?: (dreams: Dream[]) => void;
+  onDelete?: () => void;
   categories: LifeCategory[];
 }
 
@@ -55,6 +56,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
   isOpen,
   onClose,
   onSave,
+  onDelete,
   categories,
 }) => {
   const [visionBoardData, setVisionBoardData] = useState<DreamBoardData | null>(null);
@@ -215,6 +217,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
               onSave={handleSaveBoard}
               onShare={handleShareBoard}
               onComplete={handleComplete}
+              onDelete={onDelete}
               className={styles.dreamBoardWrapper}
             />
           )}

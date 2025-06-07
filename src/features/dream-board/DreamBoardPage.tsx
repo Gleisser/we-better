@@ -8,7 +8,11 @@ import {
   DreamBoardContent,
   DreamBoardContentType,
 } from './types';
-import { saveVisionBoardData, getLatestDreamBoardData } from './api/dreamBoardApi';
+import {
+  saveVisionBoardData,
+  getLatestDreamBoardData,
+  deleteDreamBoard,
+} from './api/dreamBoardApi';
 import {
   mockCategories,
   mockResources,
@@ -367,6 +371,45 @@ const DreamBoardPage: React.FC = () => {
     }
   };
 
+  // Handle deleting the current dream board
+  const handleDeleteDreamBoard = async (): Promise<void> => {
+    if (!dreamBoardId) {
+      // No dream board to delete
+      return;
+    }
+
+    // Show confirmation dialog
+    const confirmed = window.confirm(
+      'Are you sure you want to delete your dream board? This action cannot be undone.'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const success = await deleteDreamBoard(dreamBoardId);
+
+      if (success) {
+        // Reset state to show empty state
+        setDreams([]);
+        setDreamBoardId(null);
+        setHasUnsavedChanges(false);
+        handleCloseDreamBoardModal();
+      } else {
+        setSaveError('Failed to delete dream board. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error deleting dream board:', error);
+      setSaveError('Failed to delete dream board. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Handle saving a new challenge
   const handleSaveChallenge = (challengeData: Omit<Challenge, 'id'>): void => {
     // In a real app, this would save to a database
@@ -713,6 +756,7 @@ const DreamBoardPage: React.FC = () => {
         isOpen={isDreamBoardModalOpen}
         onClose={handleCloseDreamBoardModal}
         onSave={handleCreateDreamBoard}
+        onDelete={dreamBoardId ? handleDeleteDreamBoard : undefined}
         categories={DEFAULT_LIFE_CATEGORIES}
       />
 

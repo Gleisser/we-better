@@ -79,6 +79,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   onSave,
   onShare,
   onComplete,
+  onDelete,
   readOnly = false,
 }) => {
   // Canvas state
@@ -549,6 +550,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
                 onSave={handleSave}
                 onShare={shareHandler}
                 onComplete={onComplete ? handleComplete : undefined}
+                onDelete={onDelete}
                 onFilterByCategory={handleFilterByCategory}
                 categories={lifeWheelCategories}
                 selectedCategoryId={selectedCategoryId}

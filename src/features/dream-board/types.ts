@@ -49,7 +49,6 @@ export interface Dream {
 
 export interface DreamboardState {
   dreams: Dream[];
-  journalEntries: JournalEntry[];
   challenges: Challenge[];
   resources: Resource[];
   categories: string[];
@@ -152,6 +151,7 @@ export interface DreamBoardProps {
   onSave: (data: DreamBoardData) => Promise<boolean>;
   onShare?: (data: DreamBoardData) => void;
   onComplete?: () => void;
+  onDelete?: () => void;
   className?: string;
   readOnly?: boolean;
 }

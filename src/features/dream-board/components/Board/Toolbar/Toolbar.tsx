@@ -11,6 +11,7 @@ export interface ToolbarProps {
   onSave: () => void;
   onShare?: () => void;
   onComplete?: () => void;
+  onDelete?: () => void;
   onFilterByCategory?: (categoryId: string | null) => void;
   categories?: { id: string; name: string; color: string }[];
   selectedCategoryId?: string | null;
@@ -26,6 +27,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onAutoArrange,
   onSave,
   onComplete,
+  onDelete,
   onFilterByCategory,
   categories = [],
   selectedCategoryId = null,
@@ -152,6 +154,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           >
             <span className={styles.buttonIcon}>✅</span>
             <span className={styles.buttonLabel}>Complete</span>
+          </button>
+        )}
+
+        {onDelete && (
+          <button
+            className={`${styles.toolbarButton} ${styles.deleteButton}`}
+            onClick={onDelete}
+            title="Delete Dream Board"
+          >
+            <span className={styles.buttonIcon}>🗑️</span>
+            <span className={styles.buttonLabel}>Delete</span>
           </button>
         )}
       </div>

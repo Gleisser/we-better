@@ -63,6 +63,7 @@ export interface DreamBoardProps {
   onSave: (data: DreamBoardData) => Promise<boolean>;
   onShare?: (data: DreamBoardData) => void;
   onComplete?: () => void;
+  onDelete?: () => void;
   className?: string;
   readOnly?: boolean;
 }
