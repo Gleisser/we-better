@@ -163,3 +163,46 @@
   border: 1px dashed #d1d5db;
   border-radius: 6px;
 }
+
+.loadingState {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem 1rem;
+  font-style: italic;
+  background-color: #f9fafb;
+  border-radius: 6px;
+}
+
+.errorState {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  color: #dc2626;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.errorState button {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.5rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.errorState button:hover {
+  background-color: #fee2e2;
+}
