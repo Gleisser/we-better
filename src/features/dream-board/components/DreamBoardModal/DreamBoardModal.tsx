@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { DreamBoardContainer } from '@/features/vision-board/DreamBoardContainer';
+import { DreamBoardContainer } from '@/features/dream-board/components/Board/DreamBoardContainer';
 import styles from './DreamBoardModal.module.css';
-import { VisionBoardData, VisionBoardProps } from '@/features/vision-board/types';
+import { DreamBoardData, DreamBoardProps } from '@/features/dream-board/components/Board/types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import { Dream } from '../../types';
+import { getLatestDreamBoardData, saveDreamBoardData } from '../../api/dreamBoardApi';
 
 // Define an interface for the vision board content item that extracts data from VisionBoardContent
-interface VisionBoardContentItem {
+interface DreamBoardContentItem {
   title?: string;
   description?: string;
   category?: string;
@@ -20,17 +21,18 @@ interface DreamBoardModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave?: (dreams: Dream[]) => void;
+  onDelete?: () => void;
   categories: LifeCategory[];
 }
 
 // Create a custom VisionBoard component that forces the intro screen to be closed
-const CustomVisionBoard = (props: VisionBoardProps): JSX.Element => {
+const CustomVisionBoard = (props: DreamBoardProps): JSX.Element => {
   // Override the showIntro state in the VisionBoard component
   useEffect(() => {
     // Find and close the intro screen if it exists
     const closeIntroScreen = (): void => {
       const introScreenOverlay = document.querySelector(
-        `.${styles.visionBoardWrapper} .introScreenOverlay`
+        `.${styles.dreamBoardWrapper} .introScreenOverlay`
       );
       if (introScreenOverlay) {
         // Find the Get Started button and simulate a click
@@ -55,9 +57,10 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
   isOpen,
   onClose,
   onSave,
+  onDelete,
   categories,
 }) => {
-  const [visionBoardData, setVisionBoardData] = useState<VisionBoardData | null>(null);
+  const [visionBoardData, setVisionBoardData] = useState<DreamBoardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const visionBoardContainerRef = useRef<HTMLDivElement>(null);
@@ -75,19 +78,22 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
     };
   }, [isOpen]);
 
-  // Fetch vision board data (mock for now, would be replaced with actual API call)
+  // Load existing vision board data from API
   useEffect(() => {
     if (isOpen) {
-      // Simulate loading from API
       setLoading(true);
-      setTimeout(() => {
+
+      const loadExistingData = async (): Promise<void> => {
         try {
-          // This would be an API call in a real implementation
-          const savedData = localStorage.getItem('visionBoardData');
-          if (savedData) {
-            setVisionBoardData(JSON.parse(savedData));
+          // Fetch existing dream board data from API
+          const existingData = await getLatestDreamBoardData();
+
+          if (existingData) {
+            // Use existing data if available
+            // @ts-expect-error - Type compatibility issue between duplicate type definitions
+            setVisionBoardData(existingData);
           } else {
-            // Default empty board
+            // Start with empty board if no existing data
             setVisionBoardData({
               title: 'My Dream Board',
               description: 'Visualize • Believe • Achieve',
@@ -101,54 +107,68 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
           setError('Failed to load vision board data');
           setLoading(false);
         }
-      }, 1000);
+      };
+
+      loadExistingData();
     }
   }, [isOpen, categories]);
 
   // Handle save board
-  const handleSaveBoard = async (data: VisionBoardData): Promise<boolean> => {
+  const handleSaveBoard = async (data: DreamBoardData): Promise<boolean> => {
     try {
-      // This would be an API call in a real implementation
-      localStorage.setItem('visionBoardData', JSON.stringify(data));
+      // Save the DreamBoardData directly to preserve position data
+      const result = await saveDreamBoardData(data);
 
-      // Convert vision board data to dreams array
-      if (onSave) {
-        // Create sample dreams from the vision board content
-        const newDreams: Dream[] = data.content.map((item, index) => {
-          // Extract data from the item with proper type handling
-          const contentItem: VisionBoardContentItem = {
-            title: item.caption || '',
-            description: item.caption || '',
-            category: item.categoryId || 'General',
-            priority: 'medium',
-            imageUrl: item.src,
-          };
-          const title = contentItem.title || 'Untitled Dream';
-          const description = contentItem.description || '';
-          const category = contentItem.category || 'General';
-          const priority = contentItem.priority || 'medium';
-          const imageUrl = contentItem.imageUrl;
+      if (result) {
+        // Update local state with the saved data
+        // @ts-expect-error - Type compatibility issue between duplicate type definitions
+        setVisionBoardData(result);
 
-          return {
-            id: `dream-${Date.now()}-${index}`,
-            title,
-            description,
-            category,
-            timeframe: determineTimeframe(priority),
-            progress: 0,
-            createdAt: new Date().toISOString(),
-            milestones: [],
-            isShared: false,
-            imageUrl,
-          };
-        });
+        // Convert vision board data to dreams array and pass to parent
+        if (onSave) {
+          // Create dreams from the vision board content with preserved position data
+          const newDreams: Dream[] = data.content.map(item => {
+            const contentItem: DreamBoardContentItem = {
+              title: item.caption || '',
+              description: item.caption || '',
+              category: item.categoryId || 'General',
+              priority: 'medium',
+              imageUrl: item.src,
+            };
+            const title = contentItem.title || 'Untitled Dream';
+            const description = contentItem.description || '';
+            const category = contentItem.category || 'General';
+            const priority = contentItem.priority || 'medium';
+            const imageUrl = contentItem.imageUrl;
 
-        onSave(newDreams);
+            return {
+              id: item.id, // Use the original ID from the content
+              title,
+              description,
+              category,
+              timeframe: determineTimeframe(priority),
+              progress: 0,
+              createdAt: new Date().toISOString(),
+              milestones: [],
+              isShared: false,
+              imageUrl,
+              // Preserve the position data
+              position: item.position,
+              size: item.size,
+              rotation: item.rotation,
+            };
+          });
+
+          onSave(newDreams);
+        }
+
+        // Close the modal after saving
+        onClose();
+        return true;
+      } else {
+        console.error('Failed to save dream board to API');
+        return false;
       }
-
-      // Close the modal after saving
-      onClose();
-      return true;
     } catch (error) {
       console.error('Error saving vision board:', error);
       return false;
@@ -174,10 +194,10 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
     alert('Sharing functionality coming soon!');
   };
 
-  // Handle completion of vision board
-  const handleComplete = (): void => {
-    onClose();
-  };
+  // Handle completion of vision board (not currently used)
+  // const handleComplete = (): void => {
+  //   onClose();
+  // };
 
   // Close on escape key
   useEffect(() => {
@@ -214,8 +234,8 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
               error={error || undefined}
               onSave={handleSaveBoard}
               onShare={handleShareBoard}
-              onComplete={handleComplete}
-              className={styles.visionBoardWrapper}
+              onDelete={onDelete}
+              className={styles.dreamBoardWrapper}
             />
           )}
         </div>

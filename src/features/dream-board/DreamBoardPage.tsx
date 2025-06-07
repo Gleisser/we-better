@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './DreamBoardPage.module.css';
-import { Dream, Milestone, Challenge } from './types';
+import {
+  Dream,
+  Milestone,
+  Challenge,
+  DreamBoardData,
+  DreamBoardContent,
+  DreamBoardContentType,
+} from './types';
+import { saveDreamBoardData, getLatestDreamBoardData, deleteDreamBoard } from './api/dreamBoardApi';
 import {
   mockCategories,
   mockResources,
@@ -50,6 +58,12 @@ const DreamBoardPage: React.FC = () => {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [activeDream, setActiveDream] = useState<Dream | null>(null);
   const [isDreamBoardModalOpen, setIsDreamBoardModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [dreamBoardId, setDreamBoardId] = useState<string | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // New state variables for Dream Categories section
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
@@ -88,16 +102,22 @@ const DreamBoardPage: React.FC = () => {
 
   // Update dream progress
   const updateDreamProgress = (dreamId: string, adjustment: number): void => {
-    setDreams(prevDreams =>
-      prevDreams.map(dream => {
+    setDreams(prevDreams => {
+      const updatedDreams = prevDreams.map(dream => {
         if (dream.id === dreamId) {
           // Calculate new progress and ensure it stays between 0 and 1
           const newProgress = Math.min(1, Math.max(0, dream.progress + adjustment));
           return { ...dream, progress: newProgress };
         }
         return dream;
-      })
-    );
+      });
+
+      // Auto-save the changes
+      setHasUnsavedChanges(true);
+      saveDreamBoardUpdates(updatedDreams);
+
+      return updatedDreams;
+    });
   };
 
   // Calculate the overall progress for a category
@@ -124,8 +144,8 @@ const DreamBoardPage: React.FC = () => {
     milestoneId: string,
     isComplete: boolean
   ): void => {
-    setDreams(prevDreams =>
-      prevDreams.map(dream => {
+    setDreams(prevDreams => {
+      const updatedDreams = prevDreams.map(dream => {
         if (dream.id === dreamId) {
           const updatedMilestones = dream.milestones.map(milestone =>
             milestone.id === milestoneId ? { ...milestone, completed: isComplete } : milestone
@@ -154,14 +174,20 @@ const DreamBoardPage: React.FC = () => {
           };
         }
         return dream;
-      })
-    );
+      });
+
+      // Auto-save the changes
+      setHasUnsavedChanges(true);
+      saveDreamBoardUpdates(updatedDreams);
+
+      return updatedDreams;
+    });
   };
 
   const handleDeleteMilestone = (dreamId: string, milestoneId: string): void => {
     if (window.confirm('Are you sure you want to delete this milestone?')) {
-      setDreams(prevDreams =>
-        prevDreams.map(dream => {
+      setDreams(prevDreams => {
+        const updatedDreams = prevDreams.map(dream => {
           if (dream.id === dreamId) {
             const updatedMilestones = dream.milestones.filter(
               milestone => milestone.id !== milestoneId
@@ -190,8 +216,14 @@ const DreamBoardPage: React.FC = () => {
             };
           }
           return dream;
-        })
-      );
+        });
+
+        // Auto-save the changes
+        setHasUnsavedChanges(true);
+        saveDreamBoardUpdates(updatedDreams);
+
+        return updatedDreams;
+      });
     }
   };
 
@@ -225,10 +257,158 @@ const DreamBoardPage: React.FC = () => {
     setIsDreamBoardModalOpen(false);
   };
 
+  // Convert DreamBoardData to Dreams format for frontend
+  const convertDreamBoardDataToDreams = (data: DreamBoardData): Dream[] => {
+    return data.content.map((contentItem, index) => ({
+      id: contentItem.id,
+      title: contentItem.caption || contentItem.alt || `Dream ${index + 1}`,
+      description: contentItem.caption || '',
+      category: contentItem.categoryId || 'General',
+      timeframe: 'mid-term' as const,
+      progress: 0,
+      createdAt: data.createdAt || new Date().toISOString(),
+      imageUrl: contentItem.src,
+      milestones: [],
+      isShared: false,
+      // Preserve position data from dream board
+      position: contentItem.position,
+      size: contentItem.size,
+      rotation: contentItem.rotation,
+    }));
+  };
+
+  // Convert Dreams to DreamBoardData format for API
+  const convertDreamsToDreamBoardData = (dreams: Dream[]): DreamBoardData => {
+    const categories = [...new Set(dreams.map(dream => dream.category))];
+    const content: DreamBoardContent[] = dreams.map((dream, index) => ({
+      id: dream.id,
+      type: DreamBoardContentType.IMAGE,
+      // Use preserved position data if available, otherwise use default positioning
+      position: dream.position || { x: index * 100, y: index * 100 },
+      size: dream.size || { width: 200, height: 150 },
+      rotation: dream.rotation || 0,
+      categoryId: dream.category,
+      src: dream.imageUrl,
+      alt: dream.title,
+      caption: dream.description,
+    }));
+
+    return {
+      title: 'My Dream Board',
+      description: 'Vision board created with my dreams and goals',
+      categories,
+      content,
+    };
+  };
+
+  // Load existing dream board data on component mount
+  useEffect(() => {
+    const loadDreamBoardData = async (): Promise<void> => {
+      setIsLoading(true);
+      setLoadError(null);
+
+      try {
+        const data = await getLatestDreamBoardData();
+        if (data && data.content && data.content.length > 0) {
+          const convertedDreams = convertDreamBoardDataToDreams(data);
+          setDreams(convertedDreams);
+          setDreamBoardId(data.id || null);
+        }
+      } catch (error) {
+        console.error('Error loading dream board:', error);
+        setLoadError('Failed to load your dream board. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDreamBoardData();
+  }, []);
+
+  // Auto-save dream board changes to backend
+  const saveDreamBoardUpdates = async (updatedDreams: Dream[]): Promise<void> => {
+    if (!dreamBoardId) {
+      // If no ID exists, this is a new dream board
+      return;
+    }
+
+    try {
+      const dreamBoardData = convertDreamsToDreamBoardData(updatedDreams);
+      dreamBoardData.id = dreamBoardId; // Include the ID for update
+
+      const result = await saveDreamBoardData(dreamBoardData);
+      if (result) {
+        setHasUnsavedChanges(false);
+      } else {
+        console.error('Failed to auto-save dream board');
+      }
+    } catch (error) {
+      console.error('Error auto-saving dream board:', error);
+    }
+  };
+
   // Handle creating a new dream board (after modal submission)
-  const handleCreateDreamBoard = (newDreams: Dream[]): void => {
-    setDreams(newDreams);
-    handleCloseDreamBoardModal();
+  const handleCreateDreamBoard = async (newDreams: Dream[]): Promise<void> => {
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const dreamBoardData = convertDreamsToDreamBoardData(newDreams);
+      const result = await saveDreamBoardData(dreamBoardData);
+
+      if (result) {
+        setDreams(newDreams);
+        setDreamBoardId(result.id || null); // Store the ID for future updates
+        setHasUnsavedChanges(false);
+        handleCloseDreamBoardModal();
+      } else {
+        setSaveError('Failed to save dream board. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error saving dream board:', error);
+      setSaveError('Failed to save dream board. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle deleting the current dream board
+  const handleDeleteDreamBoard = async (): Promise<void> => {
+    if (!dreamBoardId) {
+      // No dream board to delete
+      return;
+    }
+
+    // Show confirmation dialog
+    const confirmed = window.confirm(
+      'Are you sure you want to delete your dream board? This action cannot be undone.'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const success = await deleteDreamBoard(dreamBoardId);
+
+      if (success) {
+        // Reset state to show empty state
+        setDreams([]);
+        setDreamBoardId(null);
+        setHasUnsavedChanges(false);
+        handleCloseDreamBoardModal();
+      } else {
+        setSaveError('Failed to delete dream board. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error deleting dream board:', error);
+      setSaveError('Failed to delete dream board. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handle saving a new challenge
@@ -336,6 +516,10 @@ const DreamBoardPage: React.FC = () => {
     setShowMilestoneForm(false);
     setMilestoneAction(null);
     setCurrentMilestone(null);
+
+    // Auto-save changes
+    setHasUnsavedChanges(true);
+    saveDreamBoardUpdates(dreams);
   };
 
   // Cancel milestone editing/adding
@@ -470,7 +654,12 @@ const DreamBoardPage: React.FC = () => {
   return (
     <div className={styles.dreamBoardContainer}>
       <header className={styles.header}>
-        {!hasNoDreams && <h1 className={styles.title}>Dream Board</h1>}
+        {!hasNoDreams && (
+          <div className={styles.titleContainer}>
+            <h1 className={styles.title}>Dream Board</h1>
+            {hasUnsavedChanges && <span className={styles.unsavedIndicator}>●</span>}
+          </div>
+        )}
         {!hasNoDreams && (
           <div className={styles.tabs}>
             <button
@@ -497,7 +686,19 @@ const DreamBoardPage: React.FC = () => {
 
       {/* Main Content Section */}
       <main className={styles.mainContent}>
-        {hasNoDreams ? (
+        {isLoading ? (
+          <div className={styles.loadingOverlay}>
+            <div className={styles.loadingSpinner}>
+              <div className={styles.spinner}></div>
+              <p>Loading your dream board...</p>
+            </div>
+          </div>
+        ) : loadError ? (
+          <div className={styles.errorNotification}>
+            <p>{loadError}</p>
+            <button onClick={() => setLoadError(null)}>×</button>
+          </div>
+        ) : hasNoDreams ? (
           renderEmptyState()
         ) : (
           <>
@@ -556,8 +757,27 @@ const DreamBoardPage: React.FC = () => {
         isOpen={isDreamBoardModalOpen}
         onClose={handleCloseDreamBoardModal}
         onSave={handleCreateDreamBoard}
+        onDelete={dreamBoardId ? handleDeleteDreamBoard : undefined}
         categories={DEFAULT_LIFE_CATEGORIES}
       />
+
+      {/* Save Error Notification */}
+      {saveError && (
+        <div className={styles.errorNotification}>
+          <p>{saveError}</p>
+          <button onClick={() => setSaveError(null)}>×</button>
+        </div>
+      )}
+
+      {/* Loading Overlay */}
+      {isSaving && (
+        <div className={styles.loadingOverlay}>
+          <div className={styles.loadingSpinner}>
+            <div className={styles.spinner}></div>
+            <p>Saving your dream board...</p>
+          </div>
+        </div>
+      )}
 
       {/* Milestones Management Popup */}
       {showMilestonesPopup && selectedDream && (
