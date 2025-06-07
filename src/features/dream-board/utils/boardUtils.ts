@@ -92,30 +92,6 @@ export const createTextContent = (
 };
 
 /**
- * Creates a new AI-generated content item
- */
-export const createAIGeneratedContent = (
-  categoryId: string,
-  prompt: string,
-  src: string,
-  alt: string,
-  position: { x: number; y: number; z: number },
-  size: { width: number; height: number }
-): DreamBoardContent => {
-  return {
-    id: uuidv4(),
-    type: DreamBoardContentType.AI_GENERATED,
-    categoryId,
-    prompt,
-    src,
-    alt,
-    position,
-    size,
-    rotation: 0,
-  };
-};
-
-/**
  * Calculate suggested layout positions based on content
  * This is a simple grid layout - a more advanced algorithm could be implemented
  */

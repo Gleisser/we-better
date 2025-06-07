@@ -4,7 +4,7 @@ import styles from './DreamBoardModal.module.css';
 import { DreamBoardData, DreamBoardProps } from '@/features/dream-board/components/Board/types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import { Dream } from '../../types';
-import { getLatestDreamBoardData, saveVisionBoardData } from '../../api/dreamBoardApi';
+import { getLatestDreamBoardData, saveDreamBoardData } from '../../api/dreamBoardApi';
 
 // Define an interface for the vision board content item that extracts data from VisionBoardContent
 interface DreamBoardContentItem {
@@ -117,7 +117,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
   const handleSaveBoard = async (data: DreamBoardData): Promise<boolean> => {
     try {
       // Save the DreamBoardData directly to preserve position data
-      const result = await saveVisionBoardData(data);
+      const result = await saveDreamBoardData(data);
 
       if (result) {
         // Update local state with the saved data

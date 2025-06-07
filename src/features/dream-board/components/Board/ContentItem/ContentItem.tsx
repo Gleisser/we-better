@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { DreamBoardContent, DreamBoardContentType } from '../types';
+import { DreamBoardContent, DreamBoardContentType } from '../../../types';
 import styles from '../Board.module.css';
 
 interface ContentItemProps {
@@ -299,23 +299,6 @@ export const ContentItem: React.FC<ContentItemProps> = ({
               />
             </div>
             {content.caption && <div className={styles.polaroidCaption}>{content.caption}</div>}
-          </div>
-        );
-
-      case DreamBoardContentType.AI_GENERATED:
-        return (
-          <div className={styles.aiGeneratedContent}>
-            <img
-              src={content.src}
-              alt={content.alt || 'AI generated image'}
-              className={styles.imageContent}
-            />
-            {content.prompt && (
-              <div className={styles.aiPromptOverlay}>
-                <span className={styles.aiPromptLabel}>Prompt:</span>
-                <p className={styles.aiPromptText}>{content.prompt}</p>
-              </div>
-            )}
           </div>
         );
       default:

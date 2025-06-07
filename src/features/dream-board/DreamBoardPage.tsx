@@ -8,11 +8,7 @@ import {
   DreamBoardContent,
   DreamBoardContentType,
 } from './types';
-import {
-  saveVisionBoardData,
-  getLatestDreamBoardData,
-  deleteDreamBoard,
-} from './api/dreamBoardApi';
+import { saveDreamBoardData, getLatestDreamBoardData, deleteDreamBoard } from './api/dreamBoardApi';
 import {
   mockCategories,
   mockResources,
@@ -340,7 +336,7 @@ const DreamBoardPage: React.FC = () => {
       const dreamBoardData = convertDreamsToDreamBoardData(updatedDreams);
       dreamBoardData.id = dreamBoardId; // Include the ID for update
 
-      const result = await saveVisionBoardData(dreamBoardData);
+      const result = await saveDreamBoardData(dreamBoardData);
       if (result) {
         setHasUnsavedChanges(false);
       } else {
@@ -358,7 +354,7 @@ const DreamBoardPage: React.FC = () => {
 
     try {
       const dreamBoardData = convertDreamsToDreamBoardData(newDreams);
-      const result = await saveVisionBoardData(dreamBoardData);
+      const result = await saveDreamBoardData(dreamBoardData);
 
       if (result) {
         setDreams(newDreams);

@@ -96,7 +96,6 @@ import { LifeCategory } from '@/features/life-wheel/types';
 // Content types
 export enum DreamBoardContentType {
   IMAGE = 'image',
-  AI_GENERATED = 'ai_generated',
 }
 
 // Position interface

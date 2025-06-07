@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './Toolbar.module.css';
-import { ToolbarMode } from '../types';
+import { ToolbarMode } from '../../../types';
 
 export interface ToolbarProps {
   mode: ToolbarMode;

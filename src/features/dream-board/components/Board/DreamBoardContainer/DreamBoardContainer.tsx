@@ -7,7 +7,7 @@ import {
   DreamBoardContent,
   Position,
   ToolbarMode,
-} from '../types';
+} from '../../../types';
 import { ContentItem } from '../ContentItem/ContentItem';
 import { ContentControls } from '../ContentControls/ContentControls';
 import { Toolbar } from '../Toolbar/Toolbar';
@@ -341,15 +341,6 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
           alt: (contentData?.alt as string) || 'Vision board image',
         };
         break;
-
-      case DreamBoardContentType.AI_GENERATED:
-        newContent = {
-          ...newContent,
-          src: (contentData?.src as string) || 'https://via.placeholder.com/200',
-          alt: (contentData?.alt as string) || 'AI generated image',
-          prompt: (contentData?.prompt as string) || 'AI generated image',
-        };
-        break;
     }
 
     setBoardData(prev => ({
@@ -390,9 +381,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   const handleImageUpload = (): void => {
     // Count the number of image and AI-generated content items
     const imageCount = (boardData.content || []).filter(
-      item =>
-        item.type === DreamBoardContentType.IMAGE ||
-        item.type === DreamBoardContentType.AI_GENERATED
+      item => item.type === DreamBoardContentType.IMAGE
     ).length;
 
     // Check if the limit has been reached
@@ -473,11 +462,8 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
 
   // Inside the VisionBoard component, add a useMemo to calculate the image count
   const imageCount = useMemo(() => {
-    return (boardData.content || []).filter(
-      item =>
-        item.type === DreamBoardContentType.IMAGE ||
-        item.type === DreamBoardContentType.AI_GENERATED
-    ).length;
+    return (boardData.content || []).filter(item => item.type === DreamBoardContentType.IMAGE)
+      .length;
   }, [boardData.content]);
 
   // Render loading state
