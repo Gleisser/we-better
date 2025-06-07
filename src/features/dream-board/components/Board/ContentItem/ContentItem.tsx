@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { VisionBoardContent, VisionBoardContentType } from '../types';
-import styles from '../VisionBoard.module.css';
+import { DreamBoardContent, DreamBoardContentType } from '../types';
+import styles from '../Board.module.css';
 
 interface ContentItemProps {
-  content: VisionBoardContent;
+  content: DreamBoardContent;
   isSelected: boolean;
   onSelect: (id: string) => void;
-  onUpdate: (content: VisionBoardContent) => void;
+  onUpdate: (content: DreamBoardContent) => void;
   readOnly?: boolean;
   categoryColors?: Record<string, string>;
 }
@@ -37,7 +37,7 @@ const CategoryIndicator: React.FC<CategoryIndicatorProps> = ({
 };
 
 /**
- * ContentItem component displays a single item on the vision board
+ * ContentItem component displays a single item on the dream board
  * It can be an image, text, audio, or AI-generated content
  */
 export const ContentItem: React.FC<ContentItemProps> = ({
@@ -288,7 +288,7 @@ export const ContentItem: React.FC<ContentItemProps> = ({
   // Add render logic for content based on type
   const renderContent = (): JSX.Element => {
     switch (content.type) {
-      case VisionBoardContentType.IMAGE:
+      case DreamBoardContentType.IMAGE:
         return (
           <div className={styles.polaroidContainer}>
             <div className={styles.imageWrapper}>
@@ -302,7 +302,7 @@ export const ContentItem: React.FC<ContentItemProps> = ({
           </div>
         );
 
-      case VisionBoardContentType.AI_GENERATED:
+      case DreamBoardContentType.AI_GENERATED:
         return (
           <div className={styles.aiGeneratedContent}>
             <img

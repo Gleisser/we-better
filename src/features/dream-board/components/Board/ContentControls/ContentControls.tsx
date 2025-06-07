@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { VisionBoardContent, VisionBoardContentType } from '../types';
+import { DreamBoardContent, DreamBoardContentType } from '../types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import styles from './ContentControls.module.css';
 import { Milestones } from '../Milestones/Milestones';
 
 interface ContentControlsProps {
-  selectedContent: VisionBoardContent;
-  onUpdate: (content: VisionBoardContent) => void;
+  selectedContent: DreamBoardContent;
+  onUpdate: (content: DreamBoardContent) => void;
   onDelete: (id: string) => void;
   onClose?: () => void;
   lifeWheelCategories: LifeCategory[];
@@ -71,7 +71,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   lifeWheelCategories = [],
 }) => {
   // Local state to manage form values
-  const [localContent, setLocalContent] = useState<VisionBoardContent>(selectedContent);
+  const [localContent, setLocalContent] = useState<DreamBoardContent>(selectedContent);
   const [activeTab, setActiveTab] = useState<string>('position');
   const [isDeleting, setIsDeleting] = useState(false);
   const controlsRef = useRef<HTMLDivElement>(null);
@@ -82,7 +82,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   }, [selectedContent]);
 
   // Handler for form changes
-  const handleChange = (changes: Partial<VisionBoardContent>): void => {
+  const handleChange = (changes: Partial<DreamBoardContent>): void => {
     const updatedContent = { ...localContent, ...changes };
     setLocalContent(updatedContent);
     onUpdate(updatedContent);
@@ -91,9 +91,9 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   // Handle color scheme based on content type
   const getAccentColor = (): string => {
     switch (localContent.type) {
-      case VisionBoardContentType.IMAGE:
+      case DreamBoardContentType.IMAGE:
         return '#10b981'; // Green
-      case VisionBoardContentType.AI_GENERATED:
+      case DreamBoardContentType.AI_GENERATED:
         return '#8b5cf6'; // Purple
       default:
         return '#3b82f6';
@@ -102,9 +102,9 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
 
   const getContentTypeIcon = (): string => {
     switch (localContent.type) {
-      case VisionBoardContentType.IMAGE:
+      case DreamBoardContentType.IMAGE:
         return '🖼️';
-      case VisionBoardContentType.AI_GENERATED:
+      case DreamBoardContentType.AI_GENERATED:
         return '🤖';
       default:
         return '📌';
@@ -113,9 +113,9 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
 
   const getContentTypeName = (): string => {
     switch (localContent.type) {
-      case VisionBoardContentType.IMAGE:
+      case DreamBoardContentType.IMAGE:
         return 'Image';
-      case VisionBoardContentType.AI_GENERATED:
+      case DreamBoardContentType.AI_GENERATED:
         return 'AI Image';
       default:
         return 'Item';
@@ -421,11 +421,11 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   // Style tab content based on content type
   const StyleTab = (): JSX.Element => {
     switch (localContent.type) {
-      case VisionBoardContentType.IMAGE:
-      case VisionBoardContentType.AI_GENERATED:
+      case DreamBoardContentType.IMAGE:
+      case DreamBoardContentType.AI_GENERATED:
         return (
           <div className={styles.tabContent}>
-            {localContent.type === VisionBoardContentType.AI_GENERATED && (
+            {localContent.type === DreamBoardContentType.AI_GENERATED && (
               <InputField<string>
                 label="AI Prompt"
                 value={localContent.prompt || ''}

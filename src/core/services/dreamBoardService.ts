@@ -1,15 +1,15 @@
-import { VisionBoardData } from '@/features/vision-board/types';
+import { DreamBoardData } from '@/features/dream-board/types';
 import { supabase } from './supabaseClient';
 
 // Update the API URL to point to the actual backend server
-const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/vision-board`;
+const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/dream-board`;
 
-export interface VisionBoardHistoryResponse {
-  entries: VisionBoardData[];
+export interface DreamBoardHistoryResponse {
+  entries: DreamBoardData[];
   total: number;
 }
 
-export interface VisionBoardHistoryParams {
+export interface DreamBoardHistoryParams {
   limit?: number;
   offset?: number;
   startDate?: string;
@@ -90,10 +90,10 @@ const getAuthToken = async (): Promise<string | null> => {
 };
 
 /**
- * Get the latest vision board entry for the current user
- * @returns The latest vision board entry
+ * Get the latest dream board entry for the current user
+ * @returns The latest dream board entry
  */
-export const getLatestVisionBoard = async (): Promise<VisionBoardData | null> => {
+export const getLatestDreamBoard = async (): Promise<DreamBoardData | null> => {
   try {
     const token = await getAuthToken();
     const headers: Record<string, string> = {
@@ -111,22 +111,22 @@ export const getLatestVisionBoard = async (): Promise<VisionBoardData | null> =>
     });
 
     if (!response.ok) {
-      throw new Error(`Error getting latest vision board: ${response.statusText}`);
+      throw new Error(`Error getting latest dream board: ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error getting latest vision board:', error);
+    console.error('Error getting latest dream board:', error);
     return null;
   }
 };
 
 /**
- * Get a specific vision board entry by ID
- * @param id The vision board entry ID
- * @returns The vision board entry
+ * Get a specific dream board entry by ID
+ * @param id The dream board entry ID
+ * @returns The dream board entry
  */
-export const getVisionBoardById = async (id: string): Promise<VisionBoardData | null> => {
+export const getDreamBoardById = async (id: string): Promise<DreamBoardData | null> => {
   try {
     const token = await getAuthToken();
     const headers: Record<string, string> = {
@@ -144,24 +144,24 @@ export const getVisionBoardById = async (id: string): Promise<VisionBoardData | 
     });
 
     if (!response.ok) {
-      throw new Error(`Error getting vision board with ID ${id}: ${response.statusText}`);
+      throw new Error(`Error getting dream board with ID ${id}: ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error(`Error getting vision board with ID ${id}:`, error);
+    console.error(`Error getting dream board with ID ${id}:`, error);
     return null;
   }
 };
 
 /**
- * Get vision board history with pagination
+ * Get dream board history with pagination
  * @param params Pagination and filtering parameters
- * @returns Vision board entries and total count
+ * @returns Dream board entries and total count
  */
-export const getVisionBoardHistory = async (
-  params: VisionBoardHistoryParams = {}
-): Promise<VisionBoardHistoryResponse | null> => {
+export const getDreamBoardHistory = async (
+  params: DreamBoardHistoryParams = {}
+): Promise<DreamBoardHistoryResponse | null> => {
   try {
     const { limit = 10, offset = 0, startDate, endDate } = params;
     let url = `${API_URL}/history?limit=${limit}&offset=${offset}`;
@@ -190,22 +190,22 @@ export const getVisionBoardHistory = async (
     });
 
     if (!response.ok) {
-      throw new Error(`Error getting vision board history: ${response.statusText}`);
+      throw new Error(`Error getting dream board history: ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error getting vision board history:', error);
+    console.error('Error getting dream board history:', error);
     return null;
   }
 };
 
 /**
- * Create a new vision board entry
- * @param data The vision board data
- * @returns The created vision board entry
+ * Create a new dream board entry
+ * @param data The dream board data
+ * @returns The created dream board entry
  */
-export const createVisionBoard = async (data: VisionBoardData): Promise<VisionBoardData | null> => {
+export const createDreamBoard = async (data: DreamBoardData): Promise<DreamBoardData | null> => {
   try {
     const token = await getAuthToken();
     const headers: Record<string, string> = {
@@ -227,25 +227,25 @@ export const createVisionBoard = async (data: VisionBoardData): Promise<VisionBo
       console.error(`Error status: ${response.status}`);
       const errorText = await response.text();
       console.error(`Error response: ${errorText}`);
-      throw new Error(`Error creating vision board: ${response.statusText}`);
+      throw new Error(`Error creating dream board: ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error creating vision board:', error);
+    console.error('Error creating dream board:', error);
     return null;
   }
 };
 
 /**
- * Update an existing vision board entry
- * @param data The vision board data with ID
- * @returns The updated vision board entry
+ * Update an existing dream board entry
+ * @param data The dream board data with ID
+ * @returns The updated dream board entry
  */
-export const updateVisionBoard = async (data: VisionBoardData): Promise<VisionBoardData | null> => {
+export const updateDreamBoard = async (data: DreamBoardData): Promise<DreamBoardData | null> => {
   try {
     if (!data.id) {
-      throw new Error('Vision board ID is required for updates');
+      throw new Error('Dream board ID is required for updates');
     }
 
     const token = await getAuthToken();
@@ -268,22 +268,22 @@ export const updateVisionBoard = async (data: VisionBoardData): Promise<VisionBo
       console.error(`Error status: ${response.status}`);
       const errorText = await response.text();
       console.error(`Error response: ${errorText}`);
-      throw new Error(`Error updating vision board: ${response.statusText}`);
+      throw new Error(`Error updating dream board: ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error updating vision board:', error);
+    console.error('Error updating dream board:', error);
     return null;
   }
 };
 
 /**
- * Delete a vision board entry
- * @param id The vision board entry ID
+ * Delete a dream board entry
+ * @param id The dream board entry ID
  * @returns True if deletion was successful, false otherwise
  */
-export const deleteVisionBoard = async (id: string): Promise<boolean> => {
+export const deleteDreamBoard = async (id: string): Promise<boolean> => {
   try {
     const token = await getAuthToken();
     const headers: Record<string, string> = {
@@ -301,12 +301,12 @@ export const deleteVisionBoard = async (id: string): Promise<boolean> => {
     });
 
     if (!response.ok) {
-      throw new Error(`Error deleting vision board with ID ${id}: ${response.statusText}`);
+      throw new Error(`Error deleting dream board with ID ${id}: ${response.statusText}`);
     }
 
     return true;
   } catch (error) {
-    console.error(`Error deleting vision board with ID ${id}:`, error);
+    console.error(`Error deleting dream board with ID ${id}:`, error);
     return false;
   }
 };

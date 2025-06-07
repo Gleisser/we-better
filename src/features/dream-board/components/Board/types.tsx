@@ -1,7 +1,7 @@
 import { LifeCategory } from '@/features/life-wheel/types';
 
 // Content types
-export enum VisionBoardContentType {
+export enum DreamBoardContentType {
   IMAGE = 'image',
   AI_GENERATED = 'ai_generated',
 }
@@ -19,9 +19,9 @@ export interface Size {
 }
 
 // Board Content interface
-export interface VisionBoardContent {
+export interface DreamBoardContent {
   id: string;
-  type: VisionBoardContentType;
+  type: DreamBoardContentType;
   position: Position;
   size: Size;
   rotation: number;
@@ -35,13 +35,13 @@ export interface VisionBoardContent {
   // AI specific properties
   prompt?: string;
 }
-// Vision Board Data interface
-export interface VisionBoardData {
+// Dream Board Data interface
+export interface DreamBoardData {
   id?: string;
   title: string;
   description?: string;
   categories: string[];
-  content: VisionBoardContent[];
+  content: DreamBoardContent[];
   createdAt?: string;
   updatedAt?: string;
   userId?: string;
@@ -54,14 +54,14 @@ export enum ToolbarMode {
   ARRANGE = 'arrange',
 }
 
-// Vision Board Props
-export interface VisionBoardProps {
+// Dream Board Props
+export interface DreamBoardProps {
   lifeWheelCategories: LifeCategory[];
-  data?: VisionBoardData;
+  data?: DreamBoardData;
   loading?: boolean;
   error?: string;
-  onSave: (data: VisionBoardData) => Promise<boolean>;
-  onShare?: (data: VisionBoardData) => void;
+  onSave: (data: DreamBoardData) => Promise<boolean>;
+  onShare?: (data: DreamBoardData) => void;
   onComplete?: () => void;
   className?: string;
   readOnly?: boolean;

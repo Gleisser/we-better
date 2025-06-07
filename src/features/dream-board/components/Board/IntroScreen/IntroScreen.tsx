@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../VisionBoard.module.css';
+import styles from '../Board.module.css';
 
 interface IntroScreenProps {
   onClose: () => void;

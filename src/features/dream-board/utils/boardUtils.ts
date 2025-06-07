@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { VisionBoardContent, VisionBoardContentType, VisionBoardData } from '../types';
+import { DreamBoardContent, DreamBoardContentType, DreamBoardData } from '../types';
 import { LifeCategory } from '@/features/life-wheel/types';
 
 /**
@@ -8,12 +8,12 @@ import { LifeCategory } from '@/features/life-wheel/types';
 export const createNewVisionBoard = (
   userId: string,
   lifeWheelCategories: LifeCategory[]
-): VisionBoardData => {
+): DreamBoardData => {
   const sortedCategories = [...lifeWheelCategories].sort((a, b) => a.value - b.value);
   const now = new Date();
 
   // Create default content (one text item per category)
-  const content: VisionBoardContent[] = sortedCategories.map((category, index) => {
+  const content: DreamBoardContent[] = sortedCategories.map((category, index) => {
     const gridSize = Math.ceil(Math.sqrt(sortedCategories.length));
     const row = Math.floor(index / gridSize);
     const col = index % gridSize;
@@ -40,7 +40,7 @@ export const createNewVisionBoard = (
   return {
     id: uuidv4(),
     userId,
-    title: 'My Vision Board',
+    title: 'My Dream Board',
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
     categories: lifeWheelCategories.map(category => category.id),
@@ -57,10 +57,10 @@ export const createImageContent = (
   alt: string,
   position: { x: number; y: number; z: number },
   size: { width: number; height: number }
-): VisionBoardContent => {
+): DreamBoardContent => {
   return {
     id: uuidv4(),
-    type: VisionBoardContentType.IMAGE,
+    type: DreamBoardContentType.IMAGE,
     categoryId,
     src,
     alt,
@@ -78,10 +78,10 @@ export const createTextContent = (
   text: string,
   position: { x: number; y: number; z: number },
   size: { width: number; height: number }
-): VisionBoardContent => {
+): DreamBoardContent => {
   return {
     id: uuidv4(),
-    type: VisionBoardContentType.IMAGE,
+    type: DreamBoardContentType.IMAGE,
     categoryId,
     src: 'text',
     alt: text,
@@ -101,10 +101,10 @@ export const createAIGeneratedContent = (
   alt: string,
   position: { x: number; y: number; z: number },
   size: { width: number; height: number }
-): VisionBoardContent => {
+): DreamBoardContent => {
   return {
     id: uuidv4(),
-    type: VisionBoardContentType.AI_GENERATED,
+    type: DreamBoardContentType.AI_GENERATED,
     categoryId,
     prompt,
     src,
@@ -120,10 +120,10 @@ export const createAIGeneratedContent = (
  * This is a simple grid layout - a more advanced algorithm could be implemented
  */
 export const calculateSuggestedLayout = (
-  content: VisionBoardContent[],
+  content: DreamBoardContent[],
   canvasWidth: number,
   canvasHeight: number
-): VisionBoardContent[] => {
+): DreamBoardContent[] => {
   const itemsPerRow = Math.ceil(Math.sqrt(content.length));
   const itemWidth = Math.min(300, canvasWidth / itemsPerRow - 40);
   const itemHeight = Math.min(300, canvasHeight / itemsPerRow - 40);
@@ -154,9 +154,9 @@ export const calculateSuggestedLayout = (
  * Filter content by category
  */
 export const filterContentByCategory = (
-  content: VisionBoardContent[],
+  content: DreamBoardContent[],
   categoryId: string | null
-): VisionBoardContent[] => {
+): DreamBoardContent[] => {
   if (!categoryId) return content;
   return content.filter(item => item.categoryId === categoryId);
 };

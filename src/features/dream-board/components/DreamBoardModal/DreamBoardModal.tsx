@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { DreamBoardContainer } from '@/features/dream-board/components/VisionBoard/DreamBoardContainer';
+import { DreamBoardContainer } from '@/features/dream-board/components/Board/DreamBoardContainer';
 import styles from './DreamBoardModal.module.css';
-import {
-  VisionBoardData,
-  VisionBoardProps,
-} from '@/features/dream-board/components/VisionBoard/types';
+import { DreamBoardData, DreamBoardProps } from '@/features/dream-board/components/Board/types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import { Dream } from '../../types';
 
 // Define an interface for the vision board content item that extracts data from VisionBoardContent
-interface VisionBoardContentItem {
+interface DreamBoardContentItem {
   title?: string;
   description?: string;
   category?: string;
@@ -27,13 +24,13 @@ interface DreamBoardModalProps {
 }
 
 // Create a custom VisionBoard component that forces the intro screen to be closed
-const CustomVisionBoard = (props: VisionBoardProps): JSX.Element => {
+const CustomVisionBoard = (props: DreamBoardProps): JSX.Element => {
   // Override the showIntro state in the VisionBoard component
   useEffect(() => {
     // Find and close the intro screen if it exists
     const closeIntroScreen = (): void => {
       const introScreenOverlay = document.querySelector(
-        `.${styles.visionBoardWrapper} .introScreenOverlay`
+        `.${styles.dreamBoardWrapper} .introScreenOverlay`
       );
       if (introScreenOverlay) {
         // Find the Get Started button and simulate a click
@@ -60,7 +57,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
   onSave,
   categories,
 }) => {
-  const [visionBoardData, setVisionBoardData] = useState<VisionBoardData | null>(null);
+  const [visionBoardData, setVisionBoardData] = useState<DreamBoardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const visionBoardContainerRef = useRef<HTMLDivElement>(null);
@@ -109,7 +106,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
   }, [isOpen, categories]);
 
   // Handle save board
-  const handleSaveBoard = async (data: VisionBoardData): Promise<boolean> => {
+  const handleSaveBoard = async (data: DreamBoardData): Promise<boolean> => {
     try {
       // This would be an API call in a real implementation
       localStorage.setItem('visionBoardData', JSON.stringify(data));
@@ -119,7 +116,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
         // Create sample dreams from the vision board content
         const newDreams: Dream[] = data.content.map((item, index) => {
           // Extract data from the item with proper type handling
-          const contentItem: VisionBoardContentItem = {
+          const contentItem: DreamBoardContentItem = {
             title: item.caption || '',
             description: item.caption || '',
             category: item.categoryId || 'General',
@@ -218,7 +215,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
               onSave={handleSaveBoard}
               onShare={handleShareBoard}
               onComplete={handleComplete}
-              className={styles.visionBoardWrapper}
+              className={styles.dreamBoardWrapper}
             />
           )}
         </div>

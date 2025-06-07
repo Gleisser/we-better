@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
             });
           },
         },
-        '/api/vision-board': {
+        '/api/dream-board': {
           target: userServiceUrl,
           changeOrigin: true,
           secure: false,

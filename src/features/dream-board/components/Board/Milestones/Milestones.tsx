@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VisionBoardContent } from '../../../../vision-board/types';
+import { DreamBoardContent } from '../../../types';
 import styles from './Milestones.module.css';
 
 interface Milestone {
@@ -10,8 +10,8 @@ interface Milestone {
 }
 
 interface MilestonesProps {
-  content: VisionBoardContent;
-  onUpdate: (changes: Partial<VisionBoardContent>) => void;
+  content: DreamBoardContent;
+  onUpdate: (changes: Partial<DreamBoardContent>) => void;
 }
 
 export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUpdate }) => {

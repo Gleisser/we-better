@@ -1,33 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Playfair+Display:wght@400;700&display=swap');
 
-.fullScreenContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-  overflow: auto;
-  padding: 20px;
-}
-
-/* Background image */
-.backgroundImage {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('/assets/images/login/background.webp');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: 0;
-}
-
 /* Content wrapper */
 .contentWrapper {
   position: relative;
@@ -76,30 +48,23 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.visionBoardTitle {
+.dreamBoardTitle {
   font-family: 'Playfair Display', serif;
   font-size: min(3.5rem, 10vw);
   font-weight: 700;
-  color: rgba(50, 50, 50, 0.95);
+  color: rgba(255, 255, 255, 0.9);
   text-align: center;
-  text-shadow:
-    0 2px 15px rgba(0, 0, 0, 0.4),
-    1px 1px 5px rgba(255, 255, 255, 0.8),
-    0 0 20px rgba(255, 255, 255, 0.9);
   letter-spacing: 0.06em;
   margin-bottom: 5px;
   margin-top: 15px;
 }
 
-.visionBoardSubtitle {
+.dreamBoardSubtitle {
   font-family: 'Indie Flower', cursive;
   font-size: 1.6rem;
-  color: rgba(60, 60, 60, 0.9);
+  color: rgba(255, 255, 255, 0.8);
   text-align: center;
   margin-top: 8px;
-  text-shadow:
-    0 1px 8px rgba(255, 255, 255, 0.9),
-    0 1px 3px rgba(0, 0, 0, 0.5);
   letter-spacing: 0.03em;
   margin-bottom: 20px;
 }
@@ -119,12 +84,12 @@
     min-height: 80vh;
   }
 
-  .visionBoardTitle {
+  .dreamBoardTitle {
     font-size: 2.5rem;
     margin-top: 10px;
   }
 
-  .visionBoardSubtitle {
+  .dreamBoardSubtitle {
     font-size: 1.2rem;
   }
 
@@ -145,13 +110,13 @@
     min-height: 75vh;
   }
 
-  .visionBoardTitle {
+  .dreamBoardTitle {
     font-size: 2rem;
     margin-top: 5px;
   }
 }
 
-.visionBoardWrapper {
+.dreamBoardWrapper {
   position: fixed;
   top: 0;
   left: 0;
@@ -166,7 +131,7 @@
   overflow: hidden;
 }
 
-.visionBoardContainer {
+.dreamBoardContainer {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -620,7 +585,7 @@
   line-height: 1.2;
 }
 
-.visionBoardHeader {
+.dreamBoardHeader {
   position: absolute;
   top: 30px;
   left: 0;
@@ -648,265 +613,33 @@
   }
 }
 
-.visionBoardTitle::before,
-.visionBoardTitle::after {
+.dreamBoardTitle::before,
+.dreamBoardTitle::after {
   content: '';
   position: absolute;
   width: 40px;
   height: 2px;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.9);
   top: 50%;
 }
 
-.visionBoardTitle::before {
+.dreamBoardTitle::before {
   left: 15px;
   transform: translateY(-50%) rotate(-20deg);
 }
 
-.visionBoardTitle::after {
+.dreamBoardTitle::after {
   right: 15px;
   transform: translateY(-50%) rotate(20deg);
 }
 
-.visionBoardSubtitle {
+.dreamBoardSubtitle {
   font-family: 'Indie Flower', cursive;
   font-size: 1.6rem;
-  color: rgba(60, 60, 60, 0.9);
+  color: rgba(255, 255, 255, 0.9);
   text-align: center;
   margin-top: 8px;
-  text-shadow:
-    0 1px 8px rgba(255, 255, 255, 0.9),
-    0 1px 3px rgba(0, 0, 0, 0.5);
   letter-spacing: 0.03em;
-}
-
-/* 3D Dream Symbols */
-.dreamSymbols {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  overflow: visible;
-  pointer-events: none;
-  z-index: 4;
-  margin: 10px 0 20px;
-}
-
-.dreamSymbol {
-  position: absolute;
-  width: 65px;
-  height: 65px;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.15));
-  opacity: 0.85;
-  transform-style: preserve-3d;
-  perspective: 1000px;
-  z-index: 4;
-  animation: float 10s ease-in-out infinite;
-  transition: all 0.3s ease;
-  border-radius: 15px;
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-.dreamSymbol:hover {
-  filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.25));
-  transform: scale(1.3) translateY(-10px) rotateY(10deg);
-  z-index: 10;
-  animation-play-state: paused;
-  opacity: 1;
-}
-
-/* Career/Work */
-.dreamSymbol.briefcase {
-  background-image: url('https://img.icons8.com/3d-fluency/94/briefcase.png');
-  top: 15px;
-  left: 12%;
-  width: 75px;
-  height: 75px;
-  animation-delay: 0s;
-  transform: rotate(-5deg);
-}
-
-/* Finance */
-.dreamSymbol.money {
-  background-image: url('https://img.icons8.com/3d-fluency/94/money-bag.png');
-  top: 60px;
-  right: 15%;
-  width: 70px;
-  height: 70px;
-  animation-delay: 1s;
-  transform: rotate(8deg);
-}
-
-/* Health */
-.dreamSymbol.health {
-  background-image: url('https://img.icons8.com/3d-fluency/94/heart-with-pulse.png');
-  top: 120px;
-  left: 30%;
-  width: 80px;
-  height: 70px;
-  animation-delay: 2s;
-  transform: rotate(-3deg);
-}
-
-/* Home/Environment */
-.dreamSymbol.house {
-  background-image: url('https://img.icons8.com/3d-fluency/94/home.png');
-  top: 40px;
-  left: 45%;
-  width: 80px;
-  height: 80px;
-  animation-delay: 3.5s;
-  transform: rotate(-2deg);
-}
-
-/* Personal Growth */
-.dreamSymbol.growth {
-  background-image: url('https://img.icons8.com/3d-fluency/94/sprout.png');
-  top: 85px;
-  right: 32%;
-  width: 75px;
-  height: 75px;
-  animation-delay: 2.5s;
-  transform: rotate(5deg);
-}
-
-/* Relationships */
-.dreamSymbol.heart {
-  background-image: url('https://img.icons8.com/3d-fluency/94/hearts.png');
-  top: 30px;
-  right: 25%;
-  width: 60px;
-  height: 60px;
-  animation-delay: 5s;
-  transform: rotate(10deg);
-}
-
-/* Recreation/Leisure */
-.dreamSymbol.recreation {
-  background-image: url('https://img.icons8.com/3d-fluency/94/beach.png');
-  top: 140px;
-  right: 48%;
-  width: 85px;
-  height: 85px;
-  animation-delay: 1.5s;
-  transform: rotate(4deg);
-}
-
-/* Spirituality */
-.dreamSymbol.meditation {
-  background-image: url('https://img.icons8.com/3d-fluency/94/meditation.png');
-  top: 75px;
-  left: 18%;
-  width: 80px;
-  height: 80px;
-  animation-delay: 4s;
-  transform: rotate(-6deg);
-}
-
-/* Education */
-.dreamSymbol.graduation {
-  background-image: url('https://img.icons8.com/3d-fluency/94/graduation-cap.png');
-  top: 35px;
-  right: 45%;
-  width: 70px;
-  height: 70px;
-  animation-delay: 3s;
-  transform: rotate(6deg);
-}
-
-/* Travel */
-.dreamSymbol.travel {
-  background-image: url('https://img.icons8.com/3d-fluency/94/air-travel.png');
-  top: 20px;
-  left: 65%;
-  width: 80px;
-  height: 60px;
-  animation-delay: 4.5s;
-  transform: rotate(-7deg);
-}
-
-/* Dreams/Inspiration */
-.dreamSymbol.cloud {
-  background-image: url('https://img.icons8.com/3d-fluency/94/partly-cloudy-day.png');
-  top: 15px;
-  left: 28%;
-  width: 95px;
-  height: 65px;
-  animation-delay: 2.8s;
-  transform: rotate(-3deg);
-}
-
-/* Success */
-.dreamSymbol.trophy {
-  background-image: url('https://img.icons8.com/3d-fluency/94/trophy.png');
-  top: 110px;
-  left: 55%;
-  width: 70px;
-  height: 70px;
-  animation-delay: 3.2s;
-  transform: rotate(-5deg);
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0) translateX(0) rotateY(0deg) rotateX(0deg) scale(1);
-  }
-  25% {
-    transform: translateY(-18px) translateX(10px) rotateY(15deg) rotateX(8deg) scale(1.05);
-  }
-  50% {
-    transform: translateY(0) translateX(25px) rotateY(0deg) rotateX(0deg) scale(1);
-  }
-  75% {
-    transform: translateY(18px) translateX(10px) rotateY(-15deg) rotateX(-8deg) scale(0.95);
-  }
-  100% {
-    transform: translateY(0) translateX(0) rotateY(0deg) rotateX(0deg) scale(1);
-  }
-}
-
-@media (max-width: 768px) {
-  .dreamSymbol {
-    width: 50px;
-    height: 50px;
-  }
-
-  .dreamSymbol.cloud {
-    width: 60px;
-    height: 60px;
-  }
-}
-
-.attributionFooter {
-  position: relative;
-  margin-top: 15px;
-  text-align: center;
-  font-size: 12px;
-  color: rgba(60, 60, 60, 0.8);
-  padding: 5px 10px;
-  display: inline-block;
-  margin-left: auto;
-  margin-right: auto;
-  width: fit-content;
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.attributionFooter a {
-  color: rgba(0, 102, 255, 0.9);
-  text-decoration: none;
-  transition: color 0.2s ease;
-  font-weight: 500;
-}
-
-.attributionFooter a:hover {
-  color: rgba(0, 102, 255, 1);
-  text-decoration: underline;
 }
 
 /* Category indicator */

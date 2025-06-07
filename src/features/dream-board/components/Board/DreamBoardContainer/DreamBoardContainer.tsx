@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  VisionBoardProps,
-  VisionBoardData,
-  VisionBoardContentType,
-  VisionBoardContent,
+  DreamBoardProps,
+  DreamBoardData,
+  DreamBoardContentType,
+  DreamBoardContent,
   Position,
   ToolbarMode,
 } from '../types';
@@ -71,7 +71,7 @@ const compressImage = (base64Image: string, maxSizeKB: number = 100): Promise<st
   });
 };
 
-export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
+export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   lifeWheelCategories,
   data,
   loading = false,
@@ -87,7 +87,7 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
   const [animating, setAnimating] = useState(false);
 
   // Board data state
-  const [boardData, setBoardData] = useState<VisionBoardData>({
+  const [boardData, setBoardData] = useState<DreamBoardData>({
     title: 'My Dream Board',
     description: 'Visualize • Believe • Achieve',
     categories: lifeWheelCategories.map(cat => cat.id),
@@ -202,7 +202,7 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
   };
 
   // Handle content update
-  const handleUpdateContent = (updatedContent: VisionBoardContent): void => {
+  const handleUpdateContent = (updatedContent: DreamBoardContent): void => {
     setBoardData(prev => ({
       ...prev,
       content: prev.content.map(item => (item.id === updatedContent.id ? updatedContent : item)),
@@ -250,7 +250,7 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
       const compressedContent = await Promise.all(
         boardData.content.map(async item => {
           if (
-            item.type === VisionBoardContentType.IMAGE &&
+            item.type === DreamBoardContentType.IMAGE &&
             item.src &&
             item.src.startsWith('data:')
           ) {
@@ -266,7 +266,7 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
         })
       );
 
-      const dataToSave: VisionBoardData = {
+      const dataToSave: DreamBoardData = {
         ...boardData,
         content: compressedContent,
         updatedAt: new Date().toISOString(),
@@ -296,7 +296,7 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
 
   // Handle adding content
   const handleAddContent = (
-    type: VisionBoardContentType,
+    type: DreamBoardContentType,
     contentData?: Record<string, unknown>
   ): void => {
     // Calculate safe placement area, avoiding the right side where the content panel appears
@@ -313,7 +313,7 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
       y: Math.floor(Math.random() * (canvasSize.height - CONTENT_ITEM_HEIGHT - 100)) || 50,
     };
 
-    let newContent: VisionBoardContent = {
+    let newContent: DreamBoardContent = {
       id: uuidv4(),
       type,
       position: newPosition,
@@ -327,7 +327,7 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
 
     // Set default properties based on type
     switch (type) {
-      case VisionBoardContentType.IMAGE:
+      case DreamBoardContentType.IMAGE:
         newContent = {
           ...newContent,
           src: (contentData?.src as string) || 'https://via.placeholder.com/200',
@@ -335,7 +335,7 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
         };
         break;
 
-      case VisionBoardContentType.AI_GENERATED:
+      case DreamBoardContentType.AI_GENERATED:
         newContent = {
           ...newContent,
           src: (contentData?.src as string) || 'https://via.placeholder.com/200',
@@ -384,8 +384,8 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
     // Count the number of image and AI-generated content items
     const imageCount = boardData.content.filter(
       item =>
-        item.type === VisionBoardContentType.IMAGE ||
-        item.type === VisionBoardContentType.AI_GENERATED
+        item.type === DreamBoardContentType.IMAGE ||
+        item.type === DreamBoardContentType.AI_GENERATED
     ).length;
 
     // Check if the limit has been reached
@@ -407,7 +407,7 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
         reader.onload = (event): void => {
           if (event.target?.result) {
             // Use handleAddContent correctly with type first, then content details
-            handleAddContent(VisionBoardContentType.IMAGE, {
+            handleAddContent(DreamBoardContentType.IMAGE, {
               src: event.target.result as string,
               alt: file.name,
               caption: '',
@@ -468,8 +468,8 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
   const imageCount = useMemo(() => {
     return boardData.content.filter(
       item =>
-        item.type === VisionBoardContentType.IMAGE ||
-        item.type === VisionBoardContentType.AI_GENERATED
+        item.type === DreamBoardContentType.IMAGE ||
+        item.type === DreamBoardContentType.AI_GENERATED
     ).length;
   }, [boardData.content]);
 
@@ -516,9 +516,9 @@ export const DreamBoardContainer: React.FC<VisionBoardProps> = ({
       <div>
         <div className={styles.glassCard}>
           {/* Vision Board Title */}
-          <h1 className={styles.visionBoardTitle}>{boardData.title || 'Vision Board'}</h1>
+          <h1 className={styles.dreamBoardTitle}>{boardData.title || 'Vision Board'}</h1>
           {boardData.description && (
-            <p className={styles.visionBoardSubtitle}>{boardData.description}</p>
+            <p className={styles.dreamBoardSubtitle}>{boardData.description}</p>
           )}
 
           {/* Canvas container */}

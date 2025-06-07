@@ -2,7 +2,7 @@
 
 ## Overview
 
-We Better is an AI-powered self-improvement platform that helps users achieve personal and professional growth through various tools and features like Vision Boards, Life Wheel assessments, and personalized learning paths.
+We Better is an AI-powered self-improvement platform that helps users achieve personal and professional growth through various tools and features like Dream Boards, Life Wheel assessments, and personalized learning paths.
 
 ## Table of Contents
 
@@ -89,7 +89,7 @@ src/
 ├── features/           # Feature modules
 │   ├── auth/          # Authentication feature
 │   ├── dashboard/     # Dashboard feature
-│   ├── vision-board/  # Vision board feature
+│   ├── dream-board/  # Dream board feature
 │   ├── life-wheel/    # Life wheel feature
 │   ├── courses/       # Courses feature
 │   ├── podcasts/      # Podcasts feature
@@ -228,18 +228,18 @@ const contentApi = apiClient.create({
 
 ### Key Features
 
-#### 1. Vision Board
+#### 1. Dream Board
 
-The Vision Board feature allows users to create interactive visual representations of their goals and aspirations.
+The Dream Board feature allows users to create interactive visual representations of their goals and aspirations.
 
 **Key Components**:
 
 ```typescript
-// Example Vision Board usage
-import { VisionBoard } from '@/features/vision-board';
+// Example Dream Board usage
+import { DreamBoard } from '@/features/dream-board';
 
-<VisionBoard
-  data={visionBoardData}
+<DreamBoard
+  data={dreamBoardData}
   onSave={handleSave}
   onShare={handleShare}
 />
@@ -247,7 +247,7 @@ import { VisionBoard } from '@/features/vision-board';
 
 **Features**:
 
-- Interactive canvas for creating vision boards
+- Interactive canvas for creating dream boards
 - Image upload and manipulation
 - Category-based organization
 - Real-time collaboration
