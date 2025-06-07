@@ -1,9 +1,15 @@
-/**
- * Custom hook for affirmations management
- * Follows the same patterns as useGoals for consistency
- */
-
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryKey,
+  UseQueryResult,
+  UseMutationResult,
+  InitialDataFunction,
+} from '@tanstack/react-query';
+import { useAuth } from './useAuth';
+import * as affirmationsService from '@/core/services/affirmationsService';
 import {
   PersonalAffirmation,
   AffirmationReminderSettings,
@@ -13,482 +19,331 @@ import {
   AffirmationCategory,
   AffirmationIntensity,
   ReminderFrequency,
-  fetchPersonalAffirmation,
-  createPersonalAffirmation,
-  updatePersonalAffirmation,
-  deletePersonalAffirmation,
-  logAffirmation,
-  fetchAffirmationLogs,
-  checkTodayStatus,
-  fetchAffirmationStreak,
-  fetchAffirmationStats,
-  fetchBasicStats,
-  fetchReminderSettings,
-  upsertReminderSettings,
-  updateReminderSettings,
-  transformTimeFormat,
-  transformTimeToBackend,
-  getDaysOfWeekForFrequency,
+  AffirmationLogsResponse,
+  AffirmationLogsResponse,
 } from '@/core/services/affirmationsService';
+
+// Query Keys
+export const PERSONAL_AFFIRMATION_KEY = 'personalAffirmation'; // Exported
+export const AFFIRMATION_REMINDER_SETTINGS_KEY = 'affirmationReminderSettings';
+export const AFFIRMATION_STREAK_KEY = 'affirmationStreak';
+const AFFIRMATION_STATS_KEY = 'affirmationStats';
+const AFFIRMATION_LOGS_KEY = 'affirmationLogs';
+const AFFIRMATION_TODAY_STATUS_KEY = 'affirmationTodayStatus';
+
+// Variable types for mutations
+interface CreatePersonalAffirmationVariables {
+  text: string;
+  category?: AffirmationCategory;
+  intensity?: AffirmationIntensity;
+}
+
+interface UpdatePersonalAffirmationVariables {
+  id: string;
+  updates: Partial<Omit<PersonalAffirmation, 'id' | 'user_id' | 'created_at' | 'updated_at'>>;
+}
+
+interface LogAffirmationVariables {
+  affirmationText: string;
+  affirmationId?: string;
+  date?: string;
+}
+
+interface SaveReminderSettingsVariables {
+  is_enabled: boolean;
+  reminder_time: string; // Frontend format HH:MM
+  frequency: ReminderFrequency;
+  days_of_week?: number[];
+  notification_sound?: string;
+  notification_message?: string;
+}
+
+interface UpdateReminderSettingsVariables extends Partial<SaveReminderSettingsVariables> {}
+
 
 // Hook return type
 export interface UseAffirmationsReturn {
-  // State
-  personalAffirmation: PersonalAffirmation | null;
-  reminderSettings: AffirmationReminderSettings | null;
-  streak: AffirmationStreak | null;
-  stats: AffirmationStats | null;
-  logs: AffirmationLog[];
-  hasAffirmedToday: boolean;
-  isLoading: boolean;
-  error: Error | null;
-
-  // Personal affirmation operations
-  fetchPersonalAffirmation: () => Promise<void>;
-  createPersonalAffirmation: (
-    text: string,
-    category?: AffirmationCategory,
-    intensity?: AffirmationIntensity
-  ) => Promise<PersonalAffirmation | null>;
-  updatePersonalAffirmation: (
-    id: string,
-    updates: {
-      text?: string;
-      category?: AffirmationCategory;
-      intensity?: AffirmationIntensity;
-      is_active?: boolean;
-    }
-  ) => Promise<PersonalAffirmation | null>;
-  deletePersonalAffirmation: (id: string) => Promise<void>;
-
-  // Affirmation logging
-  logAffirmation: (
-    affirmationText: string,
-    affirmationId?: string,
-    date?: string
-  ) => Promise<AffirmationLog | null>;
-  fetchLogs: (
+  personalAffirmationQuery: UseQueryResult<PersonalAffirmation | null, Error>;
+  reminderSettingsQuery: UseQueryResult<AffirmationReminderSettings | null, Error>;
+  affirmationStreakQuery: UseQueryResult<AffirmationStreak | null, Error>;
+  affirmationStatsQuery: UseQueryResult<AffirmationStats | null, Error>;
+  affirmationLogsQuery: (
     startDate?: string,
     endDate?: string,
     limit?: number,
     offset?: number
-  ) => Promise<void>;
-  checkTodayStatus: () => Promise<void>;
+  ) => UseQueryResult<AffirmationLogsResponse | null, Error>;
+  affirmationTodayStatusQuery: UseQueryResult<boolean, Error>;
 
-  // Streak and statistics
-  fetchStreak: () => Promise<void>;
-  fetchStats: () => Promise<void>;
-  fetchBasicStats: () => Promise<void>;
+  createPersonalAffirmationMutation: UseMutationResult<
+    PersonalAffirmation | null,
+    Error,
+    CreatePersonalAffirmationVariables
+  >;
+  updatePersonalAffirmationMutation: UseMutationResult<
+    PersonalAffirmation | null,
+    Error,
+    UpdatePersonalAffirmationVariables
+  >;
+  deletePersonalAffirmationMutation: UseMutationResult<boolean, Error, string>;
 
-  // Reminder settings operations
-  fetchReminderSettings: () => Promise<void>;
-  saveReminderSettings: (settings: {
-    is_enabled: boolean;
-    reminder_time: string;
-    frequency: ReminderFrequency;
-    days_of_week?: number[];
-    notification_sound?: string;
-    notification_message?: string;
-  }) => Promise<AffirmationReminderSettings | null>;
-  updateReminderSettings: (settings: {
-    is_enabled?: boolean;
-    reminder_time?: string;
-    frequency?: ReminderFrequency;
-    days_of_week?: number[];
-    notification_sound?: string;
-    notification_message?: string;
-  }) => Promise<AffirmationReminderSettings | null>;
+  logAffirmationMutation: UseMutationResult<AffirmationLog | null, Error, LogAffirmationVariables>;
 
-  // Utility
-  clearError: () => void;
-  refetch: () => Promise<void>;
+  saveReminderSettingsMutation: UseMutationResult<
+    AffirmationReminderSettings | null,
+    Error,
+    SaveReminderSettingsVariables
+  >;
+  updateReminderSettingsMutation: UseMutationResult<
+    AffirmationReminderSettings | null,
+    Error,
+    UpdateReminderSettingsVariables
+  >;
+
+  refetchAll: () => Promise<void>;
 }
 
-export const useAffirmations = (): UseAffirmationsReturn => {
-  // State
-  const [personalAffirmation, setPersonalAffirmation] = useState<PersonalAffirmation | null>(null);
-  const [reminderSettings, setReminderSettings] = useState<AffirmationReminderSettings | null>(
-    null
-  );
-  const [streak, setStreak] = useState<AffirmationStreak | null>(null);
-  const [stats, setStats] = useState<AffirmationStats | null>(null);
-  const [logs, setLogs] = useState<AffirmationLog[]>([]);
-  const [hasAffirmedToday, setHasAffirmedToday] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+interface UseAffirmationsProps {
+  initialPersonalAffirmation?: PersonalAffirmation | null | InitialDataFunction<PersonalAffirmation | null>;
+}
 
-  // Helper function to handle errors
-  const handleError = useCallback((error: unknown) => {
-    const errorObj = error instanceof Error ? error : new Error('An unknown error occurred');
-    setError(errorObj);
-    console.error('Affirmations hook error:', errorObj);
-  }, []);
+export const useAffirmations = ({ initialPersonalAffirmation }: UseAffirmationsProps = {}): UseAffirmationsReturn => {
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
+  const STALE_TIME = 1000 * 60 * 5; // 5 minutes
 
-  // Fetch personal affirmation
-  const fetchPersonalAffirmationData = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const affirmation = await fetchPersonalAffirmation();
-      setPersonalAffirmation(affirmation);
-    } catch (err) {
-      handleError(err);
-    } finally {
-      setIsLoading(false);
+  // --- Queries ---
+  const personalAffirmationQuery = useQuery<PersonalAffirmation | null, Error, PersonalAffirmation | null, QueryKey>(
+    [PERSONAL_AFFIRMATION_KEY],
+    affirmationsService.fetchPersonalAffirmation,
+    { 
+      enabled: isAuthenticated,
+      initialData: initialPersonalAffirmation,
+      staleTime: STALE_TIME,
     }
-  }, [handleError]);
-
-  // Create personal affirmation
-  const createPersonalAffirmationData = useCallback(
-    async (
-      text: string,
-      category?: AffirmationCategory,
-      intensity?: AffirmationIntensity
-    ): Promise<PersonalAffirmation | null> => {
-      try {
-        setError(null);
-        const newAffirmation = await createPersonalAffirmation(text, category, intensity);
-
-        if (newAffirmation) {
-          setPersonalAffirmation(newAffirmation);
-        }
-
-        return newAffirmation;
-      } catch (err) {
-        handleError(err);
-        throw err;
-      }
-    },
-    [handleError]
   );
 
-  // Update personal affirmation
-  const updatePersonalAffirmationData = useCallback(
-    async (
-      id: string,
-      updates: {
-        text?: string;
-        category?: AffirmationCategory;
-        intensity?: AffirmationIntensity;
-        is_active?: boolean;
-      }
-    ): Promise<PersonalAffirmation | null> => {
-      try {
-        setError(null);
-
-        // Optimistic update
-        if (personalAffirmation) {
-          setPersonalAffirmation(prev => (prev ? { ...prev, ...updates } : null));
+  const reminderSettingsQuery = useQuery<AffirmationReminderSettings | null, Error, AffirmationReminderSettings | null, QueryKey>(
+    [AFFIRMATION_REMINDER_SETTINGS_KEY],
+    affirmationsService.fetchReminderSettings,
+    {
+      enabled: isAuthenticated,
+      select: (data) => {
+        if (data && data.reminder_time) {
+          return { ...data, reminder_time: affirmationsService.transformTimeFormat(data.reminder_time) };
         }
-
-        const updatedAffirmation = await updatePersonalAffirmation(id, updates);
-
-        if (updatedAffirmation) {
-          setPersonalAffirmation(updatedAffirmation);
-        }
-
-        return updatedAffirmation;
-      } catch (err) {
-        handleError(err);
-        // Revert optimistic update on error
-        await fetchPersonalAffirmationData();
-        throw err;
-      }
-    },
-    [handleError, fetchPersonalAffirmationData, personalAffirmation]
-  );
-
-  // Delete personal affirmation
-  const deletePersonalAffirmationData = useCallback(
-    async (id: string): Promise<void> => {
-      try {
-        setError(null);
-
-        // Optimistic removal
-        setPersonalAffirmation(null);
-
-        await deletePersonalAffirmation(id);
-      } catch (err) {
-        handleError(err);
-        // Revert optimistic update on error
-        await fetchPersonalAffirmationData();
-        throw err;
-      }
-    },
-    [handleError, fetchPersonalAffirmationData]
-  );
-
-  // Fetch streak
-  const fetchStreakData = useCallback(async (): Promise<void> => {
-    try {
-      setError(null);
-      const streakData = await fetchAffirmationStreak();
-      setStreak(streakData);
-    } catch (err) {
-      handleError(err);
+        return data;
+      },
     }
-  }, [handleError]);
-
-  // Fetch comprehensive stats
-  const fetchStatsData = useCallback(async (): Promise<void> => {
-    try {
-      setError(null);
-      const statsData = await fetchAffirmationStats();
-      setStats(statsData);
-    } catch (err) {
-      handleError(err);
-    }
-  }, [handleError]);
-
-  // Log affirmation
-  const logAffirmationData = useCallback(
-    async (
-      affirmationText: string,
-      affirmationId?: string,
-      date?: string
-    ): Promise<AffirmationLog | null> => {
-      try {
-        setError(null);
-
-        const logEntry = await logAffirmation(affirmationText, affirmationId, date);
-
-        if (logEntry) {
-          // Add to logs state
-          setLogs(prevLogs => [logEntry, ...prevLogs]);
-
-          // Update today status
-          const today = new Date().toISOString().split('T')[0];
-          if (logEntry.date === today) {
-            setHasAffirmedToday(true);
-          }
-
-          // Refresh streak and stats
-          await fetchStreakData();
-          await fetchStatsData();
-        }
-
-        return logEntry;
-      } catch (err) {
-        handleError(err);
-        throw err;
-      }
-    },
-    [handleError, fetchStreakData, fetchStatsData]
   );
 
-  // Fetch logs
-  const fetchLogsData = useCallback(
-    async (startDate?: string, endDate?: string, limit = 20, offset = 0): Promise<void> => {
-      try {
-        setError(null);
-
-        const logsResponse = await fetchAffirmationLogs(startDate, endDate, limit, offset);
-
-        if (logsResponse) {
-          setLogs(logsResponse.logs);
-        }
-      } catch (err) {
-        handleError(err);
-      }
-    },
-    [handleError]
+  const affirmationStreakQuery = useQuery<AffirmationStreak | null, Error, AffirmationStreak | null, QueryKey>(
+    [AFFIRMATION_STREAK_KEY],
+    affirmationsService.fetchAffirmationStreak,
+    { enabled: isAuthenticated }
   );
 
-  // Check today status
-  const checkTodayStatusData = useCallback(async (): Promise<void> => {
-    try {
-      setError(null);
-      const todayStatus = await checkTodayStatus();
-      setHasAffirmedToday(todayStatus);
-    } catch (err) {
-      handleError(err);
-    }
-  }, [handleError]);
-
-  // Fetch basic stats (backwards compatibility)
-  const fetchBasicStatsData = useCallback(async (): Promise<void> => {
-    try {
-      setError(null);
-      const basicStats = await fetchBasicStats();
-      setStats(basicStats);
-    } catch (err) {
-      handleError(err);
-    }
-  }, [handleError]);
-
-  // Fetch reminder settings
-  const fetchReminderSettingsData = useCallback(async (): Promise<void> => {
-    try {
-      setError(null);
-      const settings = await fetchReminderSettings();
-
-      // Transform time format for frontend
-      if (settings && settings.reminder_time) {
-        settings.reminder_time = transformTimeFormat(settings.reminder_time);
-      }
-
-      setReminderSettings(settings);
-    } catch (err) {
-      handleError(err);
-    }
-  }, [handleError]);
-
-  // Save reminder settings
-  const saveReminderSettingsData = useCallback(
-    async (settings: {
-      is_enabled: boolean;
-      reminder_time: string;
-      frequency: ReminderFrequency;
-      days_of_week?: number[];
-      notification_sound?: string;
-      notification_message?: string;
-    }): Promise<AffirmationReminderSettings | null> => {
-      try {
-        setError(null);
-
-        // Transform time format for backend
-        const backendSettings = {
-          ...settings,
-          reminder_time: transformTimeToBackend(settings.reminder_time),
-          days_of_week: settings.days_of_week || getDaysOfWeekForFrequency(settings.frequency),
-        };
-
-        const savedSettings = await upsertReminderSettings(backendSettings);
-
-        if (savedSettings) {
-          // Transform time format back for frontend
-          savedSettings.reminder_time = transformTimeFormat(savedSettings.reminder_time);
-          setReminderSettings(savedSettings);
-        }
-
-        return savedSettings;
-      } catch (err) {
-        handleError(err);
-        throw err;
-      }
-    },
-    [handleError]
+  const affirmationStatsQuery = useQuery<AffirmationStats | null, Error, AffirmationStats | null, QueryKey>(
+    [AFFIRMATION_STATS_KEY],
+    affirmationsService.fetchAffirmationStats, // Using the more comprehensive stats fetcher
+    { enabled: isAuthenticated }
   );
 
-  // Update reminder settings
-  const updateReminderSettingsData = useCallback(
-    async (settings: {
-      is_enabled?: boolean;
-      reminder_time?: string;
-      frequency?: ReminderFrequency;
-      days_of_week?: number[];
-      notification_sound?: string;
-      notification_message?: string;
-    }): Promise<AffirmationReminderSettings | null> => {
-      try {
-        setError(null);
+  const affirmationLogsQuery = (
+    startDate?: string,
+    endDate?: string,
+    limit = 20,
+    offset = 0
+  ): UseQueryResult<AffirmationLogsResponse | null, Error> => {
+    return useQuery<AffirmationLogsResponse | null, Error, AffirmationLogsResponse | null, QueryKey>(
+      [AFFIRMATION_LOGS_KEY, startDate, endDate, limit, offset],
+      () => affirmationsService.fetchAffirmationLogs(startDate, endDate, limit, offset),
+      { enabled: isAuthenticated }
+    );
+  };
 
-        // Transform time format for backend if provided
-        const backendSettings = { ...settings };
-        if (settings.reminder_time) {
-          backendSettings.reminder_time = transformTimeToBackend(settings.reminder_time);
-        }
-
-        // Set days_of_week based on frequency if frequency is provided but days_of_week is not
-        if (settings.frequency && !settings.days_of_week) {
-          backendSettings.days_of_week = getDaysOfWeekForFrequency(settings.frequency);
-        }
-
-        const updatedSettings = await updateReminderSettings(backendSettings);
-
-        if (updatedSettings) {
-          // Transform time format back for frontend
-          updatedSettings.reminder_time = transformTimeFormat(updatedSettings.reminder_time);
-          setReminderSettings(updatedSettings);
-        }
-
-        return updatedSettings;
-      } catch (err) {
-        handleError(err);
-        throw err;
-      }
-    },
-    [handleError]
+  const affirmationTodayStatusQuery = useQuery<boolean, Error, boolean, QueryKey>(
+    [AFFIRMATION_TODAY_STATUS_KEY],
+    affirmationsService.checkTodayStatus,
+    { enabled: isAuthenticated }
   );
 
-  // Clear error
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
+  // --- Mutations ---
 
-  // Refetch all data
-  const refetch = useCallback(async (): Promise<void> => {
-    await Promise.all([
-      fetchPersonalAffirmationData(),
-      fetchReminderSettingsData(),
-      fetchStreakData(),
-      fetchStatsData(),
-      checkTodayStatusData(),
-      fetchLogsData(),
-    ]);
-  }, [
-    fetchPersonalAffirmationData,
-    fetchReminderSettingsData,
-    fetchStreakData,
-    fetchStatsData,
-    checkTodayStatusData,
-    fetchLogsData,
-  ]);
+  const createPersonalAffirmationMutation = useMutation<
+    PersonalAffirmation | null,
+    Error,
+    CreatePersonalAffirmationVariables
+  >(
+    ({ text, category, intensity }) =>
+      affirmationsService.createPersonalAffirmation(text, category, intensity),
+    {
+      enabled: isAuthenticated,
+      onSuccess: (data) => {
+        queryClient.setQueryData([PERSONAL_AFFIRMATION_KEY], data);
+        queryClient.invalidateQueries([PERSONAL_AFFIRMATION_KEY]);
+      },
+    }
+  );
 
-  // Auto-fetch on mount
-  useEffect(() => {
-    const initializeData = async (): Promise<void> => {
-      await Promise.all([
-        fetchPersonalAffirmationData(),
-        fetchReminderSettingsData(),
-        fetchStreakData(),
-        checkTodayStatusData(),
-      ]);
-    };
+  const updatePersonalAffirmationMutation = useMutation<
+    PersonalAffirmation | null,
+    Error,
+    UpdatePersonalAffirmationVariables
+  >(
+    ({ id, updates }) => affirmationsService.updatePersonalAffirmation(id, updates),
+    {
+      enabled: isAuthenticated,
+      onMutate: async ({ updates }) => {
+        await queryClient.cancelQueries([PERSONAL_AFFIRMATION_KEY]);
+        const previousAffirmation = queryClient.getQueryData<PersonalAffirmation | null>([PERSONAL_AFFIRMATION_KEY]);
+        if (previousAffirmation !== undefined) { // Ensure it's not undefined before setting
+           queryClient.setQueryData<PersonalAffirmation | null>(
+            [PERSONAL_AFFIRMATION_KEY],
+            (old) => (old ? { ...old, ...updates } : null)
+          );
+        }
+        return { previousAffirmation };
+      },
+      onError: (_err, _variables, context) => {
+        if (context?.previousAffirmation !== undefined) {
+          queryClient.setQueryData([PERSONAL_AFFIRMATION_KEY], context.previousAffirmation);
+        }
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries([PERSONAL_AFFIRMATION_KEY]);
+      },
+    }
+  );
 
-    initializeData();
-  }, [
-    fetchPersonalAffirmationData,
-    fetchReminderSettingsData,
-    fetchStreakData,
-    checkTodayStatusData,
-  ]);
+  const deletePersonalAffirmationMutation = useMutation<boolean, Error, string>(
+    (id) => affirmationsService.deletePersonalAffirmation(id),
+    {
+      enabled: isAuthenticated,
+      onMutate: async () => {
+        await queryClient.cancelQueries([PERSONAL_AFFIRMATION_KEY]);
+        const previousAffirmation = queryClient.getQueryData<PersonalAffirmation | null>([PERSONAL_AFFIRMATION_KEY]);
+        queryClient.setQueryData<PersonalAffirmation | null>([PERSONAL_AFFIRMATION_KEY], null);
+        return { previousAffirmation };
+      },
+      onError: (_err, _variables, context) => {
+        if (context?.previousAffirmation !== undefined) {
+          queryClient.setQueryData([PERSONAL_AFFIRMATION_KEY], context.previousAffirmation);
+        }
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries([PERSONAL_AFFIRMATION_KEY]);
+      },
+    }
+  );
+
+  const logAffirmationMutation = useMutation<AffirmationLog | null, Error, LogAffirmationVariables>(
+    ({ affirmationText, affirmationId, date }) =>
+      affirmationsService.logAffirmation(affirmationText, affirmationId, date),
+    {
+      enabled: isAuthenticated,
+      onSuccess: (newLog) => {
+        queryClient.invalidateQueries([AFFIRMATION_STREAK_KEY]);
+        queryClient.invalidateQueries([AFFIRMATION_STATS_KEY]);
+        queryClient.invalidateQueries([AFFIRMATION_LOGS_KEY]);
+        queryClient.invalidateQueries([AFFIRMATION_TODAY_STATUS_KEY]);
+        // Optionally, add to logs cache if displaying paginated logs and new log fits current view
+         if (newLog) {
+          queryClient.setQueryData<AffirmationLogsResponse | null>(
+            [AFFIRMATION_LOGS_KEY], // Use a generic key or the specific one if params match
+            (oldData) => {
+              if (!oldData) return { logs: [newLog], total: 1 };
+              return {
+                ...oldData,
+                logs: [newLog, ...oldData.logs], // Add to beginning
+                total: oldData.total + 1,
+              };
+            }
+          );
+        }
+      },
+    }
+  );
+
+  const saveReminderSettingsMutation = useMutation<
+    AffirmationReminderSettings | null,
+    Error,
+    SaveReminderSettingsVariables
+  >(
+    (settings) => {
+      const backendSettings = {
+        ...settings,
+        reminder_time: affirmationsService.transformTimeToBackend(settings.reminder_time),
+        days_of_week:
+          settings.days_of_week || affirmationsService.getDaysOfWeekForFrequency(settings.frequency),
+      };
+      return affirmationsService.upsertReminderSettings(backendSettings);
+    },
+    {
+      enabled: isAuthenticated,
+      onSuccess: (data) => {
+        if (data && data.reminder_time) {
+          data.reminder_time = affirmationsService.transformTimeFormat(data.reminder_time);
+        }
+        queryClient.setQueryData([AFFIRMATION_REMINDER_SETTINGS_KEY], data);
+        queryClient.invalidateQueries([AFFIRMATION_REMINDER_SETTINGS_KEY]);
+      },
+    }
+  );
+
+  const updateReminderSettingsMutation = useMutation<
+    AffirmationReminderSettings | null,
+    Error,
+    UpdateReminderSettingsVariables
+  >(
+    (settings) => {
+      const backendSettings: affirmationsService.AffirmationReminderSettings = { ...settings } as any; // Cast for partial
+      if (settings.reminder_time) {
+        backendSettings.reminder_time = affirmationsService.transformTimeToBackend(settings.reminder_time);
+      }
+      if (settings.frequency && !settings.days_of_week) {
+        backendSettings.days_of_week = affirmationsService.getDaysOfWeekForFrequency(settings.frequency);
+      }
+      return affirmationsService.updateReminderSettings(backendSettings);
+    },
+    {
+      enabled: isAuthenticated,
+      onSuccess: (data) => {
+         if (data && data.reminder_time) {
+          data.reminder_time = affirmationsService.transformTimeFormat(data.reminder_time);
+        }
+        queryClient.setQueryData([AFFIRMATION_REMINDER_SETTINGS_KEY], data);
+        // Optimistically update, then invalidate
+        queryClient.invalidateQueries([AFFIRMATION_REMINDER_SETTINGS_KEY]);
+      },
+    }
+  );
+
+  const refetchAll = useCallback(async (): Promise<void> => {
+    await queryClient.invalidateQueries([PERSONAL_AFFIRMATION_KEY]);
+    await queryClient.invalidateQueries([AFFIRMATION_REMINDER_SETTINGS_KEY]);
+    await queryClient.invalidateQueries([AFFIRMATION_STREAK_KEY]);
+    await queryClient.invalidateQueries([AFFIRMATION_STATS_KEY]);
+    await queryClient.invalidateQueries([AFFIRMATION_TODAY_STATUS_KEY]);
+    await queryClient.invalidateQueries([AFFIRMATION_LOGS_KEY]); // Invalidate all log sets
+    // Consider refetching active queries instead of just invalidating if immediate refresh is needed
+    // For example: await Promise.all([...])
+  }, [queryClient]);
+
 
   return {
-    // State
-    personalAffirmation,
-    reminderSettings,
-    streak,
-    stats,
-    logs,
-    hasAffirmedToday,
-    isLoading,
-    error,
-
-    // Personal affirmation operations
-    fetchPersonalAffirmation: fetchPersonalAffirmationData,
-    createPersonalAffirmation: createPersonalAffirmationData,
-    updatePersonalAffirmation: updatePersonalAffirmationData,
-    deletePersonalAffirmation: deletePersonalAffirmationData,
-
-    // Affirmation logging
-    logAffirmation: logAffirmationData,
-    fetchLogs: fetchLogsData,
-    checkTodayStatus: checkTodayStatusData,
-
-    // Streak and statistics
-    fetchStreak: fetchStreakData,
-    fetchStats: fetchStatsData,
-    fetchBasicStats: fetchBasicStatsData,
-
-    // Reminder settings operations
-    fetchReminderSettings: fetchReminderSettingsData,
-    saveReminderSettings: saveReminderSettingsData,
-    updateReminderSettings: updateReminderSettingsData,
-
-    // Utility
-    clearError,
-    refetch,
+    personalAffirmationQuery,
+    reminderSettingsQuery,
+    affirmationStreakQuery,
+    affirmationStatsQuery,
+    affirmationLogsQuery,
+    affirmationTodayStatusQuery,
+    createPersonalAffirmationMutation,
+    updatePersonalAffirmationMutation,
+    deletePersonalAffirmationMutation,
+    logAffirmationMutation,
+    saveReminderSettingsMutation,
+    updateReminderSettingsMutation,
+    refetchAll,
   };
 };
