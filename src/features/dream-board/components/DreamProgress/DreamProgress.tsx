@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../../DreamBoardPage.module.css';
-import { Dream } from '../../types';
+import { Dream, Milestone } from '../../types';
+import { getMilestonesForContent } from '../../services/milestonesService';
 
 // CategoryDetails type for styling and presentation
 type CategoryDetails = {
@@ -23,12 +24,43 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
   handleOpenMilestoneManager,
   getCategoryDetails,
 }) => {
+  const [dreamMilestones, setDreamMilestones] = useState<Record<string, Milestone[]>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMilestones = async (): Promise<void> => {
+      try {
+        const milestonesMap: Record<string, Milestone[]> = {};
+
+        for (const dream of dreams) {
+          // Assuming dream.id is the content ID for milestones
+          const milestones = await getMilestonesForContent(dream.id);
+          milestonesMap[dream.id] = milestones;
+        }
+
+        setDreamMilestones(milestonesMap);
+      } catch (error) {
+        console.error('Error fetching dream milestones:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (dreams.length > 0) {
+      fetchMilestones();
+    }
+  }, [dreams]);
+
   return (
     <section className={styles.progressSection}>
       <h2>Dream Progress</h2>
       <div className={styles.dreamsProgress}>
         {dreams.map(dream => {
           const categoryDetail = getCategoryDetails(dream.category);
+          const milestones = dreamMilestones[dream.id] || [];
+          const completedMilestones = milestones.filter(m => m.completed).length;
+          const totalMilestones = milestones.length;
+          const progress = totalMilestones > 0 ? completedMilestones / totalMilestones : 0;
 
           return (
             <div
@@ -90,7 +122,7 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
                     <div
                       className={styles.progressFill}
                       style={{
-                        width: `${dream.progress * 100}%`,
+                        width: `${progress * 100}%`,
                         backgroundColor: 'rgba(255, 255, 255, 0.8)',
                         height: '100%',
                         borderRadius: '5px',
@@ -101,8 +133,9 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
                     style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}
                   >
                     <div className={styles.milestonesInfo}>
-                      {dream.milestones.filter(m => m.completed).length} of{' '}
-                      {dream.milestones.length} milestones completed
+                      {loading
+                        ? 'Loading...'
+                        : `${completedMilestones} of ${totalMilestones} milestones completed`}
                     </div>
                   </div>
 
