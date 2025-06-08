@@ -18,6 +18,7 @@ interface DreamProgressProps {
   handleOpenMilestoneManager: (dreamId: string) => void;
   getCategoryDetails: (category: string) => CategoryDetails;
   onMilestonesLoaded?: (dreamMilestones: Record<string, Milestone[]>) => void;
+  fetchedMilestones?: Record<string, Milestone[]>;
 }
 
 const DreamProgress: React.FC<DreamProgressProps> = ({
@@ -25,6 +26,7 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
   handleOpenMilestoneManager,
   getCategoryDetails,
   onMilestonesLoaded,
+  fetchedMilestones,
 }) => {
   const [dreamMilestones, setDreamMilestones] = useState<Record<string, Milestone[]>>({});
   const [loading, setLoading] = useState(true);
@@ -55,13 +57,16 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
     }
   }, [dreams, onMilestonesLoaded]);
 
+  // Use fetched milestones from parent if available, otherwise use local state
+  const currentMilestones = fetchedMilestones || dreamMilestones;
+
   return (
     <section className={styles.progressSection}>
       <h2>Dream Progress</h2>
       <div className={styles.dreamsProgress}>
         {dreams.map(dream => {
           const categoryDetail = getCategoryDetails(dream.category);
-          const milestones = dreamMilestones[dream.id] || [];
+          const milestones = currentMilestones[dream.id] || [];
           const completedMilestones = milestones.filter(m => m.completed).length;
           const totalMilestones = milestones.length;
           const progress = totalMilestones > 0 ? completedMilestones / totalMilestones : 0;

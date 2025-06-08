@@ -707,6 +707,7 @@ const DreamBoardPage: React.FC = () => {
                 setFilterCategory={setFilterCategory}
                 categories={mockCategories}
                 handleMilestonesLoaded={handleMilestonesLoaded}
+                fetchedMilestones={fetchedDreamMilestones}
               />
             )}
 
