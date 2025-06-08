@@ -25,7 +25,7 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
   const [error, setError] = useState<string | null>(null);
 
   const [newMilestoneTitle, setNewMilestoneTitle] = useState('');
-  const [newMilestoneDueDate] = useState('');
+  const [newMilestoneDueDate, setNewMilestoneDueDate] = useState('');
   const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(null);
 
   // Load milestones from backend
@@ -53,10 +53,15 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
     if (!newMilestoneTitle.trim()) return;
 
     try {
-      await createMilestoneForContent(contentId, {
+      const newMilestone = await createMilestoneForContent(contentId, {
         title: newMilestoneTitle,
         date: newMilestoneDueDate || undefined,
       });
+
+      // Update local state and clear form
+      setMilestones([...milestones, newMilestone]);
+      setNewMilestoneTitle('');
+      setNewMilestoneDueDate('');
     } catch (err) {
       console.error('Error adding milestone:', err);
       setError('Failed to add milestone');
@@ -140,6 +145,12 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
           value={newMilestoneTitle}
           onChange={e => setNewMilestoneTitle(e.target.value)}
           placeholder="New milestone title..."
+          className={styles.milestoneInput}
+        />
+        <input
+          type="date"
+          value={newMilestoneDueDate}
+          onChange={e => setNewMilestoneDueDate(e.target.value)}
           className={styles.milestoneInput}
         />
         <button
