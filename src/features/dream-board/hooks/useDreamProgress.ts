@@ -13,7 +13,7 @@ interface UseDreamProgressReturn {
     adjustment: number,
     dream: Dream
   ) => Promise<number | null>;
-  getProgressForDream: (dreamId: string) => Promise<number>;
+  getProgressForDream: (dreamId: string) => Promise<number | undefined>;
   loading: boolean;
   error: string | null;
 }
@@ -68,9 +68,9 @@ export const useDreamProgress = (): UseDreamProgressReturn => {
   /**
    * Get the current progress for a specific dream
    * @param dreamId The dream board content ID
-   * @returns The current progress value (0-1)
+   * @returns The current progress value (0-1) or undefined if no progress found
    */
-  const getProgressForDream = useCallback(async (dreamId: string): Promise<number> => {
+  const getProgressForDream = useCallback(async (dreamId: string): Promise<number | undefined> => {
     try {
       const latestProgress: LatestDreamProgress[] = await getLatestDreamProgress(dreamId);
 
@@ -78,11 +78,12 @@ export const useDreamProgress = (): UseDreamProgressReturn => {
         return latestProgress[0].progress_value;
       }
 
-      // Return 0 if no progress found
-      return 0;
+      // Return undefined if no progress found (allows fallback to dream.progress)
+      return undefined;
     } catch (err) {
       console.error('Error getting dream progress:', err);
-      return 0;
+      // Return undefined on error to allow fallback to original dream.progress
+      return undefined;
     }
   }, []);
 
