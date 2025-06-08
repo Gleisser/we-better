@@ -156,7 +156,10 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                 <div className={styles.chartVisualization}>
                   <h4>Progress Chart</h4>
 
-                  {milestoneHistory.filter(h => h.dreamId === selectedDream.id).length > 0 ? (
+                  {(() => {
+                    const chartData = getProgressChartData(selectedDream.id);
+                    return chartData.length > 0;
+                  })() ? (
                     <div className={styles.progressChartContainer}>
                       {(() => {
                         const chartData = getProgressChartData(selectedDream.id);
@@ -228,8 +231,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                   ) : (
                     <div className={styles.emptyVisualization}>
                       <p>
-                        No progress data available yet. Complete some milestones to see your
-                        progress chart.
+                        No milestones available yet. Add some milestones to see your progress chart.
                       </p>
                     </div>
                   )}

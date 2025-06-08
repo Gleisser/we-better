@@ -553,24 +553,26 @@ const DreamBoardPage: React.FC = () => {
       )
       .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
-    if (relevantEvents.length === 0) {
-      const dream = dreams.find(d => d.id === dreamId);
-      if (!dream) return [];
+    // Get the current milestone data from the fetched milestones (backend data)
+    const currentMilestones = fetchedDreamMilestones[dreamId] || [];
+    const totalMilestones = currentMilestones.length;
+    const currentCompletedCount = currentMilestones.filter(m => m.completed).length;
+    const currentPercentage =
+      totalMilestones > 0 ? (currentCompletedCount / totalMilestones) * 100 : 0;
 
+    if (relevantEvents.length === 0) {
       // If no events but we have current progress, add a single data point
-      return [
-        {
-          date: new Date(),
-          percentage: dream.progress * 100,
-        },
-      ];
+      if (totalMilestones > 0) {
+        return [
+          {
+            date: new Date(),
+            percentage: currentPercentage,
+          },
+        ];
+      }
+      return [];
     }
 
-    // Calculate progress at each event
-    const dream = dreams.find(d => d.id === dreamId);
-    if (!dream) return [];
-
-    const totalMilestones = dream.milestones.length;
     const points: Array<{ date: Date; percentage: number }> = [];
     let currentCompleted = 0;
 
@@ -593,6 +595,15 @@ const DreamBoardPage: React.FC = () => {
         percentage,
       });
     });
+
+    // Add current state as the latest point if it's different from the last calculated point
+    const lastPoint = points[points.length - 1];
+    if (!lastPoint || lastPoint.percentage !== currentPercentage) {
+      points.push({
+        date: new Date(),
+        percentage: currentPercentage,
+      });
+    }
 
     return points;
   };
