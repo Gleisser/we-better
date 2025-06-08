@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream, Milestone } from '../../types';
 import TimelineComponent from './TimelineComponent';
@@ -31,7 +31,7 @@ interface MilestonesPopupProps {
     width: number,
     height: number
   ) => string;
-  getProgressChartData: (dreamId: string) => Array<{ date: Date; percentage: number }>;
+  getProgressChartData: (dreamId: string) => Promise<Array<{ date: Date; percentage: number }>>;
   milestoneHistory: Array<MilestoneHistoryItem>;
   achievementBadges: Array<{
     id: string;
@@ -64,6 +64,32 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
   achievementBadges,
   fetchedMilestones,
 }) => {
+  // State for async chart data (must be at the top level)
+  const [chartData, setChartData] = useState<Array<{ date: Date; percentage: number }>>([]);
+  const [isLoadingChart, setIsLoadingChart] = useState<boolean>(false);
+  const [chartError, setChartError] = useState<string | null>(null);
+
+  // Fetch chart data when the chart tab is active
+  useEffect(() => {
+    if (activeVizTab === 'chart' && selectedDream) {
+      setIsLoadingChart(true);
+      setChartError(null);
+
+      getProgressChartData(selectedDream.id)
+        .then(data => {
+          setChartData(data);
+        })
+        .catch(error => {
+          console.error('❌ Error loading chart data:', error);
+          setChartError('Failed to load progress chart data');
+          setChartData([]);
+        })
+        .finally(() => {
+          setIsLoadingChart(false);
+        });
+    }
+  }, [activeVizTab, selectedDream?.id, getProgressChartData, selectedDream]);
+
   if (!showMilestonesPopup || !selectedDream) return null;
 
   const milestones = fetchedMilestones || selectedDream.milestones;
@@ -164,13 +190,17 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                 <div className={styles.chartVisualization}>
                   <h4>Progress Chart</h4>
 
-                  {(() => {
-                    const chartData = getProgressChartData(selectedDream.id);
-                    return chartData.length > 0;
-                  })() ? (
+                  {isLoadingChart ? (
+                    <div className={styles.emptyVisualization}>
+                      <p>Loading progress chart...</p>
+                    </div>
+                  ) : chartError ? (
+                    <div className={styles.emptyVisualization}>
+                      <p>Error loading chart: {chartError}</p>
+                    </div>
+                  ) : chartData.length > 0 ? (
                     <div className={styles.progressChartContainer}>
                       {(() => {
-                        const chartData = getProgressChartData(selectedDream.id);
                         const chartWidth = 600;
                         const chartHeight = 200;
 

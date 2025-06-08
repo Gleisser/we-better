@@ -545,23 +545,55 @@ const DreamBoardPage: React.FC = () => {
       .join(' ');
   };
 
-  // Get completion events from history to create progress chart data
-  const getProgressChartData = (dreamId: string): Array<{ date: Date; percentage: number }> => {
-    const relevantEvents = milestoneHistory
-      .filter(
-        h => h.dreamId === dreamId && (h.action === 'completed' || h.action === 'uncompleted')
-      )
-      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  // Get completion events from backend to create progress chart data
+  const getProgressChartData = async (
+    dreamId: string
+  ): Promise<Array<{ date: Date; percentage: number }>> => {
+    try {
+      // Import the milestone events API
+      const { getProgressTimelineForContent } = await import('./api/dreamMilestoneEventsApi');
 
-    // Get the current milestone data from the fetched milestones (backend data)
-    const currentMilestones = fetchedDreamMilestones[dreamId] || [];
-    const totalMilestones = currentMilestones.length;
-    const currentCompletedCount = currentMilestones.filter(m => m.completed).length;
-    const currentPercentage =
-      totalMilestones > 0 ? (currentCompletedCount / totalMilestones) * 100 : 0;
+      // Get progress timeline data from backend
+      const timelineData = await getProgressTimelineForContent(dreamId);
 
-    if (relevantEvents.length === 0) {
-      // If no events but we have current progress, add a single data point
+      // Transform backend data to the format expected by the chart
+      const chartPoints = timelineData.map(point => ({
+        date: new Date(point.date),
+        percentage: point.percentage,
+        milestone_title: point.milestone_title,
+        event_type: point.event_type,
+      }));
+
+      // If no timeline data but we have current milestones, create a current state point
+      if (chartPoints.length === 0) {
+        const currentMilestones = fetchedDreamMilestones[dreamId] || [];
+        const totalMilestones = currentMilestones.length;
+        const currentCompletedCount = currentMilestones.filter(m => m.completed).length;
+        const currentPercentage =
+          totalMilestones > 0 ? (currentCompletedCount / totalMilestones) * 100 : 0;
+
+        if (totalMilestones > 0) {
+          return [
+            {
+              date: new Date(),
+              percentage: currentPercentage,
+            },
+          ];
+        }
+        return [];
+      }
+
+      return chartPoints;
+    } catch (error) {
+      console.error('❌ Error fetching progress chart data from backend:', error);
+
+      // Fallback to current milestone state if backend fails
+      const currentMilestones = fetchedDreamMilestones[dreamId] || [];
+      const totalMilestones = currentMilestones.length;
+      const currentCompletedCount = currentMilestones.filter(m => m.completed).length;
+      const currentPercentage =
+        totalMilestones > 0 ? (currentCompletedCount / totalMilestones) * 100 : 0;
+
       if (totalMilestones > 0) {
         return [
           {
@@ -572,40 +604,6 @@ const DreamBoardPage: React.FC = () => {
       }
       return [];
     }
-
-    const points: Array<{ date: Date; percentage: number }> = [];
-    let currentCompleted = 0;
-
-    // Add starting point if we have events
-    points.push({
-      date: new Date(relevantEvents[0].timestamp),
-      percentage: 0,
-    });
-
-    relevantEvents.forEach(event => {
-      if (event.action === 'completed') {
-        currentCompleted++;
-      } else if (event.action === 'uncompleted') {
-        currentCompleted = Math.max(0, currentCompleted - 1);
-      }
-
-      const percentage = totalMilestones > 0 ? (currentCompleted / totalMilestones) * 100 : 0;
-      points.push({
-        date: new Date(event.timestamp),
-        percentage,
-      });
-    });
-
-    // Add current state as the latest point if it's different from the last calculated point
-    const lastPoint = points[points.length - 1];
-    if (!lastPoint || lastPoint.percentage !== currentPercentage) {
-      points.push({
-        date: new Date(),
-        percentage: currentPercentage,
-      });
-    }
-
-    return points;
   };
 
   // Handle updating a challenge (for marking days complete/incomplete)
