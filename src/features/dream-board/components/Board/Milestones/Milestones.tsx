@@ -1,85 +1,142 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DreamBoardContent } from '../../../types';
+import {
+  getMilestonesForContent,
+  createMilestoneForContent,
+  toggleMilestoneCompletionForContent,
+  deleteMilestoneForContent,
+  updateMilestoneForContent,
+} from '../../../services/milestonesService';
 import styles from './Milestones.module.css';
-
-interface Milestone {
-  id: string;
-  title: string;
-  completed: boolean;
-  dueDate?: string;
-}
 
 interface MilestonesProps {
   content: DreamBoardContent;
   onUpdate: (changes: Partial<DreamBoardContent>) => void;
 }
 
+import { Milestone } from '../../../types';
+
 export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUpdate }) => {
-  // Use content.id as a key for storing/retrieving milestones
   const contentId = content.id;
 
-  // Initialize milestones from localStorage or create empty array
-  const [milestones, setMilestones] = useState<Milestone[]>(() => {
-    const savedMilestones = localStorage.getItem(`milestones-${contentId}`);
-    return savedMilestones ? JSON.parse(savedMilestones) : [];
-  });
+  // State for milestones
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [newMilestoneTitle, setNewMilestoneTitle] = useState('');
   const [newMilestoneDueDate, setNewMilestoneDueDate] = useState('');
   const [editingMilestoneId, setEditingMilestoneId] = useState<string | null>(null);
 
-  // Save milestones to localStorage whenever they change
-  const saveMilestones = (updatedMilestones: Milestone[]): void => {
-    localStorage.setItem(`milestones-${contentId}`, JSON.stringify(updatedMilestones));
-    setMilestones(updatedMilestones);
-  };
+  // Load milestones from backend
+  useEffect(() => {
+    const loadMilestones = async (): Promise<void> => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  // Add a new milestone
-  const handleAddMilestone = (): void => {
-    if (!newMilestoneTitle.trim()) return;
-
-    const newMilestone: Milestone = {
-      id: `milestone-${Date.now()}`,
-      title: newMilestoneTitle,
-      completed: false,
-      dueDate: newMilestoneDueDate || undefined,
+        const fetchedMilestones = await getMilestonesForContent(contentId);
+        setMilestones(fetchedMilestones);
+      } catch (err) {
+        console.error('Error loading milestones:', err);
+        setError('Failed to load milestones');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const updatedMilestones = [...milestones, newMilestone];
-    saveMilestones(updatedMilestones);
-    setNewMilestoneTitle('');
-    setNewMilestoneDueDate('');
+    loadMilestones();
+  }, [contentId]);
+
+  // Add a new milestone
+  const handleAddMilestone = async (): Promise<void> => {
+    if (!newMilestoneTitle.trim()) return;
+
+    try {
+      const newMilestone = await createMilestoneForContent(contentId, {
+        title: newMilestoneTitle,
+        date: newMilestoneDueDate || undefined,
+      });
+
+      // Update local state and clear form
+      setMilestones([...milestones, newMilestone]);
+      setNewMilestoneTitle('');
+      setNewMilestoneDueDate('');
+    } catch (err) {
+      console.error('Error adding milestone:', err);
+      setError('Failed to add milestone');
+    }
   };
 
   // Toggle milestone completion status
-  const toggleMilestoneCompletion = (id: string): void => {
-    const updatedMilestones = milestones.map(milestone =>
-      milestone.id === id ? { ...milestone, completed: !milestone.completed } : milestone
-    );
-    saveMilestones(updatedMilestones);
+  const handleToggleMilestoneCompletion = async (id: string): Promise<void> => {
+    try {
+      const updatedMilestone = await toggleMilestoneCompletionForContent(id);
+
+      setMilestones(
+        milestones.map(milestone => (milestone.id === id ? updatedMilestone : milestone))
+      );
+    } catch (err) {
+      console.error('Error toggling milestone completion:', err);
+      setError('Failed to update milestone');
+    }
   };
 
   // Delete a milestone
-  const deleteMilestone = (id: string): void => {
-    const updatedMilestones = milestones.filter(milestone => milestone.id !== id);
-    saveMilestones(updatedMilestones);
-    if (editingMilestoneId === id) {
-      setEditingMilestoneId(null);
+  const handleDeleteMilestone = async (id: string): Promise<void> => {
+    try {
+      await deleteMilestoneForContent(id);
+
+      setMilestones(milestones.filter(milestone => milestone.id !== id));
+      if (editingMilestoneId === id) {
+        setEditingMilestoneId(null);
+      }
+    } catch (err) {
+      console.error('Error deleting milestone:', err);
+      setError('Failed to delete milestone');
     }
   };
 
   // Update milestone title
-  const updateMilestoneTitle = (id: string, title: string): void => {
-    const updatedMilestones = milestones.map(milestone =>
-      milestone.id === id ? { ...milestone, title } : milestone
-    );
-    saveMilestones(updatedMilestones);
+  const handleUpdateMilestoneTitle = async (id: string, title: string): Promise<void> => {
+    try {
+      const milestoneToUpdate = milestones.find(m => m.id === id);
+      if (!milestoneToUpdate) return;
+
+      const updatedMilestone = await updateMilestoneForContent({
+        ...milestoneToUpdate,
+        title,
+      });
+
+      setMilestones(
+        milestones.map(milestone => (milestone.id === id ? updatedMilestone : milestone))
+      );
+    } catch (err) {
+      console.error('Error updating milestone title:', err);
+      setError('Failed to update milestone');
+    }
   };
+
+  if (loading) {
+    return (
+      <div className={styles.milestonesContainer}>
+        <h3 className={styles.milestonesTitle}>Dream Milestones</h3>
+        <div className={styles.loadingState}>Loading milestones...</div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.milestonesContainer}>
       <h3 className={styles.milestonesTitle}>Dream Milestones</h3>
       <p className={styles.milestonesDescription}>Break down your dream into achievable steps</p>
+
+      {error && (
+        <div className={styles.errorState}>
+          {error}
+          <button onClick={() => setError(null)}>×</button>
+        </div>
+      )}
 
       {/* Add new milestone form */}
       <div className={styles.addMilestoneForm}>
@@ -88,6 +145,12 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
           value={newMilestoneTitle}
           onChange={e => setNewMilestoneTitle(e.target.value)}
           placeholder="New milestone title..."
+          className={styles.milestoneInput}
+        />
+        <input
+          type="date"
+          value={newMilestoneDueDate}
+          onChange={e => setNewMilestoneDueDate(e.target.value)}
           className={styles.milestoneInput}
         />
         <button
@@ -112,7 +175,7 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
                 <input
                   type="checkbox"
                   checked={milestone.completed}
-                  onChange={() => toggleMilestoneCompletion(milestone.id)}
+                  onChange={() => handleToggleMilestoneCompletion(milestone.id)}
                   id={`milestone-${milestone.id}`}
                 />
                 <label
@@ -123,10 +186,27 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
                     <input
                       type="text"
                       value={milestone.title}
-                      onChange={e => updateMilestoneTitle(milestone.id, e.target.value)}
-                      onBlur={() => setEditingMilestoneId(null)}
+                      onChange={e => {
+                        const updatedMilestones = milestones.map(m =>
+                          m.id === milestone.id ? { ...m, title: e.target.value } : m
+                        );
+                        setMilestones(updatedMilestones);
+                      }}
+                      onBlur={() => {
+                        handleUpdateMilestoneTitle(milestone.id, milestone.title);
+                        setEditingMilestoneId(null);
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          handleUpdateMilestoneTitle(milestone.id, milestone.title);
+                          setEditingMilestoneId(null);
+                        }
+                        if (e.key === 'Escape') {
+                          setEditingMilestoneId(null);
+                        }
+                      }}
                       autoFocus
-                      className={styles.editMilestoneInput}
+                      className={styles.milestoneEditInput}
                     />
                   ) : (
                     <span
@@ -138,22 +218,18 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
                   )}
                 </label>
               </div>
-
-              <div className={styles.milestoneActions}>
-                {milestone.dueDate && (
-                  <span className={styles.milestoneDueDate}>
-                    {new Date(milestone.dueDate).toLocaleDateString()}
-                  </span>
-                )}
-
-                <button
-                  onClick={() => deleteMilestone(milestone.id)}
-                  className={styles.deleteMilestoneButton}
-                  aria-label="Delete milestone"
-                >
-                  ×
-                </button>
-              </div>
+              {milestone.date && (
+                <div className={styles.milestoneDueDate}>
+                  Due: {new Date(milestone.date).toLocaleDateString()}
+                </div>
+              )}
+              <button
+                onClick={() => handleDeleteMilestone(milestone.id)}
+                className={styles.deleteMilestoneButton}
+                title="Delete milestone"
+              >
+                ×
+              </button>
             </div>
           ))
         )}

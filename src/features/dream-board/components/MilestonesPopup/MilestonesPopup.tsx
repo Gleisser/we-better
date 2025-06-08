@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream, Milestone } from '../../types';
 import TimelineComponent from './TimelineComponent';
@@ -31,7 +31,7 @@ interface MilestonesPopupProps {
     width: number,
     height: number
   ) => string;
-  getProgressChartData: (dreamId: string) => Array<{ date: Date; percentage: number }>;
+  getProgressChartData: (dreamId: string) => Promise<Array<{ date: Date; percentage: number }>>;
   milestoneHistory: Array<MilestoneHistoryItem>;
   achievementBadges: Array<{
     id: string;
@@ -40,6 +40,7 @@ interface MilestonesPopupProps {
     icon: string;
     condition: (dream: Dream) => boolean;
   }>;
+  fetchedMilestones?: Milestone[];
 }
 
 const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
@@ -61,8 +62,45 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
   getProgressChartData,
   milestoneHistory,
   achievementBadges,
+  fetchedMilestones,
 }) => {
+  // State for async chart data (must be at the top level)
+  const [chartData, setChartData] = useState<Array<{ date: Date; percentage: number }>>([]);
+  const [isLoadingChart, setIsLoadingChart] = useState<boolean>(false);
+  const [chartError, setChartError] = useState<string | null>(null);
+
+  // Fetch chart data when the chart tab is active
+  useEffect(() => {
+    if (activeVizTab === 'chart' && selectedDream) {
+      setIsLoadingChart(true);
+      setChartError(null);
+
+      getProgressChartData(selectedDream.id)
+        .then(data => {
+          setChartData(data);
+        })
+        .catch(error => {
+          console.error('❌ Error loading chart data:', error);
+          setChartError('Failed to load progress chart data');
+          setChartData([]);
+        })
+        .finally(() => {
+          setIsLoadingChart(false);
+        });
+    }
+  }, [activeVizTab, selectedDream?.id, getProgressChartData, selectedDream]);
+
   if (!showMilestonesPopup || !selectedDream) return null;
+
+  const milestones = fetchedMilestones || selectedDream.milestones;
+
+  // Create a modified dream object with current milestone data for achievement evaluation
+  const dreamWithCurrentData = {
+    ...selectedDream,
+    milestones,
+    progress:
+      milestones.length > 0 ? milestones.filter(m => m.completed).length / milestones.length : 0,
+  };
 
   return (
     <div className={styles.modalOverlay} onClick={() => setShowMilestonesPopup(false)}>
@@ -85,20 +123,19 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
               <div
                 className={styles.progressFill}
                 style={{
-                  width: `${getPercentage(calculateProgress(selectedDream.milestones, false))}%`,
+                  width: `${getPercentage(calculateProgress(milestones, false))}%`,
                   backgroundColor: '#4caf50',
                 }}
               />
             </div>
             <p>
-              You've completed {selectedDream.milestones.filter(m => m.completed).length} of{' '}
-              {selectedDream.milestones.length} milestones (
-              {getPercentage(calculateProgress(selectedDream.milestones, false))}% complete)
+              You've completed {milestones.filter(m => m.completed).length} of {milestones.length}{' '}
+              milestones ({getPercentage(calculateProgress(milestones, false))}% complete)
             </p>
           </div>
 
           {/* Visualization Tabs - only show when not in form mode */}
-          {!showMilestoneForm && selectedDream.milestones.length > 0 && (
+          {!showMilestoneForm && milestones.length > 0 && (
             <div className={styles.visualizationTabs}>
               <button
                 className={`${styles.vizTab} ${activeVizTab === 'timeline' ? styles.activeVizTab : ''}`}
@@ -130,12 +167,12 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
               {activeVizTab === 'timeline' && (
                 <div className={styles.timelineVisualization}>
                   <h4>Milestone Timeline</h4>
-                  {selectedDream.milestones.some(m => m.date) ? (
+                  {milestones.some(m => m.date) ? (
                     <TimelineComponent
-                      milestones={selectedDream.milestones}
+                      milestones={milestones}
                       formatDisplayDate={formatDisplayDate}
                       dreamTitle={selectedDream.title}
-                      progress={calculateProgress(selectedDream.milestones, false)}
+                      progress={calculateProgress(milestones, false)}
                     />
                   ) : (
                     <div className={styles.emptyVisualization}>
@@ -153,10 +190,17 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                 <div className={styles.chartVisualization}>
                   <h4>Progress Chart</h4>
 
-                  {milestoneHistory.filter(h => h.dreamId === selectedDream.id).length > 0 ? (
+                  {isLoadingChart ? (
+                    <div className={styles.emptyVisualization}>
+                      <p>Loading progress chart...</p>
+                    </div>
+                  ) : chartError ? (
+                    <div className={styles.emptyVisualization}>
+                      <p>Error loading chart: {chartError}</p>
+                    </div>
+                  ) : chartData.length > 0 ? (
                     <div className={styles.progressChartContainer}>
                       {(() => {
-                        const chartData = getProgressChartData(selectedDream.id);
                         const chartWidth = 600;
                         const chartHeight = 200;
 
@@ -191,76 +235,75 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                             />
 
                             {/* Chart line */}
-                            {chartData.length > 1 && (
-                              <path
-                                d={generateProgressChartPath(chartData, chartWidth, chartHeight)}
-                                stroke="#4caf50"
-                                strokeWidth="3"
-                                fill="none"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            )}
+                            <path
+                              d={generateProgressChartPath(chartData, chartWidth, chartHeight)}
+                              stroke="#4caf50"
+                              strokeWidth="2"
+                              fill="none"
+                            />
 
                             {/* Data points */}
-                            {chartData.map((point, i) => {
-                              const minDate = chartData[0].date;
-                              const maxDate = chartData[chartData.length - 1].date;
-                              const timeRange = maxDate.getTime() - minDate.getTime();
+                            {chartData.map((point, index) => {
                               const x =
                                 chartWidth *
-                                ((point.date.getTime() - minDate.getTime()) / timeRange);
+                                ((point.date.getTime() - chartData[0].date.getTime()) /
+                                  (chartData[chartData.length - 1].date.getTime() -
+                                    chartData[0].date.getTime()));
                               const y = chartHeight - (point.percentage / 100) * chartHeight;
-
-                              return <circle key={i} cx={x} cy={y} r="5" fill="#4caf50" />;
+                              return (
+                                <circle
+                                  key={index}
+                                  cx={x}
+                                  cy={y}
+                                  r="3"
+                                  fill="#4caf50"
+                                  stroke="white"
+                                  strokeWidth="1"
+                                />
+                              );
                             })}
-
-                            {/* Y-axis labels */}
-                            <text x="5" y="15" fill="white" fontSize="12">
-                              100%
-                            </text>
-                            <text x="5" y={chartHeight / 2 + 15} fill="white" fontSize="12">
-                              50%
-                            </text>
-                            <text x="5" y={chartHeight - 5} fill="white" fontSize="12">
-                              0%
-                            </text>
                           </svg>
                         );
                       })()}
-
-                      <div className={styles.chartLabels}>
-                        <div>Milestone Completion Progress</div>
-                      </div>
                     </div>
                   ) : (
                     <div className={styles.emptyVisualization}>
                       <p>
-                        Not enough data for a progress chart. Mark milestones as complete to track
-                        your progress over time.
+                        No milestones available yet. Add some milestones to see your progress chart.
                       </p>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* Achievements/Badges */}
+              {/* Achievements */}
               {activeVizTab === 'achievements' && (
                 <div className={styles.achievementsVisualization}>
                   <h4>Achievements</h4>
-
-                  <div className={styles.badgeGrid}>
+                  <div className={styles.achievementBadges}>
                     {achievementBadges.map(badge => {
-                      const isEarned = badge.condition(selectedDream);
+                      const isEarned = badge.condition(dreamWithCurrentData);
                       return (
                         <div
                           key={badge.id}
-                          className={`${styles.achievementBadge} ${isEarned ? styles.earnedBadge : styles.unearnedBadge}`}
+                          className={`${styles.achievementBadge} ${
+                            isEarned ? styles.earnedBadge : styles.unearnedBadge
+                          }`}
                         >
-                          <div className={styles.badgeIcon}>{badge.icon}</div>
-                          <div className={styles.badgeTitle}>{badge.title}</div>
-                          <div className={styles.badgeDescription}>{badge.description}</div>
-                          {!isEarned && <div className={styles.badgeLock}>🔒</div>}
+                          <div className={styles.badgeIcon}>
+                            {isEarned ? (
+                              badge.icon
+                            ) : (
+                              <>
+                                <span style={{ opacity: 0.3 }}>{badge.icon}</span>
+                                <div className={styles.badgeLock}>🔒</div>
+                              </>
+                            )}
+                          </div>
+                          <div className={styles.badgeInfo}>
+                            <h5 className={styles.badgeTitle}>{badge.title}</h5>
+                            <p className={styles.badgeDescription}>{badge.description}</p>
+                          </div>
                         </div>
                       );
                     })}
@@ -270,7 +313,6 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
             </>
           )}
 
-          {/* Milestone Form (visible when adding/editing) */}
           {showMilestoneForm ? (
             <div className={styles.milestoneFormContainer}>
               <div className={styles.milestoneFormHeader}>
@@ -346,9 +388,9 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                 </button>
               </div>
 
-              {selectedDream.milestones.length > 0 ? (
+              {milestones.length > 0 ? (
                 <ul className={styles.milestoneList}>
-                  {selectedDream.milestones.map(milestone => (
+                  {milestones.map(milestone => (
                     <li key={milestone.id} className={styles.milestoneItem}>
                       <div className={styles.milestoneCheckboxContainer}>
                         <input
@@ -418,9 +460,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                         (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
                       )
                       .map((historyItem, index) => {
-                        const milestone = selectedDream.milestones.find(
-                          m => m.id === historyItem.milestoneId
-                        );
+                        const milestone = milestones.find(m => m.id === historyItem.milestoneId);
                         const milestoneTitle = milestone ? milestone.title : 'Deleted milestone';
                         const formattedTime = new Date(historyItem.timestamp).toLocaleString();
 
