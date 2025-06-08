@@ -1820,10 +1820,11 @@
 }
 
 /* Achievement Badges */
-.badgeGrid {
+.achievementBadges {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  margin: 1rem 0;
 }
 
 .achievementBadge {
@@ -1834,27 +1835,53 @@
   position: relative;
   transition: all 0.3s;
   border: 1px solid rgba(255, 255, 255, 0.15);
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.earnedBadge {
+.achievementBadge.earnedBadge {
   background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(46, 125, 50, 0.15));
   border-color: rgba(76, 175, 80, 0.4);
   box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
 }
 
-.earnedBadge:hover {
-  transform: translateY(-5px);
+.achievementBadge.earnedBadge:hover {
+  transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
 }
 
-.unearnedBadge {
-  opacity: 0.6;
+.achievementBadge.unearnedBadge {
+  opacity: 0.5;
   filter: grayscale(0.8);
+  background: rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.achievementBadge.unearnedBadge .badgeIcon {
+  opacity: 0.3;
 }
 
 .badgeIcon {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.badgeLock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  z-index: 2;
+}
+
+.badgeInfo {
+  text-align: center;
 }
 
 .badgeTitle {
@@ -1864,18 +1891,47 @@
   color: white;
 }
 
+.achievementBadge.unearnedBadge .badgeTitle {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .badgeDescription {
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.4;
 }
 
-.badgeLock {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 1.2rem;
-  opacity: 0.8;
+.achievementBadge.unearnedBadge .badgeDescription {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Responsive achievement badges */
+@media (max-width: 768px) {
+  .achievementBadges {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .achievementBadge {
+    min-height: 120px;
+    padding: 1rem 0.8rem;
+  }
+
+  .badgeIcon {
+    font-size: 2rem;
+  }
+
+  .badgeLock {
+    font-size: 1.6rem;
+  }
+
+  .badgeTitle {
+    font-size: 0.9rem;
+  }
+
+  .badgeDescription {
+    font-size: 0.75rem;
+  }
 }
 
 .dreamWeatherContainer {

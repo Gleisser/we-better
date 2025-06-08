@@ -68,6 +68,14 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
 
   const milestones = fetchedMilestones || selectedDream.milestones;
 
+  // Create a modified dream object with current milestone data for achievement evaluation
+  const dreamWithCurrentData = {
+    ...selectedDream,
+    milestones,
+    progress:
+      milestones.length > 0 ? milestones.filter(m => m.completed).length / milestones.length : 0,
+  };
+
   return (
     <div className={styles.modalOverlay} onClick={() => setShowMilestonesPopup(false)}>
       <div className={styles.milestonesPopup} onClick={e => e.stopPropagation()}>
@@ -242,25 +250,34 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
               {activeVizTab === 'achievements' && (
                 <div className={styles.achievementsVisualization}>
                   <h4>Achievements</h4>
-                  {achievementBadges.some(badge => badge.condition(selectedDream)) ? (
-                    <div className={styles.achievementBadges}>
-                      {achievementBadges
-                        .filter(badge => badge.condition(selectedDream))
-                        .map(badge => (
-                          <div key={badge.id} className={styles.achievementBadge}>
-                            <div className={styles.badgeIcon}>{badge.icon}</div>
-                            <div className={styles.badgeInfo}>
-                              <h5>{badge.title}</h5>
-                              <p>{badge.description}</p>
-                            </div>
+                  <div className={styles.achievementBadges}>
+                    {achievementBadges.map(badge => {
+                      const isEarned = badge.condition(dreamWithCurrentData);
+                      return (
+                        <div
+                          key={badge.id}
+                          className={`${styles.achievementBadge} ${
+                            isEarned ? styles.earnedBadge : styles.unearnedBadge
+                          }`}
+                        >
+                          <div className={styles.badgeIcon}>
+                            {isEarned ? (
+                              badge.icon
+                            ) : (
+                              <>
+                                <span style={{ opacity: 0.3 }}>{badge.icon}</span>
+                                <div className={styles.badgeLock}>🔒</div>
+                              </>
+                            )}
                           </div>
-                        ))}
-                    </div>
-                  ) : (
-                    <div className={styles.emptyVisualization}>
-                      <p>No achievements unlocked yet. Keep making progress on your milestones!</p>
-                    </div>
-                  )}
+                          <div className={styles.badgeInfo}>
+                            <h5 className={styles.badgeTitle}>{badge.title}</h5>
+                            <p className={styles.badgeDescription}>{badge.description}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </>
