@@ -17,12 +17,14 @@ interface DreamProgressProps {
   dreams: Dream[];
   handleOpenMilestoneManager: (dreamId: string) => void;
   getCategoryDetails: (category: string) => CategoryDetails;
+  onMilestonesLoaded?: (dreamMilestones: Record<string, Milestone[]>) => void;
 }
 
 const DreamProgress: React.FC<DreamProgressProps> = ({
   dreams,
   handleOpenMilestoneManager,
   getCategoryDetails,
+  onMilestonesLoaded,
 }) => {
   const [dreamMilestones, setDreamMilestones] = useState<Record<string, Milestone[]>>({});
   const [loading, setLoading] = useState(true);
@@ -39,8 +41,10 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
         }
 
         setDreamMilestones(milestonesMap);
+        // Pass the fetched milestones to parent component
+        onMilestonesLoaded?.(milestonesMap);
       } catch (error) {
-        console.error('Error fetching dream milestones:', error);
+        console.error('❌ Error fetching dream milestones:', error);
       } finally {
         setLoading(false);
       }
@@ -49,7 +53,7 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
     if (dreams.length > 0) {
       fetchMilestones();
     }
-  }, [dreams]);
+  }, [dreams, onMilestonesLoaded]);
 
   return (
     <section className={styles.progressSection}>

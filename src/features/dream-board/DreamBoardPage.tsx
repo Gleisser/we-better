@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './DreamBoardPage.module.css';
 import {
   Dream,
@@ -26,6 +26,12 @@ import DreamInsights from './components/DreamInsights';
 import FooterTools from './components/FooterTools';
 import MilestonesPopup from './components/MilestonesPopup';
 import ChallengeModal from './components/DreamChallenge/ChallengeModal';
+import {
+  createMilestoneForContent,
+  updateMilestoneForContent,
+  deleteMilestoneForContent,
+  toggleMilestoneCompletionForContent,
+} from './services/milestonesService';
 
 type CategoryDetails = {
   icon: string;
@@ -85,9 +91,14 @@ const DreamBoardPage: React.FC = () => {
   // New state for inline form display
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
 
-  // New state variables for visualizations
+  // New state for visualizations
   const [activeVizTab, setActiveVizTab] = useState<'timeline' | 'chart' | 'achievements' | null>(
     null
+  );
+
+  // New state for fetched dream milestones
+  const [fetchedDreamMilestones, setFetchedDreamMilestones] = useState<Record<string, Milestone[]>>(
+    {}
   );
 
   // Toggle mini vision board expansion
@@ -139,91 +150,68 @@ const DreamBoardPage: React.FC = () => {
   };
 
   // Milestone Management Functions
-  const handleMilestoneComplete = (
+  const handleMilestoneComplete = async (
     dreamId: string,
     milestoneId: string,
     isComplete: boolean
-  ): void => {
-    setDreams(prevDreams => {
-      const updatedDreams = prevDreams.map(dream => {
-        if (dream.id === dreamId) {
-          const updatedMilestones = dream.milestones.map(milestone =>
-            milestone.id === milestoneId ? { ...milestone, completed: isComplete } : milestone
-          );
+  ): Promise<void> => {
+    try {
+      // Update milestone completion status in backend
+      const updatedMilestone = await toggleMilestoneCompletionForContent(milestoneId);
 
-          // Add to history
-          setMilestoneHistory(prev => [
-            ...prev,
-            {
-              dreamId,
-              milestoneId,
-              action: isComplete ? 'completed' : 'uncompleted',
-              timestamp: new Date().toISOString(),
-            },
-          ]);
+      // Update local fetched milestones state
+      setFetchedDreamMilestones(prev => ({
+        ...prev,
+        [dreamId]: prev[dreamId]?.map(m => (m.id === milestoneId ? updatedMilestone : m)) || [],
+      }));
 
-          // Recalculate progress based on milestones
-          const completedCount = updatedMilestones.filter(m => m.completed).length;
-          const totalCount = updatedMilestones.length;
-          const newProgress = totalCount > 0 ? completedCount / totalCount : 0;
-
-          return {
-            ...dream,
-            milestones: updatedMilestones,
-            progress: newProgress,
-          };
-        }
-        return dream;
-      });
-
-      // Auto-save the changes
-      setHasUnsavedChanges(true);
-      saveDreamBoardUpdates(updatedDreams);
-
-      return updatedDreams;
-    });
+      // Add to history
+      setMilestoneHistory(prev => [
+        ...prev,
+        {
+          dreamId,
+          milestoneId,
+          action: isComplete ? 'completed' : 'uncompleted',
+          timestamp: new Date().toISOString(),
+        },
+      ]);
+    } catch (error) {
+      console.error('❌ Error updating milestone completion:', error);
+    }
   };
 
-  const handleDeleteMilestone = (dreamId: string, milestoneId: string): void => {
+  const handleDeleteMilestone = async (dreamId: string, milestoneId: string): Promise<void> => {
     if (window.confirm('Are you sure you want to delete this milestone?')) {
-      setDreams(prevDreams => {
-        const updatedDreams = prevDreams.map(dream => {
-          if (dream.id === dreamId) {
-            const updatedMilestones = dream.milestones.filter(
-              milestone => milestone.id !== milestoneId
-            );
+      try {
+        // Delete milestone from backend
+        await deleteMilestoneForContent(milestoneId);
 
-            // Add to history
-            setMilestoneHistory(prev => [
-              ...prev,
-              {
-                dreamId,
-                milestoneId,
-                action: 'deleted',
-                timestamp: new Date().toISOString(),
-              },
-            ]);
+        // Update local fetched milestones state
+        setFetchedDreamMilestones(prev => ({
+          ...prev,
+          [dreamId]: (prev[dreamId] || []).filter(m => m.id !== milestoneId),
+        }));
 
-            // Recalculate progress
-            const completedCount = updatedMilestones.filter(m => m.completed).length;
-            const totalCount = updatedMilestones.length;
-            const newProgress = totalCount > 0 ? completedCount / totalCount : 0;
+        // Add to history
+        setMilestoneHistory(prev => [
+          ...prev,
+          {
+            dreamId,
+            milestoneId,
+            action: 'deleted',
+            timestamp: new Date().toISOString(),
+          },
+        ]);
 
-            return {
-              ...dream,
-              milestones: updatedMilestones,
-              progress: newProgress,
-            };
-          }
-          return dream;
-        });
-
-        // Auto-save the changes
-        setHasUnsavedChanges(true);
-        saveDreamBoardUpdates(updatedDreams);
-
-        return updatedDreams;
-      });
+        // Close editing mode if we were editing this milestone
+        if (currentMilestone?.id === milestoneId) {
+          setCurrentMilestone(null);
+          setMilestoneAction(null);
+          setShowMilestoneForm(false);
+        }
+      } catch (error) {
+        console.error('❌ Error deleting milestone:', error);
+      }
     }
   };
 
@@ -437,89 +425,80 @@ const DreamBoardPage: React.FC = () => {
   };
 
   // Handle save milestone with integrated form
-  const handleSaveMilestone = (e: React.FormEvent): void => {
+  const handleSaveMilestone = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
-    const title = (form.elements.namedItem('title') as HTMLInputElement).value;
-    const description = (form.elements.namedItem('description') as HTMLTextAreaElement).value;
+    const title = (form.elements.namedItem('title') as HTMLInputElement).value.trim();
+    const description = (
+      form.elements.namedItem('description') as HTMLTextAreaElement
+    ).value.trim();
     const date = (form.elements.namedItem('date') as HTMLInputElement).value;
 
-    if (!selectedDreamForMilestones) return;
+    if (!selectedDreamForMilestones || !title) return;
 
-    const milestoneData: Milestone = {
-      id: currentMilestone?.id || '',
-      title,
-      description,
-      completed: currentMilestone?.completed || false,
-      date: date ? new Date(date).toISOString() : undefined,
-    };
+    try {
+      if (milestoneAction === 'add') {
+        // Create new milestone in backend
+        const newMilestone = await createMilestoneForContent(selectedDreamForMilestones, {
+          title,
+          description: description || undefined,
+          date: date || undefined,
+        });
 
-    setDreams(prevDreams =>
-      prevDreams.map(dream => {
-        if (dream.id === selectedDreamForMilestones) {
-          let updatedMilestones;
+        // Update local fetched milestones state
+        setFetchedDreamMilestones(prev => ({
+          ...prev,
+          [selectedDreamForMilestones]: [...(prev[selectedDreamForMilestones] || []), newMilestone],
+        }));
 
-          if (milestoneAction === 'add') {
-            // Generate a unique ID for new milestone
-            const newMilestone = {
-              ...milestoneData,
-              id: `m${Date.now()}`,
-              completed: false,
-            };
-            updatedMilestones = [...dream.milestones, newMilestone];
+        // Add to history
+        setMilestoneHistory(prev => [
+          ...prev,
+          {
+            dreamId: selectedDreamForMilestones,
+            milestoneId: newMilestone.id,
+            action: 'added',
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+      } else if (milestoneAction === 'edit' && currentMilestone) {
+        // Update existing milestone in backend
+        const milestoneToUpdate = {
+          ...currentMilestone,
+          title,
+          description: description || undefined,
+          date: date || undefined,
+        };
 
-            // Add to history
-            setMilestoneHistory(prev => [
-              ...prev,
-              {
-                dreamId: dream.id,
-                milestoneId: newMilestone.id,
-                action: 'added',
-                timestamp: new Date().toISOString(),
-              },
-            ]);
-          } else if (milestoneAction === 'edit' && currentMilestone) {
-            updatedMilestones = dream.milestones.map(m =>
-              m.id === currentMilestone.id ? milestoneData : m
-            );
+        const updatedMilestone = await updateMilestoneForContent(milestoneToUpdate);
 
-            // Add to history
-            setMilestoneHistory(prev => [
-              ...prev,
-              {
-                dreamId: dream.id,
-                milestoneId: milestoneData.id,
-                action: 'edited',
-                timestamp: new Date().toISOString(),
-              },
-            ]);
-          } else {
-            updatedMilestones = dream.milestones;
-          }
+        // Update local fetched milestones state
+        setFetchedDreamMilestones(prev => ({
+          ...prev,
+          [selectedDreamForMilestones]: (prev[selectedDreamForMilestones] || []).map(m =>
+            m.id === currentMilestone.id ? updatedMilestone : m
+          ),
+        }));
 
-          // Recalculate progress
-          const completedCount = updatedMilestones.filter(m => m.completed).length;
-          const totalCount = updatedMilestones.length;
-          const newProgress = totalCount > 0 ? completedCount / totalCount : 0;
+        // Add to history
+        setMilestoneHistory(prev => [
+          ...prev,
+          {
+            dreamId: selectedDreamForMilestones,
+            milestoneId: updatedMilestone.id,
+            action: 'edited',
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+      }
 
-          return {
-            ...dream,
-            milestones: updatedMilestones,
-            progress: newProgress,
-          };
-        }
-        return dream;
-      })
-    );
-
-    // Reset form state
-    setShowMilestoneForm(false);
-    setMilestoneAction(null);
-    setCurrentMilestone(null);
-
-    // Auto-save changes
-    setHasUnsavedChanges(true);
-    saveDreamBoardUpdates(dreams);
+      // Reset form state
+      setShowMilestoneForm(false);
+      setMilestoneAction(null);
+      setCurrentMilestone(null);
+    } catch (error) {
+      console.error('❌ Error saving milestone:', error);
+    }
   };
 
   // Cancel milestone editing/adding
@@ -651,6 +630,14 @@ const DreamBoardPage: React.FC = () => {
     </div>
   );
 
+  // Handle fetched milestones from DreamProgress component
+  const handleMilestonesLoaded = useCallback(
+    (dreamMilestones: Record<string, Milestone[]>): void => {
+      setFetchedDreamMilestones(dreamMilestones);
+    },
+    []
+  );
+
   return (
     <div className={styles.dreamBoardContainer}>
       <header className={styles.header}>
@@ -719,6 +706,7 @@ const DreamBoardPage: React.FC = () => {
                 filterCategory={filterCategory}
                 setFilterCategory={setFilterCategory}
                 categories={mockCategories}
+                handleMilestonesLoaded={handleMilestonesLoaded}
               />
             )}
 
@@ -800,6 +788,7 @@ const DreamBoardPage: React.FC = () => {
           getProgressChartData={getProgressChartData}
           milestoneHistory={milestoneHistory}
           achievementBadges={achievementBadges}
+          fetchedMilestones={selectedDream ? fetchedDreamMilestones[selectedDream.id] : undefined}
         />
       )}
 

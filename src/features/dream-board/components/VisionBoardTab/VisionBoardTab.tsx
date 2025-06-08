@@ -31,6 +31,9 @@ interface VisionBoardTabProps {
   filterCategory: string | null;
   setFilterCategory: (category: string | null) => void;
   categories: string[];
+  handleMilestonesLoaded: (
+    dreamMilestones: Record<string, import('../../types').Milestone[]>
+  ) => void;
 }
 
 const VisionBoardTab: React.FC<VisionBoardTabProps> = ({
@@ -49,6 +52,7 @@ const VisionBoardTab: React.FC<VisionBoardTabProps> = ({
   filterCategory,
   setFilterCategory,
   categories,
+  handleMilestonesLoaded,
 }) => {
   return (
     <>
@@ -81,6 +85,7 @@ const VisionBoardTab: React.FC<VisionBoardTabProps> = ({
           dreams={dreams}
           handleOpenMilestoneManager={handleOpenMilestoneManager}
           getCategoryDetails={getCategoryDetails}
+          onMilestonesLoaded={handleMilestonesLoaded}
         />
       </div>
     </>
