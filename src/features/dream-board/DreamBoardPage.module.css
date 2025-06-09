@@ -59,12 +59,14 @@
     0 8px 32px rgba(0, 0, 0, 0.2),
     0 0 0 1px rgba(124, 82, 255, 0.2);
   transition: all 0.3s ease;
-  max-height: 250px;
   backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  height: 250px; /* Fixed height instead of max-height */
 }
 
 .expanded {
-  max-height: 600px;
+  height: 450px; /* Fixed height for expanded state */
 }
 
 .miniBoardHeader {
@@ -99,11 +101,81 @@
   color: white;
 }
 
+.miniBoardContentWrapper {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
 .miniBoardContent {
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: 100%;
+  overflow-y: auto;
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.miniBoardContent::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.scrollIndicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.9), rgba(72, 79, 233, 0.7));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 4px 12px rgba(124, 58, 237, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+.scrollIndicator:hover {
+  transform: translateX(-50%) translateY(-2px) scale(1.05);
+  box-shadow:
+    0 6px 20px rgba(124, 58, 237, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.scrollIndicator:active {
+  transform: translateX(-50%) translateY(0) scale(0.95);
+}
+
+.scrollArrow {
+  font-size: 16px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-2px);
+  }
 }
 
 .miniDream {
@@ -117,6 +189,8 @@
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: transform 0.2s ease;
+  min-height: 70px; /* Ensure dreams don't get squeezed */
+  flex-shrink: 0; /* Prevent dreams from shrinking */
 }
 
 .miniDream:hover {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Dream } from '../../types';
 import { useDreamProgress } from '../../hooks/useDreamProgress';
 import styles from '../../DreamBoardPage.module.css';
@@ -25,6 +25,8 @@ const QuickVision: React.FC<QuickVisionProps> = ({
     error,
   } = useDreamProgress();
   const [dreamProgresses, setDreamProgresses] = useState<Record<string, number>>({});
+  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Initialize progress values from backend when component mounts
   useEffect(() => {
@@ -54,6 +56,43 @@ const QuickVision: React.FC<QuickVisionProps> = ({
       loadProgressValues();
     }
   }, [dreams, getProgressForDream]);
+
+  // Check if scroll indicator should be shown
+  useEffect(() => {
+    const checkScrollNeeded = (): void => {
+      if (scrollContainerRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+        const hasMoreContent = scrollHeight > clientHeight + 2; // Small buffer for rounding
+        const canScrollDown = scrollTop < scrollHeight - clientHeight - 10; // 10px threshold
+        setShowScrollIndicator(hasMoreContent && canScrollDown);
+      }
+    };
+
+    // Add a small delay to ensure DOM is updated
+    const timeoutId = setTimeout(checkScrollNeeded, 100);
+
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', checkScrollNeeded);
+      return () => {
+        scrollContainer.removeEventListener('scroll', checkScrollNeeded);
+        clearTimeout(timeoutId);
+      };
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [dreams, expandedMiniBoard]);
+
+  // Handle scroll indicator click
+  const handleScrollDown = (): void => {
+    if (scrollContainerRef.current) {
+      const { clientHeight } = scrollContainerRef.current;
+      scrollContainerRef.current.scrollBy({
+        top: clientHeight * 0.7, // Scroll 70% of visible height
+        behavior: 'smooth',
+      });
+    }
+  };
 
   // Enhanced updateDreamProgress function that saves to backend
   const handleDreamProgressUpdate = async (dreamId: string, adjustment: number): Promise<void> => {
@@ -125,57 +164,70 @@ const QuickVision: React.FC<QuickVisionProps> = ({
         </div>
       )}
 
-      <div className={styles.miniBoardContent}>
-        {dreams.slice(0, 3).map(dream => {
-          // Use progress from backend state, fallback to dream.progress
-          const currentProgress = dreamProgresses[dream.id] ?? dream.progress;
+      <div className={styles.miniBoardContentWrapper}>
+        <div ref={scrollContainerRef} className={styles.miniBoardContent}>
+          {dreams.map(dream => {
+            // Use progress from backend state, fallback to dream.progress
+            const currentProgress = dreamProgresses[dream.id] ?? dream.progress;
 
-          return (
-            <div key={dream.id} className={styles.miniDream}>
-              <div className={styles.dreamIcon}>{getIconForCategory(dream.category)}</div>
+            return (
+              <div key={dream.id} className={styles.miniDream}>
+                <div className={styles.dreamIcon}>{getIconForCategory(dream.category)}</div>
 
-              <div className={styles.dreamContentWrapper}>
-                <div className={styles.dreamTitle}>{dream.title}</div>
-                <div className={styles.progressContainer}>
-                  <div className={styles.progressBar}>
-                    <div
-                      className={styles.progressIndicator}
-                      style={{ width: `${currentProgress * 100}%` }}
-                    />
+                <div className={styles.dreamContentWrapper}>
+                  <div className={styles.dreamTitle}>{dream.title}</div>
+                  <div className={styles.progressContainer}>
+                    <div className={styles.progressBar}>
+                      <div
+                        className={styles.progressIndicator}
+                        style={{ width: `${currentProgress * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.dreamStatus}>
+                  <div className={styles.progressControls}>
+                    <button
+                      className={styles.progressButton}
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleDreamProgressUpdate(dream.id, -0.1);
+                      }}
+                      disabled={currentProgress <= 0 || loading}
+                      aria-label="Decrease progress"
+                    >
+                      <span className={styles.buttonIcon}>-</span>
+                    </button>
+                    <div className={styles.progressValue}>{Math.round(currentProgress * 100)}%</div>
+                    <button
+                      className={styles.progressButton}
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleDreamProgressUpdate(dream.id, 0.1);
+                      }}
+                      disabled={currentProgress >= 1 || loading}
+                      aria-label="Increase progress"
+                    >
+                      <span className={styles.buttonIcon}>+</span>
+                    </button>
                   </div>
                 </div>
               </div>
+            );
+          })}
+        </div>
 
-              <div className={styles.dreamStatus}>
-                <div className={styles.progressControls}>
-                  <button
-                    className={styles.progressButton}
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleDreamProgressUpdate(dream.id, -0.1);
-                    }}
-                    disabled={currentProgress <= 0 || loading}
-                    aria-label="Decrease progress"
-                  >
-                    <span className={styles.buttonIcon}>-</span>
-                  </button>
-                  <div className={styles.progressValue}>{Math.round(currentProgress * 100)}%</div>
-                  <button
-                    className={styles.progressButton}
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleDreamProgressUpdate(dream.id, 0.1);
-                    }}
-                    disabled={currentProgress >= 1 || loading}
-                    aria-label="Increase progress"
-                  >
-                    <span className={styles.buttonIcon}>+</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {/* Scroll indicator */}
+        {showScrollIndicator && (
+          <button
+            className={styles.scrollIndicator}
+            onClick={handleScrollDown}
+            aria-label="Scroll to see more dreams"
+          >
+            <span className={styles.scrollArrow}>⬇</span>
+          </button>
+        )}
       </div>
     </section>
   );

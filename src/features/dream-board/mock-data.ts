@@ -218,7 +218,7 @@ export const mockDreams: Dream[] = [
 export const mockCategories = [
   'Travel',
   'Skills',
-  'Finance',
+  'Finances',
   'Health',
   'Relationships',
   'Career',
