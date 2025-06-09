@@ -1172,6 +1172,24 @@
   border-radius: 4px;
 }
 
+.moreDreamsIndicator {
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.errorState {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: #fecaca;
+  font-size: 0.9rem;
+}
+
 /* Responsive adjustments for categories */
 @media (max-width: 768px) {
   .categoriesGrid {
