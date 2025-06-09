@@ -1,36 +1,23 @@
 import React, { useState, useRef, useEffect, TouchEvent } from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream } from '../../types';
-
-interface Challenge {
-  id: string;
-  title: string;
-  description: string;
-  dreamId: string | null;
-  duration: number;
-  frequency: 'daily' | 'weekly' | 'custom';
-  selectedDays: number[];
-  difficultyLevel: 'easy' | 'medium' | 'hard';
-  enableReminders: boolean;
-  reminderTime: string | null;
-  startDate: string;
-  currentDay: number;
-  completed: boolean;
-}
+import { useDreamChallenges } from '../../hooks/useDreamChallenges';
 
 interface DreamChallengeProps {
-  challenges: Challenge[];
   dreams?: Dream[];
   onOpenChallengeModal?: () => void;
-  onUpdateChallenge?: (challengeId: string, updatedData: Partial<Challenge>) => void;
+  onEditChallenge?: (challengeId: string) => void;
+  onDeleteChallenge?: (challengeId: string) => void;
 }
 
 const DreamChallenge: React.FC<DreamChallengeProps> = ({
-  challenges,
   onOpenChallengeModal = () => {},
-  onUpdateChallenge = () => {}, // Default empty function
+  onEditChallenge = () => {},
+  onDeleteChallenge = () => {},
 }) => {
-  const activeChallenges = challenges.filter(c => !c.completed);
+  const { activeChallenges, loading, error, updateChallenge, deleteChallenge } =
+    useDreamChallenges();
+
   const hasActiveChallenges = activeChallenges.length > 0;
 
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
@@ -90,38 +77,74 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
   };
 
   // Handle marking a day as complete
-  const handleMarkDayComplete = (challengeId: string, currentDay: number): void => {
-    // Add a day to the challenge progress
-    onUpdateChallenge(challengeId, { currentDay: currentDay + 1 });
+  const handleMarkDayComplete = async (challengeId: string, currentDay: number): Promise<void> => {
+    try {
+      // Update the challenge's current_day
+      await updateChallenge({
+        id: challengeId,
+        current_day: currentDay + 1,
+      });
 
-    // Add the challenge to the marked complete set
-    setMarkedCompletedToday(prev => {
-      const newSet = new Set(prev);
-      newSet.add(challengeId);
-      return newSet;
-    });
+      // Add the challenge to the marked complete set
+      setMarkedCompletedToday(prev => {
+        const newSet = new Set(prev);
+        newSet.add(challengeId);
+        return newSet;
+      });
 
-    // Check if the challenge is now completed
-    const challenge = challenges.find(c => c.id === challengeId);
-    if (challenge && currentDay + 1 >= challenge.duration) {
-      // If currentDay + 1 equals or exceeds the duration, mark as completed
-      onUpdateChallenge(challengeId, { completed: true });
+      // Check if the challenge is now completed
+      const challenge = activeChallenges.find(c => c.id === challengeId);
+      if (challenge && currentDay + 1 >= challenge.duration) {
+        // If currentDay + 1 equals or exceeds the duration, mark as completed
+        await updateChallenge({
+          id: challengeId,
+          completed: true,
+        });
+      }
+    } catch (error) {
+      console.error('Error marking day complete:', error);
     }
   };
 
   // Handle undoing a day as complete
-  const handleUndoMarkDayComplete = (challengeId: string, currentDay: number): void => {
-    // Only allow undo if currentDay is greater than 0
-    if (currentDay > 0) {
-      // Subtract a day from the challenge progress
-      onUpdateChallenge(challengeId, { currentDay: currentDay - 1 });
+  const handleUndoMarkDayComplete = async (
+    challengeId: string,
+    currentDay: number
+  ): Promise<void> => {
+    try {
+      // Only allow undo if currentDay is greater than 0
+      if (currentDay > 0) {
+        // Subtract a day from the challenge progress
+        await updateChallenge({
+          id: challengeId,
+          current_day: currentDay - 1,
+        });
 
-      // Remove the challenge from the marked complete set
-      setMarkedCompletedToday(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(challengeId);
-        return newSet;
-      });
+        // Remove the challenge from the marked complete set
+        setMarkedCompletedToday(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(challengeId);
+          return newSet;
+        });
+      }
+    } catch (error) {
+      console.error('Error undoing day complete:', error);
+    }
+  };
+
+  // Handle deleting a challenge
+  const handleDeleteChallenge = async (challengeId: string): Promise<void> => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this challenge? This action cannot be undone.'
+    );
+
+    if (confirmed) {
+      try {
+        await deleteChallenge(challengeId);
+        onDeleteChallenge(challengeId); // Notify parent component
+      } catch (error) {
+        console.error('Error deleting challenge:', error);
+      }
     }
   };
 
@@ -129,6 +152,40 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
   const isCurrentChallengeMarkedComplete = currentChallenge
     ? markedCompletedToday.has(currentChallenge.id)
     : false;
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className={styles.dreamChallengeContainer}>
+        <div className={styles.challengeHeader}>
+          <h3 className={styles.challengeTitle}>Challenge Mode</h3>
+          <button className={styles.newChallengeButton} onClick={onOpenChallengeModal}>
+            New Challenge
+          </button>
+        </div>
+        <div className={styles.noChallengeState}>
+          <p>Loading challenges...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className={styles.dreamChallengeContainer}>
+        <div className={styles.challengeHeader}>
+          <h3 className={styles.challengeTitle}>Challenge Mode</h3>
+          <button className={styles.newChallengeButton} onClick={onOpenChallengeModal}>
+            New Challenge
+          </button>
+        </div>
+        <div className={styles.noChallengeState}>
+          <p>Error loading challenges: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.dreamChallengeContainer}>
@@ -167,13 +224,13 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
 
               <div className={styles.challengeProgress}>
                 <div className={styles.progressText}>
-                  Day {currentChallenge?.currentDay} of {currentChallenge?.duration}
+                  Day {currentChallenge?.current_day} of {currentChallenge?.duration}
                 </div>
                 <div className={styles.progressBarContainer}>
                   <div
                     className={styles.progressBarFill}
                     style={{
-                      width: `${((currentChallenge?.currentDay || 0) / (currentChallenge?.duration || 1)) * 100}%`,
+                      width: `${((currentChallenge?.current_day || 0) / (currentChallenge?.duration || 1)) * 100}%`,
                     }}
                   />
                 </div>
@@ -181,26 +238,51 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
             </div>
 
             <div className={styles.challengeActions}>
-              {currentChallenge &&
-                (isCurrentChallengeMarkedComplete ? (
-                  <button
-                    className={`${styles.completeButton} ${styles.undoButton}`}
-                    onClick={() =>
-                      handleUndoMarkDayComplete(currentChallenge.id, currentChallenge.currentDay)
-                    }
-                  >
-                    Undo Today Complete
-                  </button>
-                ) : (
-                  <button
-                    className={styles.completeButton}
-                    onClick={() =>
-                      handleMarkDayComplete(currentChallenge.id, currentChallenge.currentDay)
-                    }
-                  >
-                    Mark Today Complete
-                  </button>
-                ))}
+              {currentChallenge && (
+                <>
+                  <div className={styles.mainAction}>
+                    {isCurrentChallengeMarkedComplete ? (
+                      <button
+                        className={`${styles.completeButton} ${styles.undoButton}`}
+                        onClick={() =>
+                          handleUndoMarkDayComplete(
+                            currentChallenge.id,
+                            currentChallenge.current_day
+                          )
+                        }
+                      >
+                        Undo Today Complete
+                      </button>
+                    ) : (
+                      <button
+                        className={styles.completeButton}
+                        onClick={() =>
+                          handleMarkDayComplete(currentChallenge.id, currentChallenge.current_day)
+                        }
+                      >
+                        Mark Today Complete
+                      </button>
+                    )}
+                  </div>
+
+                  <div className={styles.challengeManagementActions}>
+                    <button
+                      className={styles.editButton}
+                      onClick={() => onEditChallenge(currentChallenge.id)}
+                      title="Edit Challenge"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleDeleteChallenge(currentChallenge.id)}
+                      title="Delete Challenge"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
