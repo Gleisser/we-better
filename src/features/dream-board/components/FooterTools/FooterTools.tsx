@@ -1,8 +1,6 @@
 import React from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import DreamWeather from '../DreamWeather';
-import DreamChallenge from '../DreamChallenge';
-import { Dream } from '../../types';
 
 interface Weather {
   message: string;
@@ -16,47 +14,15 @@ interface Notification {
   read: boolean;
 }
 
-interface Challenge {
-  id: string;
-  title: string;
-  description: string;
-  dreamId: string | null;
-  duration: number;
-  frequency: 'daily' | 'weekly' | 'custom';
-  selectedDays: number[];
-  difficultyLevel: 'easy' | 'medium' | 'hard';
-  enableReminders: boolean;
-  reminderTime: string | null;
-  startDate: string;
-  currentDay: number;
-  completed: boolean;
-}
-
 interface FooterToolsProps {
   weather: Weather;
   notifications: Notification[];
-  challenges: Challenge[];
-  dreams?: Dream[];
-  onOpenChallengeModal?: () => void;
-  onUpdateChallenge?: (challengeId: string, updatedData: Partial<Challenge>) => void;
 }
 
-const FooterTools: React.FC<FooterToolsProps> = ({
-  weather,
-  challenges,
-  dreams = [],
-  onOpenChallengeModal = () => {},
-  onUpdateChallenge = () => {},
-}) => {
+const FooterTools: React.FC<FooterToolsProps> = ({ weather }) => {
   return (
     <footer className={styles.toolsFooter}>
       <DreamWeather weather={weather} />
-      <DreamChallenge
-        challenges={challenges}
-        dreams={dreams}
-        onOpenChallengeModal={onOpenChallengeModal}
-        onUpdateChallenge={onUpdateChallenge}
-      />
     </footer>
   );
 };

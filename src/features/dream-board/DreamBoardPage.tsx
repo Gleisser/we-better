@@ -3,7 +3,6 @@ import styles from './DreamBoardPage.module.css';
 import {
   Dream,
   Milestone,
-  Challenge,
   DreamBoardData,
   DreamBoardContent,
   DreamBoardContentType,
@@ -25,7 +24,7 @@ import VisionBoardTab from './components/VisionBoardTab';
 import DreamInsights from './components/DreamInsights';
 import FooterTools from './components/FooterTools';
 import MilestonesPopup from './components/MilestonesPopup';
-import ChallengeModal from './components/DreamChallenge/ChallengeModal';
+import { DreamChallengeContainer } from './components/DreamChallenge';
 import {
   createMilestoneForContent,
   updateMilestoneForContent,
@@ -61,7 +60,6 @@ const DreamBoardPage: React.FC = () => {
   const [expandedMiniBoard, setExpandedMiniBoard] = useState(true);
   const [activeTab, setActiveTab] = useState('vision-board');
   const [dreams, setDreams] = useState<Dream[]>([]);
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [activeDream, setActiveDream] = useState<Dream | null>(null);
   const [isDreamBoardModalOpen, setIsDreamBoardModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -84,9 +82,6 @@ const DreamBoardPage: React.FC = () => {
     Array<{ dreamId: string; milestoneId: string; action: string; timestamp: string }>
   >([]);
   const [showMilestonesPopup, setShowMilestonesPopup] = useState(false);
-
-  // New state for challenge modal
-  const [isChallengeModalOpen, setIsChallengeModalOpen] = useState(false);
 
   // New state for inline form display
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
@@ -223,16 +218,6 @@ const DreamBoardPage: React.FC = () => {
     setShowMilestoneForm(false);
     setMilestoneAction(null);
     setCurrentMilestone(null);
-  };
-
-  // Handle opening the challenge modal
-  const handleOpenChallengeModal = (): void => {
-    setIsChallengeModalOpen(true);
-  };
-
-  // Handle closing the challenge modal
-  const handleCloseChallengeModal = (): void => {
-    setIsChallengeModalOpen(false);
   };
 
   // Handle opening the dream board modal
@@ -397,21 +382,6 @@ const DreamBoardPage: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  // Handle saving a new challenge
-  const handleSaveChallenge = (challengeData: Omit<Challenge, 'id'>): void => {
-    // In a real app, this would save to a database
-    console.info('New challenge created:', challengeData);
-
-    // Add the new challenge to the state
-    const newChallenge: Challenge = {
-      ...challengeData,
-      id: `c${Date.now()}`, // Generate a simple ID
-    };
-
-    setChallenges(prevChallenges => [...prevChallenges, newChallenge]);
-    handleCloseChallengeModal();
   };
 
   // Handle initiating add/edit milestone
@@ -606,18 +576,6 @@ const DreamBoardPage: React.FC = () => {
     }
   };
 
-  // Handle updating a challenge (for marking days complete/incomplete)
-  const handleUpdateChallenge = (challengeId: string, updatedData: Partial<Challenge>): void => {
-    setChallenges(prevChallenges =>
-      prevChallenges.map(challenge => {
-        if (challenge.id === challengeId) {
-          return { ...challenge, ...updatedData };
-        }
-        return challenge;
-      })
-    );
-  };
-
   // Check if the user has any dreams
   const hasNoDreams = dreams.length === 0;
 
@@ -740,14 +698,10 @@ const DreamBoardPage: React.FC = () => {
 
       {/* Footer Tools Section - Only show if the user has dreams */}
       {!hasNoDreams && (
-        <FooterTools
-          weather={mockWeather}
-          notifications={mockNotifications}
-          challenges={challenges}
-          dreams={dreams}
-          onOpenChallengeModal={handleOpenChallengeModal}
-          onUpdateChallenge={handleUpdateChallenge}
-        />
+        <div className={styles.bottomToolsContainer}>
+          <FooterTools weather={mockWeather} notifications={mockNotifications} />
+          <DreamChallengeContainer dreams={dreams} />
+        </div>
       )}
 
       {/* Dream Board Modal */}
@@ -801,14 +755,6 @@ const DreamBoardPage: React.FC = () => {
           fetchedMilestones={selectedDream ? fetchedDreamMilestones[selectedDream.id] : undefined}
         />
       )}
-
-      {/* Challenge Modal */}
-      <ChallengeModal
-        isOpen={isChallengeModalOpen}
-        onClose={handleCloseChallengeModal}
-        onSave={handleSaveChallenge}
-        dreams={dreams}
-      />
     </div>
   );
 };

@@ -1,30 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ChallengeModal.module.css';
 import { Dream } from '../../types';
-
-interface NewChallenge {
-  title: string;
-  description: string;
-  duration: number;
-  frequency: 'daily' | 'weekly' | 'custom';
-  selectedDays: number[];
-  difficultyLevel: 'easy' | 'medium' | 'hard';
-  dreamId: string | null;
-  enableReminders: boolean;
-  reminderTime: string | null;
-  startDate: string;
-  currentDay: number;
-  completed: boolean;
-}
+import { CreateDreamChallengeInput, DreamChallenge } from '../../api/dreamChallengesApi';
 
 interface ChallengeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (challengeData: NewChallenge) => void;
+  onSave: (challengeData: CreateDreamChallengeInput) => Promise<void>;
   dreams: Dream[];
+  editingChallenge?: DreamChallenge;
 }
 
-const ChallengeModal: React.FC<ChallengeModalProps> = ({ isOpen, onClose, onSave, dreams }) => {
+const ChallengeModal: React.FC<ChallengeModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  dreams,
+  editingChallenge,
+}) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState('30');
@@ -49,22 +42,37 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({ isOpen, onClose, onSave
   }, [isOpen]);
 
   useEffect(() => {
-    // Reset form when modal opens
+    // Reset form when modal opens or populate with editing data
     if (isOpen) {
-      setTitle('');
-      setDescription('');
-      setDuration('30');
-      setDurationUnit('days');
-      setFrequency('daily');
-      setSelectedDays([]);
-      setDifficultyLevel('medium');
-      setLinkedDream('');
-      setEnableReminders(false);
-      setReminderTime('09:00');
+      if (editingChallenge) {
+        // Populate form with existing challenge data
+        setTitle(editingChallenge.title);
+        setDescription(editingChallenge.description);
+        setDuration(editingChallenge.duration.toString());
+        setDurationUnit('days'); // Default since we store everything in days
+        setFrequency(editingChallenge.frequency);
+        setSelectedDays(editingChallenge.selected_days || []);
+        setDifficultyLevel(editingChallenge.difficulty_level);
+        setLinkedDream(editingChallenge.dream_id || '');
+        setEnableReminders(editingChallenge.enable_reminders);
+        setReminderTime(editingChallenge.reminder_time || '09:00');
+      } else {
+        // Reset form for new challenge
+        setTitle('');
+        setDescription('');
+        setDuration('30');
+        setDurationUnit('days');
+        setFrequency('daily');
+        setSelectedDays([]);
+        setDifficultyLevel('medium');
+        setLinkedDream('');
+        setEnableReminders(false);
+        setReminderTime('09:00');
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, editingChallenge]);
 
-  const handleSubmit = (e: React.FormEvent): void => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
 
     // Calculate actual duration in days
@@ -72,24 +80,29 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({ isOpen, onClose, onSave
     if (durationUnit === 'weeks') durationInDays *= 7;
     if (durationUnit === 'months') durationInDays *= 30;
 
-    // Create challenge object
-    const newChallenge = {
+    // Create challenge object matching API interface
+    const newChallenge: CreateDreamChallengeInput = {
       title,
       description,
       duration: durationInDays,
       frequency,
-      selectedDays: frequency === 'custom' ? selectedDays : [],
-      difficultyLevel,
-      dreamId: linkedDream || null,
-      enableReminders,
-      reminderTime: enableReminders ? reminderTime : null,
-      startDate: new Date().toISOString(),
-      currentDay: 0,
+      selected_days: frequency === 'custom' ? selectedDays : [],
+      difficulty_level: difficultyLevel,
+      dream_id: linkedDream || null,
+      enable_reminders: enableReminders,
+      reminder_time: enableReminders ? reminderTime : null,
+      start_date: new Date().toISOString(),
+      current_day: 0,
       completed: false,
     };
 
-    onSave(newChallenge);
-    onClose();
+    try {
+      await onSave(newChallenge);
+      onClose();
+    } catch (error) {
+      console.error('Error creating challenge:', error);
+      // Could add error state here to show to user
+    }
   };
 
   const handleDayToggle = (day: number): void => {
@@ -114,7 +127,9 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({ isOpen, onClose, onSave
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.challengeModal} onClick={e => e.stopPropagation()}>
         <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>Create New Challenge</h2>
+          <h2 className={styles.modalTitle}>
+            {editingChallenge ? 'Edit Challenge' : 'Create New Challenge'}
+          </h2>
           <button className={styles.closeButton} onClick={onClose} aria-label="Close modal">
             ×
           </button>
@@ -334,7 +349,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({ isOpen, onClose, onSave
                 Cancel
               </button>
               <button type="submit" className={styles.saveButton}>
-                Create Challenge
+                {editingChallenge ? 'Update Challenge' : 'Create Challenge'}
               </button>
             </div>
           </form>
