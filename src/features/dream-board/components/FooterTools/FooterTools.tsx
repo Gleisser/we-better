@@ -1,11 +1,12 @@
 import React from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import DreamWeather from '../DreamWeather';
+import { WeatherState, CategoryWeatherStatus } from '../../api/dreamWeatherApi';
 
 interface Weather {
   message: string;
-  overall: 'sunny' | 'partly-cloudy' | 'cloudy' | 'stormy';
-  categoryStatus?: Record<string, 'sunny' | 'partly-cloudy' | 'cloudy' | 'stormy'>;
+  overall: WeatherState;
+  categoryStatus?: CategoryWeatherStatus;
 }
 
 interface Notification {

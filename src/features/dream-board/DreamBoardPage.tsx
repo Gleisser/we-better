@@ -8,13 +8,8 @@ import {
   DreamBoardContentType,
 } from './types';
 import { saveDreamBoardData, getLatestDreamBoardData, deleteDreamBoard } from './api/dreamBoardApi';
-import {
-  mockCategories,
-  mockResources,
-  mockInsights,
-  mockWeather,
-  mockNotifications,
-} from './mock-data';
+import { mockCategories, mockResources, mockInsights, mockNotifications } from './mock-data';
+import { useDreamWeather } from './hooks/useDreamWeather';
 import { CosmicDreamExperience } from './components/CosmicDreamExperience/CosmicDreamExperience';
 import { DreamBoardModal } from './components/DreamBoardModal';
 import { DEFAULT_LIFE_CATEGORIES } from '../life-wheel/constants/categories';
@@ -56,6 +51,13 @@ const getCategoryDetails = (category: string): CategoryDetails => {
 };
 
 const DreamBoardPage: React.FC = () => {
+  // Dream Weather hook
+  const { weather: dreamWeather, error: weatherError } = useDreamWeather({
+    includeMetrics: false,
+    includeCategoryStatus: true,
+    autoFetch: true,
+  });
+
   // Add a state to track if the user has created a dream board yet
   const [expandedMiniBoard, setExpandedMiniBoard] = useState(true);
   const [activeTab, setActiveTab] = useState('vision-board');
@@ -699,7 +701,16 @@ const DreamBoardPage: React.FC = () => {
       {/* Footer Tools Section - Only show if the user has dreams */}
       {!hasNoDreams && (
         <div className={styles.bottomToolsContainer}>
-          <FooterTools weather={mockWeather} notifications={mockNotifications} />
+          <FooterTools
+            weather={
+              dreamWeather || {
+                overall: 'cloudy',
+                message: weatherError ? 'Unable to load weather data' : 'Loading weather...',
+                categoryStatus: {},
+              }
+            }
+            notifications={mockNotifications}
+          />
           <DreamChallengeContainer dreams={dreams} />
         </div>
       )}
