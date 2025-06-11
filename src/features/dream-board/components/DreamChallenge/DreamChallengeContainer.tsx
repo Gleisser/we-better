@@ -12,7 +12,7 @@ interface DreamChallengeContainerProps {
 const DreamChallengeContainer: React.FC<DreamChallengeContainerProps> = ({ dreams }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingChallenge, setEditingChallenge] = useState<string | null>(null);
-  const { createChallenge, updateChallenge, refreshChallenges, activeChallenges } =
+  const { createChallenge, updateChallenge, deleteChallenge, activeChallenges, loading, error } =
     useDreamChallenges();
 
   const handleOpenModal = (): void => {
@@ -46,8 +46,6 @@ const DreamChallengeContainer: React.FC<DreamChallengeContainerProps> = ({ dream
         // Create new challenge
         await createChallenge(challengeData);
       }
-      // Refresh the challenges list to ensure UI is updated
-      await refreshChallenges();
     } catch (error) {
       console.error(`Failed to ${editingChallenge ? 'update' : 'create'} challenge:`, error);
       throw error; // Re-throw to allow modal to handle error state
@@ -63,9 +61,14 @@ const DreamChallengeContainer: React.FC<DreamChallengeContainerProps> = ({ dream
     <>
       <DreamChallenge
         dreams={dreams}
+        activeChallenges={activeChallenges}
+        loading={loading}
+        error={error}
         onOpenChallengeModal={handleOpenModal}
         onEditChallenge={handleEditChallenge}
         onDeleteChallenge={handleDeleteChallenge}
+        onUpdateChallenge={updateChallenge}
+        onDeleteChallengeAction={deleteChallenge}
       />
 
       <ChallengeModal

@@ -1,23 +1,34 @@
 import React, { useState, useRef, useEffect, TouchEvent } from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream } from '../../types';
-import { useDreamChallenges } from '../../hooks/useDreamChallenges';
+import { DreamChallenge as DreamChallengeType } from '../../api/dreamChallengesApi';
 
 interface DreamChallengeProps {
   dreams?: Dream[];
+  activeChallenges: DreamChallengeType[];
+  loading: boolean;
+  error: string | null;
   onOpenChallengeModal?: () => void;
   onEditChallenge?: (challengeId: string) => void;
   onDeleteChallenge?: (challengeId: string) => void;
+  onUpdateChallenge: (data: {
+    id: string;
+    current_day?: number;
+    completed?: boolean;
+  }) => Promise<DreamChallengeType | null>;
+  onDeleteChallengeAction: (id: string) => Promise<boolean>;
 }
 
 const DreamChallenge: React.FC<DreamChallengeProps> = ({
+  activeChallenges,
+  loading,
+  error,
   onOpenChallengeModal = () => {},
   onEditChallenge = () => {},
   onDeleteChallenge = () => {},
+  onUpdateChallenge,
+  onDeleteChallengeAction,
 }) => {
-  const { activeChallenges, loading, error, updateChallenge, deleteChallenge } =
-    useDreamChallenges();
-
   const hasActiveChallenges = activeChallenges.length > 0;
 
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
@@ -80,7 +91,7 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
   const handleMarkDayComplete = async (challengeId: string, currentDay: number): Promise<void> => {
     try {
       // Update the challenge's current_day
-      await updateChallenge({
+      await onUpdateChallenge({
         id: challengeId,
         current_day: currentDay + 1,
       });
@@ -96,7 +107,7 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
       const challenge = activeChallenges.find(c => c.id === challengeId);
       if (challenge && currentDay + 1 >= challenge.duration) {
         // If currentDay + 1 equals or exceeds the duration, mark as completed
-        await updateChallenge({
+        await onUpdateChallenge({
           id: challengeId,
           completed: true,
         });
@@ -115,7 +126,7 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
       // Only allow undo if currentDay is greater than 0
       if (currentDay > 0) {
         // Subtract a day from the challenge progress
-        await updateChallenge({
+        await onUpdateChallenge({
           id: challengeId,
           current_day: currentDay - 1,
         });
@@ -140,7 +151,7 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
 
     if (confirmed) {
       try {
-        await deleteChallenge(challengeId);
+        await onDeleteChallengeAction(challengeId);
         onDeleteChallenge(challengeId); // Notify parent component
       } catch (error) {
         console.error('Error deleting challenge:', error);
