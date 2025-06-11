@@ -318,6 +318,25 @@ export const markDayComplete = async (
 };
 
 /**
+ * Delete a progress entry for a specific day (for undoing completion)
+ */
+export const deleteDayProgress = async (
+  challengeId: string,
+  dayNumber: number
+): Promise<boolean> => {
+  try {
+    const result = await apiRequest<{ success: boolean }>(
+      `${API_URL}/progress?challenge_id=${challengeId}&day_number=${dayNumber}`,
+      'DELETE'
+    );
+    return result?.success || false;
+  } catch (error) {
+    console.error('Error deleting day progress:', error);
+    return false;
+  }
+};
+
+/**
  * Update challenge progress (increment current_day)
  */
 export const updateChallengeProgress = async (

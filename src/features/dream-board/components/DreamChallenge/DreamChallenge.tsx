@@ -11,13 +11,9 @@ interface DreamChallengeProps {
   onOpenChallengeModal?: () => void;
   onEditChallenge?: (challengeId: string) => void;
   onDeleteChallenge?: (challengeId: string) => void;
-  onUpdateChallenge: (data: {
-    id: string;
-    current_day?: number;
-    completed?: boolean;
-  }) => Promise<DreamChallengeType | null>;
   onDeleteChallengeAction: (id: string) => Promise<boolean>;
   onMarkDayCompleted: (challengeId: string, dayNumber: number, notes?: string) => Promise<void>;
+  onUndoDayCompleted: (challengeId: string, dayNumber: number) => Promise<void>;
   onGetProgressHistory: (
     challengeId: string
   ) => Promise<import('../../api/dreamChallengesApi').DreamChallengeProgress[]>;
@@ -30,9 +26,9 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
   onOpenChallengeModal = () => {},
   onEditChallenge = () => {},
   onDeleteChallenge = () => {},
-  onUpdateChallenge,
   onDeleteChallengeAction,
   onMarkDayCompleted,
+  onUndoDayCompleted,
   onGetProgressHistory,
 }) => {
   const hasActiveChallenges = activeChallenges.length > 0;
@@ -151,11 +147,9 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
     try {
       // Only allow undo if currentDay is greater than 0
       if (currentDay > 0) {
-        // Subtract a day from the challenge progress
-        await onUpdateChallenge({
-          id: challengeId,
-          current_day: currentDay - 1,
-        });
+        // Use the new undoDayCompleted function which handles both
+        // deleting the progress entry and updating the challenge
+        await onUndoDayCompleted(challengeId, currentDay);
 
         // Remove the challenge from the marked complete set
         setMarkedCompletedToday(prev => {

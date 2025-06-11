@@ -17,6 +17,7 @@ const DreamChallengeContainer: React.FC<DreamChallengeContainerProps> = ({ dream
     updateChallenge,
     deleteChallenge,
     markDayCompleted,
+    undoDayCompleted,
     getProgressHistory,
     activeChallenges,
     loading,
@@ -75,9 +76,9 @@ const DreamChallengeContainer: React.FC<DreamChallengeContainerProps> = ({ dream
         onOpenChallengeModal={handleOpenModal}
         onEditChallenge={handleEditChallenge}
         onDeleteChallenge={handleDeleteChallenge}
-        onUpdateChallenge={updateChallenge}
         onDeleteChallengeAction={deleteChallenge}
         onMarkDayCompleted={markDayCompleted}
+        onUndoDayCompleted={undoDayCompleted}
         onGetProgressHistory={getProgressHistory}
       />
 
