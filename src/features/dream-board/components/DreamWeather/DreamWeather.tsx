@@ -1,10 +1,11 @@
 import React from 'react';
 import styles from '../../DreamBoardPage.module.css';
+import { WeatherState, CategoryWeatherStatus } from '../../api/dreamWeatherApi';
 
 interface Weather {
   message: string;
-  overall: 'sunny' | 'partly-cloudy' | 'cloudy' | 'stormy';
-  categoryStatus?: Record<string, 'sunny' | 'partly-cloudy' | 'cloudy' | 'stormy'>;
+  overall: WeatherState;
+  categoryStatus?: CategoryWeatherStatus;
 }
 
 interface DreamWeatherProps {
@@ -13,7 +14,6 @@ interface DreamWeatherProps {
 
 const weatherImages = {
   sunny: '/assets/images/dreamboard/weather/sunny.webp',
-  'partly-cloudy': '/assets/images/dreamboard/weather/partially_cloudy.webp',
   cloudy: '/assets/images/dreamboard/weather/cloudy.webp',
   stormy: '/assets/images/dreamboard/weather/stormy_rain.webp',
   raining: '/assets/images/dreamboard/weather/raining.webp',
@@ -22,9 +22,9 @@ const weatherImages = {
 // Weather display names for better UI presentation
 const weatherDisplayNames = {
   sunny: 'Sunny',
-  'partly-cloudy': 'Partly Cloudy',
   cloudy: 'Cloudy',
   stormy: 'Stormy',
+  raining: 'Raining',
 };
 
 const DreamWeather: React.FC<DreamWeatherProps> = ({ weather }) => {
