@@ -3,13 +3,14 @@ import {
   DreamChallenge,
   CreateDreamChallengeInput,
   UpdateDreamChallengeInput,
+  DreamChallengeProgress,
   getActiveChallenges,
   getCompletedChallenges,
   createDreamChallenge,
   updateDreamChallenge,
   deleteDreamChallenge,
-  markChallengeComplete,
   markDayComplete,
+  getChallengeProgress,
 } from '../api/dreamChallengesApi';
 
 interface UseDreamChallengesResult {
@@ -27,6 +28,7 @@ interface UseDreamChallengesResult {
   deleteChallenge: (id: string) => Promise<boolean>;
   markDayCompleted: (challengeId: string, dayNumber: number, notes?: string) => Promise<void>;
   refreshChallenges: () => Promise<void>;
+  getProgressHistory: (challengeId: string) => Promise<DreamChallengeProgress[]>;
 }
 
 export const useDreamChallenges = (): UseDreamChallengesResult => {
@@ -180,6 +182,7 @@ export const useDreamChallenges = (): UseDreamChallengesResult => {
 
   /**
    * Mark a day as completed for a challenge
+   * This properly uses both the progress table and updates the main challenge
    */
   const markDayCompleted = useCallback(
     async (challengeId: string, dayNumber: number, notes?: string): Promise<void> => {
@@ -187,14 +190,14 @@ export const useDreamChallenges = (): UseDreamChallengesResult => {
         setLoading(true);
         setError(null);
 
-        // Record the progress
+        // First, record the progress in the progress table
         await markDayComplete({
           challenge_id: challengeId,
           day_number: dayNumber,
           notes,
         });
 
-        // Update the challenge's current_day
+        // Update the challenge's current_day in the main table
         const challenge = [...activeChallenges, ...completedChallenges].find(
           c => c.id === challengeId
         );
@@ -208,10 +211,8 @@ export const useDreamChallenges = (): UseDreamChallengesResult => {
             completed: isCompleted,
           });
 
-          // If challenge is now completed, mark it as such
-          if (isCompleted) {
-            await markChallengeComplete(challengeId);
-          }
+          // The updateChallenge function already handles moving challenges between
+          // active and completed arrays, so no additional logic needed here
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to mark day completed';
@@ -223,6 +224,21 @@ export const useDreamChallenges = (): UseDreamChallengesResult => {
       }
     },
     [activeChallenges, completedChallenges, updateChallenge]
+  );
+
+  /**
+   * Get progress history for a specific challenge
+   */
+  const getProgressHistory = useCallback(
+    async (challengeId: string): Promise<DreamChallengeProgress[]> => {
+      try {
+        return await getChallengeProgress(challengeId);
+      } catch (err) {
+        console.error('Error getting progress history:', err);
+        return [];
+      }
+    },
+    []
   );
 
   /**
@@ -252,5 +268,6 @@ export const useDreamChallenges = (): UseDreamChallengesResult => {
     deleteChallenge,
     markDayCompleted,
     refreshChallenges,
+    getProgressHistory,
   };
 };

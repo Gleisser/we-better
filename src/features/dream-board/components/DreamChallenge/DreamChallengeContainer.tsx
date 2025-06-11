@@ -12,8 +12,16 @@ interface DreamChallengeContainerProps {
 const DreamChallengeContainer: React.FC<DreamChallengeContainerProps> = ({ dreams }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingChallenge, setEditingChallenge] = useState<string | null>(null);
-  const { createChallenge, updateChallenge, deleteChallenge, activeChallenges, loading, error } =
-    useDreamChallenges();
+  const {
+    createChallenge,
+    updateChallenge,
+    deleteChallenge,
+    markDayCompleted,
+    getProgressHistory,
+    activeChallenges,
+    loading,
+    error,
+  } = useDreamChallenges();
 
   const handleOpenModal = (): void => {
     setIsModalOpen(true);
@@ -69,6 +77,8 @@ const DreamChallengeContainer: React.FC<DreamChallengeContainerProps> = ({ dream
         onDeleteChallenge={handleDeleteChallenge}
         onUpdateChallenge={updateChallenge}
         onDeleteChallengeAction={deleteChallenge}
+        onMarkDayCompleted={markDayCompleted}
+        onGetProgressHistory={getProgressHistory}
       />
 
       <ChallengeModal

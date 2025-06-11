@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, TouchEvent } from 'react';
+import React, { useState, useRef, useEffect, useCallback, TouchEvent } from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream } from '../../types';
 import { DreamChallenge as DreamChallengeType } from '../../api/dreamChallengesApi';
@@ -17,6 +17,10 @@ interface DreamChallengeProps {
     completed?: boolean;
   }) => Promise<DreamChallengeType | null>;
   onDeleteChallengeAction: (id: string) => Promise<boolean>;
+  onMarkDayCompleted: (challengeId: string, dayNumber: number, notes?: string) => Promise<void>;
+  onGetProgressHistory: (
+    challengeId: string
+  ) => Promise<import('../../api/dreamChallengesApi').DreamChallengeProgress[]>;
 }
 
 const DreamChallenge: React.FC<DreamChallengeProps> = ({
@@ -28,6 +32,8 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
   onDeleteChallenge = () => {},
   onUpdateChallenge,
   onDeleteChallengeAction,
+  onMarkDayCompleted,
+  onGetProgressHistory,
 }) => {
   const hasActiveChallenges = activeChallenges.length > 0;
 
@@ -68,12 +74,45 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
     setTouchEnd(null);
   };
 
-  // Reset index when challenges change
+  // Check if today was already completed for all challenges
+  const checkTodayCompletionStatus = useCallback(async () => {
+    const today = new Date();
+    const todayDateString = today.toDateString(); // Get today's date as a string for comparison
+    const todayCompletedChallenges = new Set<string>();
+
+    // Check each active challenge to see if today was already marked complete
+    for (const challenge of activeChallenges) {
+      try {
+        const progressHistory = await onGetProgressHistory(challenge.id);
+
+        // Check if any progress entry was made today
+        const todayProgress = progressHistory.find(progress => {
+          const progressDate = new Date(progress.completed_at);
+          return progressDate.toDateString() === todayDateString;
+        });
+
+        if (todayProgress) {
+          todayCompletedChallenges.add(challenge.id);
+        }
+      } catch (error) {
+        console.error(`Error checking progress for challenge ${challenge.id}:`, error);
+      }
+    }
+
+    setMarkedCompletedToday(todayCompletedChallenges);
+  }, [activeChallenges, onGetProgressHistory]);
+
+  // Reset index when challenges change and check today's completion status
   useEffect(() => {
     if (currentChallengeIndex >= activeChallenges.length) {
       setCurrentChallengeIndex(0);
     }
-  }, [activeChallenges.length, currentChallengeIndex]);
+
+    // Check today's completion status when challenges load or change
+    if (activeChallenges.length > 0) {
+      checkTodayCompletionStatus();
+    }
+  }, [activeChallenges.length, currentChallengeIndex, checkTodayCompletionStatus]);
 
   const navigateToChallenge = (direction: 'prev' | 'next'): void => {
     if (direction === 'prev') {
@@ -90,11 +129,8 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
   // Handle marking a day as complete
   const handleMarkDayComplete = async (challengeId: string, currentDay: number): Promise<void> => {
     try {
-      // Update the challenge's current_day
-      await onUpdateChallenge({
-        id: challengeId,
-        current_day: currentDay + 1,
-      });
+      // Use the proper progress tracking function that records in both tables
+      await onMarkDayCompleted(challengeId, currentDay + 1);
 
       // Add the challenge to the marked complete set
       setMarkedCompletedToday(prev => {
@@ -102,16 +138,6 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
         newSet.add(challengeId);
         return newSet;
       });
-
-      // Check if the challenge is now completed
-      const challenge = activeChallenges.find(c => c.id === challengeId);
-      if (challenge && currentDay + 1 >= challenge.duration) {
-        // If currentDay + 1 equals or exceeds the duration, mark as completed
-        await onUpdateChallenge({
-          id: challengeId,
-          completed: true,
-        });
-      }
     } catch (error) {
       console.error('Error marking day complete:', error);
     }
