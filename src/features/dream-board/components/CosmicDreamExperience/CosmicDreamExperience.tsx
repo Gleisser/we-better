@@ -816,8 +816,8 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       if (distance < node.radius) {
         hoveredNode = node;
 
-        // Update card position for portal
-        if (hoveredNode) {
+        // Update card position for portal (only needed in normal mode)
+        if (hoveredNode && !isFullscreen) {
           // Convert node position to screen coordinates
           const screenX = node.x * zoomLevel + panOffset.x;
           const screenY = node.y * zoomLevel + panOffset.y;
@@ -984,17 +984,30 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     const dream = activeDream || hoveredDream;
     if (!dream) return null;
 
-    return (
-      <div
-        className={`${styles.dreamDetailCard} ${showDetailCard ? styles.dreamDetailCardVisible : ''}`}
-        ref={detailCardRef}
-        style={{
-          position: 'fixed',
+    // Use different positioning for fullscreen vs normal mode
+    const cardStyle = isFullscreen
+      ? {
+          // In fullscreen, use absolute positioning relative to the container
+          position: 'absolute' as const,
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 50,
+        }
+      : {
+          // In normal mode, use fixed positioning relative to viewport
+          position: 'fixed' as const,
           top: `${detailCardPosition.y}px`,
           left: `${detailCardPosition.x}px`,
           transform: 'translate(-50%, -120%)',
           zIndex: 9999,
-        }}
+        };
+
+    return (
+      <div
+        className={`${styles.dreamDetailCard} ${showDetailCard ? styles.dreamDetailCardVisible : ''}`}
+        ref={detailCardRef}
+        style={cardStyle}
       >
         <button className={styles.closeDetailButton} onClick={() => displayDreamDetails(null)}>
           ×
@@ -1233,7 +1246,11 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
           </div>
 
           {/* Use Portal for Dream Detail Card */}
-          {showPortalCard && createPortal(<DreamDetailCard />, document.body)}
+          {showPortalCard &&
+            createPortal(
+              <DreamDetailCard />,
+              isFullscreen && containerRef.current ? containerRef.current : document.body
+            )}
         </>
       ) : (
         <div className={styles.loadingContainer}>
