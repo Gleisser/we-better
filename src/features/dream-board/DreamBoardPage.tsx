@@ -234,6 +234,8 @@ const DreamBoardPage: React.FC = () => {
 
   // Convert DreamBoardData to Dreams format for frontend
   const convertDreamBoardDataToDreams = (data: DreamBoardData): Dream[] => {
+    const backendData = data as DreamBoardData & { created_at?: string; updated_at?: string };
+
     return data.content.map((contentItem, index) => ({
       id: contentItem.id,
       title: contentItem.caption || contentItem.alt || `Dream ${index + 1}`,
@@ -241,7 +243,7 @@ const DreamBoardPage: React.FC = () => {
       category: contentItem.categoryId || 'General',
       timeframe: 'mid-term' as const,
       progress: 0,
-      createdAt: data.createdAt || new Date().toISOString(),
+      createdAt: data.createdAt || backendData.created_at || new Date().toISOString(),
       imageUrl: contentItem.src,
       milestones: [],
       isShared: false,

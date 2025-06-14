@@ -1192,12 +1192,6 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         )}
 
         <div className={styles.dreamDetailFooter}>
-          <div className={styles.dreamDetailTimeframe}>
-            {dream.timeframe
-              .split('-')
-              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}
-          </div>
           <div className={styles.dreamDetailCreated}>
             Created: {formatDate(dream.createdAt || '')}
           </div>
