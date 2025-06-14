@@ -1,0 +1,154 @@
+.radarChartContainer {
+  @apply w-full max-w-full h-auto px-4;
+  aspect-ratio: 1 / 1;
+}
+
+.radarChart {
+  @apply w-full h-auto;
+  max-height: 600px;
+}
+
+.gridCircle {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+}
+
+.axisLine {
+  stroke: rgba(255, 255, 255, 0.15);
+  stroke-width: 1;
+  stroke-dasharray: 2, 4;
+}
+
+.dataPolygon {
+  fill-opacity: 0.6;
+}
+
+.comparisonPolygon {
+  stroke-dasharray: 3, 3;
+}
+
+.valueIndicator {
+  cursor: pointer;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.4));
+  transition: all 0.2s ease;
+}
+
+.valueIndicator:hover {
+  r: 6;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6));
+}
+
+.categoryLabel {
+  fill: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.categoryLabel:hover,
+.highlightedLabel {
+  fill: white;
+  font-weight: 600;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.valueLabel {
+  fill: rgba(255, 255, 255, 0.5);
+  font-size: 9px;
+}
+
+.labelGroup {
+  cursor: pointer;
+}
+
+.tooltip {
+  @apply absolute bg-gray-800/80 text-white px-2 py-1 rounded-md text-xs
+         backdrop-blur-sm shadow-md z-50;
+  transform: translate(-50%, -110%);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.radarSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.radarGrid {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+  fill: none;
+}
+
+.radarAxis {
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 1;
+}
+
+.radarArea {
+  fill-opacity: 0.4;
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.radarArea:hover {
+  fill-opacity: 0.6;
+}
+
+.radarPoint {
+  stroke-width: 2;
+  cursor: pointer;
+  filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.3));
+}
+
+.valueAxis {
+  font-size: 10px;
+  fill: rgba(255, 255, 255, 0.5);
+  text-anchor: middle;
+}
+
+.labelBackground {
+  fill: rgba(0, 0, 0, 0.3);
+  rx: 4;
+  ry: 4;
+}
+
+.tooltipTitle {
+  font-size: 12px;
+  font-weight: bold;
+  fill: white;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+.tooltipValue {
+  font-size: 10px;
+  fill: rgba(255, 255, 255, 0.8);
+}
+
+.tooltipHealth {
+  font-size: 10px;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .categoryLabel {
+    font-size: 10px;
+  }
+
+  .valueAxis {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .categoryLabel {
+    font-size: 8px;
+  }
+
+  .valueAxis {
+    display: none;
+  }
+}

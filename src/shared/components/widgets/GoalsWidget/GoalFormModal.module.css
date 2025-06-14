@@ -1,0 +1,289 @@
+.overlay {
+  @apply fixed inset-0 
+         bg-black/50 backdrop-blur-sm
+         flex items-center justify-center
+         z-50;
+}
+
+.modal {
+  @apply w-full max-w-md mx-4
+         bg-[#1A1A1A] rounded-2xl
+         border border-white/10
+         shadow-xl;
+}
+
+.header {
+  @apply flex items-center justify-between
+         p-6 border-b border-white/10;
+}
+
+.title {
+  @apply text-lg text-white font-plus-jakarta font-medium;
+}
+
+.closeButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+}
+
+.closeIcon {
+  @apply w-4 h-4;
+}
+
+.content {
+  @apply p-6 space-y-6;
+}
+
+.section {
+  @apply space-y-4;
+}
+
+.label {
+  @apply block text-sm text-white/70 font-plus-jakarta;
+}
+
+.input {
+  @apply mt-1 w-full px-4 py-2 rounded-xl
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white
+         transition-all duration-200
+         hover:bg-black/60
+         focus:outline-none focus:border-primary-purple;
+  @apply font-plus-jakarta;
+}
+
+/* Add specific styles for date input */
+input[type='date'].input {
+  @apply text-white/90 cursor-pointer;
+  color-scheme: dark;
+}
+
+/* Make the calendar icon more visible */
+input[type='date'].input::-webkit-calendar-picker-indicator {
+  @apply cursor-pointer;
+  filter: invert(1) brightness(150%); /* Make it bright white */
+  opacity: 0.9;
+  background-color: transparent;
+  padding: 0.2rem;
+  margin-right: -0.5rem;
+  width: 20px;
+  height: 20px;
+}
+
+/* For Firefox */
+input[type='date'].input::-moz-calendar-picker-indicator {
+  filter: invert(1) brightness(150%);
+  opacity: 0.9;
+}
+
+/* Add placeholder style */
+input[type='date'].input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Style for the date text */
+input[type='date'].input:valid {
+  @apply text-white;
+}
+
+.categoryOptions {
+  @apply grid grid-cols-2 gap-2 mt-2;
+}
+
+.categoryButton {
+  @apply flex items-center gap-2
+         px-4 py-2 rounded-xl
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+}
+
+.categoryButton.selected {
+  @apply bg-primary-purple/20 
+         border-primary-purple 
+         text-white;
+}
+
+.categoryIcon {
+  @apply text-base;
+}
+
+.milestoneInput {
+  @apply flex gap-2 mt-2;
+}
+
+.addButton {
+  @apply px-4 py-2 rounded-xl
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white
+         whitespace-nowrap;
+}
+
+.milestoneList {
+  @apply mt-4 space-y-2;
+}
+
+.milestoneItem {
+  @apply flex items-center justify-between
+         px-4 py-2 rounded-xl
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white
+         transition-all duration-200;
+}
+
+.milestoneItem.completed {
+  @apply bg-emerald-500/10 border-emerald-500/30;
+}
+
+.milestoneContent {
+  @apply flex items-center gap-3 flex-1;
+}
+
+.checkboxContainer {
+  @apply relative flex items-center cursor-pointer;
+}
+
+.checkbox {
+  @apply sr-only;
+}
+
+.checkmark {
+  @apply w-4 h-4 rounded
+         border border-white/20
+         flex items-center justify-center
+         transition-all duration-200
+         relative;
+}
+
+.checkbox:checked + .checkmark {
+  @apply bg-emerald-500 border-emerald-500;
+}
+
+.checkbox:checked + .checkmark::after {
+  content: '✓';
+  @apply text-white text-xs font-bold
+         absolute inset-0
+         flex items-center justify-center;
+}
+
+.milestoneTitle {
+  @apply cursor-pointer hover:text-white/80
+         transition-colors duration-200;
+}
+
+.milestoneItem.completed .milestoneTitle {
+  @apply line-through opacity-70;
+}
+
+.editingContainer {
+  @apply flex items-center gap-2 flex-1;
+}
+
+.editInput {
+  @apply flex-1 px-2 py-1 rounded
+         bg-black/60
+         border border-white/20
+         text-sm text-white
+         focus:outline-none focus:border-primary-purple;
+}
+
+.editActions {
+  @apply flex items-center gap-1;
+}
+
+.saveEditButton,
+.cancelEditButton {
+  @apply w-6 h-6 rounded
+         flex items-center justify-center
+         text-xs font-bold
+         transition-all duration-200;
+}
+
+.saveEditButton {
+  @apply bg-emerald-500/20 text-emerald-400
+         hover:bg-emerald-500/30;
+}
+
+.cancelEditButton {
+  @apply bg-red-500/20 text-red-400
+         hover:bg-red-500/30;
+}
+
+.removeButton {
+  @apply p-1 rounded-lg
+         text-white/50
+         transition-all duration-200
+         hover:text-white/80;
+}
+
+.removeIcon {
+  @apply w-4 h-4;
+}
+
+.footer {
+  @apply flex items-center justify-end gap-3
+         p-6 border-t border-white/10;
+}
+
+.cancelButton {
+  @apply px-4 py-2 rounded-xl
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+  @apply font-plus-jakarta;
+}
+
+.saveButton {
+  @apply px-4 py-2 rounded-xl
+         bg-primary-purple/20
+         border border-primary-purple
+         text-sm text-white
+         transition-all duration-200
+         hover:bg-primary-purple/30;
+  @apply font-plus-jakarta;
+}
+
+.dateInputWrapper {
+  @apply relative flex items-center gap-2;
+}
+
+/* Hide the default calendar icon */
+input[type='date'].input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  width: 0;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+}
+
+input[type='date'].input {
+  @apply flex-1;
+}
+
+.calendarButton {
+  @apply w-10 h-10 rounded-xl
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-base
+         transition-all duration-200
+         hover:bg-black/60;
+}
+
+.categoryLabel {
+  @apply font-plus-jakarta;
+}

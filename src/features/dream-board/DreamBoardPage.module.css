@@ -1,0 +1,3513 @@
+.dreamBoardContainer {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #f9fafb;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(30, 30, 30, 0.6);
+  color: #f9fafb;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background-color: rgba(60, 60, 60, 0.6);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.activeTab {
+  background-color: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.7);
+}
+
+/* Enhanced Mini Vision Board styles */
+.miniBoard {
+  margin-bottom: 24px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(140deg, rgba(20, 21, 38, 0.95), rgba(38, 25, 61, 0.9));
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(124, 82, 255, 0.2);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  height: 250px; /* Fixed height instead of max-height */
+}
+
+.expanded {
+  height: 450px; /* Fixed height for expanded state */
+}
+
+.miniBoardHeader {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.miniBoardHeader h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+.miniBoardHeader button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.miniBoardHeader button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.miniBoardContentWrapper {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.miniBoardContent {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow-y: auto;
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.miniBoardContent::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.scrollIndicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.9), rgba(72, 79, 233, 0.7));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 4px 12px rgba(124, 58, 237, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+.scrollIndicator:hover {
+  transform: translateX(-50%) translateY(-2px) scale(1.05);
+  box-shadow:
+    0 6px 20px rgba(124, 58, 237, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.scrollIndicator:active {
+  transform: translateX(-50%) translateY(0) scale(0.95);
+}
+
+.scrollArrow {
+  font-size: 16px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-2px);
+  }
+}
+
+.miniDream {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 12px 16px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s ease;
+  min-height: 70px; /* Ensure dreams don't get squeezed */
+  flex-shrink: 0; /* Prevent dreams from shrinking */
+}
+
+.miniDream:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.miniDream::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, rgba(124, 58, 237, 0.05), rgba(124, 58, 237, 0.01));
+  pointer-events: none;
+}
+
+.dreamIcon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  font-size: 16px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.7), rgba(72, 79, 233, 0.5));
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.5);
+}
+
+.dreamTitle {
+  flex: 1;
+  color: white;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.progressContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.progressBar {
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.progressFill {
+  position: absolute;
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  left: 0;
+  top: 0;
+}
+
+.progressIndicator {
+  height: 100%;
+  background: linear-gradient(90deg, #7c4dff, #00bcd4);
+  border-radius: 4px;
+  position: relative;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px rgba(124, 77, 255, 0.6);
+}
+
+.progressIndicator::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  animation: pulse 1.5s infinite;
+  border-radius: 0 4px 4px 0;
+}
+
+.dreamStatus {
+  width: 120px;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 16px;
+  position: relative;
+}
+
+.progressControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progressButton {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.7), rgba(72, 79, 233, 0.5));
+  color: white;
+  font-size: 18px;
+  line-height: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.4);
+}
+
+.progressButton:hover:not(:disabled) {
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.6);
+}
+
+.progressButton:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.progressButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.buttonIcon {
+  display: block;
+  height: 18px;
+  width: 18px;
+  line-height: 18px;
+}
+
+.progressValue {
+  min-width: 40px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: white;
+}
+
+.dreamContentWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px rgba(124, 58, 237, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(124, 58, 237, 0.5);
+  }
+}
+
+/* Main Content */
+.mainContent {
+  margin-bottom: 2rem;
+}
+
+/* Categories Dashboard */
+.categoriesDashboard {
+  margin-bottom: 2.5rem;
+}
+
+.categoriesDashboard h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.categoriesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.categoryCard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: white;
+  min-height: 160px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.categoryCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 1;
+}
+
+.categoryCard:hover::before {
+  opacity: 1;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.categoryIconContainer {
+  position: relative;
+  margin-right: 1.25rem;
+  z-index: 3;
+}
+
+.categoryIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.categoryIconOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+  transition: opacity 0.3s ease;
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+}
+
+.categoryCard:hover .categoryIcon {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.categoryCard:hover .categoryIconOverlay {
+  opacity: 0.4;
+}
+
+.categoryContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  z-index: 2;
+}
+
+.categoryCard h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dreamCount {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-bottom: 1.25rem;
+  font-weight: 400;
+}
+
+.categoryProgressWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.categoryProgressBar {
+  flex: 1;
+  height: 5px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.categoryProgressFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.categoryProgressLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  width: 40px;
+  text-align: right;
+}
+
+/* Progress Section */
+.progressSection {
+  margin-bottom: 2.5rem;
+}
+
+.progressSection h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.dreamsProgress {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.dreamProgressCard {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.dreamProgressCard h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.progressText {
+  font-size: 0.875rem;
+  color: rgba(249, 250, 251, 0.7);
+}
+
+/* Timeline Section */
+.timelineSection {
+  margin-bottom: 2.5rem;
+}
+
+.timelineSection h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.timelineContainer {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.timeframeColumn {
+  flex: 1;
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.timeframeColumn h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.timelineDream {
+  background-color: rgba(40, 40, 40, 0.6);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-left: 3px solid #8b5cf6;
+}
+
+/* AI Insights */
+.aiInsights {
+  margin-bottom: 2.5rem;
+}
+
+.aiInsights h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.insightCard {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  margin-bottom: 1rem;
+}
+
+.insightCard h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #8b5cf6;
+}
+
+/* Resource Section */
+.resourceSection {
+  margin-bottom: 2.5rem;
+}
+
+.resourceSection h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.resourceCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.resourceCard {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.resourceCard h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.resourceCard p {
+  font-size: 0.875rem;
+  color: rgba(249, 250, 251, 0.7);
+  margin-bottom: 1rem;
+}
+
+.resourceButton {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resourceButton:hover {
+  background-color: rgba(139, 92, 246, 0.4);
+}
+
+/* Journal Section */
+.journalSection {
+  margin-bottom: 2.5rem;
+}
+
+.journalSection h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.journalEntry {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  margin-bottom: 1rem;
+}
+
+.journalEntry h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.journalDate {
+  font-size: 0.875rem;
+  color: rgba(249, 250, 251, 0.7);
+  margin-bottom: 1rem;
+}
+
+.addEntryButton {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addEntryButton:hover {
+  background-color: rgba(139, 92, 246, 0.4);
+}
+
+/* Bottom Tools Container for two-column layout */
+.bottomToolsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .bottomToolsContainer {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Tools Footer */
+.toolsFooter {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.toolSection {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.toolSection h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #d946ef;
+}
+
+.toolSection p {
+  font-size: 0.875rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .timelineContainer {
+    flex-direction: column;
+  }
+}
+
+/* Additional styles for new elements */
+.milestonesInfo {
+  font-size: 0.75rem;
+  color: rgba(249, 250, 251, 0.6);
+  margin-top: 0.25rem;
+}
+
+.categoryBadge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #d946ef;
+  margin-top: 0.5rem;
+}
+
+.emotionBadge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #d946ef;
+  margin-bottom: 0.75rem;
+}
+
+.journalContent {
+  line-height: 1.6;
+}
+
+.relatedCategories {
+  font-size: 0.75rem;
+  color: rgba(249, 250, 251, 0.7);
+  margin-top: 0.5rem;
+}
+
+.resourceType {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1rem;
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #d946ef;
+  margin-bottom: 0.75rem;
+  text-transform: capitalize;
+}
+
+.weatherStatus {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.weatherIcon {
+  display: inline-block;
+  margin-left: 0.25rem;
+  font-weight: 500;
+}
+
+.notificationPreview {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: rgba(40, 40, 40, 0.6);
+  border-radius: 0.25rem;
+}
+
+.timelinePlaceholder {
+  background-color: rgba(30, 30, 30, 0.6);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  margin: 1rem 0;
+  text-align: center;
+  color: rgba(249, 250, 251, 0.7);
+}
+
+.detailedTimeline {
+  margin-bottom: 2.5rem;
+}
+
+.detailedTimeline h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.dreamBoardButtonContainer {
+  margin-top: 8px;
+}
+
+.dreamBoardButton {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  color: white;
+  text-align: left;
+}
+
+.dreamBoardButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dreamBoardButtonIcon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  font-size: 16px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.7), rgba(219, 39, 119, 0.5));
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+.dreamBoardButtonText {
+  display: flex;
+  flex-direction: column;
+}
+
+.dreamBoardButtonTitle {
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dreamBoardButtonSubtitle {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+}
+
+.miniBoardHeaderControls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Base styles for all buttons in the header controls */
+.miniBoardHeaderControls button {
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  padding: 0 14px;
+  font-size: 0.85rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+/* Style icon elements consistently */
+.miniBoardHeaderControls button::before,
+.dreamBoardButtonIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 16px;
+}
+
+/* Style for the expand/minimize button */
+.miniBoardHeaderControls button:last-child {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(79, 70, 229, 0.2));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.miniBoardHeaderControls button:last-child:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(79, 70, 229, 0.3));
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Style for the dream board button */
+.miniBoardHeaderControls .dreamBoardButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(219, 39, 119, 0.2));
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 0 16px;
+}
+
+.miniBoardHeaderControls .dreamBoardButton:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(219, 39, 119, 0.3));
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Only add the icon when in the 'Expand' state */
+.miniBoardHeaderControls .expandButton::before {
+  content: '▼'; /* Black down-pointing triangle */
+  margin-right: 8px;
+  font-size: 12px;
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
+
+/* Use a different icon for the 'Minimize' state */
+.miniBoardHeaderControls .minimizeButton::before {
+  content: '▲'; /* Black up-pointing triangle */
+  margin-right: 8px;
+  font-size: 12px;
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
+
+/* Enhanced Dream Categories styles */
+.categoriesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.categoriesControls {
+  display: flex;
+  gap: 1rem;
+}
+
+.clearFilterButton {
+  background: rgba(139, 92, 246, 0.2);
+  color: white;
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clearFilterButton:hover {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+.categoryCard.expanded {
+  grid-row-end: span 2;
+  min-height: 300px;
+}
+
+.categoryCard.focused {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+.categoryCard.active {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.categoryCard.dormant {
+  opacity: 0.7;
+  filter: saturate(0.8);
+}
+
+.categoryCard.dormant:hover {
+  opacity: 1;
+  filter: saturate(1);
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.categoryIconContainer {
+  position: relative;
+  margin-right: 1rem;
+  z-index: 3;
+}
+
+.categoryIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.categoryIconOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+  transition: opacity 0.3s ease;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+
+.categoryCard:hover .categoryIcon {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.categoryCard:hover .categoryIconOverlay {
+  opacity: 0.3;
+}
+
+.categoryContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  z-index: 2;
+  padding-top: 0.5rem;
+}
+
+.categoryCard h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dreamCount {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+}
+
+.categoryProgressWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.categoryProgressBar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.categoryProgressFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.categoryProgressLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  width: 40px;
+  text-align: right;
+}
+
+.expandedCategoryContent {
+  margin-top: 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.8rem;
+  padding: 1rem;
+  animation: slideIn 0.3s forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recentActivity {
+  margin-bottom: 1rem;
+}
+
+.recentActivity h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.recentActivity p {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.categoryActions {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.categoryActionButton {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.categoryActionButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.categoryQuickDreams h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.quickDreamsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.quickDreamItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quickDreamItem:last-child {
+  border-bottom: none;
+}
+
+.quickDreamTitle {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.quickDreamProgress {
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.moreDreamsIndicator {
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.errorState {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: #fecaca;
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments for categories */
+@media (max-width: 768px) {
+  .categoriesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .categoryCard.expanded {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Accessibility focus styles */
+.categoryCard:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+.emptyStateMessage {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.emptyStateMessage p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.addDreamButton {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addDreamButton:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.addDreamButton:active {
+  transform: translateY(0);
+}
+
+.addDreamButton::before {
+  content: '+';
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Milestone Management Styles */
+.milestoneSection {
+  margin-top: 1.5rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.milestoneSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.milestoneSectionHeader h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.addMilestoneButton {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addMilestoneButton:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.milestoneList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.milestoneItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.milestoneItem:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.milestoneCheckboxContainer {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.milestoneCheckbox {
+  margin-right: 0.8rem;
+  height: 18px;
+  width: 18px;
+  cursor: pointer;
+}
+
+.milestoneLabel {
+  font-size: 0.95rem;
+  color: #fff;
+  text-decoration: none;
+  transition: text-decoration 0.2s;
+  cursor: pointer;
+}
+
+.milestoneCheckbox:checked + .milestoneLabel {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.milestoneDetails {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.milestoneDate {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.milestoneActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editMilestoneButton,
+.deleteMilestoneButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.2rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.editMilestoneButton:hover,
+.deleteMilestoneButton:hover {
+  opacity: 1;
+}
+
+.emptyMilestones {
+  text-align: center;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+/* Milestone History */
+.milestoneHistorySection {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.milestoneHistorySection details {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.milestoneHistorySection summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.3rem 0;
+}
+
+.milestoneHistoryList {
+  list-style: none;
+  padding: 0.5rem 0 0 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.historyItem {
+  display: flex;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.historyAction {
+  font-weight: 500;
+  margin-right: 0.5rem;
+  min-width: 80px;
+}
+
+.historyMilestone {
+  flex: 1;
+}
+
+.historyTime {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.milestoneModal {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.milestoneModal h3 {
+  margin: 0 0 1.5rem 0;
+  color: #fff;
+  font-size: 1.3rem;
+}
+
+.formGroup {
+  margin-bottom: 1.2rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.formGroup textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.cancelButton,
+.saveButton {
+  padding: 0.7rem 1.2rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cancelButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.saveButton {
+  background-color: #3b82f6;
+  border: none;
+  color: #fff;
+  font-weight: 500;
+}
+
+.saveButton:hover {
+  background-color: #2563eb;
+}
+
+/* Manage Milestones Button */
+.manageMilestonesButton {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.7rem;
+  background-color: rgba(59, 130, 246, 0.2);
+  color: white;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.manageMilestonesButton:hover {
+  background-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.manageMilestonesButton:active {
+  transform: translateY(0);
+}
+
+/* Milestones Popup */
+.milestonesPopup {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 0;
+  width: 95%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.milestonesPopupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2));
+  border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.milestonesPopupHeader h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.closePopupButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.closePopupButton:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.milestonesPopupContent {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(90vh - 80px);
+}
+
+.milestonesProgressSummary {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.milestonesProgressSummary .progressBar {
+  height: 8px;
+  margin-bottom: 1rem;
+}
+
+.milestonesProgressSummary p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+}
+
+.milestonesContainer {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+/* Milestone Form Styles */
+.milestoneFormContainer {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.milestoneFormHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.milestoneFormHeader h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 600;
+}
+
+.closeFormButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.closeFormButton:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Visualization Tabs */
+.visualizationTabs {
+  display: flex;
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+}
+
+.vizTab {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  text-align: center;
+}
+
+.vizTab:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.activeVizTab {
+  background-color: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+/* Common Visualization Styles */
+.timelineVisualization,
+.chartVisualization,
+.achievementsVisualization {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.timelineVisualization h4,
+.chartVisualization h4,
+.achievementsVisualization h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 600;
+}
+
+.emptyVisualization {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+/* Timeline Visualization */
+.timelineContainer {
+  position: relative;
+  height: 180px;
+  margin: 2rem 0;
+}
+
+.timelineAxis {
+  position: relative;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.15);
+  margin-top: 80px;
+}
+
+.timeMarker {
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.markerLine {
+  height: 10px;
+  width: 2px;
+  background-color: rgba(255, 255, 255, 0.4);
+  margin: 0 auto;
+}
+
+.markerLabel {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+.timelinePoint {
+  position: absolute;
+  transform: translateX(-50%);
+  bottom: 50px;
+}
+
+.pointConnector {
+  height: 30px;
+  width: 2px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 0 auto;
+}
+
+.pointDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #f44336;
+  margin: 0 auto;
+  margin-top: -6px;
+  position: relative;
+  z-index: 2;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.completedPoint .pointDot {
+  background-color: #4caf50;
+}
+
+.pointContent {
+  min-width: 120px;
+  text-align: center;
+  margin-top: 0.5rem;
+  transform: rotate(-30deg);
+  transform-origin: top center;
+}
+
+.pointTitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: white;
+  margin-bottom: 0.2rem;
+}
+
+.pointDate {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Progress Chart Visualization */
+.progressChartContainer {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.chartLabels {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Achievement Badges */
+.achievementBadges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.achievementBadge {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.achievementBadge.earnedBadge {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(46, 125, 50, 0.15));
+  border-color: rgba(76, 175, 80, 0.4);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+}
+
+.achievementBadge.earnedBadge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+}
+
+.achievementBadge.unearnedBadge {
+  opacity: 0.5;
+  filter: grayscale(0.8);
+  background: rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.achievementBadge.unearnedBadge .badgeIcon {
+  opacity: 0.3;
+}
+
+.badgeIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.badgeLock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  z-index: 2;
+}
+
+.badgeInfo {
+  text-align: center;
+}
+
+.badgeTitle {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: white;
+}
+
+.achievementBadge.unearnedBadge .badgeTitle {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.badgeDescription {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+.achievementBadge.unearnedBadge .badgeDescription {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Responsive achievement badges */
+@media (max-width: 768px) {
+  .achievementBadges {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .achievementBadge {
+    min-height: 120px;
+    padding: 1rem 0.8rem;
+  }
+
+  .badgeIcon {
+    font-size: 2rem;
+  }
+
+  .badgeLock {
+    font-size: 1.6rem;
+  }
+
+  .badgeTitle {
+    font-size: 0.9rem;
+  }
+
+  .badgeDescription {
+    font-size: 0.75rem;
+  }
+}
+
+.dreamWeatherContainer {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 20px;
+  transition: all 0.3s ease;
+  margin-bottom: 8px;
+}
+
+.dreamWeatherContainer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.weatherImageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  position: relative;
+}
+
+.weatherImageLarge {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+  animation: weatherFloatImproved 4s ease-in-out infinite;
+}
+
+.weatherTemperature {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.weatherDetails {
+  flex: 1;
+}
+
+.weatherTitle {
+  font-size: 1.7rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+}
+
+.weatherMessage {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+@keyframes weatherFloatImproved {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-4px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-4px) rotate(-1deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.weatherCardContent {
+  margin-bottom: 24px;
+  border-radius: 15px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.weatherCategoryStatus {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  padding: 16px;
+  backdrop-filter: blur(5px);
+}
+
+.weatherCategoryStatsHeader {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.5px;
+}
+
+.weatherCategoryStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.weatherCategoryStat {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.weatherCategoryName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.weatherCategoryValue {
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.weathersunny {
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.4), rgba(234, 179, 8, 0.4));
+  color: rgba(254, 240, 138, 1);
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.4);
+}
+
+.weatherpartlycloudy {
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.4), rgba(100, 116, 139, 0.4));
+  color: rgba(226, 232, 240, 1);
+  box-shadow: 0 0 8px rgba(148, 163, 184, 0.4);
+}
+
+.weathercloudy {
+  background: linear-gradient(135deg, rgba(100, 116, 139, 0.4), rgba(71, 85, 105, 0.4));
+  color: rgba(203, 213, 225, 1);
+  box-shadow: 0 0 8px rgba(100, 116, 139, 0.4);
+}
+
+.weatherstormy {
+  background: linear-gradient(135deg, rgba(51, 65, 85, 0.4), rgba(30, 41, 59, 0.4));
+  color: rgba(148, 163, 184, 1);
+  box-shadow: 0 0 8px rgba(51, 65, 85, 0.4);
+}
+
+/* Responsive adjustments for the weather card */
+@media (max-width: 768px) {
+  .weatherCardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .weatherCondition {
+    align-self: flex-start;
+  }
+
+  .weatherCategoryStatsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dreamWeatherCard {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.2),
+    0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  backdrop-filter: blur(10px);
+}
+
+.weatherGlassmorphism {
+  position: relative;
+  backdrop-filter: blur(8px);
+  background: url('/assets/images/dreamboard/weather/background.webp') no-repeat center center;
+  background-size: cover;
+  padding: 24px;
+  border-radius: 20px;
+  overflow: hidden;
+  z-index: 1;
+  color: white;
+}
+
+.weatherGlassmorphism::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(16, 24, 39, 0.8) 0%,
+    rgba(59, 130, 246, 0.5) 50%,
+    rgba(139, 92, 246, 0.3) 100%
+  );
+  z-index: -1;
+}
+
+.weatherCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.weatherCondition {
+  border-radius: 30px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.weatherText {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.weatherMessage {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dreamChallengeContainer {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(217, 70, 239, 0.1));
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.2),
+    0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  backdrop-filter: blur(10px);
+  padding: 24px;
+  color: white;
+}
+
+.dreamChallengeContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(16, 24, 39, 0.8) 0%,
+    rgba(244, 63, 94, 0.3) 50%,
+    rgba(217, 70, 239, 0.2) 100%
+  );
+  z-index: -1;
+}
+
+.challengeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.challengeTitle {
+  font-size: 1.7rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+}
+
+.newChallengeButton {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 8px 16px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.newChallengeButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.activeChallengeCard {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.challengeInfo {
+  margin-bottom: 16px;
+}
+
+.challengeName {
+  font-size: 1.3rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 12px;
+  color: white;
+}
+
+.challengeProgress {
+  margin-top: 12px;
+}
+
+.progressText {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.progressBarContainer {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(to right, #f43f5e, #d946ef);
+  border-radius: 10px;
+  transition: width 0.3s ease-in-out;
+}
+
+.challengeActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mainAction {
+  flex: 1;
+}
+
+.challengeManagementActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.completeButton {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.8), rgba(217, 70, 239, 0.8));
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  width: 100%;
+}
+
+.editButton,
+.deleteButton {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.editButton:hover {
+  background: rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.deleteButton:hover {
+  background: rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.completeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Undo button style */
+.undoButton {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(79, 70, 229, 0.8));
+  position: relative;
+  padding-left: 35px;
+}
+
+.undoButton::before {
+  content: '↩';
+  position: absolute;
+  left: 15px;
+  font-size: 1.2rem;
+  animation: pulse 1.5s infinite;
+}
+
+.noChallengeState {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.noChallengeState p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.moreChallenges {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.moreChallenges:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+.challengeDescription {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+.carouselIndicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.activeIndicator {
+  background-color: rgba(255, 255, 255, 0.9);
+  transform: scale(1.2);
+}
+
+.carouselControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.carouselButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.carouselButton:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.carouselCounter {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.activeChallengeCard {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.challengeModal {
+  background-color: #1a1a1a;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  color: white;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.challengeModal h2 {
+  margin: 0 0 24px 0;
+  color: white;
+  font-size: 1.8rem;
+  background: linear-gradient(135deg, #f43f5e, #d946ef);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.formRow {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 1.2rem;
+}
+
+.formRow .formGroup {
+  flex: 1;
+}
+
+.durationInputs {
+  display: flex;
+  gap: 10px;
+}
+
+.durationInputs input {
+  width: 80px;
+}
+
+.durationInputs select {
+  flex: 1;
+}
+
+.difficultyInputs {
+  display: flex;
+  gap: 10px;
+}
+
+.difficultyBtn {
+  flex: 1;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.difficultyBtn.active {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.5), rgba(217, 70, 239, 0.5));
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.3);
+}
+
+.difficultyBtn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.frequencyOptions {
+  display: flex;
+  gap: 20px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.radioLabel input {
+  margin: 0;
+}
+
+.daySelector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dayButton {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dayButton.selectedDay {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.5), rgba(217, 70, 239, 0.5));
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.3);
+}
+
+.dayButton:hover:not(.selectedDay) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.reminderToggle {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.timeInput {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+  padding: 8px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .formRow {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .frequencyOptions {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Enhanced Insights Tab Styles */
+.insightsTab {
+  width: 100%;
+}
+
+.insightsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.insightsFilters {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.filterButton {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.filterButton.active {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
+.filterButton:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.keyTakeaways {
+  background: linear-gradient(135deg, rgba(8, 8, 15, 0.95), rgba(16, 16, 30, 0.9));
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.keyTakeaways::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #7c3aed, #ec4899);
+  z-index: 2;
+}
+
+.keyTakeawaysHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+}
+
+.keyTakeawaysHeader h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.keyTakeawaysContent {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.insightsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.insightCard {
+  background: rgba(30, 30, 45, 0.6);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.insightCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.insightCardFocused {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.insightIconContainer {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.insightCard h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.insightCard h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 3rem;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.insightCard p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 1rem;
+  flex: 1;
+}
+
+.insightFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.actionButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.actionButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.relatedCategories {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.relatedCategoryTag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Pattern insights specific styling */
+.insightCard.patternInsight {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(139, 92, 246, 0.05));
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+.insightCard.patternInsight:hover {
+  box-shadow: 0 10px 25px rgba(124, 58, 237, 0.15);
+}
+
+.insightCard.patternInsight .insightIconContainer {
+  background: rgba(124, 58, 237, 0.2);
+  color: #a78bfa;
+}
+
+.insightCard.patternInsight h3 {
+  color: #a78bfa;
+}
+
+.insightCard.patternInsight h3::after {
+  background: linear-gradient(90deg, #8b5cf6, #6d28d9);
+}
+
+/* Balance insights specific styling */
+.insightCard.balanceInsight {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.insightCard.balanceInsight:hover {
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
+}
+
+.insightCard.balanceInsight .insightIconContainer {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+.insightCard.balanceInsight h3 {
+  color: #6ee7b7;
+}
+
+.insightCard.balanceInsight h3::after {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+/* Progress insights specific styling */
+.insightCard.progressInsight {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.insightCard.progressInsight:hover {
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+}
+
+.insightCard.progressInsight .insightIconContainer {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
+.insightCard.progressInsight h3 {
+  color: #93c5fd;
+}
+
+.insightCard.progressInsight h3::after {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+/* Suggestion insights specific styling */
+.insightCard.suggestionInsight {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.insightCard.suggestionInsight:hover {
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.15);
+}
+
+.insightCard.suggestionInsight .insightIconContainer {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+}
+
+.insightCard.suggestionInsight h3 {
+  color: #fcd34d;
+}
+
+.insightCard.suggestionInsight h3::after {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.relatedDreamsSection {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.relatedDreamsTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.relatedDreamsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.relatedDreamTag {
+  padding: 0.35rem 0.85rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+  color: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.relatedDreamTag:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.insightChart {
+  height: 80px;
+  margin: 1rem 0;
+  position: relative;
+}
+
+.moreDetailsButton {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: center;
+}
+
+.moreDetailsButton:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.learnMoreSection {
+  margin-top: 3rem;
+  background: rgba(20, 20, 30, 0.5);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.learnMoreHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.learnMoreHeader h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.learnMoreGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.resourceCard {
+  background: rgba(30, 30, 45, 0.4);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.resourceCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.resourceTypeTag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  background: rgba(139, 92, 246, 0.2);
+  font-size: 0.8rem;
+  color: rgba(139, 92, 246, 0.9);
+  margin-bottom: 0.75rem;
+}
+
+.resourceCard h4 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  color: white;
+}
+
+.resourceButton {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 0.5rem;
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+}
+
+.resourceButton:hover {
+  background: rgba(139, 92, 246, 0.3);
+  transform: translateY(-2px);
+}
+
+.insightDetailModal {
+  background: linear-gradient(135deg, rgba(20, 20, 35, 0.95), rgba(28, 25, 38, 0.95));
+  border-radius: 1.25rem;
+  padding: 0;
+  width: 95%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modalHeader {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.modalCloseButton {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1.5rem;
+}
+
+.modalCloseButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.modalContent {
+  padding: 2rem;
+  overflow-y: auto;
+  max-height: calc(90vh - 9rem);
+}
+
+.dataVisSection {
+  margin-top: 2rem;
+}
+
+.timelineContainer {
+  margin-top: 1.5rem;
+  height: 200px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+/* Animation classes */
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+  }
+}
+
+.glowEffect {
+  animation: glowPulse 2s infinite;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slideInAnimation {
+  animation: slideDown 0.3s ease forwards;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .insightsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .insightCardFocused {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .learnMoreGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .insightsFilters {
+    flex-wrap: wrap;
+  }
+}
+
+/* Empty Dream Board State */
+.emptyDreamBoardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.emptyDreamBoardContent {
+  background: linear-gradient(135deg, rgba(30, 30, 60, 0.8), rgba(45, 35, 75, 0.8));
+  border-radius: 1.5rem;
+  padding: 3rem;
+  text-align: center;
+  max-width: 650px;
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.emptyDreamBoardIcon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  animation: sparkle 2s infinite;
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.emptyDreamBoardTitle {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+}
+
+.emptyDreamBoardDescription {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+}
+
+.createDreamBoardButton {
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow:
+    0 10px 25px rgba(139, 92, 246, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.createDreamBoardButton:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 15px 30px rgba(139, 92, 246, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+.createDreamBoardButton:active {
+  transform: translateY(-1px);
+  box-shadow:
+    0 5px 15px rgba(139, 92, 246, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.createButtonIcon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+/* Responsive adjustments for empty state */
+@media (max-width: 768px) {
+  .emptyDreamBoardContent {
+    padding: 2rem;
+  }
+
+  .emptyDreamBoardTitle {
+    font-size: 1.8rem;
+  }
+
+  .emptyDreamBoardDescription {
+    font-size: 1rem;
+  }
+
+  .createDreamBoardButton {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Loading Overlay */
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loadingSpinner {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #8b5cf6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error Notification */
+.errorNotification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.errorNotification button {
+  background: none;
+  border: none;
+  color: #c33;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 1rem;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.errorNotification button:hover {
+  background: rgba(204, 51, 51, 0.1);
+  border-radius: 50%;
+}
+
+/* Title container and unsaved changes indicator */
+.titleContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.unsavedIndicator {
+  color: #f59e0b;
+  font-size: 1.2rem;
+  line-height: 1;
+  animation: pulse 2s infinite;
+  margin-top: -0.2rem;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

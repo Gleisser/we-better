@@ -1,6 +1,7 @@
-import '@testing-library/jest-dom';
-import { beforeAll } from 'vitest';
+import { expect, beforeAll } from 'vitest';
+import matchers from '@testing-library/jest-dom/matchers';
 
+expect.extend(matchers);
 // Mock Vite's import.meta.env
 beforeAll(() => {
   const viteMock = {
@@ -13,9 +14,14 @@ beforeAll(() => {
       MODE: 'test',
       DEV: true,
       PROD: false,
-      SSR: false
-    }
+      SSR: false,
+    },
   };
 
-  (global as any).import = { meta: viteMock };
-}); 
+  // Use proper type assertion
+  type GlobalWithImport = typeof global & {
+    import: { meta: typeof viteMock };
+  };
+
+  (global as GlobalWithImport).import = { meta: viteMock };
+});

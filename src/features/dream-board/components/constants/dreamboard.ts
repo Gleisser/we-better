@@ -1,0 +1,68 @@
+const categoryDetails = {
+  Travel: {
+    icon: '✈️',
+    illustration: '/assets/images/dreamboard/travel.webp',
+    gradient: 'linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%)',
+    hoverGradient: 'linear-gradient(135deg, #38BDF8 0%, #0EA5E9 100%)',
+    shadowColor: 'rgba(14, 165, 233, 0.4)',
+    color: '#38BDF8',
+  },
+  Skills: {
+    icon: '🎯',
+    illustration: '/assets/images/dreamboard/skills.webp',
+    gradient: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+    hoverGradient: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
+    shadowColor: 'rgba(245, 158, 11, 0.4)',
+    color: '#F59E0B',
+  },
+  Finance: {
+    icon: '💰',
+    illustration: '/assets/images/dreamboard/finance.webp',
+    gradient: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+    hoverGradient: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+    shadowColor: 'rgba(5, 150, 105, 0.4)',
+    color: '#10B981',
+  },
+  Health: {
+    icon: '💪',
+    illustration: '/assets/images/dreamboard/health.webp',
+    gradient: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+    hoverGradient: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+    shadowColor: 'rgba(220, 38, 38, 0.4)',
+    color: '#EF4444',
+  },
+  Relationships: {
+    icon: '❤️',
+    illustration: '/assets/images/dreamboard/relationship.webp',
+    gradient: 'linear-gradient(135deg, #DB2777 0%, #BE185D 100%)',
+    hoverGradient: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)',
+    shadowColor: 'rgba(219, 39, 119, 0.4)',
+    color: '#EC4899',
+  },
+  Career: {
+    icon: '💼',
+    illustration: '/assets/images/dreamboard/career.webp',
+    gradient: 'linear-gradient(135deg, #9333EA 0%, #7E22CE 100%)',
+    hoverGradient: 'linear-gradient(135deg, #A855F7 0%, #9333EA 100%)',
+    shadowColor: 'rgba(147, 51, 234, 0.4)',
+    color: '#A855F7',
+  },
+  Education: {
+    icon: '🎓',
+    illustration: '/assets/images/dreamboard/education.webp',
+    gradient: 'linear-gradient(135deg, #e9620e 0%, #e9860e 100%)',
+    hoverGradient: 'linear-gradient(135deg, #e9860e 0%, #e9620e 100%)',
+    shadowColor: 'rgba(30, 64, 175, 0.4)',
+    color: '#3B82F6',
+  },
+  Spirituality: {
+    icon: '✨',
+    illustration: '/assets/images/dreamboard/spirituality.webp',
+    gradient: 'linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%)',
+    hoverGradient: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+    shadowColor: 'rgba(109, 40, 217, 0.4)',
+    color: '#8B5CF6',
+  },
+};
+
+export default categoryDetails;

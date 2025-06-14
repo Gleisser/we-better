@@ -1,0 +1,122 @@
+.lifeWheelWidget {
+  @apply bg-gradient-to-br from-gray-900 to-purple-900/80
+           rounded-xl shadow-lg p-2 pb-4 h-full w-full;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  /* Test containment */
+  isolation: isolate;
+  position: relative;
+}
+
+/* Enhanced Life Wheel Widget Styles */
+.widgetHeader {
+  @apply flex flex-col gap-2 px-4 pt-3 mb-0;
+}
+
+.headerTop {
+  @apply flex items-center justify-between;
+}
+
+.headerLeft {
+  @apply flex items-center gap-3;
+}
+
+.headerIcon {
+  @apply w-10 h-10 rounded-xl
+         bg-black/80
+         flex items-center justify-center
+         text-xl
+         border border-white/[0.08]
+         shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
+}
+
+.headerText {
+  @apply text-sm text-white/80 font-medium;
+}
+
+.headerActions {
+  @apply flex items-center gap-2;
+}
+
+.actionButton {
+  @apply w-8 h-8 rounded-full
+         bg-black/60 backdrop-blur-sm
+         border border-white/[0.08]
+         flex items-center justify-center
+         text-white/70
+         transition-all duration-300
+         hover:bg-black/80 hover:text-white;
+}
+
+.actionIcon {
+  @apply w-4 h-4;
+}
+
+.viewToggleButton {
+  @apply p-2 rounded-full bg-gray-800/60 hover:bg-gray-700/80 
+           text-white text-sm transition-colors;
+}
+
+.radarViewContainer {
+  @apply relative pt-2 pb-4;
+}
+
+.wheelViewContainer {
+  @apply relative flex items-center justify-center flex-1 h-full pt-0 pb-6;
+  /* Test containment */
+  position: relative;
+  isolation: isolate;
+}
+
+.dashboardRadarChart {
+  @apply max-h-72 mx-auto;
+}
+
+.radarTooltip {
+  @apply absolute top-4 left-1/2 transform -translate-x-1/2
+           bg-gray-900/95 text-white px-4 py-2 rounded-lg text-sm
+           backdrop-blur-sm border border-purple-500/50 font-medium z-50;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+  min-width: 120px;
+  text-align: center;
+}
+
+.wheelTooltip {
+  @apply absolute bottom-3 left-1/2 transform -translate-x-1/2
+         bg-gray-900/95 text-white px-4 py-2 rounded-lg text-sm
+         backdrop-blur-sm border border-purple-500/50 font-medium z-50;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+  min-width: 120px;
+  text-align: center;
+  /* Use transition instead of animation for predictable behavior */
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.widgetFooter {
+  @apply mt-0 mb-3 text-center;
+}
+
+.seeMoreButton {
+  @apply px-4 py-2 bg-purple-600/80 hover:bg-purple-500/90 
+           text-white rounded-lg text-sm transition-colors;
+}
+
+.loadingIndicator {
+  @apply flex flex-col items-center justify-center h-64 text-gray-300;
+  min-height: 200px;
+}
+
+.spinner {
+  @apply w-8 h-8 border-4 border-gray-600 border-t-purple-500 
+           rounded-full mb-3;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

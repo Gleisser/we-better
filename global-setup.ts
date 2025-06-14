@@ -10,19 +10,19 @@ async function waitForServer(url: string, maxAttempts = 3): Promise<boolean> {
     try {
       const response = await fetch(url);
       const text = await response.text();
-      
+
       // Check for "Upgrade Required" error
       if (text.includes('Upgrade Required')) {
-        console.log('Detected Vite upgrade required error, restarting server...');
+        console.info('Detected Vite upgrade required error, restarting server...');
         await restartDevServer();
         // Wait a bit for the server to restart
         await new Promise(resolve => setTimeout(resolve, 5000));
         continue;
       }
-      
+
       return true;
     } catch (error) {
-      console.log(`Server check attempt ${attempt + 1} failed:`, error.message);
+      console.info(`Server check attempt ${attempt + 1} failed:`, error.message);
       if (attempt === maxAttempts - 1) {
         throw new Error(`Server failed to start after ${maxAttempts} attempts`);
       }
@@ -33,7 +33,7 @@ async function waitForServer(url: string, maxAttempts = 3): Promise<boolean> {
   return false;
 }
 
-async function restartDevServer() {
+async function restartDevServer(): Promise<void> {
   try {
     // Kill any existing Vite processes
     if (process.platform === 'win32') {
@@ -41,23 +41,23 @@ async function restartDevServer() {
     } else {
       await execAsync('pkill -f vite');
     }
-    
+
     // Clean Vite cache
     await execAsync('rm -rf node_modules/.vite');
-    
+
     // Optional: Clear npm cache and reinstall dependencies
     // await execAsync('npm cache clean --force');
     // await execAsync('npm install');
-    
-    console.log('Dev server restarted successfully');
+
+    console.info('Dev server restarted successfully');
   } catch (error) {
     console.error('Error restarting dev server:', error);
   }
 }
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup(config: FullConfig): Promise<void> {
   const baseURL = config.projects[0].use.baseURL as string;
-  
+
   try {
     // Wait for server with retry mechanism
     await waitForServer(baseURL);

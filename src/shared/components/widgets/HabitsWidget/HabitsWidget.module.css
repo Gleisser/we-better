@@ -1,0 +1,603 @@
+.container {
+  @apply relative w-full h-full
+         rounded-[32px] overflow-hidden
+         border border-white/10
+         shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)];
+  animation: breathe 8s ease-in-out infinite;
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start) 0%,
+    var(--gradient-middle) 50%,
+    var(--gradient-end) 100%
+  );
+  transition: background 2s ease-in-out;
+}
+
+.header {
+  @apply p-5;
+}
+
+.headerMain {
+  @apply flex items-center justify-between;
+}
+
+.headerLeft {
+  @apply flex items-center gap-3;
+}
+
+.headerIcon {
+  @apply w-10 h-10 rounded-xl
+         bg-black/80
+         flex items-center justify-center
+         text-xl
+         border border-white/[0.08]
+         shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
+}
+
+.headerText {
+  @apply text-sm text-white/80 font-medium;
+}
+
+/* Loading, error and empty states */
+.loadingIndicator {
+  @apply flex items-center justify-center
+         h-40 w-full
+         text-white/70 text-sm
+         animate-pulse;
+}
+
+.errorMessage {
+  @apply flex items-center justify-center
+         h-40 w-full
+         text-red-400 text-sm
+         p-4 rounded-lg
+         bg-red-500/10 border border-red-500/20;
+}
+
+.emptyState {
+  @apply flex flex-col items-center justify-center
+         gap-4 h-40 w-full
+         text-white/70 text-sm;
+}
+
+.createButton {
+  @apply px-4 py-2 rounded-lg
+         bg-white/10 hover:bg-white/20
+         border border-white/10
+         text-white text-sm
+         transition-all duration-300;
+}
+
+.categorySelector {
+  @apply flex gap-2 overflow-x-auto
+         px-5 pb-4
+         scroll-smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.categorySelector::-webkit-scrollbar {
+  display: none;
+}
+
+.categoryButton {
+  @apply flex items-center gap-2
+         px-3 py-1.5 rounded-full
+         bg-black/40 backdrop-blur-[2px]
+         border border-white/[0.08]
+         text-sm text-white/70
+         whitespace-nowrap
+         transition-all duration-300;
+}
+
+.categoryButton:hover {
+  @apply text-white;
+  border-color: rgba(var(--category-color-rgb), 0.3);
+  background-color: rgba(var(--category-color-rgb), 0.1);
+}
+
+.categoryButton.selected {
+  @apply text-white;
+  border-color: rgba(var(--category-color-rgb), 0.3);
+  background-color: rgba(var(--category-color-rgb), 0.2);
+}
+
+.categoryIcon {
+  @apply text-base;
+}
+
+.content {
+  @apply flex-1 flex flex-col
+         px-5 pb-5;
+}
+
+.habitsList {
+  @apply flex flex-col gap-3;
+}
+
+.habitCard {
+  @apply flex items-center gap-4
+         p-4 rounded-xl
+         bg-black/40 backdrop-blur-[2px]
+         border border-white/[0.08]
+         transition-all duration-300;
+}
+
+.habitInfo {
+  @apply flex items-center gap-3;
+}
+
+.habitIcon {
+  @apply w-8 h-8 rounded-lg
+         bg-black/40
+         flex items-center justify-center
+         text-base
+         border border-white/[0.08];
+}
+
+.habitName {
+  @apply text-sm text-white font-medium;
+}
+
+.habitStats {
+  @apply flex items-center gap-3;
+}
+
+.streakBadge {
+  @apply px-2 py-1 rounded-lg
+         bg-black/40
+         text-xs text-white/70
+         border border-white/[0.08];
+}
+
+.checkButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         text-white/70 text-lg
+         border border-white/[0.08]
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white;
+}
+
+.checkButton.completed {
+  @apply bg-emerald-500/20 border-emerald-500/30
+         text-emerald-400;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    background-position: 0% 0%;
+    background-size: 100% 100%;
+  }
+  50% {
+    background-position: 50% 50%;
+    background-size: 120% 120%;
+  }
+}
+
+.weekProgress {
+  @apply flex items-center gap-6 flex-1
+         justify-center;
+}
+
+.dayColumn {
+  @apply flex flex-col items-center gap-2
+         relative;
+}
+
+.dayColumn::after {
+  @apply content-[attr(data-tooltip)]
+         absolute -bottom-6
+         px-2 py-1 rounded-md
+         bg-black/90
+         text-xs text-white/70
+         opacity-0
+         transition-opacity duration-200
+         whitespace-nowrap
+         pointer-events-none;
+}
+
+.dayColumn:hover::after {
+  @apply opacity-100;
+}
+
+.dayCheck {
+  @apply w-8 h-8 rounded-full
+         flex items-center justify-center
+         border-2 border-white/20
+         text-sm text-white/50
+         transition-all duration-300
+         cursor-pointer
+         hover:border-white/40
+         hover:scale-110
+         active:scale-95
+         relative;
+  animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes subtle-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+  }
+}
+
+.dayCheck.hasStatus {
+  @apply bg-emerald-500
+         border-emerald-500
+         text-white;
+}
+
+.statusIcon {
+  @apply text-base;
+}
+
+/* Status-specific styles */
+.dayCheck[data-status='completed'] {
+  @apply bg-[#4CAF50]
+         border-[#4CAF50]
+         text-white
+         flex items-center justify-center
+         relative;
+}
+
+.dayCheck[data-status='completed'] .statusIcon {
+  @apply hidden;
+}
+
+.dayCheck[data-status='completed']::after {
+  content: '';
+  @apply absolute
+         inset-0
+         flex items-center justify-center;
+}
+
+.checkmarkIcon {
+  @apply w-4 h-4
+         text-white
+         absolute
+         left-1/2 top-1/2
+         -translate-x-1/2 -translate-y-1/2;
+}
+
+/* Remove the hover scale effect for completed status */
+.dayCheck[data-status='completed']:hover {
+  @apply scale-100
+         brightness-95;
+}
+
+/* Other statuses keep their emojis */
+.dayCheck[data-status]:not([data-status='completed']) .statusIcon {
+  @apply text-base;
+}
+
+/* Status-specific background colors */
+.dayCheck[data-status='sick'] {
+  @apply bg-orange-500/20 border-orange-500
+         text-orange-400;
+}
+
+.dayCheck[data-status='weather'] {
+  @apply bg-blue-500/20 border-blue-500
+         text-blue-400;
+}
+
+.dayCheck[data-status='travel'] {
+  @apply bg-purple-500/20 border-purple-500
+         text-purple-400;
+}
+
+/* ... add other status styles as needed ... */
+
+.dayCheck[data-status] {
+  @apply relative;
+}
+
+.dayCheck[data-status]::after {
+  @apply content-[attr(data-status-icon)]
+         absolute -top-1 -right-1
+         w-4 h-4
+         flex items-center justify-center
+         text-xs;
+}
+
+.checkmark {
+  @apply opacity-0 transition-opacity duration-200;
+}
+
+.dayCheck.completed .checkmark {
+  @apply opacity-100;
+}
+
+.checkInButton {
+  @apply px-4 py-2 rounded-lg
+         bg-black/40
+         border border-white/[0.08]
+         text-sm text-white/70
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white;
+}
+
+.habitActions {
+  @apply flex items-center gap-2
+         ml-auto;
+}
+
+.monthlyViewButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white;
+}
+
+.actionIcon {
+  @apply w-4 h-4;
+}
+
+.dayLabel {
+  @apply text-xs text-white font-medium;
+}
+
+/* Update partial status styles */
+.dayCheck[data-status='partial'],
+.dayCheck[data-status='rescheduled'],
+.dayCheck[data-status='half'] {
+  @apply bg-transparent
+         text-white
+         border-2 border-white/20
+         relative;
+}
+
+/* Create the half green border */
+.dayCheck[data-status='partial']::before,
+.dayCheck[data-status='rescheduled']::before,
+.dayCheck[data-status='half']::before {
+  content: '';
+  @apply absolute
+         inset-[-2px]
+         rounded-full
+         border-2 border-[#4caf50]
+         pointer-events-none;
+  clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+}
+
+/* Remove the previous after pseudo-element that was showing the day number */
+.dayCheck[data-status='partial']::after,
+.dayCheck[data-status='rescheduled']::after,
+.dayCheck[data-status='half']::after {
+  content: none;
+}
+
+/* Remove emoji icon for partial statuses */
+.dayCheck[data-status='partial'] .statusIcon,
+.dayCheck[data-status='rescheduled'] .statusIcon,
+.dayCheck[data-status='half'] .statusIcon {
+  @apply hidden;
+}
+
+/* Add styles for the action buttons */
+.actionButton,
+.monthlyViewButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white;
+}
+
+/* Add styles for the add button in the header */
+.addButton {
+  @apply w-7 h-7 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white
+         ml-2;
+}
+
+.headerRight {
+  @apply flex items-center gap-2;
+}
+
+.collapseButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-200
+         hover:bg-black/60 hover:text-white;
+}
+
+.collapseIcon {
+  @apply w-4 h-4 transition-transform duration-300;
+}
+
+.collapseButton.collapsed .collapseIcon {
+  @apply rotate-180;
+}
+
+.container.collapsed {
+  @apply min-h-0;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+
+.content {
+  @apply overflow-hidden;
+}
+
+.collapsibleContent {
+  @apply flex flex-col overflow-hidden;
+}
+
+/* Add mobile-specific styles at the end of the file */
+@media (max-width: 768px) {
+  .habitCard {
+    @apply flex flex-col gap-2
+           p-4;
+  }
+
+  .habitHeader {
+    @apply flex items-center justify-between
+           w-full p-3;
+  }
+
+  .habitMainInfo {
+    @apply flex items-center gap-2
+           flex-1;
+  }
+
+  .weekProgress {
+    @apply flex overflow-x-auto
+           py-2 px-1
+           w-full
+           -mx-0;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .weekProgress::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dayColumn {
+    @apply flex-shrink-0
+           min-w-[50px]
+           flex flex-col items-center;
+  }
+
+  .dayLabel {
+    @apply text-xs text-white/70 
+           mb-1;
+  }
+
+  .dayCheck {
+    @apply w-9 h-9
+           rounded-full
+           flex items-center justify-center
+           border border-white/[0.08]
+           relative;
+  }
+
+  /* Remove the background and border we added before */
+  .weekProgress {
+    @apply bg-transparent
+           border-0;
+  }
+
+  /* Update the status icon positioning */
+  .statusIcon {
+    @apply absolute left-1/2 top-1/2
+           -translate-x-1/2 -translate-y-1/2
+           text-base;
+  }
+
+  /* Position the day number alongside the icon */
+  .dayCheck[data-status] {
+    @apply relative;
+  }
+
+  .dayCheck[data-status]::after {
+    @apply absolute -top-1 -right-1
+           w-4 h-4
+           flex items-center justify-center
+           text-xs
+           bg-black/40
+           rounded-full;
+  }
+
+  /* Adjust checkmark icon position */
+  .checkmarkIcon {
+    @apply absolute left-1/2 top-1/2
+           -translate-x-1/2 -translate-y-1/2
+           text-white;
+  }
+
+  /* Make sure the day number is visible when there's no status */
+  .dayCheck:not([data-status]) {
+    @apply text-white/70;
+  }
+
+  /* Collapsed state styles */
+  .habitCard.collapsed .weekProgress,
+  .habitCard.collapsed .habitActions {
+    @apply hidden;
+  }
+
+  .habitCard.collapsed {
+    @apply py-2; /* Reduced padding when collapsed */
+  }
+
+  /* Expand/collapse toggle */
+  .toggleButton {
+    @apply w-8 h-8
+           flex items-center justify-center
+           rounded-lg
+           bg-black/40
+           text-white/70;
+  }
+
+  .toggleIcon {
+    @apply w-4 h-4 transition-transform;
+  }
+
+  .collapsed .toggleIcon {
+    @apply rotate-180;
+  }
+
+  .streakBadge {
+    @apply flex items-center gap-1
+           px-2 py-1 rounded-lg
+           bg-black/40
+           text-xs text-white/70
+           border border-white/[0.08]
+           ml-2;
+  }
+
+  .habitName {
+    @apply flex-1;
+  }
+
+  /* Override the status styles specifically for mobile habit widget */
+  .habitCard .dayCheck[data-status]::after {
+    content: none; /* Remove the floating ball */
+  }
+
+  .habitCard .dayCheck {
+    @apply w-9 h-9
+           rounded-full
+           flex items-center justify-center
+           border border-white/[0.08]
+           relative; /* Ensure proper stacking */
+  }
+
+  /* Ensure status icons are properly centered without the floating ball */
+  .habitCard .statusIcon {
+    @apply absolute left-1/2 top-1/2
+           -translate-x-1/2 -translate-y-1/2
+           text-base; /* Adjust icon size if needed */
+  }
+
+  /* Keep the checkmark styling clean */
+  .habitCard .checkmarkIcon {
+    @apply absolute left-1/2 top-1/2
+           -translate-x-1/2 -translate-y-1/2
+           text-white;
+  }
+}
