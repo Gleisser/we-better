@@ -684,7 +684,7 @@ const DreamBoardPage: React.FC = () => {
               <div className={styles.experienceTab}>
                 <CosmicDreamExperience
                   dreams={dreams}
-                  categories={mockCategories}
+                  categories={[...new Set(dreams.map(dream => dream.category))]}
                   onDreamSelect={handleDreamSelect}
                   activeDream={activeDream}
                 />

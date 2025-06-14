@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { Dream } from '../../types';
 import styles from './CosmicDreamExperience.module.css';
 import { createPortal } from 'react-dom';
@@ -52,20 +52,34 @@ interface Supernova {
   createdAt: number;
 }
 
-// Color palette for categories
-const categoryColors: Record<string, string> = {
-  Travel: '#4FD1C5',
-  Skills: '#9F7AEA',
-  Finance: '#F6AD55',
-  Health: '#68D391',
-  Relationships: '#FC8181',
-  Career: '#63B3ED',
-  Education: '#F687B3',
-  Spirituality: '#B794F4',
+// Helper function to normalize category names (capitalize first letter)
+const normalizeCategory = (category: string): string => {
+  return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
 };
 
-// Default color for categories not in the palette
-const defaultColor = '#8B5CF6';
+// Helper function to get category color (case-insensitive)
+const getCategoryColor = (category: string): string => {
+  const categoryColors: Record<string, string> = {
+    travel: '#4FD1C5',
+    skills: '#9F7AEA',
+    finance: '#F6AD55',
+    finances: '#F6AD55', // Handle both "finance" and "finances"
+    health: '#68D391',
+    relationships: '#FC8181',
+    career: '#63B3ED',
+    education: '#F687B3',
+    spirituality: '#B794F4',
+  };
+
+  const normalizedCategory = category.toLowerCase();
+  return categoryColors[normalizedCategory] || '#8B5CF6';
+};
+
+// Helper function to check if a dream matches the selected category (case-insensitive)
+const dreamMatchesCategory = (dream: Dream, selectedCategory: string): boolean => {
+  if (selectedCategory === 'all') return true;
+  return normalizeCategory(dream.category) === selectedCategory;
+};
 
 export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   dreams,
@@ -73,6 +87,26 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   onDreamSelect,
   activeDream,
 }) => {
+  // Create a comprehensive list of categories that includes both actual categories from dreams
+  // and predefined categories to ensure we show all possible categories
+  const displayCategories = useMemo(() => {
+    const allPossibleCategories = [
+      'Travel',
+      'Skills',
+      'Finance',
+      'Health',
+      'Relationships',
+      'Career',
+      'Education',
+      'Spirituality',
+    ];
+
+    // Normalize categories from dreams (capitalize first letter)
+    const normalizedDreamCategories = categories.map(cat => normalizeCategory(cat));
+
+    // Combine normalized categories from dreams with predefined ones, removing duplicates
+    return [...new Set([...normalizedDreamCategories, ...allPossibleCategories])];
+  }, [categories]);
   // Basic state
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -187,7 +221,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         const nodeRadius = 15 + importanceFactor * 10;
 
         // Color based on category
-        const color = categoryColors[dream.category] || defaultColor;
+        const color = getCategoryColor(dream.category);
 
         // Initial brightness based on progress
         const brightness = 0.4 + dream.progress * 0.6;
@@ -348,7 +382,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         }
 
         // Draw nebula glow
-        const color = categoryColors[category] || defaultColor;
+        const color = getCategoryColor(category);
         const radialGradient = ctx.createRadialGradient(
           centerX,
           centerY,
@@ -379,7 +413,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     // Update and draw connections
     dreamNodes.forEach(node => {
       // Skip if node is filtered out by category selection
-      if (selectedCategory !== 'all' && node.category !== selectedCategory) return;
+      if (!dreamMatchesCategory(node.dream, selectedCategory)) return;
 
       const isActive = activeDream?.id === node.dream.id;
       const isHovered = hoveredDream?.id === node.dream.id;
@@ -390,7 +424,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         if (!target) return;
 
         // Skip if target is filtered out by category selection
-        if (selectedCategory !== 'all' && target.category !== selectedCategory) return;
+        if (!dreamMatchesCategory(target.dream, selectedCategory)) return;
 
         // Skip if connection is offscreen
         const midX = (node.x + target.x) / 2;
@@ -454,7 +488,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     // Update and draw nodes
     dreamNodes.forEach(node => {
       // Skip if node is filtered out by category selection
-      if (selectedCategory !== 'all' && node.category !== selectedCategory) return;
+      if (!dreamMatchesCategory(node.dream, selectedCategory)) return;
 
       // Skip if offscreen (with buffer for glow)
       const screenX = node.x * zoomLevel + panOffset.x;
@@ -610,7 +644,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       if (!parentNode) return;
 
       // Skip if parent is filtered out by category selection
-      if (selectedCategory !== 'all' && parentNode.category !== selectedCategory) return;
+      if (!dreamMatchesCategory(parentNode.dream, selectedCategory)) return;
 
       // Update badge position to orbit parent
       badge.angle += 0.01;
@@ -807,7 +841,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     let hoveredNode = null;
     for (const node of dreamNodes) {
       // Skip if node is filtered out by category selection
-      if (selectedCategory !== 'all' && node.category !== selectedCategory) continue;
+      if (!dreamMatchesCategory(node.dream, selectedCategory)) continue;
 
       const dx = node.x - mouseX;
       const dy = node.y - mouseY;
@@ -913,7 +947,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     let clickedNode = null;
     for (const node of dreamNodes) {
       // Skip if node is filtered out by category selection
-      if (selectedCategory !== 'all' && node.category !== selectedCategory) continue;
+      if (!dreamMatchesCategory(node.dream, selectedCategory)) continue;
 
       const dx = node.x - mouseX;
       const dy = node.y - mouseY;
@@ -1018,7 +1052,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         <div
           className={styles.dreamDetailCategory}
           style={{
-            backgroundColor: categoryColors[dream.category] || defaultColor,
+            backgroundColor: getCategoryColor(dream.category),
           }}
         >
           {dream.category}
@@ -1038,7 +1072,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
               className={styles.dreamDetailProgressFill}
               style={{
                 width: `${dream.progress * 100}%`,
-                backgroundColor: categoryColors[dream.category] || defaultColor,
+                backgroundColor: getCategoryColor(dream.category),
               }}
             />
           </div>
@@ -1207,7 +1241,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
                 onChange={handleCategorySelect}
               >
                 <option value="all">All Categories</option>
-                {categories.map(category => (
+                {displayCategories.map(category => (
                   <option key={category} value={category}>
                     {category}
                   </option>
@@ -1220,8 +1254,8 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
           <div className={styles.categoryLegend}>
             <div className={styles.legendTitle}>Dream Categories</div>
             <div className={styles.legendItems}>
-              {categories.map(category => {
-                const count = dreams.filter(d => d.category === category).length;
+              {displayCategories.map(category => {
+                const count = dreams.filter(d => normalizeCategory(d.category) === category).length;
                 return (
                   <div
                     key={category}
@@ -1233,7 +1267,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
                   >
                     <div
                       className={styles.legendColor}
-                      style={{ backgroundColor: categoryColors[category] || defaultColor }}
+                      style={{ backgroundColor: getCategoryColor(category) }}
                     />
                     <div className={styles.legendLabel}>
                       {category}
