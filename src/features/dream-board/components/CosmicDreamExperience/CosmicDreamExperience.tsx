@@ -261,6 +261,32 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     }
   }, [dimensions, isInitialized, initializeUniverse]);
 
+  // Handle fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = (): void => {
+      const isCurrentlyFullscreen = !!document.fullscreenElement;
+      setIsFullscreen(isCurrentlyFullscreen);
+
+      // Reset view when toggling fullscreen
+      setPanOffset({ x: 0, y: 0 });
+      setZoomLevel(1);
+
+      // Allow time for the container to resize before updating dimensions
+      setTimeout(() => {
+        if (containerRef.current) {
+          const { width, height } = containerRef.current.getBoundingClientRect();
+          setDimensions({ width, height });
+        }
+      }, 100);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   // Animation loop to render the cosmic dream map
   const animate = useCallback(() => {
     if (!canvasRef.current || !isInitialized) return;
@@ -671,19 +697,19 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
   // Toggle fullscreen mode
   const toggleFullscreen = (): void => {
-    setIsFullscreen(!isFullscreen);
+    if (!containerRef.current) return;
 
-    // Reset view when toggling fullscreen
-    setPanOffset({ x: 0, y: 0 });
-    setZoomLevel(1);
-
-    // Allow time for the container to resize before re-initializing
-    setTimeout(() => {
-      if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        setDimensions({ width, height });
-      }
-    }, 100);
+    if (!document.fullscreenElement) {
+      // Enter fullscreen
+      containerRef.current.requestFullscreen().catch(err => {
+        console.error('Error attempting to enable fullscreen:', err);
+      });
+    } else {
+      // Exit fullscreen
+      document.exitFullscreen().catch(err => {
+        console.error('Error attempting to exit fullscreen:', err);
+      });
+    }
   };
 
   // Toggle view mode between cosmic and constellation
