@@ -1,7 +1,9 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { Dream } from '../../types';
+import { Dream, Milestone } from '../../types';
 import styles from './CosmicDreamExperience.module.css';
 import { createPortal } from 'react-dom';
+import { useDreamProgress } from '../../hooks/useDreamProgress';
+import { getDreamMilestonesForContent } from '../../api/dreamMilestonesApi';
 
 interface CosmicDreamExperienceProps {
   dreams: Dream[];
@@ -134,6 +136,11 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   // State for positioning the detail card
   const [detailCardPosition, setDetailCardPosition] = useState({ x: 0, y: 0 });
   const [showPortalCard, setShowPortalCard] = useState(false);
+
+  // Backend integration for progress and milestones
+  const { getProgressForDream } = useDreamProgress();
+  const [dreamProgresses, setDreamProgresses] = useState<Record<string, number>>({});
+  const [dreamMilestones, setDreamMilestones] = useState<Record<string, Milestone[]>>({});
 
   // Format date helper
   const formatDate = (dateString: string): string => {
@@ -294,6 +301,53 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       initializeUniverse();
     }
   }, [dimensions, isInitialized, initializeUniverse]);
+
+  // Load backend data for progress and milestones
+  useEffect(() => {
+    const loadBackendData = async (): Promise<void> => {
+      if (dreams.length === 0) return;
+
+      try {
+        // Load progress data
+        const progressMap: Record<string, number> = {};
+        for (const dream of dreams) {
+          try {
+            const latestProgress = await getProgressForDream(dream.id);
+            progressMap[dream.id] = latestProgress !== undefined ? latestProgress : dream.progress;
+          } catch (error) {
+            console.error(`Error loading progress for dream ${dream.id}:`, error);
+            progressMap[dream.id] = dream.progress;
+          }
+        }
+        setDreamProgresses(progressMap);
+
+        // Load milestones data
+        const milestonesMap: Record<string, Milestone[]> = {};
+        for (const dream of dreams) {
+          try {
+            const milestones = await getDreamMilestonesForContent(dream.id);
+            // Convert backend milestones to frontend format
+            milestonesMap[dream.id] = milestones.map(m => ({
+              id: m.id,
+              title: m.title,
+              description: m.description || '',
+              completed: m.completed,
+              date: m.due_date || m.created_at,
+            }));
+          } catch (error) {
+            console.error(`Error loading milestones for dream ${dream.id}:`, error);
+            // Fallback to dream's existing milestones
+            milestonesMap[dream.id] = dream.milestones || [];
+          }
+        }
+        setDreamMilestones(milestonesMap);
+      } catch (error) {
+        console.error('Error loading backend data:', error);
+      }
+    };
+
+    loadBackendData();
+  }, [dreams, getProgressForDream]);
 
   // Handle fullscreen changes
   useEffect(() => {
@@ -598,15 +652,16 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       ctx.fillStyle = nodeGradient;
       ctx.fill();
 
-      // Draw progress ring
-      if (node.dream.progress > 0) {
+      // Draw progress ring using backend data
+      const nodeProgress = dreamProgresses[node.dream.id] ?? node.dream.progress;
+      if (nodeProgress > 0) {
         ctx.beginPath();
         ctx.arc(
           node.x,
           node.y,
           node.radius + 2,
           -Math.PI / 2,
-          -Math.PI / 2 + Math.PI * 2 * node.dream.progress
+          -Math.PI / 2 + Math.PI * 2 * nodeProgress
         );
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 2;
@@ -716,6 +771,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     selectedCategory,
     viewMode,
     dreams,
+    dreamProgresses,
   ]);
 
   // Start animation when initialized
@@ -1018,6 +1074,10 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     const dream = activeDream || hoveredDream;
     if (!dream) return null;
 
+    // Get backend data for this dream
+    const currentProgress = dreamProgresses[dream.id] ?? dream.progress;
+    const currentMilestones = dreamMilestones[dream.id] ?? dream.milestones ?? [];
+
     // Use different positioning for fullscreen vs normal mode
     const cardStyle = isFullscreen
       ? {
@@ -1064,14 +1124,14 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
           <div className={styles.dreamDetailProgressHeader}>
             <div className={styles.dreamDetailProgressLabel}>Progress</div>
             <div className={styles.dreamDetailProgressValue}>
-              {Math.round(dream.progress * 100)}%
+              {Math.round(currentProgress * 100)}%
             </div>
           </div>
           <div className={styles.dreamDetailProgressBar}>
             <div
               className={styles.dreamDetailProgressFill}
               style={{
-                width: `${dream.progress * 100}%`,
+                width: `${currentProgress * 100}%`,
                 backgroundColor: getCategoryColor(dream.category),
               }}
             />
@@ -1081,13 +1141,13 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         <div className={styles.dreamDetailMilestonesHeader}>
           <h3 className={styles.dreamDetailMilestonesTitle}>Milestones</h3>
           <div className={styles.dreamDetailMilestonesSummary}>
-            {dream.milestones.filter(m => m.completed).length} of {dream.milestones.length}{' '}
+            {currentMilestones.filter(m => m.completed).length} of {currentMilestones.length}{' '}
             completed
           </div>
         </div>
 
         <div className={styles.dreamDetailMilestones}>
-          {dream.milestones.map(milestone => (
+          {currentMilestones.map(milestone => (
             <div
               key={milestone.id}
               className={`${styles.dreamDetailMilestone} ${milestone.completed ? styles.completedMilestone : ''}`}
