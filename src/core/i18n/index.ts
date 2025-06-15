@@ -52,6 +52,33 @@ const resources = {
         settings: 'Settings',
         profile: 'Profile',
       },
+      header: {
+        toggleTheme: 'Toggle theme',
+        notifications: 'Notifications',
+        profile: 'Profile',
+        markAllAsRead: 'Mark all as read',
+        viewAllNotifications: 'View all notifications',
+        bookmarks: 'Bookmarks',
+        signOut: 'Sign out',
+        user: 'User',
+      },
+      notifications: {
+        title: 'Notifications',
+        tabs: {
+          all: 'All',
+          following: 'Following',
+          archive: 'Archive',
+        },
+        actions: {
+          followBack: 'Follow back',
+          reply: 'Reply',
+          view: 'View',
+          viewThread: 'View thread',
+          viewTask: 'View task',
+          viewArticle: 'View article',
+          viewBadge: 'View badge',
+        },
+      },
     },
     auth: {
       login: {
@@ -101,6 +128,33 @@ const resources = {
         affirmations: 'Afirmações',
         settings: 'Configurações',
         profile: 'Perfil',
+      },
+      header: {
+        toggleTheme: 'Alternar tema',
+        notifications: 'Notificações',
+        profile: 'Perfil',
+        markAllAsRead: 'Marcar todas como lidas',
+        viewAllNotifications: 'Ver todas as notificações',
+        bookmarks: 'Favoritos',
+        signOut: 'Sair',
+        user: 'Usuário',
+      },
+      notifications: {
+        title: 'Notificações',
+        tabs: {
+          all: 'Todas',
+          following: 'Seguindo',
+          archive: 'Arquivo',
+        },
+        actions: {
+          followBack: 'Seguir de volta',
+          reply: 'Responder',
+          view: 'Ver',
+          viewThread: 'Ver conversa',
+          viewTask: 'Ver tarefa',
+          viewArticle: 'Ver artigo',
+          viewBadge: 'Ver medalha',
+        },
       },
     },
     auth: {

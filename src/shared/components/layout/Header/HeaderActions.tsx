@@ -7,9 +7,11 @@ import { MobileNotifications } from '../NotificationsPanel/MobileNotifications';
 import ProfileMenu from './ProfileMenu/ProfileMenu';
 import { useHeader } from '@/shared/hooks/useHeader';
 import LanguageSwitcher from '@/shared/components/i18n/LanguageSwitcher';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './HeaderActions.module.css';
 
 const HeaderActions = (): JSX.Element => {
+  const { t } = useCommonTranslation();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [notificationCount] = useState(10);
   const { activePopup, setActivePopup } = useHeader();
@@ -91,7 +93,7 @@ const HeaderActions = (): JSX.Element => {
       <button
         className={styles.themeToggle}
         onClick={() => setIsDarkMode(!isDarkMode)}
-        aria-label="Toggle theme"
+        aria-label={t('header.toggleTheme') as string}
       >
         {isDarkMode ? (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={styles.themeIcon}>
@@ -118,7 +120,7 @@ const HeaderActions = (): JSX.Element => {
       <div className={styles.notificationContainer}>
         <button
           className={styles.notificationButton}
-          aria-label="Notifications"
+          aria-label={t('header.notifications') as string}
           onClick={() => setActivePopup(activePopup === 'notifications' ? null : 'notifications')}
         >
           <BellIcon className={styles.notificationIcon} />
