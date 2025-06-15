@@ -146,6 +146,16 @@ const resources = {
           deleteConfirmMessage:
             'Are you sure you want to delete your personal affirmation? This action cannot be undone.',
           deletedSuccessfully: 'Personal affirmation deleted successfully',
+          modal: {
+            createTitle: 'Create Personal Affirmation',
+            updateTitle: 'Update Personal Affirmation',
+            placeholder: 'Write your personal affirmation...',
+            preview: 'Preview:',
+            confirmReplace: 'This will replace your existing personal affirmation. Continue?',
+            cancel: 'Cancel',
+            save: 'Save',
+            yesReplace: 'Yes, Replace',
+          },
           categories: {
             personal: 'Personal',
             beauty: 'Beauty',
@@ -304,6 +314,16 @@ const resources = {
           deleteConfirmMessage:
             'Tem certeza de que deseja excluir sua afirmação pessoal? Esta ação não pode ser desfeita.',
           deletedSuccessfully: 'Afirmação pessoal excluída com sucesso',
+          modal: {
+            createTitle: 'Criar Afirmação Pessoal',
+            updateTitle: 'Atualizar Afirmação Pessoal',
+            placeholder: 'Escreva sua afirmação pessoal...',
+            preview: 'Visualização:',
+            confirmReplace: 'Isso substituirá sua afirmação pessoal existente. Continuar?',
+            cancel: 'Cancelar',
+            save: 'Salvar',
+            yesReplace: 'Sim, Substituir',
+          },
           categories: {
             personal: 'Pessoal',
             beauty: 'Beleza',

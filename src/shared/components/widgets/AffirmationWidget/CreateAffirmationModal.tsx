@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { XIcon } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './CreateAffirmationModal.module.css';
 
 interface CreateAffirmationModalProps {
@@ -19,6 +20,7 @@ export const CreateAffirmationModal = ({
   onSave,
   existingAffirmation,
 }: CreateAffirmationModalProps): JSX.Element => {
+  const { t } = useCommonTranslation();
   const [text, setText] = useState(existingAffirmation || '');
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -57,8 +59,8 @@ export const CreateAffirmationModal = ({
             <div className={styles.header}>
               <h2 className={styles.title}>
                 {existingAffirmation
-                  ? 'Update Personal Affirmation'
-                  : 'Create Personal Affirmation'}
+                  ? t('widgets.affirmation.modal.updateTitle')
+                  : t('widgets.affirmation.modal.createTitle')}
               </h2>
               <button onClick={handleClose} className={styles.closeButton}>
                 <XIcon className={styles.closeIcon} />
@@ -70,7 +72,7 @@ export const CreateAffirmationModal = ({
                 <textarea
                   value={text}
                   onChange={e => setText(e.target.value.slice(0, MAX_LENGTH))}
-                  placeholder="Write your personal affirmation..."
+                  placeholder={t('widgets.affirmation.modal.placeholder') as string}
                   className={styles.input}
                   rows={3}
                 />
@@ -81,23 +83,27 @@ export const CreateAffirmationModal = ({
 
               {text && (
                 <div className={styles.preview}>
-                  <div className={styles.previewLabel}>Preview:</div>
+                  <div className={styles.previewLabel}>
+                    {t('widgets.affirmation.modal.preview')}
+                  </div>
                   <div className={styles.previewText}>"{text}"</div>
                 </div>
               )}
 
               {showConfirm && (
                 <div className={styles.confirmMessage}>
-                  This will replace your existing personal affirmation. Continue?
+                  {t('widgets.affirmation.modal.confirmReplace')}
                 </div>
               )}
 
               <div className={styles.actions}>
                 <button onClick={handleClose} className={styles.cancelButton}>
-                  Cancel
+                  {t('widgets.affirmation.modal.cancel')}
                 </button>
                 <button onClick={handleSave} className={styles.saveButton} disabled={!text.trim()}>
-                  {showConfirm ? 'Yes, Replace' : 'Save'}
+                  {showConfirm
+                    ? t('widgets.affirmation.modal.yesReplace')
+                    : t('widgets.affirmation.modal.save')}
                 </button>
               </div>
             </div>
