@@ -6,6 +6,7 @@ import type { NotificationItem } from '../NotificationsPopup/NotificationsPopup'
 import { MobileNotifications } from '../NotificationsPanel/MobileNotifications';
 import ProfileMenu from './ProfileMenu/ProfileMenu';
 import { useHeader } from '@/shared/hooks/useHeader';
+import LanguageSwitcher from '@/shared/components/i18n/LanguageSwitcher';
 import styles from './HeaderActions.module.css';
 
 const HeaderActions = (): JSX.Element => {
@@ -83,6 +84,9 @@ const HeaderActions = (): JSX.Element => {
 
   return (
     <div className={styles.actionsContainer}>
+      {/* Language Switcher */}
+      <LanguageSwitcher variant="buttons" className={styles.languageSwitcher} />
+
       {/* Theme Toggle */}
       <button
         className={styles.themeToggle}

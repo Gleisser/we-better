@@ -5,21 +5,23 @@ import HeaderActions from '@/shared/components/layout/Header/HeaderActions';
 import { HeaderProvider } from '@/shared/contexts/HeaderContext';
 import { MobileNav } from '@/shared/components/navigation/MobileNav/MobileNav';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './WeBetterApp.module.css';
 
 const WeBetterApp = (): JSX.Element => {
   const { user } = useAuth();
+  const { t } = useCommonTranslation();
 
   // Function to get greeting based on time of day
   const getGreeting = (): string => {
     const hour = new Date().getHours();
 
     if (hour < 12) {
-      return 'Good Morning';
+      return t('greetings.goodMorning');
     } else if (hour < 17) {
-      return 'Good Afternoon';
+      return t('greetings.goodAfternoon');
     } else {
-      return 'Good Evening';
+      return t('greetings.goodEvening');
     }
   };
 
@@ -49,7 +51,7 @@ const WeBetterApp = (): JSX.Element => {
     if (displayName) {
       return { greeting, userPart: displayName };
     } else {
-      return { greeting, userPart: 'how are you?' };
+      return { greeting, userPart: t('greetings.howAreYou') };
     }
   };
 
