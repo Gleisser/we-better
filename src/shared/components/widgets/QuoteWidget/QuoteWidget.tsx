@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './QuoteWidget.module.css';
 import { MoreVerticalIcon, RefreshIcon } from '../../common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/shared/hooks/useTiltEffect';
 import { quoteService, type Quote } from '@/core/services/quoteService';
@@ -145,6 +146,7 @@ const LoadingSkeleton = (): JSX.Element => (
 );
 
 const QuoteWidget = (): JSX.Element => {
+  const { t } = useCommonTranslation();
   const { theme } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5);
 
@@ -228,6 +230,7 @@ const QuoteWidget = (): JSX.Element => {
       setQuote(mappedQuotes[0]);
     } catch (error) {
       console.error('Error fetching quotes:', error);
+      // Use a static error message to avoid dependency on t function
       setError('Failed to load quotes');
     } finally {
       setLoading(false);
@@ -246,7 +249,7 @@ const QuoteWidget = (): JSX.Element => {
     if (!isBookmarked) {
       setShowSuccess({
         show: true,
-        message: 'Quote bookmarked!',
+        message: t('widgets.quote.quoteBookmarked'),
         type: 'bookmark',
       });
       setTimeout(() => setShowSuccess(prev => ({ ...prev, show: false })), 2000);
@@ -267,7 +270,7 @@ const QuoteWidget = (): JSX.Element => {
       navigator.clipboard.writeText(quote);
       setShowSuccess({
         show: true,
-        message: 'Quote copied to clipboard!',
+        message: t('widgets.quote.quoteCopied'),
         type: 'share',
       });
       setTimeout(() => setShowSuccess(prev => ({ ...prev, show: false })), 2000);
@@ -283,7 +286,7 @@ const QuoteWidget = (): JSX.Element => {
     navigator.clipboard.writeText(quote);
     setShowSuccess({
       show: true,
-      message: 'Quote copied to clipboard!',
+      message: t('widgets.quote.quoteCopied') as string,
       type: 'share',
     });
     setTimeout(() => setShowSuccess(prev => ({ ...prev, show: false })), 2000);
@@ -379,7 +382,7 @@ const QuoteWidget = (): JSX.Element => {
             <div className={styles.iconWrapper}>
               <QuoteIcon className={styles.headerIcon} />
             </div>
-            <span className={styles.headerText}>Quote of the day</span>
+            <span className={styles.headerText}>{t('widgets.quote.title')}</span>
           </div>
 
           <div className={styles.actions}>
@@ -389,7 +392,7 @@ const QuoteWidget = (): JSX.Element => {
                 type="button"
                 className={styles.actionButton}
                 onClick={() => setShowShareMenu(!showShareMenu)}
-                aria-label="Share quote"
+                aria-label={t('widgets.quote.shareQuote')}
               >
                 <ShareIcon className={styles.actionIcon} />
               </button>
@@ -433,7 +436,11 @@ const QuoteWidget = (): JSX.Element => {
                   e.stopPropagation();
                   setShowTooltip(false);
                 }}
-                aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark quote'}
+                aria-label={
+                  isBookmarked
+                    ? t('widgets.quote.removeBookmark')
+                    : t('widgets.quote.bookmarkQuote')
+                }
                 style={{ position: 'relative', zIndex: 2 }}
               >
                 <BookmarkIcon className={styles.bookmarkIcon} filled={isBookmarked} />
@@ -447,7 +454,9 @@ const QuoteWidget = (): JSX.Element => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                   >
-                    {isBookmarked ? 'Remove bookmark' : 'Bookmark quote'}
+                    {isBookmarked
+                      ? t('widgets.quote.removeBookmark')
+                      : t('widgets.quote.bookmarkQuote')}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -474,7 +483,7 @@ const QuoteWidget = (): JSX.Element => {
                 type="button"
                 className={styles.actionButton}
                 onClick={() => setShowMoreOptions(!showMoreOptions)}
-                aria-label="More options"
+                aria-label={t('widgets.quote.moreOptions')}
               >
                 <MoreVerticalIcon className={styles.actionIcon} />
               </button>
@@ -490,24 +499,24 @@ const QuoteWidget = (): JSX.Element => {
                   >
                     <button onClick={handleLearnMore} className={styles.moreOption}>
                       <span className={styles.moreOptionIcon}>✨</span>
-                      <span>Learn more</span>
+                      <span>{t('widgets.quote.learnMore')}</span>
                     </button>
 
                     <button onClick={handleBookRecommendations} className={styles.moreOption}>
                       <span className={styles.moreOptionIcon}>📚</span>
-                      <span>Book recommendations</span>
+                      <span>{t('widgets.quote.bookRecommendations')}</span>
                     </button>
 
                     <button onClick={handleTakeaways} className={styles.moreOption}>
                       <span className={styles.moreOptionIcon}>💡</span>
-                      <span>Quick takeaways</span>
+                      <span>{t('widgets.quote.quickTakeaways')}</span>
                     </button>
 
                     <div className={styles.menuDivider} />
 
                     <button onClick={handleSubmitQuote} className={styles.moreOption}>
                       <span className={styles.moreOptionIcon}>✍️</span>
-                      <span>Submit a quote</span>
+                      <span>{t('widgets.quote.submitQuote')}</span>
                     </button>
                   </motion.div>
                 )}
@@ -521,9 +530,9 @@ const QuoteWidget = (): JSX.Element => {
         ) : error ? (
           <div className={styles.error}>
             <span className={styles.errorIcon}>⚠️</span>
-            <span className={styles.errorMessage}>{error}</span>
+            <span className={styles.errorMessage}>{t('widgets.quote.failedToLoad')}</span>
             <button onClick={fetchQuotes} className={styles.retryButton}>
-              Try Again
+              {t('widgets.quote.tryAgain')}
             </button>
           </div>
         ) : quote ? (
