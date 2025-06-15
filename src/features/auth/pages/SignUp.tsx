@@ -9,6 +9,7 @@ const SignUp = (): JSX.Element => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +25,11 @@ const SignUp = (): JSX.Element => {
       return;
     }
 
+    if (!name.trim()) {
+      setError('Please enter your name');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -31,7 +37,7 @@ const SignUp = (): JSX.Element => {
         user,
         error: authError,
         needsEmailConfirmation,
-      } = await authService.signUp(email, password);
+      } = await authService.signUp(email, password, name.trim());
 
       if (authError) throw authError;
 
@@ -152,6 +158,18 @@ const SignUp = (): JSX.Element => {
 
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.inputGroup}>
+                <label htmlFor="name">Full Name</label>
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="Enter your full name"
+                  required
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
                 <label htmlFor="email">Email</label>
                 <input
                   id="email"
@@ -205,6 +223,18 @@ const SignUp = (): JSX.Element => {
                     {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label htmlFor="name">Name</label>
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="Enter your name"
+                  required
+                />
               </div>
 
               <button type="submit" className={styles.submitButton} disabled={isLoading}>
