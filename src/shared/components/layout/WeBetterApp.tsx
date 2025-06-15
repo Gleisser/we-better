@@ -5,9 +5,55 @@ import HeaderActions from '@/shared/components/layout/Header/HeaderActions';
 import SearchBar from '@/shared/components/layout/SearchBar/SearchBar';
 import { HeaderProvider } from '@/shared/contexts/HeaderContext';
 import { MobileNav } from '@/shared/components/navigation/MobileNav/MobileNav';
+import { useAuth } from '@/shared/hooks/useAuth';
 import styles from './WeBetterApp.module.css';
 
 const WeBetterApp = (): JSX.Element => {
+  const { user } = useAuth();
+
+  // Function to get greeting based on time of day
+  const getGreeting = (): string => {
+    const hour = new Date().getHours();
+
+    if (hour < 12) {
+      return 'Good Morning';
+    } else if (hour < 17) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
+    }
+  };
+
+  // Get user's display name with fallback
+  const getUserDisplayName = (): string | null => {
+    if (user?.display_name?.trim()) {
+      return user.display_name.trim();
+    }
+    if (user?.full_name?.trim()) {
+      return user.full_name.trim();
+    }
+    if (user?.email) {
+      const emailName = user.email.split('@')[0];
+      // Only use email name if it's not just numbers/generic
+      if (emailName && emailName.length > 2 && !/^\d+$/.test(emailName)) {
+        return emailName;
+      }
+    }
+    return null;
+  };
+
+  // Get the greeting message parts
+  const getGreetingParts = (): { greeting: string; userPart: string } => {
+    const greeting = getGreeting();
+    const displayName = getUserDisplayName();
+
+    if (displayName) {
+      return { greeting, userPart: displayName };
+    } else {
+      return { greeting, userPart: 'how are you?' };
+    }
+  };
+
   // Check if we're in development mode
   // const isDev = process.env.NODE_ENV === 'development';
 
@@ -26,7 +72,8 @@ const WeBetterApp = (): JSX.Element => {
           <header className={styles.header}>
             <div className={styles.headerContent}>
               <h1 className={styles.greeting}>
-                Good Morning, <span className={styles.userName}>Gleisser</span>
+                {getGreetingParts().greeting},{' '}
+                <span className={styles.userName}>{getGreetingParts().userPart}</span>
               </h1>
 
               <div className={styles.headerRight}>

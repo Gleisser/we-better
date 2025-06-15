@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState, useCallback } from 'react';
 import { authService } from '@/core/services/authService';
 import { supabase } from '@/core/services/supabaseClient';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 /**
  * Represents an authenticated user in the application.
@@ -8,11 +9,15 @@ import { supabase } from '@/core/services/supabaseClient';
  * @property {string} id - The unique identifier of the user
  * @property {string} email - The user's email address
  * @property {string} [full_name] - The user's full name (optional)
+ * @property {string} [display_name] - The user's display name from metadata (optional)
+ * @property {Record<string, unknown>} [user_metadata] - The user's metadata (optional)
  */
 export interface User {
   id: string;
   email?: string;
   full_name?: string;
+  display_name?: string;
+  user_metadata?: Record<string, unknown>;
 }
 
 /**
@@ -89,7 +94,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
       }
 
       if (currentUser) {
-        setUser(currentUser);
+        // Extract display name from user metadata
+        const supabaseUser = currentUser as SupabaseUser;
+        const displayName =
+          supabaseUser.user_metadata?.display_name || supabaseUser.user_metadata?.full_name || '';
+
+        const userWithDisplayName: User = {
+          id: supabaseUser.id,
+          email: supabaseUser.email,
+          full_name: supabaseUser.user_metadata?.full_name as string,
+          display_name: displayName as string,
+          user_metadata: supabaseUser.user_metadata,
+        };
+
+        setUser(userWithDisplayName);
       } else {
         console.warn('No valid user session found');
         setUser(null);
