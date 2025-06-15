@@ -51,6 +51,7 @@ const resources = {
         affirmations: 'Affirmations',
         settings: 'Settings',
         profile: 'Profile',
+        logout: 'Logout',
       },
       header: {
         toggleTheme: 'Toggle theme',
@@ -128,6 +129,7 @@ const resources = {
         affirmations: 'Afirmações',
         settings: 'Configurações',
         profile: 'Perfil',
+        logout: 'Sair',
       },
       header: {
         toggleTheme: 'Alternar tema',
