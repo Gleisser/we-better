@@ -1,8 +1,9 @@
-import { useCallback, useState, useEffect, useRef } from 'react';
+import { useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LifeWheel from '@/shared/components/layout/LifeWheel/LifeWheel';
 import { getLatestLifeWheelData } from '@/features/life-wheel/api/lifeWheelApi';
 import { createLogger } from '@/shared/utils/debugUtils';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './LifeWheelWidget.module.css';
 import { Tooltip } from '@/shared/components/common/Tooltip';
 
@@ -50,24 +51,62 @@ const ExternalLinkIcon = ({ className }: { className?: string }): JSX.Element =>
 );
 
 const LifeWheelWidget = (): JSX.Element => {
+  const { t } = useCommonTranslation();
   const navigate = useNavigate();
+
+  // Function to get translated category name
+  const getTranslatedCategoryName = useCallback(
+    (categoryName: string): string => {
+      // Convert category name to lowercase and remove spaces for key matching
+      const normalizedName = categoryName.toLowerCase().replace(/\s+/g, '');
+
+      // Map common category name variations to translation keys
+      const categoryKeyMap: Record<string, string> = {
+        health: 'health',
+        career: 'career',
+        money: 'money',
+        family: 'family',
+        relationship: 'relationship',
+        relationships: 'relationship',
+        social: 'social',
+        spirituality: 'spirituality',
+        spiritual: 'spirituality',
+        selfcare: 'selfCare',
+        'self-care': 'selfCare',
+        personal: 'personal',
+        education: 'education',
+        recreation: 'recreation',
+        environment: 'environment',
+        // Add more mappings as needed based on backend category names
+      };
+
+      const translationKey = categoryKeyMap[normalizedName];
+      if (translationKey) {
+        const translated = t(`widgets.lifeWheel.categories.${translationKey}`);
+        return Array.isArray(translated) ? translated[0] : translated;
+      }
+
+      // Fallback to original name if no translation found
+      return categoryName;
+    },
+    [t]
+  );
   const [isLoading, setIsLoading] = useState(true);
-  const [categories, setCategories] = useState<LifeCategory[]>([]);
   const [tooltipContent, setTooltipContent] = useState<string | null>(null);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
-  const renderCountRef = useRef(0);
+  // const renderCountRef = useRef(0); // Removed to prevent infinite loops
 
   // Handle navigation to LifeWheelPage
   const handleNavigateToLifeWheel = (): void => {
     navigate('/app/life-wheel');
   };
 
-  // Track render cycles
-  useEffect(() => {
-    renderCountRef.current += 1;
-    logger.log(`Widget render #${renderCountRef.current}`);
-  });
+  // Track render cycles (removed to prevent infinite loops)
+  // useEffect(() => {
+  //   renderCountRef.current += 1;
+  //   logger.log(`Widget render #${renderCountRef.current}`);
+  // });
 
   // Track component mount/unmount and performance
   useEffect(() => {
@@ -81,29 +120,27 @@ const LifeWheelWidget = (): JSX.Element => {
     };
   }, []);
 
-  // Fetch initial data
+  // Store raw categories from backend
+  const [rawCategories, setRawCategories] = useState<
+    Array<{
+      id: string;
+      name: string;
+      color: string | { from: string; to: string };
+      icon?: string;
+      value: number;
+    }>
+  >([]);
+
+  // Fetch initial data (only once)
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
         setIsLoading(true);
         const response = await getLatestLifeWheelData();
         if (response.entry) {
-          // Map the response data to the required format for the widget
-          const mappedCategories = response.entry.categories.map(category => ({
-            id: category.id,
-            name: category.name,
-            color:
-              typeof category.color === 'string'
-                ? { from: category.color, to: category.color }
-                : category.color,
-            icon: category.icon || '📊',
-            score: category.value,
-            hasUpdate: true,
-            orbitRadius: Math.random() * 60 + 100, // Random orbit radius for visual variety
-            orbitSpeed: Math.random() * 0.5 + 0.3, // Random orbit speed for visual variety
-          }));
-          setCategories(mappedCategories);
-          logger.log('Categories loaded', { count: mappedCategories.length });
+          // Store raw categories without translation
+          setRawCategories(response.entry.categories);
+          logger.log('Categories loaded', { count: response.entry.categories.length });
         }
       } catch (error) {
         console.error('Error loading life wheel data:', error);
@@ -113,31 +150,58 @@ const LifeWheelWidget = (): JSX.Element => {
     };
 
     fetchData();
-  }, []);
+  }, []); // No dependencies - fetch only once
+
+  // Translate categories directly in render (no useEffect to avoid infinite loops)
+  const categories = useMemo(() => {
+    if (rawCategories.length === 0) return [];
+
+    return rawCategories.map(category => ({
+      id: category.id,
+      name: getTranslatedCategoryName(category.name), // Translate the category name
+      color:
+        typeof category.color === 'string'
+          ? { from: category.color, to: category.color }
+          : category.color,
+      icon: category.icon || '📊',
+      score: category.value,
+      hasUpdate: true,
+      orbitRadius: Math.random() * 60 + 100, // Random orbit radius for visual variety
+      orbitSpeed: Math.random() * 0.5 + 0.3, // Random orbit speed for visual variety
+    }));
+  }, [rawCategories, getTranslatedCategoryName]);
 
   // Optimized handler with requestAnimationFrame for better performance
-  const handleCategorySelect = useCallback((category: LifeCategory) => {
-    logger.log('Category selected', { id: category.id, name: category.name });
+  const handleCategorySelect = useCallback(
+    (category: LifeCategory) => {
+      logger.log('Category selected', { id: category.id, name: category.name });
 
-    // Use requestAnimationFrame to batch DOM updates
-    requestAnimationFrame(() => {
-      // Clear existing timeout to prevent race conditions
-      if (tooltipTimeoutRef.current) {
-        clearTimeout(tooltipTimeoutRef.current);
-      }
+      // Use requestAnimationFrame to batch DOM updates
+      requestAnimationFrame(() => {
+        // Clear existing timeout to prevent race conditions
+        if (tooltipTimeoutRef.current) {
+          clearTimeout(tooltipTimeoutRef.current);
+        }
 
-      // Update tooltip with minimal DOM changes
-      setTooltipContent(`${category.name} score: ${category.score}`);
+        // Update tooltip with minimal DOM changes
+        // Note: category.name is already translated when passed to LifeWheel component
+        const categoryScoreText = t('widgets.lifeWheel.categoryScore');
+        const scoreText = Array.isArray(categoryScoreText)
+          ? categoryScoreText[0]
+          : categoryScoreText;
+        setTooltipContent(`${category.name} ${scoreText} ${category.score}`);
 
-      // Auto-hide tooltip after 3 seconds, with RAF for perf
-      tooltipTimeoutRef.current = setTimeout(() => {
-        requestAnimationFrame(() => {
-          logger.log('Tooltip timeout completed');
-          setTooltipContent(null);
-        });
-      }, 3000);
-    });
-  }, []);
+        // Auto-hide tooltip after 3 seconds, with RAF for perf
+        tooltipTimeoutRef.current = setTimeout(() => {
+          requestAnimationFrame(() => {
+            logger.log('Tooltip timeout completed');
+            setTooltipContent(null);
+          });
+        }, 3000);
+      });
+    },
+    [t]
+  );
 
   // Clean up timeout on unmount
   useEffect(() => {
@@ -158,7 +222,7 @@ const LifeWheelWidget = (): JSX.Element => {
       <div className={styles.lifeWheelWidget}>
         <div className={styles.loadingIndicator}>
           <div className={styles.spinner}></div>
-          <p>Loading life wheel data...</p>
+          <p>{t('widgets.lifeWheel.loading')}</p>
         </div>
       </div>
     );
@@ -170,14 +234,17 @@ const LifeWheelWidget = (): JSX.Element => {
         <div className={styles.headerTop}>
           <div className={styles.headerLeft}>
             <span className={styles.headerIcon}>⚖️</span>
-            <span className={styles.headerText}>Life Wheel</span>
+            <span className={styles.headerText}>{t('widgets.lifeWheel.title')}</span>
           </div>
           <div className={styles.headerActions}>
-            <Tooltip content="Go to Life Wheel details">
+            <Tooltip content={t('widgets.lifeWheel.goToDetails')}>
               <button
                 className={styles.actionButton}
                 onClick={handleNavigateToLifeWheel}
-                aria-label="Go to Life Wheel details"
+                aria-label={(() => {
+                  const label = t('widgets.lifeWheel.goToDetails');
+                  return Array.isArray(label) ? label[0] : label;
+                })()}
               >
                 <ExternalLinkIcon className={styles.actionIcon} />
               </button>
@@ -193,7 +260,7 @@ const LifeWheelWidget = (): JSX.Element => {
       </div>
       <div className={styles.widgetFooter}>
         <button onClick={handleNavigateToLifeWheel} className={styles.seeMoreButton}>
-          View Detailed Analysis
+          {t('widgets.lifeWheel.viewAnalysis')}
         </button>
       </div>
     </div>
