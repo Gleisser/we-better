@@ -59,7 +59,6 @@ const LifeWheelWidget = (): JSX.Element => {
     (categoryName: string): string => {
       // Convert category name to lowercase and remove spaces for key matching
       const normalizedName = categoryName.toLowerCase().replace(/\s+/g, '');
-
       // Map common category name variations to translation keys
       const categoryKeyMap: Record<string, string> = {
         health: 'health',
@@ -77,6 +76,11 @@ const LifeWheelWidget = (): JSX.Element => {
         education: 'education',
         recreation: 'recreation',
         environment: 'environment',
+        community: 'community',
+        finances: 'finances',
+        personalgrowth: 'personalGrowth',
+        'personal-growth': 'personalGrowth',
+        'personal growth': 'personalGrowth',
         // Add more mappings as needed based on backend category names
       };
 

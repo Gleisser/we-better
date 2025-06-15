@@ -1,3 +1,44 @@
+/**
+ * INTERNATIONALIZATION (i18n) CONFIGURATION
+ * =========================================
+ *
+ * This file contains the complete i18n setup for the WeBetter application.
+ * All translations are defined inline in this TypeScript file for better type safety
+ * and easier maintenance.
+ *
+ * IMPORTANT NOTES FOR DEVELOPERS:
+ *
+ * 1. **Translation Structure**:
+ *    - All translations are organized by namespace (common, auth, errors)
+ *    - Each namespace contains nested objects for logical grouping
+ *    - Keys should be descriptive and follow camelCase convention
+ *
+ * 2. **Adding New Translations**:
+ *    - Add keys to BOTH English (en) and Portuguese (pt) sections
+ *    - Maintain the same structure in both languages
+ *    - Test translations in both languages before committing
+ *
+ * 3. **Usage in Components**:
+ *    - Use the useCommonTranslation hook: `const { t } = useCommonTranslation()`
+ *    - Access nested keys with dot notation: `t('widgets.quote.title')`
+ *    - For other namespaces, use: `const { t } = useTranslation('auth')`
+ *
+ * 4. **Language Support**:
+ *    - Currently supports English (en) and Portuguese (pt-BR)
+ *    - Language detection: localStorage → browser → HTML tag
+ *    - Fallback language: English
+ *
+ * 5. **DO NOT**:
+ *    - Create separate JSON files (they will be ignored)
+ *    - Use hardcoded strings in components
+ *    - Forget to add translations to both languages
+ *
+ * 6. **Widget Categories**:
+ *    - Life Wheel categories are defined in widgets.lifeWheel.categories
+ *    - Category names from backend are normalized and mapped to translation keys
+ *    - Add new categories to both languages when backend adds them
+ */
+
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -188,6 +229,9 @@ const resources = {
             education: 'Education',
             recreation: 'Recreation',
             environment: 'Environment',
+            community: 'Community',
+            finances: 'Finances',
+            personalGrowth: 'Personal Growth',
           },
         },
       },
@@ -377,6 +421,9 @@ const resources = {
             education: 'Educação',
             recreation: 'Recreação',
             environment: 'Ambiente',
+            community: 'Comunidade',
+            finances: 'Finanças',
+            personalGrowth: 'Crescimento Pessoal',
           },
         },
       },
@@ -408,7 +455,7 @@ i18n
     // Default language settings
     fallbackLng: 'en',
     defaultNS: 'common',
-    debug: import.meta.env.DEV, // Enable debug in development mode
+    debug: process.env.NODE_ENV === 'development', // Enable debug in development mode
 
     // Interpolation settings
     interpolation: {
@@ -442,12 +489,13 @@ i18n
     cleanCode: false, // Keep full language codes including regions
 
     // Translation missing key behavior
-    saveMissing: import.meta.env.DEV, // Save missing keys in development
-    missingKeyHandler: import.meta.env.DEV
-      ? (lng, ns, key) => {
-          console.warn(`Missing translation key: ${lng}.${ns}.${key}`);
-        }
-      : undefined,
+    saveMissing: process.env.NODE_ENV === 'development', // Save missing keys in development
+    missingKeyHandler:
+      process.env.NODE_ENV === 'development'
+        ? (lng, ns, key) => {
+            console.warn(`Missing translation key: ${lng}.${ns}.${key}`);
+          }
+        : undefined,
   });
 
 export default i18n;
