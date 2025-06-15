@@ -80,6 +80,28 @@ const resources = {
           viewBadge: 'View badge',
         },
       },
+      floating: {
+        quickInspiration: 'Quick Inspiration',
+        aiAssistant: 'AI Assistant',
+        collapseStories: 'Collapse stories',
+        lifeCategories: {
+          social: 'Social',
+          health: 'Health',
+          selfCare: 'Self Care',
+          money: 'Money',
+          family: 'Family',
+          spirituality: 'Spirituality',
+          relationship: 'Relationship',
+          career: 'Career',
+        },
+      },
+      aiChat: {
+        title: 'AI Assistant',
+        greeting: 'How can I help you today?',
+        placeholder: 'Type your message...',
+        send: 'Send',
+        closeChat: 'Close chat',
+      },
     },
     auth: {
       login: {
@@ -157,6 +179,28 @@ const resources = {
           viewArticle: 'Ver artigo',
           viewBadge: 'Ver medalha',
         },
+      },
+      floating: {
+        quickInspiration: 'Inspiração Rápida',
+        aiAssistant: 'Assistente IA',
+        collapseStories: 'Recolher histórias',
+        lifeCategories: {
+          social: 'Social',
+          health: 'Saúde',
+          selfCare: 'Autocuidado',
+          money: 'Dinheiro',
+          family: 'Família',
+          spirituality: 'Espiritualidade',
+          relationship: 'Relacionamento',
+          career: 'Carreira',
+        },
+      },
+      aiChat: {
+        title: 'Assistente IA',
+        greeting: 'Como posso ajudá-lo hoje?',
+        placeholder: 'Digite sua mensagem...',
+        send: 'Enviar',
+        closeChat: 'Fechar chat',
       },
     },
     auth: {

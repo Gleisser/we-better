@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import { SparkleIcon } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import AIChatBox from './AIChatBox';
 import styles from './AIAssistantButton.module.css';
 import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
 
 const AIAssistantButton = (): JSX.Element => {
+  const { t } = useCommonTranslation();
   const [isHovered, setIsHovered] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const controls = useAnimation();
@@ -95,7 +97,7 @@ const AIAssistantButton = (): JSX.Element => {
         {/* Content */}
         <div className={`${styles.content} ${isHovered ? styles.hovered : ''}`}>
           <SparkleIcon className={styles.icon} />
-          <span className={styles.text}>AI Assistant</span>
+          <span className={styles.text}>{t('floating.aiAssistant')}</span>
         </div>
       </motion.button>
     </div>

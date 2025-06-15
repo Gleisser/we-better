@@ -2,104 +2,106 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LifeStories from '../Stories/LifeStories';
 import { XIcon, PlayIcon } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './StoriesBar.module.css';
 import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
 
-const MOCK_CATEGORIES = [
-  {
-    id: 'social',
-    name: 'Social',
-    color: {
-      from: '#8B5CF6',
-      to: '#D946EF',
-    },
-    icon: '👥',
-    score: 85,
-    hasUpdate: true,
-  },
-  {
-    id: 'health',
-    name: 'Health',
-    color: {
-      from: '#10B981',
-      to: '#34D399',
-    },
-    icon: '💪',
-    score: 70,
-    hasUpdate: true,
-  },
-  {
-    id: 'selfCare',
-    name: 'Self Care',
-    color: {
-      from: '#F59E0B',
-      to: '#FBBF24',
-    },
-    icon: '🧘‍♂️',
-    score: 65,
-    hasUpdate: false,
-  },
-  {
-    id: 'money',
-    name: 'Money',
-    color: {
-      from: '#3B82F6',
-      to: '#60A5FA',
-    },
-    icon: '💰',
-    score: 75,
-    hasUpdate: true,
-  },
-  {
-    id: 'family',
-    name: 'Family',
-    color: {
-      from: '#EC4899',
-      to: '#F472B6',
-    },
-    icon: '👨‍👩‍👧‍👦',
-    score: 90,
-    hasUpdate: true,
-  },
-  {
-    id: 'spirituality',
-    name: 'Spirituality',
-    color: {
-      from: '#8B5CF6',
-      to: '#A78BFA',
-    },
-    icon: '🧘‍♀️',
-    score: 60,
-    hasUpdate: false,
-  },
-  {
-    id: 'relationship',
-    name: 'Relationship',
-    color: {
-      from: '#EF4444',
-      to: '#F87171',
-    },
-    icon: '❤️',
-    score: 80,
-    hasUpdate: true,
-  },
-  {
-    id: 'career',
-    name: 'Career',
-    color: {
-      from: '#6366F1',
-      to: '#818CF8',
-    },
-    icon: '💼',
-    score: 85,
-    hasUpdate: true,
-  },
-];
-
 const StoriesBar = (): JSX.Element => {
+  const { t } = useCommonTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const isMobile = window.innerWidth <= 768;
   const { activeSheet, setActiveSheet, closeSheet } = useBottomSheet();
+
+  const MOCK_CATEGORIES = [
+    {
+      id: 'social',
+      name: t('floating.lifeCategories.social'),
+      color: {
+        from: '#8B5CF6',
+        to: '#D946EF',
+      },
+      icon: '👥',
+      score: 85,
+      hasUpdate: true,
+    },
+    {
+      id: 'health',
+      name: t('floating.lifeCategories.health'),
+      color: {
+        from: '#10B981',
+        to: '#34D399',
+      },
+      icon: '💪',
+      score: 70,
+      hasUpdate: true,
+    },
+    {
+      id: 'selfCare',
+      name: t('floating.lifeCategories.selfCare'),
+      color: {
+        from: '#F59E0B',
+        to: '#FBBF24',
+      },
+      icon: '🧘‍♂️',
+      score: 65,
+      hasUpdate: false,
+    },
+    {
+      id: 'money',
+      name: t('floating.lifeCategories.money'),
+      color: {
+        from: '#3B82F6',
+        to: '#60A5FA',
+      },
+      icon: '💰',
+      score: 75,
+      hasUpdate: true,
+    },
+    {
+      id: 'family',
+      name: t('floating.lifeCategories.family'),
+      color: {
+        from: '#EC4899',
+        to: '#F472B6',
+      },
+      icon: '👨‍👩‍👧‍👦',
+      score: 90,
+      hasUpdate: true,
+    },
+    {
+      id: 'spirituality',
+      name: t('floating.lifeCategories.spirituality'),
+      color: {
+        from: '#8B5CF6',
+        to: '#A78BFA',
+      },
+      icon: '🧘‍♀️',
+      score: 60,
+      hasUpdate: false,
+    },
+    {
+      id: 'relationship',
+      name: t('floating.lifeCategories.relationship'),
+      color: {
+        from: '#EF4444',
+        to: '#F87171',
+      },
+      icon: '❤️',
+      score: 80,
+      hasUpdate: true,
+    },
+    {
+      id: 'career',
+      name: t('floating.lifeCategories.career'),
+      color: {
+        from: '#6366F1',
+        to: '#818CF8',
+      },
+      icon: '💼',
+      score: 85,
+      hasUpdate: true,
+    },
+  ];
 
   const handleOpen = (): void => {
     setActiveSheet('stories');
@@ -146,7 +148,7 @@ const StoriesBar = (): JSX.Element => {
               <button
                 className={styles.collapseButton}
                 onClick={handleClose}
-                aria-label="Collapse stories"
+                aria-label={t('floating.collapseStories')}
               >
                 <XIcon className={styles.collapseIcon} />
               </button>
@@ -166,7 +168,7 @@ const StoriesBar = (): JSX.Element => {
               <div className={styles.collapsedIcon}>
                 <PlayIcon className={styles.playIcon} />
               </div>
-              <span className={styles.collapsedText}>Quick Inspiration</span>
+              <span className={styles.collapsedText}>{t('floating.quickInspiration')}</span>
             </motion.button>
           )}
         </AnimatePresence>
