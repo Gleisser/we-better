@@ -443,6 +443,17 @@ const resources = {
           message:
             'Are you sure you want to delete your dream board? This action cannot be undone.',
         },
+        weather: {
+          title: 'Dream Weather',
+          states: {
+            sunny: 'Sunny',
+            cloudy: 'Cloudy',
+            stormy: 'Stormy',
+            raining: 'Raining',
+            unknown: 'Unknown',
+          },
+          altText: '{{weather}} weather',
+        },
       },
     },
     auth: {
@@ -844,6 +855,17 @@ const resources = {
           title: 'Excluir Quadro dos Sonhos',
           message:
             'Tem certeza de que deseja excluir seu quadro dos sonhos? Esta ação não pode ser desfeita.',
+        },
+        weather: {
+          title: 'Clima dos Sonhos',
+          states: {
+            sunny: 'Ensolarado',
+            cloudy: 'Nublado',
+            stormy: 'Tempestuoso',
+            raining: 'Chuvoso',
+            unknown: 'Desconhecido',
+          },
+          altText: 'Clima {{weather}}',
         },
       },
     },

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from '../../DreamBoardPage.module.css';
 import { WeatherState, CategoryWeatherStatus } from '../../api/dreamWeatherApi';
 
@@ -19,15 +20,11 @@ const weatherImages = {
   raining: '/assets/images/dreamboard/weather/raining.webp',
 };
 
-// Weather display names for better UI presentation
-const weatherDisplayNames = {
-  sunny: 'Sunny',
-  cloudy: 'Cloudy',
-  stormy: 'Stormy',
-  raining: 'Raining',
-};
+// Weather display names are now handled via translations
 
 const DreamWeather: React.FC<DreamWeatherProps> = ({ weather }) => {
+  const { t } = useCommonTranslation();
+
   // Get the image path based on weather type - default to cloudy if not found
   const getWeatherImage = (type: string): string => {
     const normalizedType = type.toLowerCase().replace('-', '_');
@@ -39,7 +36,8 @@ const DreamWeather: React.FC<DreamWeatherProps> = ({ weather }) => {
 
   // Get display name for the weather status
   const getWeatherDisplayName = (type: string): string => {
-    return weatherDisplayNames[type as keyof typeof weatherDisplayNames] || 'Unknown';
+    const weatherKey = `dreamBoard.weather.states.${type}` as const;
+    return (t(weatherKey) as string) || (t('dreamBoard.weather.states.unknown') as string);
   };
 
   // Weather image source
@@ -50,7 +48,7 @@ const DreamWeather: React.FC<DreamWeatherProps> = ({ weather }) => {
     <div className={styles.dreamWeatherCard}>
       <div className={styles.weatherGlassmorphism}>
         <div className={styles.weatherCardHeader}>
-          <div className={styles.weatherTitle}>Dream Weather</div>
+          <div className={styles.weatherTitle}>{t('dreamBoard.weather.title')}</div>
           <div className={styles.weatherCondition}>
             <span className={styles.weatherText}>{weatherDisplayName}</span>
           </div>
@@ -63,7 +61,7 @@ const DreamWeather: React.FC<DreamWeatherProps> = ({ weather }) => {
         <div className={styles.weatherImageContainer}>
           <img
             src={imagePath}
-            alt={`${weatherDisplayName} weather`}
+            alt={t('dreamBoard.weather.altText', { weather: weatherDisplayName }) as string}
             className={styles.weatherImageLarge}
           />
         </div>
