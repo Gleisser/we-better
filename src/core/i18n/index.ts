@@ -412,6 +412,38 @@ const resources = {
           },
         },
       },
+      dreamBoard: {
+        title: 'Dream Board',
+        tabs: {
+          visionBoard: 'Vision Board',
+          experience: 'Experience',
+          insights: 'Insights',
+        },
+        emptyState: {
+          title: 'Create Your Dream Board',
+          description:
+            'Welcome to your dream journey! Start by creating your personal dream board. Visualize your aspirations, track your progress, and turn your dreams into reality.',
+          createButton: 'Create Dream Board',
+        },
+        loading: {
+          dreamBoard: 'Loading your dream board...',
+          saving: 'Saving your dream board...',
+        },
+        errors: {
+          loadFailed: 'Failed to load your dream board. Please try again.',
+          saveFailed: 'Failed to save dream board. Please try again.',
+          deleteFailed: 'Failed to delete dream board. Please try again.',
+        },
+        milestones: {
+          deleteConfirm: 'Are you sure you want to delete this milestone?',
+          noDateSet: 'No date set',
+        },
+        deleteConfirm: {
+          title: 'Delete Dream Board',
+          message:
+            'Are you sure you want to delete your dream board? This action cannot be undone.',
+        },
+      },
     },
     auth: {
       login: {
@@ -780,6 +812,38 @@ const resources = {
             failedToDelete: 'Falha ao excluir meta',
             failedToComplete: 'Falha ao completar revisão',
           },
+        },
+      },
+      dreamBoard: {
+        title: 'Quadro dos Sonhos',
+        tabs: {
+          visionBoard: 'Quadro de Visão',
+          experience: 'Experiência',
+          insights: 'Insights',
+        },
+        emptyState: {
+          title: 'Crie Seu Quadro dos Sonhos',
+          description:
+            'Bem-vindo à sua jornada dos sonhos! Comece criando seu quadro dos sonhos pessoal. Visualize suas aspirações, acompanhe seu progresso e transforme seus sonhos em realidade.',
+          createButton: 'Criar Quadro dos Sonhos',
+        },
+        loading: {
+          dreamBoard: 'Carregando seu quadro dos sonhos...',
+          saving: 'Salvando seu quadro dos sonhos...',
+        },
+        errors: {
+          loadFailed: 'Falha ao carregar seu quadro dos sonhos. Tente novamente.',
+          saveFailed: 'Falha ao salvar quadro dos sonhos. Tente novamente.',
+          deleteFailed: 'Falha ao excluir quadro dos sonhos. Tente novamente.',
+        },
+        milestones: {
+          deleteConfirm: 'Tem certeza de que deseja excluir este marco?',
+          noDateSet: 'Nenhuma data definida',
+        },
+        deleteConfirm: {
+          title: 'Excluir Quadro dos Sonhos',
+          message:
+            'Tem certeza de que deseja excluir seu quadro dos sonhos? Esta ação não pode ser desfeita.',
         },
       },
     },
