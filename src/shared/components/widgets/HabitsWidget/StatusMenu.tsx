@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { STATUS_CONFIG } from './config';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './StatusMenu.module.css';
 import { useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -18,6 +19,7 @@ export const StatusMenu: React.FC<StatusMenuProps> = ({
   onSelect,
   position,
 }: StatusMenuProps): JSX.Element => {
+  const { t } = useCommonTranslation();
   const menuRef = useRef<HTMLDivElement>(null);
   const isMobile = window.innerWidth <= 768;
 
@@ -65,7 +67,7 @@ export const StatusMenu: React.FC<StatusMenuProps> = ({
                   }}
                 >
                   <span className={styles.icon}>{config.icon}</span>
-                  <span className={styles.label}>{config.label}</span>
+                  <span className={styles.label}>{t(`widgets.habits.statuses.${status}`)}</span>
                 </button>
               ))}
             </div>

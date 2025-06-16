@@ -19,6 +19,7 @@ import {
   ChevronRightIcon,
   CheckmarkIcon,
 } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { HabitStatus } from './types';
 import { STATUS_CONFIG } from './config';
 import styles from './MonthlyView.module.css';
@@ -38,6 +39,7 @@ interface MonthlyViewProps {
 }
 
 export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps): JSX.Element => {
+  const { t } = useCommonTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const getDaysInMonth = (): Date[] => {
@@ -48,6 +50,16 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps): JSX.E
 
   const nextMonth = (): void => setCurrentDate(addMonths(currentDate, 1));
   const prevMonth = (): void => setCurrentDate(subMonths(currentDate, 1));
+
+  const weekdays = [
+    t('widgets.habits.monthlyView.weekdays.mon'),
+    t('widgets.habits.monthlyView.weekdays.tue'),
+    t('widgets.habits.monthlyView.weekdays.wed'),
+    t('widgets.habits.monthlyView.weekdays.thu'),
+    t('widgets.habits.monthlyView.weekdays.fri'),
+    t('widgets.habits.monthlyView.weekdays.sat'),
+    t('widgets.habits.monthlyView.weekdays.sun'),
+  ];
 
   return createPortal(
     <AnimatePresence>
@@ -69,7 +81,9 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps): JSX.E
             <div className={styles.header}>
               <div className={styles.habitInfo}>
                 <h3 className={styles.habitName}>{habit.name}</h3>
-                <div className={styles.streakBadge}>🔥 {habit.streak} days</div>
+                <div className={styles.streakBadge}>
+                  🔥 {t('widgets.habits.monthlyView.streakLabel', { count: habit.streak })}
+                </div>
               </div>
               <button onClick={onClose} className={styles.closeButton}>
                 <XIcon className={styles.closeIcon} />
@@ -88,8 +102,8 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps): JSX.E
 
             <div className={styles.calendar}>
               <div className={styles.weekDays}>
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                  <div key={day} className={styles.weekDay}>
+                {weekdays.map((day, index) => (
+                  <div key={index} className={styles.weekDay}>
                     {day}
                   </div>
                 ))}
@@ -130,11 +144,11 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps): JSX.E
               <div className={styles.legend}>
                 <div className={styles.legendItem}>
                   <div className={`${styles.legendDot} ${styles.completed}`} />
-                  <span>Completed</span>
+                  <span>{t('widgets.habits.monthlyView.completedLegend')}</span>
                 </div>
                 <div className={styles.legendItem}>
                   <div className={styles.legendDot} />
-                  <span>Missed</span>
+                  <span>{t('widgets.habits.monthlyView.missedLegend')}</span>
                 </div>
               </div>
             </div>
