@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream } from '../../types';
-
-interface Insight {
-  id: string;
-  type: 'pattern' | 'balance' | 'progress' | 'suggestion';
-  title: string;
-  description: string;
-  relatedCategories?: string[];
-}
+import { useInsights, type ComponentInsight } from '../../hooks/useInsights';
 
 interface Resource {
   id: string;
@@ -19,8 +12,7 @@ interface Resource {
 
 interface DreamInsightsProps {
   dreams: Dream[];
-  insights: Insight[];
-  resources: Resource[];
+  resources?: Resource[];
 }
 
 const InsightTypeIcons: Record<string, string> = {
@@ -30,13 +22,16 @@ const InsightTypeIcons: Record<string, string> = {
   suggestion: '💡',
 };
 
-const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
+const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams }) => {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [focusedInsight, setFocusedInsight] = useState<string | null>(null);
   const [detailModal, setDetailModal] = useState<{ isOpen: boolean; insightId: string | null }>({
     isOpen: false,
     insightId: null,
   });
+
+  // Use the insights hook to get real data from the API
+  const { insights, loading, error, refreshInsights, generateFresh, clearError } = useInsights();
 
   // Filter insights based on the active filter
   const filteredInsights = activeFilter
@@ -49,7 +44,7 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
   );
 
   // Generate some related dreams for each insight based on categories
-  const getRelatedDreams = (insight: Insight): Dream[] => {
+  const getRelatedDreams = (insight: ComponentInsight): Dream[] => {
     if (!insight.relatedCategories || insight.relatedCategories.length === 0) {
       return [];
     }
@@ -79,7 +74,7 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
   };
 
   // Get insight class name based on its type
-  const getInsightClassName = (insight: Insight): string => {
+  const getInsightClassName = (insight: ComponentInsight): string => {
     const baseClass = styles.insightCard;
     const typeClass = styles[`${insight.type}Insight`];
     const focusedClass = focusedInsight === insight.id ? styles.insightCardFocused : '';
@@ -87,37 +82,87 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
     return `${baseClass} ${typeClass} ${focusedClass} ${animationClass}`;
   };
 
+  // Handle filter changes (now makes API calls)
+  const handleFilterChange = async (filterType: string | null): Promise<void> => {
+    setActiveFilter(filterType);
+
+    // If a specific filter is selected, make an API call with that type
+    if (filterType) {
+      await refreshInsights({
+        types: [filterType as 'pattern' | 'balance' | 'progress' | 'suggestion'],
+      });
+    } else {
+      // If "All" is selected, refresh without type filter
+      await refreshInsights();
+    }
+  };
+
+  // Handle refresh button click
+  const handleRefresh = async (): Promise<void> => {
+    await generateFresh();
+  };
+
   return (
     <div className={styles.insightsTab}>
-      {/* Header with filters */}
+      {/* Header with filters and refresh button */}
       <div className={styles.insightsHeader}>
         <div className={styles.insightsFilters}>
           <button
             className={`${styles.filterButton} ${activeFilter === null ? styles.active : ''}`}
-            onClick={() => setActiveFilter(null)}
+            onClick={() => handleFilterChange(null)}
+            disabled={loading}
           >
             All
           </button>
           <button
             className={`${styles.filterButton} ${activeFilter === 'pattern' ? styles.active : ''}`}
-            onClick={() => setActiveFilter('pattern')}
+            onClick={() => handleFilterChange('pattern')}
+            disabled={loading}
           >
             Patterns
           </button>
           <button
             className={`${styles.filterButton} ${activeFilter === 'balance' ? styles.active : ''}`}
-            onClick={() => setActiveFilter('balance')}
+            onClick={() => handleFilterChange('balance')}
+            disabled={loading}
           >
             Balance
           </button>
           <button
             className={`${styles.filterButton} ${activeFilter === 'progress' ? styles.active : ''}`}
-            onClick={() => setActiveFilter('progress')}
+            onClick={() => handleFilterChange('progress')}
+            disabled={loading}
           >
             Progress
           </button>
         </div>
+        <button
+          className={styles.refreshButton}
+          onClick={handleRefresh}
+          disabled={loading}
+          title="Generate fresh insights"
+        >
+          {loading ? '⏳' : '🔄'}
+        </button>
       </div>
+
+      {/* Error display */}
+      {error && (
+        <div className={styles.errorContainer}>
+          <div className={styles.errorMessage}>{error}</div>
+          <button className={styles.errorDismiss} onClick={clearError}>
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Loading state */}
+      {loading && insights.length === 0 && (
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingSpinner}>⏳</div>
+          <p>Generating your personalized insights...</p>
+        </div>
+      )}
 
       {/* Key Takeaways section */}
       <div className={styles.keyTakeaways}>
