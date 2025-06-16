@@ -4,6 +4,7 @@ import styles from './HabitsWidget.module.css';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { format, startOfWeek, addDays } from 'date-fns';
+import { enUS, ptBR } from 'date-fns/locale';
 import { MonthlyView } from './MonthlyView';
 import {
   ChartIcon,
@@ -43,9 +44,12 @@ const transformApiHabit = (apiHabit: ApiHabit, logs: HabitLog[] = []): LocalHabi
 };
 
 const HabitsWidget = (): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t, currentLanguage } = useCommonTranslation();
   const [selectedCategory, setSelectedCategory] = useState<HabitCategory | 'all'>('all');
   const { theme } = useTimeBasedTheme();
+
+  // Get the appropriate locale for date formatting
+  const dateLocale = currentLanguage === 'pt' ? ptBR : enUS;
   const [selectedHabit, setSelectedHabit] = useState<LocalHabit | null>(null);
   const [showMonthlyView, setShowMonthlyView] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -415,10 +419,18 @@ const HabitsWidget = (): JSX.Element => {
                       data-tooltip={t('widgets.habits.setStatusTooltip')}
                       role="button"
                       aria-label={
-                        t('widgets.habits.setStatusFor', { day: format(date, 'EEEE') }) as string
+                        t('widgets.habits.setStatusFor', {
+                          day: format(date, 'EEEE', { locale: dateLocale }),
+                        }) as string
                       }
                     >
-                      <span className={styles.dayLabel}>{format(date, 'EEE')}</span>
+                      <span className={styles.dayLabel}>
+                        {currentLanguage === 'pt'
+                          ? ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'][
+                              date.getDay() === 0 ? 6 : date.getDay() - 1
+                            ]
+                          : format(date, 'EEE', { locale: dateLocale })}
+                      </span>
                       <div
                         className={`${styles.dayCheck} ${
                           getDateStatus(habit, date) ? styles.hasStatus : ''

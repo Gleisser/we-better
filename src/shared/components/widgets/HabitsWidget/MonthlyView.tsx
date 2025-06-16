@@ -13,6 +13,7 @@ import {
   endOfWeek,
   isToday,
 } from 'date-fns';
+import { enUS, ptBR } from 'date-fns/locale';
 import {
   XIcon,
   ChevronLeftIcon,
@@ -39,8 +40,11 @@ interface MonthlyViewProps {
 }
 
 export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t, currentLanguage } = useCommonTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  // Get the appropriate locale for date formatting
+  const dateLocale = currentLanguage === 'pt' ? ptBR : enUS;
 
   const getDaysInMonth = (): Date[] => {
     const start = startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 });
@@ -94,7 +98,13 @@ export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps): JSX.E
               <button onClick={prevMonth} className={styles.navButton}>
                 <ChevronLeftIcon className={styles.navIcon} />
               </button>
-              <h4 className={styles.monthTitle}>{format(currentDate, 'MMMM yyyy')}</h4>
+              <h4 className={styles.monthTitle}>
+                {currentLanguage === 'pt'
+                  ? format(currentDate, 'MMMM yyyy', { locale: dateLocale }).replace(/^\w/, c =>
+                      c.toUpperCase()
+                    )
+                  : format(currentDate, 'MMMM yyyy', { locale: dateLocale })}
+              </h4>
               <button onClick={nextMonth} className={styles.navButton}>
                 <ChevronRightIcon className={styles.navIcon} />
               </button>
