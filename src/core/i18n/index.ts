@@ -454,6 +454,90 @@ const resources = {
           },
           altText: '{{weather}} weather',
         },
+        challenge: {
+          title: 'Challenge Mode',
+          newChallenge: 'New Challenge',
+          loading: 'Loading challenges...',
+          errorLoading: 'Error loading challenges: {{error}}',
+          noActiveChallenges: 'No active challenges. Start a new one!',
+          deleteConfirm:
+            'Are you sure you want to delete this challenge? This action cannot be undone.',
+          actions: {
+            markComplete: 'Mark Today Complete',
+            undoComplete: 'Undo Today Complete',
+            editChallenge: 'Edit Challenge',
+            deleteChallenge: 'Delete Challenge',
+            previousChallenge: 'Previous challenge',
+            nextChallenge: 'Next challenge',
+          },
+          progress: {
+            dayOf: 'Day {{current}} of {{total}}',
+            totalDays: 'Total: {{days}} days',
+          },
+          carousel: {
+            counter: '{{current}} / {{total}}',
+          },
+          modal: {
+            createTitle: 'Create New Challenge',
+            editTitle: 'Edit Challenge',
+            close: 'Close modal',
+            sections: {
+              basicInfo: 'Basic Information',
+              durationDifficulty: 'Duration & Difficulty',
+              frequency: 'Frequency',
+              connectRemind: 'Connect & Remind',
+            },
+            form: {
+              challengeTitle: 'Challenge Title',
+              titlePlaceholder: '30-Day Meditation Challenge',
+              description: 'Description',
+              descriptionPlaceholder:
+                'Meditate for 10 minutes each day to build a consistent practice',
+              duration: 'Duration',
+              difficultyLevel: 'Difficulty Level',
+              selectDays: 'Select Days',
+              linkToDream: 'Link to Dream (Optional)',
+              enableReminders: 'Enable Daily Reminders',
+              none: 'None',
+            },
+            units: {
+              days: 'Days',
+              weeks: 'Weeks',
+              months: 'Months',
+            },
+            difficulty: {
+              easy: 'Easy',
+              medium: 'Medium',
+              hard: 'Hard',
+            },
+            frequency: {
+              daily: 'Daily',
+              weekly: 'Weekly',
+              custom: 'Custom',
+            },
+            weekDays: {
+              mon: 'Mon',
+              tue: 'Tue',
+              wed: 'Wed',
+              thu: 'Thu',
+              fri: 'Fri',
+              sat: 'Sat',
+              sun: 'Sun',
+            },
+            tips: {
+              daily: 'Daily challenges help build consistent habits and routines.',
+              weekly:
+                'Weekly challenges are great for activities that require more time or preparation.',
+              custom:
+                'Custom scheduling gives you flexibility to fit challenges around your existing commitments.',
+            },
+            buttons: {
+              cancel: 'Cancel',
+              create: 'Create Challenge',
+              update: 'Update Challenge',
+            },
+          },
+        },
       },
     },
     auth: {
@@ -866,6 +950,90 @@ const resources = {
             unknown: 'Desconhecido',
           },
           altText: 'Clima {{weather}}',
+        },
+        challenge: {
+          title: 'Modo Desafio',
+          newChallenge: 'Novo Desafio',
+          loading: 'Carregando desafios...',
+          errorLoading: 'Erro ao carregar desafios: {{error}}',
+          noActiveChallenges: 'Nenhum desafio ativo. Comece um novo!',
+          deleteConfirm:
+            'Tem certeza de que deseja excluir este desafio? Esta ação não pode ser desfeita.',
+          actions: {
+            markComplete: 'Marcar Hoje Completo',
+            undoComplete: 'Desfazer Hoje Completo',
+            editChallenge: 'Editar Desafio',
+            deleteChallenge: 'Excluir Desafio',
+            previousChallenge: 'Desafio anterior',
+            nextChallenge: 'Próximo desafio',
+          },
+          progress: {
+            dayOf: 'Dia {{current}} de {{total}}',
+            totalDays: 'Total: {{days}} dias',
+          },
+          carousel: {
+            counter: '{{current}} / {{total}}',
+          },
+          modal: {
+            createTitle: 'Criar Novo Desafio',
+            editTitle: 'Editar Desafio',
+            close: 'Fechar modal',
+            sections: {
+              basicInfo: 'Informações Básicas',
+              durationDifficulty: 'Duração e Dificuldade',
+              frequency: 'Frequência',
+              connectRemind: 'Conectar e Lembrar',
+            },
+            form: {
+              challengeTitle: 'Título do Desafio',
+              titlePlaceholder: 'Desafio de Meditação de 30 Dias',
+              description: 'Descrição',
+              descriptionPlaceholder:
+                'Meditar por 10 minutos todos os dias para construir uma prática consistente',
+              duration: 'Duração',
+              difficultyLevel: 'Nível de Dificuldade',
+              selectDays: 'Selecionar Dias',
+              linkToDream: 'Vincular ao Sonho (Opcional)',
+              enableReminders: 'Ativar Lembretes Diários',
+              none: 'Nenhum',
+            },
+            units: {
+              days: 'Dias',
+              weeks: 'Semanas',
+              months: 'Meses',
+            },
+            difficulty: {
+              easy: 'Fácil',
+              medium: 'Médio',
+              hard: 'Difícil',
+            },
+            frequency: {
+              daily: 'Diário',
+              weekly: 'Semanal',
+              custom: 'Personalizado',
+            },
+            weekDays: {
+              mon: 'Seg',
+              tue: 'Ter',
+              wed: 'Qua',
+              thu: 'Qui',
+              fri: 'Sex',
+              sat: 'Sáb',
+              sun: 'Dom',
+            },
+            tips: {
+              daily: 'Desafios diários ajudam a construir hábitos e rotinas consistentes.',
+              weekly:
+                'Desafios semanais são ótimos para atividades que requerem mais tempo ou preparação.',
+              custom:
+                'O agendamento personalizado oferece flexibilidade para encaixar desafios em seus compromissos existentes.',
+            },
+            buttons: {
+              cancel: 'Cancelar',
+              create: 'Criar Desafio',
+              update: 'Atualizar Desafio',
+            },
+          },
         },
       },
     },
