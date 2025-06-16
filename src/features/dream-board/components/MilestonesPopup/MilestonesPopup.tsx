@@ -36,8 +36,8 @@ interface MilestonesPopupProps {
   milestoneHistory: Array<MilestoneHistoryItem>;
   achievementBadges: Array<{
     id: string;
-    title: string;
-    description: string;
+    titleKey: string;
+    descriptionKey: string;
     icon: string;
     condition: (dream: Dream) => boolean;
   }>;
@@ -302,8 +302,8 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                             )}
                           </div>
                           <div className={styles.badgeInfo}>
-                            <h5 className={styles.badgeTitle}>{badge.title}</h5>
-                            <p className={styles.badgeDescription}>{badge.description}</p>
+                            <h5 className={styles.badgeTitle}>{t(badge.titleKey)}</h5>
+                            <p className={styles.badgeDescription}>{t(badge.descriptionKey)}</p>
                           </div>
                         </div>
                       );

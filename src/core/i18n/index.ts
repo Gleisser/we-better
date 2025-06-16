@@ -450,6 +450,10 @@ const resources = {
             title: 'Milestone Timeline',
             noDates:
               'No milestone dates set. Add target dates to your milestones to see a timeline.',
+            goal: 'Goal',
+            goalCompletion: 'Goal Completion',
+            scrollLeft: 'Scroll timeline left',
+            scrollRight: 'Scroll timeline right',
           },
           chart: {
             title: 'Progress Chart',
@@ -460,6 +464,24 @@ const resources = {
           },
           achievements: {
             title: 'Achievements',
+            badges: {
+              firstStep: {
+                title: 'First Step',
+                description: 'Completed your first milestone',
+              },
+              halfwayThere: {
+                title: 'Halfway There',
+                description: 'Reached 50% completion',
+              },
+              wellPlanned: {
+                title: 'Well Planned',
+                description: 'Set target dates for all milestones',
+              },
+              dreamAchieved: {
+                title: 'Dream Achieved',
+                description: 'Completed all milestones',
+              },
+            },
           },
           form: {
             addTitle: 'Add New Milestone',
@@ -999,6 +1021,10 @@ const resources = {
             title: 'Cronograma dos Marcos',
             noDates:
               'Nenhuma data de marco definida. Adicione datas aos seus marcos para ver uma cronologia.',
+            goal: 'Meta',
+            goalCompletion: 'Conclusão da Meta',
+            scrollLeft: 'Rolar cronologia para esquerda',
+            scrollRight: 'Rolar cronologia para direita',
           },
           chart: {
             title: 'Gráfico de Progresso',
@@ -1009,6 +1035,24 @@ const resources = {
           },
           achievements: {
             title: 'Conquistas',
+            badges: {
+              firstStep: {
+                title: 'Primeiro Passo',
+                description: 'Completou seu primeiro marco',
+              },
+              halfwayThere: {
+                title: 'Na Metade do Caminho',
+                description: 'Atingiu 50% de conclusão',
+              },
+              wellPlanned: {
+                title: 'Bem Planejado',
+                description: 'Definiu datas para todos os marcos',
+              },
+              dreamAchieved: {
+                title: 'Sonho Alcançado',
+                description: 'Completou todos os marcos',
+              },
+            },
           },
           form: {
             addTitle: 'Adicionar Novo Marco',
