@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import {
   PlusIcon,
   ChevronDownIcon,
@@ -93,6 +94,7 @@ const transformToApiReviewSettings = (
 };
 
 const GoalsWidget = (): JSX.Element => {
+  const { t } = useCommonTranslation();
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return window.innerWidth <= 768;
   });
@@ -175,7 +177,7 @@ const GoalsWidget = (): JSX.Element => {
     async (goalId: string): Promise<void> => {
       try {
         await apiDeleteGoal(goalId);
-        toast.success('Goal deleted successfully', {
+        toast.success(t('widgets.goals.toasts.goalDeleted') as string, {
           icon: '🗑️',
           duration: 4000,
           position: 'top-right',
@@ -192,10 +194,10 @@ const GoalsWidget = (): JSX.Element => {
         });
       } catch (error) {
         console.error('Failed to delete goal:', error);
-        toast.error('Failed to delete goal');
+        toast.error(t('widgets.goals.toasts.failedToDelete') as string);
       }
     },
-    [apiDeleteGoal]
+    [apiDeleteGoal, t]
   );
 
   /**
@@ -315,7 +317,7 @@ const GoalsWidget = (): JSX.Element => {
           }
         }
 
-        toast.success('New goal created successfully!', {
+        toast.success(t('widgets.goals.toasts.goalCreated') as string, {
           duration: 4000,
           position: 'top-right',
           style: {
@@ -332,10 +334,10 @@ const GoalsWidget = (): JSX.Element => {
         });
       } catch (error) {
         console.error('Failed to create goal:', error);
-        toast.error('Failed to create goal');
+        toast.error(t('widgets.goals.toasts.failedToCreate') as string);
       }
     },
-    [apiCreateGoal]
+    [apiCreateGoal, t]
   );
 
   return (
@@ -353,11 +355,11 @@ const GoalsWidget = (): JSX.Element => {
         <div className={styles.headerMain}>
           <div className={styles.headerLeft}>
             <span className={styles.headerIcon}>🎯</span>
-            <span className={styles.headerText}>Goals Tracking</span>
+            <span className={styles.headerText}>{t('widgets.goals.title')}</span>
             <button
               className={styles.addButton}
               onClick={() => setShowGoalForm(true)}
-              aria-label="Add new goal"
+              aria-label={t('widgets.goals.addNew') as string}
             >
               <PlusIcon className={styles.actionIcon} />
             </button>
@@ -367,7 +369,7 @@ const GoalsWidget = (): JSX.Element => {
             <button
               className={styles.settingsButton}
               onClick={() => setShowSettings(true)}
-              aria-label="Review settings"
+              aria-label={t('widgets.goals.reviewSettings') as string}
             >
               <SettingsIcon className={styles.actionIcon} />
             </button>
@@ -380,24 +382,27 @@ const GoalsWidget = (): JSX.Element => {
                   const nextReview = new Date(updatedSettings.next_review_date || '');
                   const formattedDate = format(nextReview, 'MMM d, yyyy');
 
-                  toast.success(`Review completed! Next review: ${formattedDate}`, {
-                    duration: 4000,
-                    position: 'top-right',
-                    style: {
-                      background: '#1A1A1A',
-                      color: '#fff',
-                      border: '1px solid rgba(139, 92, 246, 0.3)',
-                      borderRadius: '12px',
-                      padding: '16px 24px',
-                      fontSize: '14px',
-                      maxWidth: '400px',
-                      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
-                    },
-                    icon: '✅',
-                  });
+                  toast.success(
+                    t('widgets.goals.toasts.reviewCompleted', { date: formattedDate }) as string,
+                    {
+                      duration: 4000,
+                      position: 'top-right',
+                      style: {
+                        background: '#1A1A1A',
+                        color: '#fff',
+                        border: '1px solid rgba(139, 92, 246, 0.3)',
+                        borderRadius: '12px',
+                        padding: '16px 24px',
+                        fontSize: '14px',
+                        maxWidth: '400px',
+                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.4)',
+                      },
+                      icon: '✅',
+                    }
+                  );
                 } catch (error) {
                   console.error('Failed to complete review:', error);
-                  toast.error('Failed to complete review');
+                  toast.error(t('widgets.goals.toasts.failedToComplete') as string);
                 }
               }}
             />
@@ -405,7 +410,11 @@ const GoalsWidget = (): JSX.Element => {
             <button
               className={`${styles.collapseButton} ${isCollapsed ? styles.collapsed : ''}`}
               onClick={() => setIsCollapsed(!isCollapsed)}
-              aria-label={isCollapsed ? 'Expand goals widget' : 'Collapse goals widget'}
+              aria-label={
+                (isCollapsed
+                  ? t('widgets.goals.expandWidget')
+                  : t('widgets.goals.collapseWidget')) as string
+              }
             >
               <ChevronDownIcon className={styles.collapseIcon} />
             </button>
@@ -431,7 +440,7 @@ const GoalsWidget = (): JSX.Element => {
             }`}
             onClick={() => setSelectedCategory('all')}
           >
-            All
+            {t('widgets.goals.categories.all')}
           </button>
           {Object.entries(CATEGORY_CONFIG).map(([category, config]) => (
             <button
@@ -442,14 +451,20 @@ const GoalsWidget = (): JSX.Element => {
               onClick={() => setSelectedCategory(category as GoalCategory)}
             >
               <span className={styles.categoryIcon}>{config.icon}</span>
-              <span className={styles.categoryLabel}>{config.label}</span>
+              <span className={styles.categoryLabel}>
+                {t(`widgets.goals.categories.${category}`)}
+              </span>
             </button>
           ))}
         </div>
 
         <div className={styles.content}>
-          {isLoading && <div className={styles.loadingIndicator}>Loading goals...</div>}
-          {error && <div className={styles.errorMessage}>Error: {error.message}</div>}
+          {isLoading && <div className={styles.loadingIndicator}>{t('widgets.goals.loading')}</div>}
+          {error && (
+            <div className={styles.errorMessage}>
+              {t('widgets.goals.errorLoading')}: {error.message}
+            </div>
+          )}
 
           {!isLoading && !error && filteredGoals.length === 0 && (
             <motion.div
@@ -468,7 +483,7 @@ const GoalsWidget = (): JSX.Element => {
                   >
                     🎯
                   </motion.div>
-                  <p>No goals found. Create your first goal to get started!</p>
+                  <p>{t('widgets.goals.emptyState.all')}</p>
                   <motion.button
                     className={styles.createButton}
                     onClick={() => {
@@ -478,7 +493,7 @@ const GoalsWidget = (): JSX.Element => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Create Goal
+                    {t('widgets.goals.emptyState.createButton')}
                   </motion.button>
                 </>
               ) : (
@@ -491,7 +506,11 @@ const GoalsWidget = (): JSX.Element => {
                   >
                     {CATEGORY_CONFIG[selectedCategory as GoalCategory]?.icon || '🎯'}
                   </motion.div>
-                  <p>No {selectedCategory} goals found.</p>
+                  <p>
+                    {t('widgets.goals.emptyState.category', {
+                      category: t(`widgets.goals.categories.${selectedCategory}`),
+                    })}
+                  </p>
                   <motion.button
                     className={styles.createButton}
                     onClick={() => {
@@ -562,7 +581,7 @@ const GoalsWidget = (): JSX.Element => {
                       {goal.milestones && goal.milestones.length > 0 && (
                         <span className={styles.milestoneCount}>
                           {goal.milestones.filter(m => m.completed).length}/{goal.milestones.length}{' '}
-                          milestones
+                          {t('widgets.goals.milestones.count')}
                         </span>
                       )}
                     </div>

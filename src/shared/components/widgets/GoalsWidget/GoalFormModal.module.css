@@ -287,3 +287,24 @@ input[type='date'].input {
 .categoryLabel {
   @apply font-plus-jakarta;
 }
+
+/* Missing classes used in JSX */
+.milestonesHeader {
+  @apply mb-4;
+}
+
+.milestonesTitle {
+  @apply text-sm text-white/70 font-plus-jakarta font-medium mb-1;
+}
+
+.milestonesDescription {
+  @apply text-xs text-white/50 font-plus-jakarta;
+}
+
+.editingMilestone {
+  @apply flex items-center gap-2 flex-1;
+}
+
+.completedText {
+  @apply line-through opacity-70;
+}
