@@ -528,8 +528,9 @@ const GoalsWidget = (): JSX.Element => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Create {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}{' '}
-                    Goal
+                    {t('widgets.goals.emptyState.createCategoryButton', {
+                      category: t(`widgets.goals.categories.${selectedCategory}`),
+                    })}
                   </motion.button>
                 </>
               )}

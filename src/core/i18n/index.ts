@@ -309,6 +309,7 @@ const resources = {
             all: 'No goals found. Create your first goal to get started!',
             category: 'No {{category}} goals found.',
             createButton: 'Create Goal',
+            createCategoryButton: 'Create {{category}} Goal',
           },
           loadMore: 'Load More',
           categories: {
@@ -677,6 +678,7 @@ const resources = {
             all: 'Nenhuma meta encontrada. Crie sua primeira meta para começar!',
             category: 'Nenhuma meta de {{category}} encontrada.',
             createButton: 'Criar Meta',
+            createCategoryButton: 'Criar Meta de {{category}}',
           },
           loadMore: 'Carregar Mais',
           categories: {
