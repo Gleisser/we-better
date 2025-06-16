@@ -437,6 +437,52 @@ const resources = {
         milestones: {
           deleteConfirm: 'Are you sure you want to delete this milestone?',
           noDateSet: 'No date set',
+          manageTitle: 'Manage Milestones: {{dreamTitle}}',
+          closePopup: 'Close popup',
+          progressSummary:
+            "You've completed {{completed}} of {{total}} milestones ({{percentage}}% complete)",
+          tabs: {
+            timeline: 'Timeline View',
+            chart: 'Progress Chart',
+            achievements: 'Achievements',
+          },
+          timeline: {
+            title: 'Milestone Timeline',
+            noDates:
+              'No milestone dates set. Add target dates to your milestones to see a timeline.',
+          },
+          chart: {
+            title: 'Progress Chart',
+            loading: 'Loading progress chart...',
+            error: 'Error loading chart: {{error}}',
+            noMilestones:
+              'No milestones available yet. Add some milestones to see your progress chart.',
+          },
+          achievements: {
+            title: 'Achievements',
+          },
+          form: {
+            addTitle: 'Add New Milestone',
+            editTitle: 'Edit Milestone',
+            closeForm: 'Close form',
+            titleLabel: 'Title (required)',
+            descriptionLabel: 'Description (optional)',
+            targetDateLabel: 'Target Date',
+            cancel: 'Cancel',
+            addButton: 'Add Milestone',
+            saveButton: 'Save Changes',
+          },
+          list: {
+            title: 'Milestones',
+            addButton: '+ Add Milestone',
+            editMilestone: 'Edit milestone',
+            deleteMilestone: 'Delete milestone',
+            emptyState: 'No milestones added yet. Add your first milestone to track progress!',
+          },
+          history: {
+            title: 'Milestone History',
+            deletedMilestone: 'Deleted milestone',
+          },
         },
         deleteConfirm: {
           title: 'Delete Dream Board',
@@ -537,6 +583,12 @@ const resources = {
               update: 'Update Challenge',
             },
           },
+        },
+        progress: {
+          title: 'Dream Progress',
+          loading: 'Loading...',
+          milestonesCompleted: '{{completed}} of {{total}} milestones completed',
+          manageMilestones: 'Manage Milestones',
         },
       },
     },
@@ -934,6 +986,53 @@ const resources = {
         milestones: {
           deleteConfirm: 'Tem certeza de que deseja excluir este marco?',
           noDateSet: 'Nenhuma data definida',
+          manageTitle: 'Gerenciar Marcos: {{dreamTitle}}',
+          closePopup: 'Fechar popup',
+          progressSummary:
+            'Você completou {{completed}} de {{total}} marcos ({{percentage}}% completo)',
+          tabs: {
+            timeline: 'Visão Cronológica',
+            chart: 'Gráfico de Progresso',
+            achievements: 'Conquistas',
+          },
+          timeline: {
+            title: 'Cronograma dos Marcos',
+            noDates:
+              'Nenhuma data de marco definida. Adicione datas aos seus marcos para ver uma cronologia.',
+          },
+          chart: {
+            title: 'Gráfico de Progresso',
+            loading: 'Carregando gráfico de progresso...',
+            error: 'Erro ao carregar gráfico: {{error}}',
+            noMilestones:
+              'Nenhum marco disponível ainda. Adicione alguns marcos para ver seu gráfico de progresso.',
+          },
+          achievements: {
+            title: 'Conquistas',
+          },
+          form: {
+            addTitle: 'Adicionar Novo Marco',
+            editTitle: 'Editar Marco',
+            closeForm: 'Fechar formulário',
+            titleLabel: 'Título (obrigatório)',
+            descriptionLabel: 'Descrição (opcional)',
+            targetDateLabel: 'Data Alvo',
+            cancel: 'Cancelar',
+            addButton: 'Adicionar Marco',
+            saveButton: 'Salvar Alterações',
+          },
+          list: {
+            title: 'Marcos',
+            addButton: '+ Adicionar Marco',
+            editMilestone: 'Editar marco',
+            deleteMilestone: 'Excluir marco',
+            emptyState:
+              'Nenhum marco adicionado ainda. Adicione seu primeiro marco para acompanhar o progresso!',
+          },
+          history: {
+            title: 'Histórico de Marcos',
+            deletedMilestone: 'Marco excluído',
+          },
         },
         deleteConfirm: {
           title: 'Excluir Quadro dos Sonhos',
@@ -1034,6 +1133,12 @@ const resources = {
               update: 'Atualizar Desafio',
             },
           },
+        },
+        progress: {
+          title: 'Progresso dos Sonhos',
+          loading: 'Carregando...',
+          milestonesCompleted: '{{completed}} de {{total}} marcos completados',
+          manageMilestones: 'Gerenciar Marcos',
         },
       },
     },

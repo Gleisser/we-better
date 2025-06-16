@@ -3,6 +3,7 @@ import styles from '../../DreamBoardPage.module.css';
 import { Dream, Milestone } from '../../types';
 import TimelineComponent from './TimelineComponent';
 import { calculateProgress, getPercentage } from '../../utils/progressUtils';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 
 interface MilestoneHistoryItem {
   dreamId: string;
@@ -64,6 +65,8 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
   achievementBadges,
   fetchedMilestones,
 }) => {
+  const { t } = useCommonTranslation();
+
   // State for async chart data (must be at the top level)
   const [chartData, setChartData] = useState<Array<{ date: Date; percentage: number }>>([]);
   const [isLoadingChart, setIsLoadingChart] = useState<boolean>(false);
@@ -106,11 +109,11 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
     <div className={styles.modalOverlay} onClick={() => setShowMilestonesPopup(false)}>
       <div className={styles.milestonesPopup} onClick={e => e.stopPropagation()}>
         <div className={styles.milestonesPopupHeader}>
-          <h3>Manage Milestones: {selectedDream.title}</h3>
+          <h3>{t('dreamBoard.milestones.manageTitle', { dreamTitle: selectedDream.title })}</h3>
           <button
             className={styles.closePopupButton}
             onClick={() => setShowMilestonesPopup(false)}
-            aria-label="Close popup"
+            aria-label={t('dreamBoard.milestones.closePopup') as string}
           >
             ×
           </button>
@@ -129,8 +132,11 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
               />
             </div>
             <p>
-              You've completed {milestones.filter(m => m.completed).length} of {milestones.length}{' '}
-              milestones ({getPercentage(calculateProgress(milestones, false))}% complete)
+              {t('dreamBoard.milestones.progressSummary', {
+                completed: milestones.filter(m => m.completed).length,
+                total: milestones.length,
+                percentage: getPercentage(calculateProgress(milestones, false)),
+              })}
             </p>
           </div>
 
@@ -141,13 +147,13 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                 className={`${styles.vizTab} ${activeVizTab === 'timeline' ? styles.activeVizTab : ''}`}
                 onClick={() => setActiveVizTab(activeVizTab === 'timeline' ? null : 'timeline')}
               >
-                Timeline View
+                {t('dreamBoard.milestones.tabs.timeline')}
               </button>
               <button
                 className={`${styles.vizTab} ${activeVizTab === 'chart' ? styles.activeVizTab : ''}`}
                 onClick={() => setActiveVizTab(activeVizTab === 'chart' ? null : 'chart')}
               >
-                Progress Chart
+                {t('dreamBoard.milestones.tabs.chart')}
               </button>
               <button
                 className={`${styles.vizTab} ${activeVizTab === 'achievements' ? styles.activeVizTab : ''}`}
@@ -155,7 +161,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                   setActiveVizTab(activeVizTab === 'achievements' ? null : 'achievements')
                 }
               >
-                Achievements
+                {t('dreamBoard.milestones.tabs.achievements')}
               </button>
             </div>
           )}
@@ -166,7 +172,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
               {/* Timeline Visualization */}
               {activeVizTab === 'timeline' && (
                 <div className={styles.timelineVisualization}>
-                  <h4>Milestone Timeline</h4>
+                  <h4>{t('dreamBoard.milestones.timeline.title')}</h4>
                   {milestones.some(m => m.date) ? (
                     <TimelineComponent
                       milestones={milestones}
@@ -176,10 +182,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                     />
                   ) : (
                     <div className={styles.emptyVisualization}>
-                      <p>
-                        No milestone dates set. Add target dates to your milestones to see a
-                        timeline.
-                      </p>
+                      <p>{t('dreamBoard.milestones.timeline.noDates')}</p>
                     </div>
                   )}
                 </div>
@@ -188,15 +191,15 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
               {/* Progress Chart */}
               {activeVizTab === 'chart' && (
                 <div className={styles.chartVisualization}>
-                  <h4>Progress Chart</h4>
+                  <h4>{t('dreamBoard.milestones.chart.title')}</h4>
 
                   {isLoadingChart ? (
                     <div className={styles.emptyVisualization}>
-                      <p>Loading progress chart...</p>
+                      <p>{t('dreamBoard.milestones.chart.loading')}</p>
                     </div>
                   ) : chartError ? (
                     <div className={styles.emptyVisualization}>
-                      <p>Error loading chart: {chartError}</p>
+                      <p>{t('dreamBoard.milestones.chart.error', { error: chartError })}</p>
                     </div>
                   ) : chartData.length > 0 ? (
                     <div className={styles.progressChartContainer}>
@@ -268,9 +271,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                     </div>
                   ) : (
                     <div className={styles.emptyVisualization}>
-                      <p>
-                        No milestones available yet. Add some milestones to see your progress chart.
-                      </p>
+                      <p>{t('dreamBoard.milestones.chart.noMilestones')}</p>
                     </div>
                   )}
                 </div>
@@ -279,7 +280,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
               {/* Achievements */}
               {activeVizTab === 'achievements' && (
                 <div className={styles.achievementsVisualization}>
-                  <h4>Achievements</h4>
+                  <h4>{t('dreamBoard.milestones.achievements.title')}</h4>
                   <div className={styles.achievementBadges}>
                     {achievementBadges.map(badge => {
                       const isEarned = badge.condition(dreamWithCurrentData);
@@ -316,11 +317,15 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
           {showMilestoneForm ? (
             <div className={styles.milestoneFormContainer}>
               <div className={styles.milestoneFormHeader}>
-                <h4>{milestoneAction === 'add' ? 'Add New Milestone' : 'Edit Milestone'}</h4>
+                <h4>
+                  {milestoneAction === 'add'
+                    ? t('dreamBoard.milestones.form.addTitle')
+                    : t('dreamBoard.milestones.form.editTitle')}
+                </h4>
                 <button
                   className={styles.closeFormButton}
                   onClick={handleCancelMilestoneForm}
-                  aria-label="Close form"
+                  aria-label={t('dreamBoard.milestones.form.closeForm') as string}
                 >
                   ×
                 </button>
@@ -328,7 +333,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
 
               <form onSubmit={handleSaveMilestone}>
                 <div className={styles.formGroup}>
-                  <label htmlFor="title">Title (required)</label>
+                  <label htmlFor="title">{t('dreamBoard.milestones.form.titleLabel')}</label>
                   <input
                     type="text"
                     id="title"
@@ -339,7 +344,9 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label htmlFor="description">Description (optional)</label>
+                  <label htmlFor="description">
+                    {t('dreamBoard.milestones.form.descriptionLabel')}
+                  </label>
                   <textarea
                     id="description"
                     name="description"
@@ -348,7 +355,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label htmlFor="date">Target Date</label>
+                  <label htmlFor="date">{t('dreamBoard.milestones.form.targetDateLabel')}</label>
                   <input
                     type="date"
                     id="date"
@@ -367,10 +374,12 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                     className={styles.cancelButton}
                     onClick={handleCancelMilestoneForm}
                   >
-                    Cancel
+                    {t('dreamBoard.milestones.form.cancel')}
                   </button>
                   <button type="submit" className={styles.saveButton}>
-                    {milestoneAction === 'add' ? 'Add Milestone' : 'Save Changes'}
+                    {milestoneAction === 'add'
+                      ? t('dreamBoard.milestones.form.addButton')
+                      : t('dreamBoard.milestones.form.saveButton')}
                   </button>
                 </div>
               </form>
@@ -379,12 +388,12 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
             /* Milestone List (visible when not adding/editing) */
             <div className={styles.milestonesContainer}>
               <div className={styles.milestoneSectionHeader}>
-                <h4>Milestones</h4>
+                <h4>{t('dreamBoard.milestones.list.title')}</h4>
                 <button
                   className={styles.addMilestoneButton}
                   onClick={() => handleInitiateMilestoneAction('add')}
                 >
-                  + Add Milestone
+                  {t('dreamBoard.milestones.list.addButton')}
                 </button>
               </div>
 
@@ -423,14 +432,14 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                           <button
                             className={styles.editMilestoneButton}
                             onClick={() => handleInitiateMilestoneAction('edit', milestone)}
-                            aria-label="Edit milestone"
+                            aria-label={t('dreamBoard.milestones.list.editMilestone') as string}
                           >
                             ✏️
                           </button>
                           <button
                             className={styles.deleteMilestoneButton}
                             onClick={() => handleDeleteMilestone(selectedDream.id, milestone.id)}
-                            aria-label="Delete milestone"
+                            aria-label={t('dreamBoard.milestones.list.deleteMilestone') as string}
                           >
                             🗑️
                           </button>
@@ -441,7 +450,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                 </ul>
               ) : (
                 <div className={styles.emptyMilestones}>
-                  <p>No milestones added yet. Add your first milestone to track progress!</p>
+                  <p>{t('dreamBoard.milestones.list.emptyState')}</p>
                 </div>
               )}
             </div>
@@ -452,7 +461,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
             milestoneHistory.filter(h => h.dreamId === selectedDream.id).length > 0 && (
               <div className={styles.milestoneHistorySection}>
                 <details>
-                  <summary>Milestone History</summary>
+                  <summary>{t('dreamBoard.milestones.history.title')}</summary>
                   <ul className={styles.milestoneHistoryList}>
                     {milestoneHistory
                       .filter(h => h.dreamId === selectedDream.id)
@@ -461,7 +470,9 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
                       )
                       .map((historyItem, index) => {
                         const milestone = milestones.find(m => m.id === historyItem.milestoneId);
-                        const milestoneTitle = milestone ? milestone.title : 'Deleted milestone';
+                        const milestoneTitle = milestone
+                          ? milestone.title
+                          : t('dreamBoard.milestones.history.deletedMilestone');
                         const formattedTime = new Date(historyItem.timestamp).toLocaleString();
 
                         return (
