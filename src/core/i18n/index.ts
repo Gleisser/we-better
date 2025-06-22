@@ -781,6 +781,40 @@ const resources = {
             spirituality: 'Spirituality',
           },
         },
+        cosmic: {
+          title: 'Dream Universe',
+          viewModes: {
+            cosmic: 'Cosmic',
+            constellation: 'Constellation',
+          },
+          tooltips: {
+            exitFullscreen: 'Exit Fullscreen',
+            fullscreen: 'Fullscreen',
+            zoomOut: 'Zoom Out',
+            resetView: 'Reset View',
+            zoomIn: 'Zoom In',
+          },
+          category: {
+            label: 'Category:',
+            all: 'All Categories',
+            legendTitle: 'Dream Categories',
+          },
+          loading: {
+            text: 'Initializing Dream Universe...',
+          },
+          emptyState: {
+            text: 'Your dream universe is empty.',
+            subtext: 'Start by adding your first dream.',
+            button: 'Add Your First Dream',
+          },
+          detail: {
+            progress: 'Progress',
+            milestones: 'Milestones',
+            completed: 'completed',
+            sharedWith: 'Shared With',
+            created: 'Created',
+          },
+        },
       },
     },
     auth: {
@@ -1537,6 +1571,40 @@ const resources = {
             community: 'Comunidade',
             environment: 'Ambiente',
             personal: 'Pessoal',
+          },
+        },
+        cosmic: {
+          title: 'Universo dos Sonhos',
+          viewModes: {
+            cosmic: 'Cósmico',
+            constellation: 'Constelação',
+          },
+          tooltips: {
+            exitFullscreen: 'Sair da Tela Cheia',
+            fullscreen: 'Tela Cheia',
+            zoomOut: 'Diminuir Zoom',
+            resetView: 'Resetar Visualização',
+            zoomIn: 'Aumentar Zoom',
+          },
+          category: {
+            label: 'Categoria:',
+            all: 'Todas as Categorias',
+            legendTitle: 'Categorias dos Sonhos',
+          },
+          loading: {
+            text: 'Inicializando Universo dos Sonhos...',
+          },
+          emptyState: {
+            text: 'Seu universo dos sonhos está vazio.',
+            subtext: 'Comece adicionando seu primeiro sonho.',
+            button: 'Adicione Seu Primeiro Sonho',
+          },
+          detail: {
+            progress: 'Progresso',
+            milestones: 'Marcos',
+            completed: 'concluídos',
+            sharedWith: 'Compartilhado Com',
+            created: 'Criado',
           },
         },
       },
