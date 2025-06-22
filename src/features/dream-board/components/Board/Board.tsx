@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import {
   DreamBoardProps,
   DreamBoardData,
@@ -82,6 +83,8 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
   className = '',
   readOnly = false,
 }) => {
+  const { t } = useCommonTranslation();
+
   // Canvas state
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -89,8 +92,8 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
 
   // Board data state
   const [boardData, setBoardData] = useState<DreamBoardData>({
-    title: 'My Dream Board',
-    description: 'Visualize • Believe • Achieve',
+    title: t('dreamBoard.board.defaultTitle') as string,
+    description: t('dreamBoard.board.defaultDescription') as string,
     categories: lifeWheelCategories.map(cat => cat.id),
     content: [],
   });
@@ -118,13 +121,13 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
       setBoardData(data);
     } else {
       setBoardData({
-        title: 'My Dream Board',
-        description: 'Visualize • Believe • Achieve',
+        title: t('dreamBoard.board.defaultTitle') as string,
+        description: t('dreamBoard.board.defaultDescription') as string,
         categories: lifeWheelCategories.map(cat => cat.id),
         content: [],
       });
     }
-  }, [data, lifeWheelCategories]);
+  }, [data, lifeWheelCategories]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Trigger animation
   const startAnimation = useCallback((): void => {
@@ -258,15 +261,15 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
       const result = await onSave(dataToSave);
 
       if (result) {
-        showToast.success('Dream board saved successfully!');
+        showToast.success(t('dreamBoard.board.saved') as string);
       } else {
-        showToast.error('Failed to save dream board');
+        showToast.error(t('dreamBoard.board.failedToSave') as string);
       }
 
       return result;
     } catch (error) {
       console.error('Error saving dream board:', error);
-      showToast.error('An error occurred while saving');
+      showToast.error(t('dreamBoard.board.errorSaving') as string);
       return false;
     } finally {
       setIsSaving(false);
@@ -361,7 +364,7 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
 
     // Check if the limit has been reached
     if (imageCount >= 7) {
-      showToast.error('You can only add up to 7 images to your dream board.');
+      showToast.error(t('dreamBoard.board.imageLimit') as string);
       return;
     }
 
@@ -431,22 +434,16 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
   };
 
   const handleDreamSymbolClick = (symbolType: string): void => {
-    const messages: Record<string, string> = {
-      briefcase: 'Your career is a path to greatness. Keep striving for excellence!',
-      money: 'Financial abundance is flowing into your life. Embrace wealth mindfully!',
-      health: 'Health is true wealth. Nurture your body, mind, and spirit daily.',
-      house: 'Your ideal home awaits. Create your perfect sanctuary and living space.',
-      growth: 'Growth happens outside your comfort zone. Embrace change and challenges!',
-      heart: 'Love deeply and authentically. Meaningful connections bring true joy.',
-      recreation: 'Balance work with play. Leisure time recharges your creative energy!',
-      meditation: 'Inner peace creates outer harmony. Take time for spiritual reflection.',
-      graduation: 'Knowledge empowers. Continue learning throughout your entire life.',
-      travel: 'Adventure awaits! New places bring fresh perspectives and memories.',
-      cloud: 'Dream without limits. Your imagination creates your future reality!',
-      trophy: 'Success is a journey of small wins. Celebrate each victory along the way!',
-    };
+    const messageKey = `dreamBoard.board.dreamSymbols.messages.${symbolType}`;
+    const message = t(messageKey) as string;
 
-    showToast.info(messages[symbolType] || 'Dream it, believe it, achieve it!');
+    // If translation key is returned as-is, use default message
+    const finalMessage =
+      message !== messageKey
+        ? message
+        : (t('dreamBoard.board.dreamSymbols.messages.default') as string);
+
+    showToast.info(finalMessage);
   };
 
   // Inside the DreamBoard component, add a useMemo to calculate the image count
@@ -463,7 +460,7 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
           <div className={styles.glassCard}>
             <div className={styles.loadingContainer}>
               <div className={styles.spinner}></div>
-              <p>Loading your dream board...</p>
+              <p>{t('dreamBoard.board.loading')}</p>
             </div>
           </div>
         </div>
@@ -480,10 +477,10 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
           <div className={styles.glassCard}>
             <div className={styles.errorContainer}>
               <div className={styles.errorIcon}>⚠️</div>
-              <h3>Something went wrong</h3>
+              <h3>{t('dreamBoard.board.errorTitle')}</h3>
               <p>{error}</p>
               <button className={styles.retryButton} onClick={() => window.location.reload()}>
-                Retry
+                {t('dreamBoard.board.retry')}
               </button>
             </div>
           </div>
@@ -501,9 +498,17 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
       <div className={styles.contentWrapper}>
         <div className={styles.glassCard}>
           {/* Dream Board Title */}
-          <h1 className={styles.dreamBoardTitle}>{boardData.title || 'Dream Board'}</h1>
+          <h1 className={styles.dreamBoardTitle}>
+            {boardData.title === 'My Dream Board'
+              ? t('dreamBoard.board.defaultTitle')
+              : boardData.title || t('dreamBoard.board.title')}
+          </h1>
           {boardData.description && (
-            <p className={styles.dreamBoardSubtitle}>{boardData.description}</p>
+            <p className={styles.dreamBoardSubtitle}>
+              {boardData.description === 'Vision board created with my dreams and goals'
+                ? t('dreamBoard.board.defaultDescription')
+                : boardData.description}
+            </p>
           )}
 
           {/* Floating 3D Dream Symbols */}

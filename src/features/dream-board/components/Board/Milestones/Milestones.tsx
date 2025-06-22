@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DreamBoardContent } from '../../../types';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import {
   getMilestonesForContent,
   createMilestoneForContent,
@@ -17,6 +18,7 @@ interface MilestonesProps {
 import { Milestone } from '../../../types';
 
 export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUpdate }) => {
+  const { t } = useCommonTranslation();
   const contentId = content.id;
 
   // State for milestones
@@ -120,16 +122,16 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
   if (loading) {
     return (
       <div className={styles.milestonesContainer}>
-        <h3 className={styles.milestonesTitle}>Dream Milestones</h3>
-        <div className={styles.loadingState}>Loading milestones...</div>
+        <h3 className={styles.milestonesTitle}>{t('dreamBoard.board.milestones.title')}</h3>
+        <div className={styles.loadingState}>{t('dreamBoard.board.milestones.loading')}</div>
       </div>
     );
   }
 
   return (
     <div className={styles.milestonesContainer}>
-      <h3 className={styles.milestonesTitle}>Dream Milestones</h3>
-      <p className={styles.milestonesDescription}>Break down your dream into achievable steps</p>
+      <h3 className={styles.milestonesTitle}>{t('dreamBoard.board.milestones.title')}</h3>
+      <p className={styles.milestonesDescription}>{t('dreamBoard.board.milestones.description')}</p>
 
       {error && (
         <div className={styles.errorState}>
@@ -144,7 +146,7 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
           type="text"
           value={newMilestoneTitle}
           onChange={e => setNewMilestoneTitle(e.target.value)}
-          placeholder="New milestone title..."
+          placeholder={t('dreamBoard.board.milestones.newMilestonePlaceholder') as string}
           className={styles.milestoneInput}
         />
         <input
@@ -158,16 +160,14 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
           disabled={!newMilestoneTitle.trim()}
           className={styles.addMilestoneButton}
         >
-          Add
+          {t('dreamBoard.board.milestones.addButton')}
         </button>
       </div>
 
       {/* Milestones list */}
       <div className={styles.milestonesList}>
         {milestones.length === 0 ? (
-          <div className={styles.emptyState}>
-            No milestones yet. Add your first milestone to track progress!
-          </div>
+          <div className={styles.emptyState}>{t('dreamBoard.board.milestones.emptyState')}</div>
         ) : (
           milestones.map(milestone => (
             <div key={milestone.id} className={styles.milestoneItem}>
@@ -220,13 +220,15 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
               </div>
               {milestone.date && (
                 <div className={styles.milestoneDueDate}>
-                  Due: {new Date(milestone.date).toLocaleDateString()}
+                  {t('dreamBoard.board.milestones.dueDate', {
+                    date: new Date(milestone.date).toLocaleDateString(),
+                  })}
                 </div>
               )}
               <button
                 onClick={() => handleDeleteMilestone(milestone.id)}
                 className={styles.deleteMilestoneButton}
-                title="Delete milestone"
+                title={t('dreamBoard.board.milestones.deleteMilestone') as string}
               >
                 ×
               </button>

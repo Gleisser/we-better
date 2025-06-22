@@ -274,8 +274,8 @@ const DreamBoardPage: React.FC = () => {
     }));
 
     return {
-      title: 'My Dream Board',
-      description: 'Vision board created with my dreams and goals',
+      title: t('dreamBoard.board.defaultTitle') as string,
+      description: t('dreamBoard.board.defaultDescription') as string,
       categories,
       content,
     };

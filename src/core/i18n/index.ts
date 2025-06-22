@@ -622,6 +622,140 @@ const resources = {
           increaseProgress: 'Increase progress',
           scrollToSeeMore: 'Scroll to see more dreams',
         },
+        board: {
+          title: 'Vision Board',
+          defaultTitle: 'My Dream Board',
+          defaultDescription: 'Visualize • Believe • Achieve',
+          loading: 'Loading your dream board...',
+          errorTitle: 'Something went wrong',
+          retry: 'Retry',
+          saved: 'Dream board saved successfully!',
+          failedToSave: 'Failed to save dream board',
+          errorSaving: 'An error occurred while saving',
+          imageLimit: 'You can only add up to 7 images to your dream board.',
+          introScreen: {
+            title: 'Welcome to Your Vision Board',
+            description:
+              'Visualize your goals and aspirations based on your Life Wheel assessment. Create a personalized space that inspires and motivates you to achieve your dreams.',
+            steps: {
+              addContent: {
+                title: 'Add Content',
+                description:
+                  'Add images, text, and audio to represent your goals in each Life Wheel category.',
+              },
+              trackGoals: {
+                title: 'Track Goals',
+                description:
+                  'Mark items as goals and track your progress as you work towards achieving them.',
+              },
+              customize: {
+                title: 'Customize',
+                description:
+                  'Change the theme, arrange items, and personalize your vision board to reflect your style.',
+              },
+              saveShare: {
+                title: 'Save & Share',
+                description:
+                  'Save your vision board to track progress over time and share it with trusted friends.',
+              },
+            },
+            getStarted: 'Get Started',
+          },
+          toolbar: {
+            modes: {
+              add: 'Add',
+              filter: 'Filter',
+              arrange: 'Arrange',
+            },
+            tooltips: {
+              addContent: 'Add Content',
+              filterContent: 'Filter Content',
+              arrangeContent: 'Arrange Content',
+              uploadImage: 'Upload Image',
+              showAll: 'Show All Categories',
+              showCategory: 'Show {{category}} Items',
+              autoArrange: 'Auto Arrange',
+              save: 'Save Vision Board',
+              delete: 'Delete Dream Board',
+            },
+            buttons: {
+              uploadPhoto: 'Upload Photo',
+              all: 'All',
+              autoArrange: 'Auto Arrange',
+              save: 'Save',
+              saving: 'Saving...',
+              delete: 'Delete',
+            },
+            imageLimitIndicator: '{{current}}/{{limit}}',
+          },
+          milestones: {
+            title: 'Dream Milestones',
+            description: 'Break down your dream into achievable steps',
+            loading: 'Loading milestones...',
+            errorLoading: 'Failed to load milestones',
+            errorAdding: 'Failed to add milestone',
+            errorUpdating: 'Failed to update milestone',
+            errorDeleting: 'Failed to delete milestone',
+            newMilestonePlaceholder: 'New milestone title...',
+            addButton: 'Add',
+            emptyState: 'No milestones yet. Add your first milestone to track progress!',
+            dueDate: 'Due: {{date}}',
+            deleteMilestone: 'Delete milestone',
+          },
+          dreamSymbols: {
+            messages: {
+              briefcase: 'Your career is a path to greatness. Keep striving for excellence!',
+              money: 'Financial abundance is flowing into your life. Embrace wealth mindfully!',
+              health: 'Health is true wealth. Nurture your body, mind, and spirit daily.',
+              house: 'Your ideal home awaits. Create your perfect sanctuary and living space.',
+              growth: 'Growth happens outside your comfort zone. Embrace change and challenges!',
+              heart: 'Love deeply and authentically. Meaningful connections bring true joy.',
+              recreation: 'Balance work with play. Leisure time recharges your creative energy!',
+              meditation: 'Inner peace creates outer harmony. Take time for spiritual reflection.',
+              graduation: 'Knowledge empowers. Continue learning throughout your entire life.',
+              travel: 'Adventure awaits! New places bring fresh perspectives and memories.',
+              cloud: 'Dream without limits. Your imagination creates your future reality!',
+              trophy: 'Success is a journey of small wins. Celebrate each victory along the way!',
+              default: 'Dream it, believe it, achieve it!',
+            },
+          },
+          contentControls: {
+            tabs: {
+              position: 'Position',
+              style: 'Style',
+              milestones: 'Milestones',
+            },
+            fields: {
+              title: 'Title',
+              altText: 'Alt Text',
+              altTextPlaceholder: 'Image description for accessibility',
+              captionPlaceholder: 'Add a caption for this image...',
+              xPosition: 'X Position',
+              yPosition: 'Y Position',
+              width: 'Width',
+              height: 'Height',
+              rotation: 'Rotation',
+              category: 'Category',
+              none: 'None',
+            },
+            buttons: {
+              replaceImage: 'Replace Image',
+              delete: 'Delete',
+              cancel: 'Cancel',
+            },
+            contentTypes: {
+              image: 'Image',
+              item: 'Item',
+            },
+            edit: 'Edit {{type}}',
+            deleteConfirmation: {
+              title: 'Delete Item',
+              message:
+                'Are you sure you want to delete this {{type}}? This action cannot be undone.',
+            },
+            noStylingOptions: 'No styling options available',
+          },
+        },
         categories: {
           title: 'Dream Categories',
           clearFilter: 'Clear Filter',
@@ -1229,6 +1363,150 @@ const resources = {
           increaseProgress: 'Aumentar progresso',
           scrollToSeeMore: 'Role para ver mais sonhos',
         },
+        board: {
+          title: 'Quadro de Visão',
+          defaultTitle: 'Meu Quadro dos Sonhos',
+          defaultDescription: 'Visualize • Acredite • Conquiste',
+          loading: 'Carregando seu quadro dos sonhos...',
+          errorTitle: 'Algo deu errado',
+          retry: 'Tentar Novamente',
+          saved: 'Quadro dos sonhos salvo com sucesso!',
+          failedToSave: 'Falha ao salvar quadro dos sonhos',
+          errorSaving: 'Ocorreu um erro ao salvar',
+          imageLimit: 'Você pode adicionar apenas até 7 imagens ao seu quadro dos sonhos.',
+          introScreen: {
+            title: 'Bem-vindo ao Seu Quadro de Visão',
+            description:
+              'Visualize seus objetivos e aspirações baseados na sua avaliação da Roda da Vida. Crie um espaço personalizado que inspira e motiva você a alcançar seus sonhos.',
+            steps: {
+              addContent: {
+                title: 'Adicionar Conteúdo',
+                description:
+                  'Adicione imagens, texto e áudio para representar seus objetivos em cada categoria da Roda da Vida.',
+              },
+              trackGoals: {
+                title: 'Acompanhar Metas',
+                description:
+                  'Marque itens como metas e acompanhe seu progresso enquanto trabalha para alcançá-las.',
+              },
+              customize: {
+                title: 'Personalizar',
+                description:
+                  'Mude o tema, organize itens e personalize seu quadro de visão para refletir seu estilo.',
+              },
+              saveShare: {
+                title: 'Salvar e Compartilhar',
+                description:
+                  'Salve seu quadro de visão para acompanhar o progresso ao longo do tempo e compartilhe com amigos de confiança.',
+              },
+            },
+            getStarted: 'Começar',
+          },
+          toolbar: {
+            modes: {
+              add: 'Adicionar',
+              filter: 'Filtrar',
+              arrange: 'Organizar',
+            },
+            tooltips: {
+              addContent: 'Adicionar Conteúdo',
+              filterContent: 'Filtrar Conteúdo',
+              arrangeContent: 'Organizar Conteúdo',
+              uploadImage: 'Enviar Imagem',
+              showAll: 'Mostrar Todas as Categorias',
+              showCategory: 'Mostrar Itens de {{category}}',
+              autoArrange: 'Organização Automática',
+              save: 'Salvar Quadro de Visão',
+              delete: 'Excluir Quadro dos Sonhos',
+            },
+            buttons: {
+              uploadPhoto: 'Enviar Foto',
+              all: 'Todas',
+              autoArrange: 'Organização Automática',
+              save: 'Salvar',
+              saving: 'Salvando...',
+              delete: 'Excluir',
+            },
+            imageLimitIndicator: '{{current}}/{{limit}}',
+          },
+          milestones: {
+            title: 'Marcos dos Sonhos',
+            description: 'Divida seu sonho em etapas alcançáveis',
+            loading: 'Carregando marcos...',
+            errorLoading: 'Falha ao carregar marcos',
+            errorAdding: 'Falha ao adicionar marco',
+            errorUpdating: 'Falha ao atualizar marco',
+            errorDeleting: 'Falha ao excluir marco',
+            newMilestonePlaceholder: 'Título do novo marco...',
+            addButton: 'Adicionar',
+            emptyState:
+              'Nenhum marco ainda. Adicione seu primeiro marco para acompanhar o progresso!',
+            dueDate: 'Vencimento: {{date}}',
+            deleteMilestone: 'Excluir marco',
+          },
+          dreamSymbols: {
+            messages: {
+              briefcase:
+                'Sua carreira é um caminho para a grandeza. Continue se esforçando pela excelência!',
+              money:
+                'A abundância financeira está fluindo para sua vida. Abrace a riqueza com consciência!',
+              health:
+                'Saúde é a verdadeira riqueza. Nutra seu corpo, mente e espírito diariamente.',
+              house: 'Sua casa ideal te aguarda. Crie seu santuário perfeito e espaço de vida.',
+              growth:
+                'O crescimento acontece fora da sua zona de conforto. Abrace mudanças e desafios!',
+              heart:
+                'Ame profunda e autenticamente. Conexões significativas trazem verdadeira alegria.',
+              recreation:
+                'Equilibre trabalho com diversão. O tempo de lazer recarrega sua energia criativa!',
+              meditation:
+                'A paz interior cria harmonia exterior. Reserve tempo para reflexão espiritual.',
+              graduation: 'O conhecimento empodera. Continue aprendendo durante toda a sua vida.',
+              travel:
+                'A aventura te aguarda! Novos lugares trazem perspectivas frescas e memórias.',
+              cloud: 'Sonhe sem limites. Sua imaginação cria sua realidade futura!',
+              trophy:
+                'O sucesso é uma jornada de pequenas vitórias. Celebre cada conquista no caminho!',
+              default: 'Sonhe, acredite, conquiste!',
+            },
+          },
+          contentControls: {
+            tabs: {
+              position: 'Posição',
+              style: 'Estilo',
+              milestones: 'Marcos',
+            },
+            fields: {
+              title: 'Título',
+              altText: 'Texto Alternativo',
+              altTextPlaceholder: 'Descrição da imagem para acessibilidade',
+              captionPlaceholder: 'Adicione uma legenda para esta imagem...',
+              xPosition: 'Posição X',
+              yPosition: 'Posição Y',
+              width: 'Largura',
+              height: 'Altura',
+              rotation: 'Rotação',
+              category: 'Categoria',
+              none: 'Nenhuma',
+            },
+            buttons: {
+              replaceImage: 'Substituir Imagem',
+              delete: 'Excluir',
+              cancel: 'Cancelar',
+            },
+            contentTypes: {
+              image: 'Imagem',
+              item: 'Item',
+            },
+            edit: 'Editar {{type}}',
+            deleteConfirmation: {
+              title: 'Excluir Item',
+              message:
+                'Tem certeza de que deseja excluir esta {{type}}? Esta ação não pode ser desfeita.',
+            },
+            noStylingOptions: 'Nenhuma opção de estilo disponível',
+          },
+        },
         categories: {
           title: 'Categorias dos Sonhos',
           clearFilter: 'Limpar Filtro',
@@ -1252,6 +1530,13 @@ const resources = {
             career: 'Carreira',
             education: 'Educação',
             spirituality: 'Espiritualidade',
+            spiritual: 'Espiritual',
+            personalgrowth: 'Crescimento Pessoal',
+            'personal growth': 'Crescimento Pessoal',
+            recreation: 'Recreação',
+            community: 'Comunidade',
+            environment: 'Ambiente',
+            personal: 'Pessoal',
           },
         },
       },

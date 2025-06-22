@@ -78,7 +78,7 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({
     });
 
     return markers;
-  }, [sortedMilestones, dreamTitle, t]);
+  }, [sortedMilestones, dreamTitle]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Check if the timeline is scrollable and update indicators
   useEffect(() => {
