@@ -168,11 +168,27 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
     return category?.color || '#999999';
   };
 
+  // Helper function to get translated category name
+  const getTranslatedCategoryName = (categoryName: string): string => {
+    // Convert category name to lowercase for key matching
+    const normalizedName = categoryName.toLowerCase();
+
+    // Try to get translation, fallback to original name if not found
+    const translationKey = `dreamBoard.categories.names.${normalizedName}`;
+    const translated = t(translationKey);
+
+    // Handle array return type from translation function
+    const translatedString = Array.isArray(translated) ? translated[0] : translated;
+
+    // If translation key is returned as-is, it means no translation was found
+    return translatedString !== translationKey ? translatedString : categoryName;
+  };
+
   // Function to get category name by id
   const getCategoryName = (categoryId?: string): string => {
     if (!categoryId) return translations.fields.none;
     const category = lifeWheelCategories.find(cat => cat.id === categoryId);
-    return category?.name || translations.fields.none;
+    return category ? getTranslatedCategoryName(category.name) : translations.fields.none;
   };
 
   // Create a reusable input field component with generic typing
@@ -481,7 +497,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
                         padding: '8px 4px',
                       }}
                     >
-                      {cat.name}
+                      {getTranslatedCategoryName(cat.name)}
                     </option>
                   ))}
                 </select>
