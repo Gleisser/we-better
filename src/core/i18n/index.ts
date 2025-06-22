@@ -612,6 +612,16 @@ const resources = {
           milestonesCompleted: '{{completed}} of {{total}} milestones completed',
           manageMilestones: 'Manage Milestones',
         },
+        quickVision: {
+          title: 'Quick Vision',
+          myDreamBoard: 'My Dream Board',
+          expand: 'Expand',
+          minimize: 'Minimize',
+          errorLoading: 'Error: {{error}}',
+          decreaseProgress: 'Decrease progress',
+          increaseProgress: 'Increase progress',
+          scrollToSeeMore: 'Scroll to see more dreams',
+        },
         categories: {
           title: 'Dream Categories',
           clearFilter: 'Clear Filter',
@@ -1208,6 +1218,16 @@ const resources = {
           loading: 'Carregando...',
           milestonesCompleted: '{{completed}} de {{total}} marcos completados',
           manageMilestones: 'Gerenciar Marcos',
+        },
+        quickVision: {
+          title: 'Visão Rápida',
+          myDreamBoard: 'Meu Quadro dos Sonhos',
+          expand: 'Expandir',
+          minimize: 'Minimizar',
+          errorLoading: 'Erro: {{error}}',
+          decreaseProgress: 'Diminuir progresso',
+          increaseProgress: 'Aumentar progresso',
+          scrollToSeeMore: 'Role para ver mais sonhos',
         },
         categories: {
           title: 'Categorias dos Sonhos',
