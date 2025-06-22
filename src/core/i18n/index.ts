@@ -815,6 +815,35 @@ const resources = {
             created: 'Created',
           },
         },
+        insights: {
+          filters: {
+            all: 'All',
+            patterns: 'Patterns',
+            balance: 'Balance',
+            progress: 'Progress',
+          },
+          keyTakeaways: {
+            title: 'Key Takeaways',
+            emptyMessage: 'Start adding more dreams to get personalized insights!',
+          },
+          relatedDreams: {
+            title: 'Related Dreams',
+            noRelated: 'No related dreams yet',
+          },
+          modal: {
+            title: 'Insight Details',
+            dataVisualization: 'Data Visualization',
+            visualizationPlaceholder: 'Interactive visualization would appear here',
+          },
+          titles: {
+            pattern_analysis: 'Pattern Analysis',
+            balance_suggestion: 'Balance Suggestion',
+            progress_insight: 'Progress Insight',
+            category_focus: 'Category Focus',
+            milestone_trend: 'Milestone Trend',
+            goal_alignment: 'Goal Alignment',
+          },
+        },
       },
     },
     auth: {
@@ -1605,6 +1634,35 @@ const resources = {
             completed: 'concluídos',
             sharedWith: 'Compartilhado Com',
             created: 'Criado',
+          },
+        },
+        insights: {
+          filters: {
+            all: 'Todos',
+            patterns: 'Padrões',
+            balance: 'Equilíbrio',
+            progress: 'Progresso',
+          },
+          keyTakeaways: {
+            title: 'Principais Insights',
+            emptyMessage: 'Comece adicionando mais sonhos para obter insights personalizados!',
+          },
+          relatedDreams: {
+            title: 'Sonhos Relacionados',
+            noRelated: 'Nenhum sonho relacionado ainda',
+          },
+          modal: {
+            title: 'Detalhes do Insight',
+            dataVisualization: 'Visualização de Dados',
+            visualizationPlaceholder: 'Visualização interativa apareceria aqui',
+          },
+          titles: {
+            pattern_analysis: 'Análise de Padrões',
+            balance_suggestion: 'Sugestão de Equilíbrio',
+            progress_insight: 'Insight de Progresso',
+            category_focus: 'Foco de Categoria',
+            milestone_trend: 'Tendência de Marcos',
+            goal_alignment: 'Alinhamento de Metas',
           },
         },
       },
