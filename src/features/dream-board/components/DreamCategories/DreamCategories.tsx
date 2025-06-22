@@ -41,6 +41,22 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
 }) => {
   const { t } = useCommonTranslation();
 
+  // Helper function to get translated category name
+  const getTranslatedCategoryName = (categoryName: string): string => {
+    // Convert category name to lowercase for key matching
+    const normalizedName = categoryName.toLowerCase();
+
+    // Try to get translation, fallback to original name if not found
+    const translationKey = `dreamBoard.categories.names.${normalizedName}`;
+    const translated = t(translationKey);
+
+    // Handle array return type from translation function
+    const translatedString = Array.isArray(translated) ? translated[0] : translated;
+
+    // If translation key is returned as-is, it means no translation was found
+    return translatedString !== translationKey ? translatedString : categoryName;
+  };
+
   // Animation refs for categories
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -160,10 +176,10 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
                 </div>
 
                 <div className={styles.categoryContent}>
-                  <h3>{category}</h3>
+                  <h3>{getTranslatedCategoryName(category)}</h3>
                   <div
                     className={styles.dreamCount}
-                    aria-label={`${dreamCount} ${dreamCount === 1 ? t('dreamBoard.categories.dreamCount.single') : t('dreamBoard.categories.dreamCount.plural')} in ${category}`}
+                    aria-label={`${dreamCount} ${dreamCount === 1 ? t('dreamBoard.categories.dreamCount.single') : t('dreamBoard.categories.dreamCount.plural')} in ${getTranslatedCategoryName(category)}`}
                   >
                     {dreamCount}{' '}
                     {dreamCount === 1
