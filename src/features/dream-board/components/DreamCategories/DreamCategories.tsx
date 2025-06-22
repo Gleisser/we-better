@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream } from '../../types';
 import { useDreamProgress } from '../../hooks/useDreamProgress';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 
 // CategoryDetails type for styling and presentation
 type CategoryDetails = {
@@ -38,6 +39,8 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
   filterCategory,
   setFilterCategory,
 }) => {
+  const { t } = useCommonTranslation();
+
   // Animation refs for categories
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -93,11 +96,11 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
   return (
     <section className={styles.categoriesDashboard}>
       <div className={styles.categoriesHeader}>
-        <h2>Dream Categories</h2>
+        <h2>{t('dreamBoard.categories.title')}</h2>
         <div className={styles.categoriesControls}>
           {filterCategory && (
             <button className={styles.clearFilterButton} onClick={() => setFilterCategory(null)}>
-              Clear Filter
+              {t('dreamBoard.categories.clearFilter')}
             </button>
           )}
         </div>
@@ -106,7 +109,7 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
       {/* Show error state */}
       {error && (
         <div className={styles.errorState}>
-          <span>Error loading progress: {error}</span>
+          <span>{t('dreamBoard.categories.errorLoading', { error })}</span>
         </div>
       )}
 
@@ -160,9 +163,12 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
                   <h3>{category}</h3>
                   <div
                     className={styles.dreamCount}
-                    aria-label={`${dreamCount} dreams in ${category}`}
+                    aria-label={`${dreamCount} ${dreamCount === 1 ? t('dreamBoard.categories.dreamCount.single') : t('dreamBoard.categories.dreamCount.plural')} in ${category}`}
                   >
-                    {dreamCount} {dreamCount === 1 ? 'dream' : 'dreams'}
+                    {dreamCount}{' '}
+                    {dreamCount === 1
+                      ? t('dreamBoard.categories.dreamCount.single')
+                      : t('dreamBoard.categories.dreamCount.plural')}
                   </div>
 
                   {/* Progress visualization */}
@@ -188,7 +194,7 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
                 <div className={styles.expandedCategoryContent}>
                   {hasDreams ? (
                     <div className={styles.categoryQuickDreams}>
-                      <h4>Dreams</h4>
+                      <h4>{t('dreamBoard.categories.expandedContent.dreamsHeader')}</h4>
                       <ul className={styles.quickDreamsList}>
                         {dreams
                           .filter(dream => dream.category.toLowerCase() === category.toLowerCase())
@@ -211,17 +217,18 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
                         dream => dream.category.toLowerCase() === category.toLowerCase()
                       ).length > 3 && (
                         <div className={styles.moreDreamsIndicator}>
-                          +
-                          {dreams.filter(
-                            dream => dream.category.toLowerCase() === category.toLowerCase()
-                          ).length - 3}{' '}
-                          more dreams
+                          {t('dreamBoard.categories.expandedContent.moreDreams', {
+                            count:
+                              dreams.filter(
+                                dream => dream.category.toLowerCase() === category.toLowerCase()
+                              ).length - 3,
+                          })}
                         </div>
                       )}
                     </div>
                   ) : (
                     <div className={styles.emptyStateMessage}>
-                      <p>No dreams in this category yet</p>
+                      <p>{t('dreamBoard.categories.expandedContent.emptyState')}</p>
                     </div>
                   )}
                 </div>

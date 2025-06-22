@@ -612,6 +612,20 @@ const resources = {
           milestonesCompleted: '{{completed}} of {{total}} milestones completed',
           manageMilestones: 'Manage Milestones',
         },
+        categories: {
+          title: 'Dream Categories',
+          clearFilter: 'Clear Filter',
+          errorLoading: 'Error loading progress: {{error}}',
+          dreamCount: {
+            single: 'dream',
+            plural: 'dreams',
+          },
+          expandedContent: {
+            dreamsHeader: 'Dreams',
+            moreDreams: '+{{count}} more dreams',
+            emptyState: 'No dreams in this category yet',
+          },
+        },
       },
     },
     auth: {
@@ -1183,6 +1197,20 @@ const resources = {
           loading: 'Carregando...',
           milestonesCompleted: '{{completed}} de {{total}} marcos completados',
           manageMilestones: 'Gerenciar Marcos',
+        },
+        categories: {
+          title: 'Categorias dos Sonhos',
+          clearFilter: 'Limpar Filtro',
+          errorLoading: 'Erro ao carregar progresso: {{error}}',
+          dreamCount: {
+            single: 'sonho',
+            plural: 'sonhos',
+          },
+          expandedContent: {
+            dreamsHeader: 'Sonhos',
+            moreDreams: '+{{count}} mais sonhos',
+            emptyState: 'Nenhum sonho nesta categoria ainda',
+          },
         },
       },
     },
