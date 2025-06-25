@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import RadarChart from './components/RadarChart/EnhancedRadarChart';
 import { LifeCategory } from './types';
-import { DEFAULT_LIFE_CATEGORIES } from './constants/categories';
+import { getLocalizedCategories } from './constants/categories';
 import styles from './LifeWheel.module.css';
 import { getLatestLifeWheelData, saveLifeWheelData, getLifeWheelHistory } from './api/lifeWheelApi';
 import ReactDOM from 'react-dom';
@@ -37,7 +37,7 @@ const EnhancedLifeWheel = ({
   const { t } = useTranslation('common');
 
   // Current wheel data
-  const [categories, setCategories] = useState<LifeCategory[]>(DEFAULT_LIFE_CATEGORIES);
+  const [categories, setCategories] = useState<LifeCategory[]>(getLocalizedCategories(t));
 
   // States for loading, error, saving
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +83,16 @@ const EnhancedLifeWheel = ({
         setIsLoading(true);
         const response = await getLatestLifeWheelData();
         if (response.entry) {
-          setCategories(response.entry.categories);
+          // Merge server data with localized category names and descriptions
+          const localizedCategories = getLocalizedCategories(t);
+          const mergedCategories = response.entry.categories.map(serverCat => {
+            const localizedCat = localizedCategories.find(local => local.id === serverCat.id);
+            return localizedCat ? { ...localizedCat, value: serverCat.value } : serverCat;
+          });
+          setCategories(mergedCategories);
+        } else {
+          // If no server data, use localized categories
+          setCategories(getLocalizedCategories(t));
         }
       } catch (err) {
         console.error('Error loading life wheel data:', err);
@@ -94,7 +103,7 @@ const EnhancedLifeWheel = ({
     };
 
     fetchData();
-  }, []);
+  }, [t]);
 
   // Load history data
   useEffect(() => {
