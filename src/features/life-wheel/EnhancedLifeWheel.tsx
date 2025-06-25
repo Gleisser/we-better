@@ -626,12 +626,13 @@ const EnhancedLifeWheel = ({
               <div
                 style={{
                   width: '100%',
-                  height: '500px',
+                  height: '600px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
                   position: 'relative',
                   margin: '20px 0',
+                  padding: '40px 20px',
                 }}
               >
                 <RadarChart
@@ -890,12 +891,13 @@ const EnhancedLifeWheel = ({
                     <div
                       style={{
                         width: '100%',
-                        height: '500px',
+                        height: '600px',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
                         position: 'relative',
                         margin: '20px 0',
+                        padding: '40px 20px',
                       }}
                     >
                       <RadarChart

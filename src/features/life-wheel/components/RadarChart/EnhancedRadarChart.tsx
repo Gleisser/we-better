@@ -68,9 +68,9 @@ const EnhancedRadarChart = ({
 
   // Generate points for the radar chart
   const getPolygonPoints = (dataPoints: DataPoint[], scale = 1): string => {
-    const centerX = 150;
-    const centerY = 150;
-    const radius = 120 * scale;
+    const centerX = 200;
+    const centerY = 200;
+    const radius = 140 * scale;
 
     return dataPoints
       .map((point, index) => {
@@ -85,18 +85,18 @@ const EnhancedRadarChart = ({
 
   // Generate grid circles and axis lines
   const gridLines = useMemo(() => {
-    const centerX = 150;
-    const centerY = 150;
+    const centerX = 200;
+    const centerY = 200;
     const gridLevels = 5;
     const axisLines = data.map((_, index) => {
       const angleInRadians = (2 * Math.PI * index) / data.length - Math.PI / 2;
-      const x = centerX + 120 * Math.cos(angleInRadians);
-      const y = centerY + 120 * Math.sin(angleInRadians);
+      const x = centerX + 140 * Math.cos(angleInRadians);
+      const y = centerY + 140 * Math.sin(angleInRadians);
       return { x1: centerX, y1: centerY, x2: x, y2: y };
     });
 
     const circles = Array.from({ length: gridLevels }, (_, i) => {
-      const radius = (120 * (i + 1)) / gridLevels;
+      const radius = (140 * (i + 1)) / gridLevels;
       return { cx: centerX, cy: centerY, r: radius };
     });
 
@@ -105,9 +105,9 @@ const EnhancedRadarChart = ({
 
   // Generate label positions
   const labelPositions = useMemo(() => {
-    const centerX = 150;
-    const centerY = 150;
-    const radius = 135; // Slightly larger than the chart radius for labels
+    const centerX = 200;
+    const centerY = 200;
+    const radius = 170; // Slightly larger than the chart radius for labels
 
     return data.map((point, index) => {
       const angleInRadians = (2 * Math.PI * index) / data.length - Math.PI / 2;
@@ -125,12 +125,12 @@ const EnhancedRadarChart = ({
 
   // Generate value indicator positions
   const valueIndicators = useMemo(() => {
-    const centerX = 150;
-    const centerY = 150;
+    const centerX = 200;
+    const centerY = 200;
 
     return animatedData.map((point, index) => {
       const angleInRadians = (2 * Math.PI * index) / animatedData.length - Math.PI / 2;
-      const normalizedValue = (point.value / maxValue) * 120;
+      const normalizedValue = (point.value / maxValue) * 140;
       const x = centerX + normalizedValue * Math.cos(angleInRadians);
       const y = centerY + normalizedValue * Math.sin(angleInRadians);
 
@@ -197,13 +197,13 @@ const EnhancedRadarChart = ({
       }}
     >
       <svg
-        viewBox="0 0 300 300"
+        viewBox="0 0 400 400"
         className={styles.radarChart}
         style={{
           width: '100%',
           height: '100%',
-          maxWidth: '600px',
-          maxHeight: '600px',
+          maxWidth: '700px',
+          maxHeight: '700px',
         }}
       >
         <defs>
@@ -309,9 +309,9 @@ const EnhancedRadarChart = ({
           comparisonData &&
           comparisonData.map((point, index) => {
             const angleInRadians = (2 * Math.PI * index) / comparisonData.length - Math.PI / 2;
-            const normalizedValue = (point.value / maxValue) * 120;
-            const x = 150 + normalizedValue * Math.cos(angleInRadians);
-            const y = 150 + normalizedValue * Math.sin(angleInRadians);
+            const normalizedValue = (point.value / maxValue) * 140;
+            const x = 200 + normalizedValue * Math.cos(angleInRadians);
+            const y = 200 + normalizedValue * Math.sin(angleInRadians);
 
             return (
               <motion.circle
@@ -353,8 +353,8 @@ const EnhancedRadarChart = ({
         {gridLines.circles.map((circle, i) => (
           <text
             key={`value-label-${i}`}
-            x={150}
-            y={150 - circle.r - 2}
+            x={200}
+            y={200 - circle.r - 2}
             textAnchor="middle"
             className={styles.valueLabel}
           >
@@ -406,9 +406,9 @@ const EnhancedRadarChart = ({
         {/* Add a visual effect for transitions */}
         {animate && (
           <motion.circle
-            cx={150}
-            cy={150}
-            r={120}
+            cx={200}
+            cy={200}
+            r={140}
             fill="none"
             stroke="rgba(139, 92, 246, 0.5)"
             strokeWidth={2}
