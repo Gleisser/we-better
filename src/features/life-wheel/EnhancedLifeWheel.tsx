@@ -264,14 +264,17 @@ const EnhancedLifeWheel = ({
 
     if (!currentEntry || !compareEntry) return [];
 
-    const insights = currentEntry.categories
+    // Localize the current entry categories to get proper category names
+    const localizedCurrentCategories = localizeCategories(currentEntry.categories);
+
+    const insights = localizedCurrentCategories
       .map(currentCat => {
         const compareCat = compareEntry.categories.find(c => c.id === currentCat.id);
         if (!compareCat) return null;
 
         const change = currentCat.value - compareCat.value;
         return {
-          category: currentCat.name,
+          category: currentCat.name, // This will now be the localized name
           change,
           currentValue: currentCat.value,
           previousValue: compareCat.value,
@@ -289,7 +292,7 @@ const EnhancedLifeWheel = ({
     }>;
 
     return insights;
-  }, [selectedHistoryEntry, comparisonEntry, historyEntries]);
+  }, [selectedHistoryEntry, comparisonEntry, historyEntries, localizeCategories]);
 
   // Determine the most improved and most declined categories
   const getHighlightedAreas = useCallback(() => {
@@ -409,15 +412,18 @@ const EnhancedLifeWheel = ({
     const previousEntry = historyEntries[currentIndex - 1];
     const currentEntry = historyEntries[currentIndex];
 
+    // Localize the current entry categories to get proper category names
+    const localizedCurrentCategories = localizeCategories(currentEntry.categories);
+
     // Calculate changes
-    const changes = currentEntry.categories
+    const changes = localizedCurrentCategories
       .map(currentCat => {
         const previousCat = previousEntry.categories.find(c => c.id === currentCat.id);
         if (!previousCat) return null;
 
         const change = currentCat.value - previousCat.value;
         return {
-          category: currentCat.name,
+          category: currentCat.name, // This will now be the localized name
           change,
           previousValue: previousCat.value,
           currentValue: currentCat.value,
@@ -436,7 +442,7 @@ const EnhancedLifeWheel = ({
 
     // Sort by change magnitude (absolute value)
     return changes.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
-  }, [selectedHistoryEntry, historyEntries]);
+  }, [selectedHistoryEntry, historyEntries, localizeCategories]);
 
   // Add a function to handle sort method changes
   const handleSortMethodChange = useCallback(() => {
@@ -458,20 +464,23 @@ const EnhancedLifeWheel = ({
   }, []);
 
   // Helper function to get sort method display text
-  const getSortMethodText = useCallback((method: string): string => {
-    switch (method) {
-      case 'magnitude':
-        return 'Largest Change';
-      case 'value':
-        return 'Current Value';
-      case 'improved':
-        return 'Most Improved';
-      case 'alphabetical':
-        return 'Alphabetical';
-      default:
-        return 'Largest Change';
-    }
-  }, []);
+  const getSortMethodText = useCallback(
+    (method: string): string => {
+      switch (method) {
+        case 'magnitude':
+          return t('widgets.lifeWheel.insights.sortMethods.magnitude');
+        case 'value':
+          return t('widgets.lifeWheel.insights.sortMethods.value');
+        case 'improved':
+          return t('widgets.lifeWheel.insights.sortMethods.improved');
+        case 'alphabetical':
+          return t('widgets.lifeWheel.insights.sortMethods.alphabetical');
+        default:
+          return t('widgets.lifeWheel.insights.sortMethods.magnitude');
+      }
+    },
+    [t]
+  );
 
   // Define a proper interface for the insights object used in sortInsights
   interface InsightItem {

@@ -273,6 +273,12 @@ const resources = {
             changesByCategory: 'Changes by Category',
             sortBy: 'Sort by:',
             clickToChangeSort: 'Click to change sorting method',
+            sortMethods: {
+              magnitude: 'Largest Change',
+              value: 'Current Value',
+              alphabetical: 'Alphabetical',
+              improved: 'Most Improved',
+            },
             stats: {
               improvedAreas: 'Improved Areas',
               declinedAreas: 'Declined Areas',
@@ -1155,6 +1161,12 @@ const resources = {
             changesByCategory: 'Mudanças por Categoria',
             sortBy: 'Ordenar por:',
             clickToChangeSort: 'Clique para alterar método de ordenação',
+            sortMethods: {
+              magnitude: 'Maior Mudança',
+              value: 'Valor Atual',
+              alphabetical: 'Alfabética',
+              improved: 'Mais Melhorada',
+            },
             stats: {
               improvedAreas: 'Áreas Melhoradas',
               declinedAreas: 'Áreas Declinadas',
