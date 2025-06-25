@@ -212,6 +212,7 @@ const resources = {
         },
         lifeWheel: {
           title: 'Life Wheel',
+          assessment: 'Life Wheel Assessment',
           loading: 'Loading life wheel data...',
           goToDetails: 'Go to Life Wheel details',
           viewAnalysis: 'View Detailed Analysis',
@@ -1014,6 +1015,7 @@ const resources = {
         },
         lifeWheel: {
           title: 'Roda da Vida',
+          assessment: 'Avaliação da Roda da Vida',
           loading: 'Carregando dados da roda da vida...',
           goToDetails: 'Ir para detalhes da Roda da Vida',
           viewAnalysis: 'Ver Análise Detalhada',
