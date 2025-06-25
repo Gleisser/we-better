@@ -4,7 +4,12 @@ import RadarChart from './components/RadarChart/EnhancedRadarChart';
 import { LifeCategory } from './types';
 import { getLocalizedCategories } from './constants/categories';
 import styles from './LifeWheel.module.css';
-import { getLatestLifeWheelData, saveLifeWheelData, getLifeWheelHistory } from './api/lifeWheelApi';
+import {
+  getLatestLifeWheelData,
+  saveLifeWheelData,
+  getLifeWheelHistory,
+  getTodaysLifeWheelData,
+} from './api/lifeWheelApi';
 import ReactDOM from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -76,23 +81,48 @@ const EnhancedLifeWheel = ({
     'magnitude' | 'value' | 'alphabetical' | 'improved'
   >('magnitude');
 
-  // Load current life wheel data
+  // New states for today's entry tracking
+  const [todaysEntry, setTodaysEntry] = useState<{
+    id: string;
+    date: string;
+    categories: LifeCategory[];
+  } | null>(null);
+  const [hasEntryToday, setHasEntryToday] = useState(false);
+
+  // Load current life wheel data and check for today's entry
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
         setIsLoading(true);
-        const response = await getLatestLifeWheelData();
-        if (response.entry) {
-          // Merge server data with localized category names and descriptions
+
+        // First check if user has an entry for today
+        const todaysResponse = await getTodaysLifeWheelData();
+        setHasEntryToday(todaysResponse.hasEntryToday);
+
+        if (todaysResponse.entry) {
+          // User has an entry for today, use it
+          setTodaysEntry(todaysResponse.entry);
           const localizedCategories = getLocalizedCategories(t);
-          const mergedCategories = response.entry.categories.map(serverCat => {
+          const mergedCategories = todaysResponse.entry.categories.map(serverCat => {
             const localizedCat = localizedCategories.find(local => local.id === serverCat.id);
             return localizedCat ? { ...localizedCat, value: serverCat.value } : serverCat;
           });
           setCategories(mergedCategories);
         } else {
-          // If no server data, use localized categories
-          setCategories(getLocalizedCategories(t));
+          // No entry for today, try to get latest entry for reference
+          const response = await getLatestLifeWheelData();
+          if (response.entry) {
+            // Merge server data with localized category names and descriptions
+            const localizedCategories = getLocalizedCategories(t);
+            const mergedCategories = response.entry.categories.map(serverCat => {
+              const localizedCat = localizedCategories.find(local => local.id === serverCat.id);
+              return localizedCat ? { ...localizedCat, value: serverCat.value } : serverCat;
+            });
+            setCategories(mergedCategories);
+          } else {
+            // If no server data at all, use localized categories
+            setCategories(getLocalizedCategories(t));
+          }
         }
       } catch (err) {
         console.error('Error loading life wheel data:', err);
@@ -154,21 +184,37 @@ const EnhancedLifeWheel = ({
       setSaveSuccess(false);
       setError(null);
 
-      await saveLifeWheelData({ categories });
+      // If user has an entry for today, update it; otherwise create new
+      const saveData = {
+        categories,
+        ...(hasEntryToday && todaysEntry ? { entryId: todaysEntry.id } : {}),
+      };
 
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      const result = await saveLifeWheelData(saveData);
 
-      // Reload history after saving
-      const response = await getLifeWheelHistory();
-      if (response.entries && response.entries.length > 0) {
-        setHistoryEntries(
-          response.entries.map(entry => ({
-            id: entry.id,
-            date: entry.date,
-            categories: entry.categories,
-          }))
-        );
+      if (result.success) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+
+        // Update today's entry state if we just created/updated it
+        if (result.entry) {
+          setTodaysEntry(result.entry);
+          setHasEntryToday(true);
+        }
+
+        // Reload history after saving
+        const response = await getLifeWheelHistory();
+        if (response.entries && response.entries.length > 0) {
+          setHistoryEntries(
+            response.entries.map(entry => ({
+              id: entry.id,
+              date: entry.date,
+              categories: entry.categories,
+            }))
+          );
+        }
+      } else {
+        throw new Error(result.error || 'Failed to save data');
       }
     } catch (err) {
       console.error('Error saving life wheel data:', err);
@@ -181,7 +227,7 @@ const EnhancedLifeWheel = ({
     } finally {
       setIsSaving(false);
     }
-  }, [categories, readOnly]);
+  }, [categories, readOnly, hasEntryToday, todaysEntry]);
 
   // Switch between selected history entries
   const handleHistoryEntrySelect = useCallback((entryId: string) => {
@@ -580,12 +626,13 @@ const EnhancedLifeWheel = ({
               <div
                 style={{
                   width: '100%',
-                  height: '500px',
+                  height: '600px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
                   position: 'relative',
                   margin: '20px 0',
+                  padding: '40px 20px',
                 }}
               >
                 <RadarChart
@@ -685,7 +732,9 @@ const EnhancedLifeWheel = ({
                   >
                     {isSaving
                       ? t('widgets.lifeWheel.actions.saving')
-                      : t('widgets.lifeWheel.actions.saveAssessment')}
+                      : hasEntryToday
+                        ? t('widgets.lifeWheel.actions.updateAssessment')
+                        : t('widgets.lifeWheel.actions.saveAssessment')}
                   </button>
                 </div>
               )}
@@ -842,12 +891,13 @@ const EnhancedLifeWheel = ({
                     <div
                       style={{
                         width: '100%',
-                        height: '500px',
+                        height: '600px',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
                         position: 'relative',
                         margin: '20px 0',
+                        padding: '40px 20px',
                       }}
                     >
                       <RadarChart

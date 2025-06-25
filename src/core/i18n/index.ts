@@ -230,6 +230,7 @@ const resources = {
           actions: {
             saving: 'Saving...',
             saveAssessment: 'Save Assessment',
+            updateAssessment: 'Update Assessment',
             saveSuccess: 'Your Life Wheel data has been saved successfully!',
           },
           history: {
@@ -1118,6 +1119,7 @@ const resources = {
           actions: {
             saving: 'Salvando...',
             saveAssessment: 'Salvar Avaliação',
+            updateAssessment: 'Atualizar Avaliação',
             saveSuccess: 'Seus dados da Roda da Vida foram salvos com sucesso!',
           },
           history: {
