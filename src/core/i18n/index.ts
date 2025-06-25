@@ -217,6 +217,70 @@ const resources = {
           goToDetails: 'Go to Life Wheel details',
           viewAnalysis: 'View Detailed Analysis',
           categoryScore: 'score:', // Used in tooltip: "{category} score: {value}"
+          tabs: {
+            current: 'Current Assessment',
+            history: 'History & Progress',
+            insights: 'Insights',
+          },
+          errors: {
+            somethingWentWrong: 'Something went wrong',
+            failedToLoad: 'Failed to load life wheel data',
+            tryAgain: 'Try Again',
+          },
+          actions: {
+            saving: 'Saving...',
+            saveAssessment: 'Save Assessment',
+            saveSuccess: 'Your Life Wheel data has been saved successfully!',
+          },
+          history: {
+            title: 'Progress Over Time',
+            loadingHistory: 'Loading history...',
+            noHistoryYet:
+              'No history entries yet. Save your first assessment to start tracking progress',
+            comparingWith: 'Comparing with:',
+            changesFromPrevious: 'Changes from Previous Period',
+            animating: 'Animating',
+            timeline: {
+              pauseAnimation: 'Pause Animation',
+              playAnimation: 'Play Timeline Animation',
+              speeds: {
+                slow: 'Slow',
+                normal: 'Normal',
+                fast: 'Fast',
+              },
+            },
+          },
+          insights: {
+            title: 'Life Wheel Insights',
+            needTwoDates: 'You need at least two dates to compare and get insights.',
+            saveMoreAssessments:
+              'Complete and save more life wheel assessments over time to track your progress.',
+            selectDatesToCompare: 'Select Dates to Compare',
+            baseDate: 'Base Date',
+            compareWith: 'Compare With',
+            selectDate: 'Select a date',
+            comparing: 'Comparing',
+            with: 'with',
+            selectTwoDates: 'Select two dates above to compare and see insights.',
+            mostImproved: 'Most Improved',
+            mostDeclined: 'Most Declined',
+            summary: 'Summary',
+            from: 'From',
+            to: 'to',
+            changesByCategory: 'Changes by Category',
+            sortBy: 'Sort by:',
+            clickToChangeSort: 'Click to change sorting method',
+            stats: {
+              improvedAreas: 'Improved Areas',
+              declinedAreas: 'Declined Areas',
+              unchanged: 'Unchanged',
+            },
+          },
+          healthStatus: {
+            needsAttention: 'Needs Attention',
+            developing: 'Developing',
+            thriving: 'Thriving',
+          },
           categories: {
             health: 'Health',
             career: 'Career',
@@ -1020,6 +1084,70 @@ const resources = {
           goToDetails: 'Ir para detalhes da Roda da Vida',
           viewAnalysis: 'Ver Análise Detalhada',
           categoryScore: 'pontuação:', // Used in tooltip: "{category} pontuação: {value}"
+          tabs: {
+            current: 'Avaliação Atual',
+            history: 'Histórico e Progresso',
+            insights: 'Insights',
+          },
+          errors: {
+            somethingWentWrong: 'Algo deu errado',
+            failedToLoad: 'Falha ao carregar dados da roda da vida',
+            tryAgain: 'Tentar Novamente',
+          },
+          actions: {
+            saving: 'Salvando...',
+            saveAssessment: 'Salvar Avaliação',
+            saveSuccess: 'Seus dados da Roda da Vida foram salvos com sucesso!',
+          },
+          history: {
+            title: 'Progresso ao Longo do Tempo',
+            loadingHistory: 'Carregando histórico...',
+            noHistoryYet:
+              'Nenhuma entrada no histórico ainda. Salve sua primeira avaliação para começar a acompanhar o progresso',
+            comparingWith: 'Comparando com:',
+            changesFromPrevious: 'Mudanças do Período Anterior',
+            animating: 'Animando',
+            timeline: {
+              pauseAnimation: 'Pausar Animação',
+              playAnimation: 'Reproduzir Animação da Linha do Tempo',
+              speeds: {
+                slow: 'Lento',
+                normal: 'Normal',
+                fast: 'Rápido',
+              },
+            },
+          },
+          insights: {
+            title: 'Insights da Roda da Vida',
+            needTwoDates: 'Você precisa de pelo menos duas datas para comparar e obter insights.',
+            saveMoreAssessments:
+              'Complete e salve mais avaliações da roda da vida ao longo do tempo para acompanhar seu progresso.',
+            selectDatesToCompare: 'Selecione Datas para Comparar',
+            baseDate: 'Data Base',
+            compareWith: 'Comparar Com',
+            selectDate: 'Selecione uma data',
+            comparing: 'Comparando',
+            with: 'com',
+            selectTwoDates: 'Selecione duas datas acima para comparar e ver insights.',
+            mostImproved: 'Mais Melhorada',
+            mostDeclined: 'Mais Declinada',
+            summary: 'Resumo',
+            from: 'De',
+            to: 'para',
+            changesByCategory: 'Mudanças por Categoria',
+            sortBy: 'Ordenar por:',
+            clickToChangeSort: 'Clique para alterar método de ordenação',
+            stats: {
+              improvedAreas: 'Áreas Melhoradas',
+              declinedAreas: 'Áreas Declinadas',
+              unchanged: 'Inalteradas',
+            },
+          },
+          healthStatus: {
+            needsAttention: 'Precisa de Atenção',
+            developing: 'Desenvolvendo',
+            thriving: 'Florescendo',
+          },
           categories: {
             health: 'Saúde',
             career: 'Carreira',
