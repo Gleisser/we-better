@@ -39,7 +39,7 @@ const getAuthToken = async (): Promise<string | null> => {
  */
 const apiRequest = async <T>(
   endpoint: string,
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' = 'GET',
   body?: Record<string, unknown>
 ): Promise<T | null> => {
   try {
@@ -59,7 +59,7 @@ const apiRequest = async <T>(
       credentials: 'include',
     };
 
-    if (body && (method === 'POST' || method === 'PUT')) {
+    if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
       config.body = JSON.stringify(body);
     }
 
@@ -142,11 +142,60 @@ export const getLatestLifeWheelData = async (): Promise<{
 };
 
 /**
- * Save life wheel data - creates a new entry
+ * Check if user has an entry for today and get it
+ */
+export const getTodaysLifeWheelData = async (): Promise<{
+  success: boolean;
+  entry?: {
+    id: string;
+    date: string;
+    categories: LifeCategory[];
+  };
+  hasEntryToday: boolean;
+  error?: string;
+}> => {
+  try {
+    const response = await apiRequest<{
+      entry: LifeWheelEntry | null;
+      hasEntryToday: boolean;
+    }>(`${API_URL}?today=true`);
+
+    if (response?.entry) {
+      // Transform backend response to match expected frontend format
+      return {
+        success: true,
+        entry: {
+          id: response.entry.id,
+          date: response.entry.created_at,
+          categories: response.entry.categories,
+        },
+        hasEntryToday: response.hasEntryToday,
+      };
+    } else {
+      // No entry for today
+      return {
+        success: true,
+        entry: undefined,
+        hasEntryToday: false,
+      };
+    }
+  } catch (error) {
+    console.error("Error getting today's life wheel data:", error);
+    return {
+      success: false,
+      hasEntryToday: false,
+      error: error instanceof Error ? error.message : "Failed to get today's life wheel data",
+    };
+  }
+};
+
+/**
+ * Save life wheel data - creates a new entry or updates today's entry if it exists
  */
 export const saveLifeWheelData = async (data: {
   categories: LifeCategory[];
   notes?: string;
+  entryId?: string; // If provided, updates this entry instead of creating new
 }): Promise<{
   success: boolean;
   entry?: {
@@ -155,16 +204,30 @@ export const saveLifeWheelData = async (data: {
     categories: LifeCategory[];
   };
   error?: string;
+  isUpdate?: boolean;
 }> => {
   try {
-    const response = await apiRequest<{ success: boolean; entry: LifeWheelEntry }>(
-      API_URL,
-      'POST',
-      {
+    let response;
+    let isUpdate = false;
+
+    if (data.entryId) {
+      // Update existing entry
+      response = await apiRequest<{ entry: LifeWheelEntry }>(
+        `${API_URL}/${data.entryId}`,
+        'PATCH',
+        {
+          categories: data.categories,
+          notes: data.notes,
+        }
+      );
+      isUpdate = true;
+    } else {
+      // Create new entry
+      response = await apiRequest<{ success: boolean; entry: LifeWheelEntry }>(API_URL, 'POST', {
         categories: data.categories,
         notes: data.notes,
-      }
-    );
+      });
+    }
 
     if (response?.entry) {
       return {
@@ -174,18 +237,24 @@ export const saveLifeWheelData = async (data: {
           date: response.entry.created_at,
           categories: response.entry.categories,
         },
+        isUpdate,
       };
     } else {
       return {
         success: false,
-        error: 'Failed to save life wheel data',
+        error: `Failed to ${isUpdate ? 'update' : 'save'} life wheel data`,
+        isUpdate,
       };
     }
   } catch (error) {
-    console.error('Error saving life wheel data:', error);
+    console.error(`Error ${data.entryId ? 'updating' : 'saving'} life wheel data:`, error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to save life wheel data',
+      error:
+        error instanceof Error
+          ? error.message
+          : `Failed to ${data.entryId ? 'update' : 'save'} life wheel data`,
+      isUpdate: !!data.entryId,
     };
   }
 };
