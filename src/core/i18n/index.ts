@@ -240,6 +240,9 @@ const resources = {
             comparingWith: 'Comparing with:',
             changesFromPrevious: 'Changes from Previous Period',
             animating: 'Animating',
+            compare: 'Compare',
+            speed: 'Speed:',
+            progressIndicator: '{{current}} / {{total}}',
             timeline: {
               pauseAnimation: 'Pause Animation',
               playAnimation: 'Play Timeline Animation',
@@ -1119,6 +1122,9 @@ const resources = {
             comparingWith: 'Comparando com:',
             changesFromPrevious: 'Mudanças do Período Anterior',
             animating: 'Animando',
+            compare: 'Comparar',
+            speed: 'Velocidade:',
+            progressIndicator: '{{current}} / {{total}}',
             timeline: {
               pauseAnimation: 'Pausar Animação',
               playAnimation: 'Reproduzir Animação da Linha do Tempo',

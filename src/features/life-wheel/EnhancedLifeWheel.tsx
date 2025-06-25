@@ -223,25 +223,37 @@ const EnhancedLifeWheel = ({
     setTooltipInfo(prev => ({ ...prev, visible: false }));
   }, []);
 
+  // Helper function to localize category data
+  const localizeCategories = useCallback(
+    (categoryData: LifeCategory[]) => {
+      const localizedCategories = getLocalizedCategories(t);
+      return categoryData.map(cat => {
+        const localizedCat = localizedCategories.find(local => local.id === cat.id);
+        return localizedCat ? { ...localizedCat, value: cat.value } : cat;
+      });
+    },
+    [t]
+  );
+
   // Get the current view data based on active tab and selections
   const getCurrentViewData = useCallback(() => {
     if (activeTab === 'current') {
       return categories;
     } else if (activeTab === 'history' && selectedHistoryEntry) {
       const entry = historyEntries.find(e => e.id === selectedHistoryEntry);
-      return entry ? entry.categories : categories;
+      return entry ? localizeCategories(entry.categories) : categories;
     }
     return categories;
-  }, [activeTab, categories, historyEntries, selectedHistoryEntry]);
+  }, [activeTab, categories, historyEntries, selectedHistoryEntry, localizeCategories]);
 
   // Get comparison data if comparison mode is enabled
   const getComparisonData = useCallback(() => {
     if (showComparison && comparisonEntry) {
       const entry = historyEntries.find(e => e.id === comparisonEntry);
-      return entry ? entry.categories : null;
+      return entry ? localizeCategories(entry.categories) : null;
     }
     return null;
-  }, [showComparison, comparisonEntry, historyEntries]);
+  }, [showComparison, comparisonEntry, historyEntries, localizeCategories]);
 
   // Calculate insights between two points in time
   const calculateInsights = useCallback(() => {
@@ -715,7 +727,7 @@ const EnhancedLifeWheel = ({
                             onChange={() => handleToggleComparison(entry.id)}
                             onClick={e => e.stopPropagation()}
                           />
-                          <span>Compare</span>
+                          <span>{t('widgets.lifeWheel.history.compare')}</span>
                         </div>
                       </button>
                     ))}
@@ -737,7 +749,7 @@ const EnhancedLifeWheel = ({
                     </button>
 
                     <div className={styles.speedControls}>
-                      <span>Speed:</span>
+                      <span>{t('widgets.lifeWheel.history.speed')}</span>
                       <button
                         onClick={() => handleSpeedChange(2000)}
                         className={`${styles.speedButton} ${playbackSpeed === 2000 ? styles.activeSpeed : ''}`}
@@ -764,7 +776,10 @@ const EnhancedLifeWheel = ({
                     <div className={styles.timelineProgress}>
                       <div className={styles.progressIndicator}>
                         <span>
-                          {timelineIndex + 1} / {historyEntries.length}
+                          {t('widgets.lifeWheel.history.progressIndicator', {
+                            current: timelineIndex + 1,
+                            total: historyEntries.length,
+                          })}
                         </span>
                       </div>
                     </div>
