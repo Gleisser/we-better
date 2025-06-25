@@ -1,39 +1,108 @@
 import { LifeCategory } from '../types';
-import { DEFAULT_LIFE_CATEGORIES } from '../constants/categories';
+import { supabase } from '@/core/services/supabaseClient';
 
-// Initial data - mocking a database
-let lifeWheelEntries: {
+// Define the API URL - following the same pattern as dream board
+const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/life-wheel`;
+
+/**
+ * Backend response interfaces to match the actual API
+ */
+interface LifeWheelEntry {
   id: string;
-  date: string;
+  user_id: string;
   categories: LifeCategory[];
-}[] = [
-  {
-    id: 'entry-1',
-    date: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(), // 60 days ago
-    categories: DEFAULT_LIFE_CATEGORIES.map(cat => ({
-      ...cat,
-      value: Math.floor(Math.random() * 6) + 3, // Random value between 3-8
-    })),
-  },
-  {
-    id: 'entry-2',
-    date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
-    categories: DEFAULT_LIFE_CATEGORIES.map(cat => ({
-      ...cat,
-      value: Math.floor(Math.random() * 7) + 2, // Random value between 2-8
-    })),
-  },
-  {
-    id: 'entry-3',
-    date: new Date().toISOString(), // Today
-    categories: DEFAULT_LIFE_CATEGORIES.map(cat => ({
-      ...cat,
-      value: Math.floor(Math.random() * 8) + 3, // Random value between 3-10
-    })),
-  },
-];
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
 
-// Get the latest life wheel data
+interface LifeWheelHistoryResponse {
+  entries: LifeWheelEntry[];
+  total: number;
+}
+
+/**
+ * Get the auth token from Supabase session or storage
+ */
+const getAuthToken = async (): Promise<string | null> => {
+  try {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token || null;
+  } catch (error) {
+    console.error('Error getting auth token:', error);
+    return null;
+  }
+};
+
+/**
+ * Handle API requests with proper authentication and error handling
+ */
+const apiRequest = async <T>(
+  endpoint: string,
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
+  body?: Record<string, unknown>
+): Promise<T | null> => {
+  try {
+    const token = await getAuthToken();
+    if (!token) {
+      throw new Error('Not authenticated');
+    }
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    };
+
+    const config: RequestInit = {
+      method,
+      headers,
+      credentials: 'include',
+    };
+
+    if (body && (method === 'POST' || method === 'PUT')) {
+      config.body = JSON.stringify(body);
+    }
+
+    // Implement exponential backoff for retries
+    const MAX_RETRIES = 3;
+    let retries = 0;
+    let response: Response;
+
+    while (true) {
+      try {
+        response = await fetch(endpoint, config);
+        break;
+      } catch (error) {
+        retries++;
+        if (retries >= MAX_RETRIES) throw error;
+        // Exponential backoff: 1s, 2s, 4s, etc.
+        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, retries - 1)));
+      }
+    }
+
+    if (!response.ok) {
+      // Handle specific error cases
+      if (response.status === 401) {
+        throw new Error('Authentication expired');
+      }
+      throw new Error(`API request failed: ${response.statusText}`);
+    }
+
+    // For DELETE operations that don't return content
+    if (method === 'DELETE' && response.status === 204) {
+      return { success: true } as unknown as T;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`API ${method} request to ${endpoint} failed:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Get the latest life wheel data for the current user
+ */
 export const getLatestLifeWheelData = async (): Promise<{
   success: boolean;
   entry?: {
@@ -43,36 +112,41 @@ export const getLatestLifeWheelData = async (): Promise<{
   };
   error?: string;
 }> => {
-  return new Promise(resolve => {
-    // Simulate API delay
-    setTimeout(() => {
-      if (lifeWheelEntries.length > 0) {
-        // Sort entries by date (newest first) and return the first entry
-        const sortedEntries = [...lifeWheelEntries].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
+  try {
+    const response = await apiRequest<{ entry: LifeWheelEntry | null }>(API_URL);
 
-        resolve({
-          success: true,
-          entry: sortedEntries[0],
-        });
-      } else {
-        resolve({
-          success: true,
-          entry: {
-            id: 'default',
-            date: new Date().toISOString(),
-            categories: DEFAULT_LIFE_CATEGORIES,
-          },
-        });
-      }
-    }, 800); // 800ms delay to simulate network
-  });
+    if (response?.entry) {
+      // Transform backend response to match expected frontend format
+      return {
+        success: true,
+        entry: {
+          id: response.entry.id,
+          date: response.entry.created_at,
+          categories: response.entry.categories,
+        },
+      };
+    } else {
+      // No entries found - return success with no entry
+      return {
+        success: true,
+        entry: undefined,
+      };
+    }
+  } catch (error) {
+    console.error('Error getting latest life wheel data:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get life wheel data',
+    };
+  }
 };
 
-// Save life wheel data
+/**
+ * Save life wheel data - creates a new entry
+ */
 export const saveLifeWheelData = async (data: {
   categories: LifeCategory[];
+  notes?: string;
 }): Promise<{
   success: boolean;
   entry?: {
@@ -82,36 +156,47 @@ export const saveLifeWheelData = async (data: {
   };
   error?: string;
 }> => {
-  return new Promise(resolve => {
-    // Simulate API delay
-    setTimeout(() => {
-      try {
-        const newEntry = {
-          id: `entry-${Date.now()}`,
-          date: new Date().toISOString(),
-          categories: data.categories,
-        };
-
-        // Add to the entries array
-        lifeWheelEntries = [...lifeWheelEntries, newEntry];
-
-        resolve({
-          success: true,
-          entry: newEntry,
-        });
-      } catch (error) {
-        console.error('Failed to save data:', error);
-        resolve({
-          success: false,
-          error: 'Failed to save data',
-        });
+  try {
+    const response = await apiRequest<{ success: boolean; entry: LifeWheelEntry }>(
+      API_URL,
+      'POST',
+      {
+        categories: data.categories,
+        notes: data.notes,
       }
-    }, 1000); // 1s delay to simulate network
-  });
+    );
+
+    if (response?.entry) {
+      return {
+        success: true,
+        entry: {
+          id: response.entry.id,
+          date: response.entry.created_at,
+          categories: response.entry.categories,
+        },
+      };
+    } else {
+      return {
+        success: false,
+        error: 'Failed to save life wheel data',
+      };
+    }
+  } catch (error) {
+    console.error('Error saving life wheel data:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to save life wheel data',
+    };
+  }
 };
 
-// Get life wheel history data
-export const getLifeWheelHistory = async (): Promise<{
+/**
+ * Get life wheel history data for the current user
+ */
+export const getLifeWheelHistory = async (
+  limit = 10,
+  offset = 0
+): Promise<{
   success: boolean;
   entries?: {
     id: string;
@@ -120,18 +205,154 @@ export const getLifeWheelHistory = async (): Promise<{
   }[];
   error?: string;
 }> => {
-  return new Promise(resolve => {
-    // Simulate API delay
-    setTimeout(() => {
-      // Sort entries by date (newest first)
-      const sortedEntries = [...lifeWheelEntries].sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
+  try {
+    const response = await apiRequest<LifeWheelHistoryResponse>(
+      `${API_URL}?history=true&limit=${limit}&offset=${offset}`
+    );
 
-      resolve({
+    if (response?.entries) {
+      // Transform backend response to match expected frontend format
+      const transformedEntries = response.entries.map(entry => ({
+        id: entry.id,
+        date: entry.created_at,
+        categories: entry.categories,
+      }));
+
+      return {
         success: true,
-        entries: sortedEntries,
-      });
-    }, 1200); // 1.2s delay to simulate network
-  });
+        entries: transformedEntries,
+      };
+    } else {
+      return {
+        success: true,
+        entries: [],
+      };
+    }
+  } catch (error) {
+    console.error('Error getting life wheel history:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get life wheel history',
+    };
+  }
+};
+
+/**
+ * Update an existing life wheel entry
+ */
+export const updateLifeWheelData = async (
+  id: string,
+  data: {
+    categories: LifeCategory[];
+    notes?: string;
+  }
+): Promise<{
+  success: boolean;
+  entry?: {
+    id: string;
+    date: string;
+    categories: LifeCategory[];
+  };
+  error?: string;
+}> => {
+  try {
+    const response = await apiRequest<{ entry: LifeWheelEntry }>(`${API_URL}/${id}`, 'PUT', {
+      categories: data.categories,
+      notes: data.notes,
+    });
+
+    if (response?.entry) {
+      return {
+        success: true,
+        entry: {
+          id: response.entry.id,
+          date: response.entry.created_at,
+          categories: response.entry.categories,
+        },
+      };
+    } else {
+      return {
+        success: false,
+        error: 'Failed to update life wheel data',
+      };
+    }
+  } catch (error) {
+    console.error('Error updating life wheel data:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to update life wheel data',
+    };
+  }
+};
+
+/**
+ * Delete a life wheel entry
+ */
+export const deleteLifeWheelEntry = async (
+  id: string
+): Promise<{
+  success: boolean;
+  error?: string;
+}> => {
+  try {
+    await apiRequest(`${API_URL}/${id}`, 'DELETE');
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting life wheel entry:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to delete life wheel entry',
+    };
+  }
+};
+
+/**
+ * Get life wheel progress data comparing two entries
+ */
+export const getLifeWheelProgress = async (
+  startEntryId: string,
+  endEntryId: string
+): Promise<{
+  success: boolean;
+  progress?: {
+    startEntry: { id: string; date: string; categories: LifeCategory[] };
+    endEntry: { id: string; date: string; categories: LifeCategory[] };
+  };
+  error?: string;
+}> => {
+  try {
+    const response = await apiRequest<{
+      startEntry: LifeWheelEntry;
+      endEntry: LifeWheelEntry;
+    }>(`${API_URL}/progress?start=${startEntryId}&end=${endEntryId}`);
+
+    if (response?.startEntry && response?.endEntry) {
+      return {
+        success: true,
+        progress: {
+          startEntry: {
+            id: response.startEntry.id,
+            date: response.startEntry.created_at,
+            categories: response.startEntry.categories,
+          },
+          endEntry: {
+            id: response.endEntry.id,
+            date: response.endEntry.created_at,
+            categories: response.endEntry.categories,
+          },
+        },
+      };
+    } else {
+      return {
+        success: false,
+        error: 'Failed to get life wheel progress data',
+      };
+    }
+  } catch (error) {
+    console.error('Error getting life wheel progress:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get life wheel progress',
+    };
+  }
 };
