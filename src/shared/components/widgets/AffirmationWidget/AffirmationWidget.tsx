@@ -13,6 +13,7 @@ import {
   TrashIcon,
   BookmarkIcon,
 } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import ParticleEffect from './ParticleEffect';
 import { useVoiceRecorder } from '@/shared/hooks/useVoiceRecorder';
 import { Tooltip } from '@/shared/components/common/Tooltip';
@@ -45,67 +46,71 @@ interface UserAffirmation {
   intensity: 1 | 2 | 3; // 1: gentle, 2: moderate, 3: powerful
 }
 
-const CATEGORY_CONFIG: Record<
+const getCategoryConfig = (
+  t: (key: string) => string | string[]
+): Record<
   AffirmationCategory,
   {
     icon: string;
     label: string;
     colorRGB: string;
   }
-> = {
+> => ({
   personal: {
     icon: '💫',
-    label: 'Personal',
+    label: t('widgets.affirmation.categories.personal') as string,
     colorRGB: '236, 72, 153', // Pink RGB values
   },
   beauty: {
     icon: '✨',
-    label: 'Beauty',
+    label: t('widgets.affirmation.categories.beauty') as string,
     colorRGB: '244, 114, 182', // Pink-500
   },
   blessing: {
     icon: '🙌',
-    label: 'Blessing',
+    label: t('widgets.affirmation.categories.blessing') as string,
     colorRGB: '139, 92, 246', // Purple-500
   },
   gratitude: {
     icon: '🙏',
-    label: 'Gratitude',
+    label: t('widgets.affirmation.categories.gratitude') as string,
     colorRGB: '245, 158, 11', // Amber-500
   },
   happiness: {
     icon: '😊',
-    label: 'Happiness',
+    label: t('widgets.affirmation.categories.happiness') as string,
     colorRGB: '250, 204, 21', // Yellow-400
   },
   health: {
     icon: '💪',
-    label: 'Health',
+    label: t('widgets.affirmation.categories.health') as string,
     colorRGB: '34, 197, 94', // Green-500
   },
   love: {
     icon: '❤️',
-    label: 'Love',
+    label: t('widgets.affirmation.categories.love') as string,
     colorRGB: '239, 68, 68', // Red-500
   },
   money: {
     icon: '💰',
-    label: 'Money',
+    label: t('widgets.affirmation.categories.money') as string,
     colorRGB: '16, 185, 129', // Emerald-500
   },
   sleep: {
     icon: '😴',
-    label: 'Sleep',
+    label: t('widgets.affirmation.categories.sleep') as string,
     colorRGB: '99, 102, 241', // Indigo-500
   },
   spiritual: {
     icon: '🕊️',
-    label: 'Spiritual',
+    label: t('widgets.affirmation.categories.spiritual') as string,
     colorRGB: '168, 85, 247', // Purple-500
   },
-};
+});
 
 const AffirmationWidget = (): JSX.Element => {
+  const { t } = useCommonTranslation();
+  const categoryConfig = getCategoryConfig(t);
   const [currentAffirmation, setCurrentAffirmation] = useState<UserAffirmation | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<AffirmationCategory>('personal');
   const [showScrollButtons, setShowScrollButtons] = useState({
@@ -249,6 +254,7 @@ const AffirmationWidget = (): JSX.Element => {
         }
       } catch (error) {
         console.error('Error fetching affirmations:', error);
+        // Use a static error message to avoid dependency on t function
         setError('Failed to load affirmations for this category');
 
         if (category === 'personal' && !checkedPersonal) {
@@ -413,16 +419,24 @@ const AffirmationWidget = (): JSX.Element => {
         <div className={styles.headerTop}>
           <div className={styles.headerLeft}>
             <span className={styles.headerIcon}>✨</span>
-            <span className={styles.headerText}>Daily Affirmation</span>
+            <span className={styles.headerText}>{t('widgets.affirmation.title')}</span>
           </div>
 
           <div className={styles.headerActions}>
-            <Tooltip content={personalAffirmation ? 'Edit' : 'Create'}>
+            <Tooltip
+              content={
+                personalAffirmation
+                  ? t('widgets.affirmation.edit')
+                  : t('widgets.affirmation.create')
+              }
+            >
               <button
                 className={styles.createButton}
                 onClick={() => setShowCreateModal(true)}
                 aria-label={
-                  personalAffirmation ? 'Edit personal affirmation' : 'Create custom affirmation'
+                  personalAffirmation
+                    ? (t('widgets.affirmation.editPersonal') as string)
+                    : (t('widgets.affirmation.createCustom') as string)
                 }
               >
                 {personalAffirmation ? (
@@ -440,14 +454,14 @@ const AffirmationWidget = (): JSX.Element => {
             <button
               className={`${styles.scrollButton} ${styles.scrollLeft}`}
               onClick={() => handleScroll('left')}
-              aria-label="Scroll categories left"
+              aria-label={t('widgets.affirmation.scrollLeft') as string}
             >
               <ChevronLeftIcon className={styles.scrollIcon} />
             </button>
           )}
 
           <div ref={categorySelectorRef} className={styles.categorySelector}>
-            {Object.entries(CATEGORY_CONFIG)
+            {Object.entries(categoryConfig)
               .filter(([category]) => category !== 'personal' || personalAffirmation !== null)
               .map(([category, config]) => (
                 <button
@@ -472,7 +486,7 @@ const AffirmationWidget = (): JSX.Element => {
             <button
               className={`${styles.scrollButton} ${styles.scrollRight}`}
               onClick={() => handleScroll('right')}
-              aria-label="Scroll categories right"
+              aria-label={t('widgets.affirmation.scrollRight') as string}
             >
               <ChevronRightIcon className={styles.scrollIcon} />
             </button>
@@ -484,16 +498,16 @@ const AffirmationWidget = (): JSX.Element => {
         <ParticleEffect isTriggered={showParticles} onComplete={handleParticlesComplete} />
 
         {loading ? (
-          <div className={styles.loading}>Loading affirmations...</div>
+          <div className={styles.loading}>{t('widgets.affirmation.loadingAffirmations')}</div>
         ) : error ? (
           <div className={styles.error}>
             <span className={styles.errorIcon}>⚠️</span>
-            <span className={styles.errorMessage}>{error}</span>
+            <span className={styles.errorMessage}>{t('widgets.affirmation.failedToLoad')}</span>
             <button
               onClick={() => fetchAffirmationsByCategory(selectedCategory)}
               className={styles.retryButton}
             >
-              Try Again
+              {t('widgets.affirmation.tryAgain')}
             </button>
           </div>
         ) : currentAffirmation ? (
@@ -525,28 +539,32 @@ const AffirmationWidget = (): JSX.Element => {
           }
         >
           <span className={styles.affirmIcon}>✨</span>
-          <span className={styles.affirmText}>I Affirm</span>
+          <span className={styles.affirmText}>{t('widgets.affirmation.iAffirm')}</span>
         </motion.button>
 
         <div className={styles.voiceControls}>
           {!audioUrl ? (
             <div className={styles.controlButtons}>
               {selectedCategory === 'personal' && (
-                <Tooltip content="Delete affirmation">
+                <Tooltip content={t('widgets.affirmation.deleteAffirmation')}>
                   <button
                     className={styles.voiceButton}
                     onClick={() => setShowDeleteConfirm(true)}
-                    aria-label="Delete personal affirmation"
+                    aria-label={t('widgets.affirmation.deleteAffirmation') as string}
                   >
                     <TrashIcon className={styles.voiceIcon} />
                   </button>
                 </Tooltip>
               )}
-              <Tooltip content="Record affirmation">
+              <Tooltip content={t('widgets.affirmation.recordAffirmation')}>
                 <button
                   className={`${styles.voiceButton} ${isRecording ? styles.recording : ''}`}
                   onClick={isRecording ? stopRecording : startRecording}
-                  aria-label={isRecording ? 'Stop recording' : 'Record affirmation'}
+                  aria-label={
+                    isRecording
+                      ? (t('widgets.affirmation.stopRecording') as string)
+                      : (t('widgets.affirmation.recordAffirmation') as string)
+                  }
                 >
                   {isRecording ? (
                     <StopIcon className={styles.voiceIcon} />
@@ -556,17 +574,17 @@ const AffirmationWidget = (): JSX.Element => {
                 </button>
               </Tooltip>
 
-              <Tooltip content="Set reminder">
+              <Tooltip content={t('widgets.affirmation.setReminder')}>
                 <button
                   className={styles.voiceButton}
                   onClick={() => setShowReminderSettings(true)}
-                  aria-label="Set reminder"
+                  aria-label={t('widgets.affirmation.setReminder') as string}
                 >
                   <BellIcon className={styles.voiceIcon} />
                 </button>
               </Tooltip>
 
-              <Tooltip content="Days streaking">
+              <Tooltip content={t('widgets.affirmation.daysStreaking')}>
                 <motion.div
                   className={styles.streakBadge}
                   animate={
@@ -587,8 +605,8 @@ const AffirmationWidget = (): JSX.Element => {
               <Tooltip
                 content={
                   currentAffirmation?.id && isBookmarked(currentAffirmation.id)
-                    ? 'Remove bookmark'
-                    : 'Bookmark'
+                    ? t('widgets.affirmation.removeBookmark')
+                    : t('widgets.affirmation.bookmark')
                 }
               >
                 <button
@@ -609,8 +627,8 @@ const AffirmationWidget = (): JSX.Element => {
                   }}
                   aria-label={
                     currentAffirmation?.id && isBookmarked(currentAffirmation.id)
-                      ? 'Remove bookmark'
-                      : 'Bookmark affirmation'
+                      ? (t('widgets.affirmation.removeBookmark') as string)
+                      : (t('widgets.affirmation.bookmarkAffirmation') as string)
                   }
                   disabled={!currentAffirmation?.id}
                 >
@@ -636,7 +654,7 @@ const AffirmationWidget = (): JSX.Element => {
               <button
                 onClick={clearRecording}
                 className={styles.clearRecording}
-                aria-label="Clear recording"
+                aria-label={t('widgets.affirmation.clearRecording') as string}
               >
                 <XIcon className={styles.clearIcon} />
               </button>
@@ -666,12 +684,12 @@ const AffirmationWidget = (): JSX.Element => {
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
-        title="Delete Personal Affirmation"
-        message="Are you sure you want to delete your personal affirmation? This action cannot be undone."
+        title={t('widgets.affirmation.deletePersonalAffirmation') as string}
+        message={t('widgets.affirmation.deleteConfirmMessage') as string}
       />
 
       <Toast
-        message="Personal affirmation deleted successfully"
+        message={t('widgets.affirmation.deletedSuccessfully') as string}
         isVisible={showSuccessToast}
         type="success"
       />

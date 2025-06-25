@@ -5,6 +5,7 @@ import { DreamBoardData, DreamBoardProps } from '@/features/dream-board/componen
 import { LifeCategory } from '@/features/life-wheel/types';
 import { Dream } from '../../types';
 import { getLatestDreamBoardData, saveDreamBoardData } from '../../api/dreamBoardApi';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 
 // Define an interface for the vision board content item that extracts data from VisionBoardContent
 interface DreamBoardContentItem {
@@ -60,6 +61,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
   onDelete,
   categories,
 }) => {
+  const { t } = useCommonTranslation();
   const [visionBoardData, setVisionBoardData] = useState<DreamBoardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,8 +97,8 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
           } else {
             // Start with empty board if no existing data
             setVisionBoardData({
-              title: 'My Dream Board',
-              description: 'Visualize • Believe • Achieve',
+              title: t('dreamBoard.board.defaultTitle') as string,
+              description: t('dreamBoard.board.defaultDescription') as string,
               categories: categories.map(cat => cat.id),
               content: [],
             });
@@ -111,6 +113,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
 
       loadExistingData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, categories]);
 
   // Handle save board

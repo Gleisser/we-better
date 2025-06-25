@@ -7,6 +7,9 @@ import { router } from './core/router/index';
 import { initializeDatabase } from './core/database';
 import './styles/index.css';
 
+// Initialize i18n
+import './core/i18n';
+
 // Create a client
 const queryClient = new QueryClient({
   defaultOptions: {

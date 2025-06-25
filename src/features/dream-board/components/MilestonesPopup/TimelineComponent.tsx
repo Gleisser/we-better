@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Milestone } from '../../types';
 import styles from './TimelineComponent.module.css';
 import { calculateProgress, getPercentage } from '../../utils/progressUtils';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 
 interface TimelineComponentProps {
   milestones: Milestone[];
@@ -16,6 +17,7 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({
   dreamTitle,
   progress,
 }) => {
+  const { t } = useCommonTranslation();
   const timelineWrapperRef = useRef<HTMLDivElement>(null);
   const [showScrollIndicators, setShowScrollIndicators] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -69,14 +71,14 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({
     markers.push({
       id: 'dream-goal',
       title: dreamTitle,
-      description: 'Goal Completion',
+      description: t('dreamBoard.milestones.timeline.goalCompletion') as string,
       position: '100%',
       date: '',
       completed: false,
     });
 
     return markers;
-  }, [sortedMilestones, dreamTitle]);
+  }, [sortedMilestones, dreamTitle]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Check if the timeline is scrollable and update indicators
   useEffect(() => {
@@ -191,7 +193,7 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({
   if (sortedMilestones.length === 0) {
     return (
       <div className={styles.emptyTimeline}>
-        <p>No milestone dates set. Add target dates to your milestones to see a timeline.</p>
+        <p>{t('dreamBoard.milestones.timeline.noDates')}</p>
       </div>
     );
   }
@@ -205,7 +207,7 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({
             <button
               className={`${styles.scrollButton} ${styles.scrollLeft}`}
               onClick={() => scrollTimeline('left')}
-              aria-label="Scroll timeline left"
+              aria-label={t('dreamBoard.milestones.timeline.scrollLeft') as string}
             >
               <svg
                 width="16"
@@ -228,7 +230,7 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({
             <button
               className={`${styles.scrollButton} ${styles.scrollRight}`}
               onClick={() => scrollTimeline('right')}
-              aria-label="Scroll timeline right"
+              aria-label={t('dreamBoard.milestones.timeline.scrollRight') as string}
             >
               <svg
                 width="16"
@@ -309,7 +311,9 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({
                   )}
                 </div>
                 <div className={styles.markerLabel}>
-                  {marker.date ? formatDisplayDate(marker.date) : 'Goal'}
+                  {marker.date
+                    ? formatDisplayDate(marker.date)
+                    : t('dreamBoard.milestones.timeline.goal')}
                 </div>
                 <div className={styles.markerSubLabel}>{marker.title}</div>
                 {marker.description && (

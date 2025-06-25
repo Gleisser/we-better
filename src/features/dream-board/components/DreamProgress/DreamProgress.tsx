@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream, Milestone } from '../../types';
 import { getMilestonesForContent } from '../../services/milestonesService';
@@ -28,6 +29,7 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
   onMilestonesLoaded,
   fetchedMilestones,
 }) => {
+  const { t } = useCommonTranslation();
   const [dreamMilestones, setDreamMilestones] = useState<Record<string, Milestone[]>>({});
   const [loading, setLoading] = useState(true);
 
@@ -62,7 +64,7 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
 
   return (
     <section className={styles.progressSection}>
-      <h2>Dream Progress</h2>
+      <h2>{t('dreamBoard.progress.title')}</h2>
       <div className={styles.dreamsProgress}>
         {dreams.map(dream => {
           const categoryDetail = getCategoryDetails(dream.category);
@@ -143,8 +145,11 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
                   >
                     <div className={styles.milestonesInfo}>
                       {loading
-                        ? 'Loading...'
-                        : `${completedMilestones} of ${totalMilestones} milestones completed`}
+                        ? t('dreamBoard.progress.loading')
+                        : t('dreamBoard.progress.milestonesCompleted', {
+                            completed: completedMilestones,
+                            total: totalMilestones,
+                          })}
                     </div>
                   </div>
 
@@ -170,7 +175,7 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
                       e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
                     }}
                   >
-                    Manage Milestones
+                    {t('dreamBoard.progress.manageMilestones')}
                   </button>
                 </div>
               </div>

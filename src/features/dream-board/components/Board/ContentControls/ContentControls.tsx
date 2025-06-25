@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { DreamBoardContent, DreamBoardContentType } from '../../../types';
 import { LifeCategory } from '@/features/life-wheel/types';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './ContentControls.module.css';
 import { Milestones } from '../Milestones/Milestones';
 
@@ -70,6 +71,50 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   onClose,
   lifeWheelCategories = [],
 }) => {
+  const { t } = useCommonTranslation();
+
+  // Memoize translated values to prevent infinite re-renders
+  const translations = useMemo(
+    () => ({
+      contentTypes: {
+        image: t('dreamBoard.board.contentControls.contentTypes.image') as string,
+        item: t('dreamBoard.board.contentControls.contentTypes.item') as string,
+      },
+      fields: {
+        none: t('dreamBoard.board.contentControls.fields.none') as string,
+        title: t('dreamBoard.board.contentControls.fields.title') as string,
+        altText: t('dreamBoard.board.contentControls.fields.altText') as string,
+        altTextPlaceholder: t(
+          'dreamBoard.board.contentControls.fields.altTextPlaceholder'
+        ) as string,
+        captionPlaceholder: t(
+          'dreamBoard.board.contentControls.fields.captionPlaceholder'
+        ) as string,
+        xPosition: t('dreamBoard.board.contentControls.fields.xPosition') as string,
+        yPosition: t('dreamBoard.board.contentControls.fields.yPosition') as string,
+        width: t('dreamBoard.board.contentControls.fields.width') as string,
+        height: t('dreamBoard.board.contentControls.fields.height') as string,
+        rotation: t('dreamBoard.board.contentControls.fields.rotation') as string,
+        category: t('dreamBoard.board.contentControls.fields.category') as string,
+      },
+      tabs: {
+        position: t('dreamBoard.board.contentControls.tabs.position') as string,
+        style: t('dreamBoard.board.contentControls.tabs.style') as string,
+        milestones: t('dreamBoard.board.contentControls.tabs.milestones') as string,
+      },
+      buttons: {
+        replaceImage: t('dreamBoard.board.contentControls.buttons.replaceImage') as string,
+        delete: t('dreamBoard.board.contentControls.buttons.delete') as string,
+        cancel: t('dreamBoard.board.contentControls.buttons.cancel') as string,
+      },
+      deleteConfirmation: {
+        title: t('dreamBoard.board.contentControls.deleteConfirmation.title') as string,
+      },
+      noStylingOptions: t('dreamBoard.board.contentControls.noStylingOptions') as string,
+    }),
+    [t]
+  );
+
   // Local state to manage form values
   const [localContent, setLocalContent] = useState<DreamBoardContent>(selectedContent);
   const [activeTab, setActiveTab] = useState<string>('position');
@@ -110,9 +155,9 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   const getContentTypeName = (): string => {
     switch (localContent.type) {
       case DreamBoardContentType.IMAGE:
-        return 'Image';
+        return translations.contentTypes.image;
       default:
-        return 'Item';
+        return translations.contentTypes.item;
     }
   };
 
@@ -123,11 +168,27 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
     return category?.color || '#999999';
   };
 
+  // Helper function to get translated category name
+  const getTranslatedCategoryName = (categoryName: string): string => {
+    // Convert category name to lowercase for key matching
+    const normalizedName = categoryName.toLowerCase();
+
+    // Try to get translation, fallback to original name if not found
+    const translationKey = `dreamBoard.categories.names.${normalizedName}`;
+    const translated = t(translationKey);
+
+    // Handle array return type from translation function
+    const translatedString = Array.isArray(translated) ? translated[0] : translated;
+
+    // If translation key is returned as-is, it means no translation was found
+    return translatedString !== translationKey ? translatedString : categoryName;
+  };
+
   // Function to get category name by id
   const getCategoryName = (categoryId?: string): string => {
-    if (!categoryId) return 'None';
+    if (!categoryId) return translations.fields.none;
     const category = lifeWheelCategories.find(cat => cat.id === categoryId);
-    return category?.name || 'None';
+    return category ? getTranslatedCategoryName(category.name) : translations.fields.none;
   };
 
   // Create a reusable input field component with generic typing
@@ -276,7 +337,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         style={activeTab === 'position' ? { borderColor: getAccentColor() } : undefined}
       >
         <span className={styles.tabIcon}>📐</span>
-        <span className={styles.tabText}>Position</span>
+        <span className={styles.tabText}>{translations.tabs.position}</span>
       </button>
 
       <button
@@ -285,7 +346,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         style={activeTab === 'style' ? { borderColor: getAccentColor() } : undefined}
       >
         <span className={styles.tabIcon}>🎨</span>
-        <span className={styles.tabText}>Style</span>
+        <span className={styles.tabText}>{translations.tabs.style}</span>
       </button>
 
       <button
@@ -294,7 +355,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         style={activeTab === 'milestones' ? { borderColor: getAccentColor() } : undefined}
       >
         <span className={styles.tabIcon}>🏆</span>
-        <span className={styles.tabText}>Milestones</span>
+        <span className={styles.tabText}>{translations.tabs.milestones}</span>
       </button>
     </div>
   );
@@ -336,26 +397,26 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         }}
         style={{ backgroundColor: getAccentColor() }}
       >
-        Replace Image
+        {translations.buttons.replaceImage}
       </button>
       <div className={styles.field}>
-        <label className={styles.label}>Title</label>
+        <label className={styles.label}>{translations.fields.title}</label>
         <CaptionInput
           value={localContent.caption || ''}
           onChange={value => handleChange({ caption: value })}
-          placeholder="Add a caption for this image..."
+          placeholder={translations.fields.captionPlaceholder}
         />
       </div>
 
       <InputField<string>
-        label="Alt Text"
+        label={translations.fields.altText}
         value={localContent.alt || ''}
         onChange={value => handleChange({ alt: value })}
-        placeholder="Image description for accessibility"
+        placeholder={translations.fields.altTextPlaceholder}
       />
       <div className={styles.gridLayout}>
         <InputField<number>
-          label="X Position"
+          label={translations.fields.xPosition}
           value={Math.round(localContent.position.x)}
           onChange={value => handleChange({ position: { ...localContent.position, x: value } })}
           type="number"
@@ -363,7 +424,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         />
 
         <InputField<number>
-          label="Y Position"
+          label={translations.fields.yPosition}
           value={Math.round(localContent.position.y)}
           onChange={value => handleChange({ position: { ...localContent.position, y: value } })}
           type="number"
@@ -371,7 +432,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         />
 
         <InputField<number>
-          label="Width"
+          label={translations.fields.width}
           value={Math.round(localContent.size.width)}
           onChange={value =>
             handleChange({ size: { ...localContent.size, width: Math.max(50, value) } })
@@ -381,7 +442,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         />
 
         <InputField<number>
-          label="Height"
+          label={translations.fields.height}
           value={Math.round(localContent.size.height)}
           onChange={value =>
             handleChange({ size: { ...localContent.size, height: Math.max(50, value) } })
@@ -393,7 +454,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
 
       <div className={styles.rotationControl}>
         <InputField<number>
-          label="Rotation"
+          label={translations.fields.rotation}
           value={localContent.rotation || 0}
           onChange={value => handleChange({ rotation: value })}
           type="range"
@@ -419,14 +480,14 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         return (
           <div className={styles.tabContent}>
             <div className={styles.controlGroup}>
-              <label className={styles.controlLabel}>Category</label>
+              <label className={styles.controlLabel}>{translations.fields.category}</label>
               <div className={styles.categoryDropdown}>
                 <select
                   value={localContent.categoryId || ''}
                   onChange={e => handleChange({ categoryId: e.target.value })}
                   className={styles.select}
                 >
-                  <option value="">None</option>
+                  <option value="">{translations.fields.none}</option>
                   {lifeWheelCategories.map(cat => (
                     <option
                       key={cat.id}
@@ -436,7 +497,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
                         padding: '8px 4px',
                       }}
                     >
-                      {cat.name}
+                      {getTranslatedCategoryName(cat.name)}
                     </option>
                   ))}
                 </select>
@@ -462,7 +523,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
           </div>
         );
       default:
-        return <div className={styles.tabContent}>No styling options available</div>;
+        return <div className={styles.tabContent}>{translations.noStylingOptions}</div>;
     }
   };
 
@@ -470,15 +531,12 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   const DeleteConfirmation = (): JSX.Element => (
     <div className={styles.deleteConfirmation}>
       <div className={styles.deleteConfirmDialog}>
-        <h3>Delete Item</h3>
-        <p>
-          Are you sure you want to delete this {getContentTypeName().toLowerCase()}? This action
-          cannot be undone.
-        </p>
+        <h3>{translations.deleteConfirmation.title}</h3>
+        <p>{getDeleteMessage()}</p>
 
         <div className={styles.deleteConfirmButtons}>
           <button className={styles.cancelButton} onClick={() => setIsDeleting(false)}>
-            Cancel
+            {translations.buttons.cancel}
           </button>
           <button
             className={styles.confirmDeleteButton}
@@ -487,12 +545,23 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
               setIsDeleting(false);
             }}
           >
-            Delete
+            {translations.buttons.delete}
           </button>
         </div>
       </div>
     </div>
   );
+
+  // Helper functions for interpolated translations
+  const getEditTitle = (): string => {
+    return t('dreamBoard.board.contentControls.edit', { type: getContentTypeName() }) as string;
+  };
+
+  const getDeleteMessage = (): string => {
+    return t('dreamBoard.board.contentControls.deleteConfirmation.message', {
+      type: getContentTypeName().toLowerCase(),
+    }) as string;
+  };
 
   return (
     <>
@@ -500,7 +569,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         <div className={styles.header} style={{ backgroundColor: getAccentColor() }}>
           <div className={styles.headerContent}>
             <div className={styles.contentTypeIcon}>{getContentTypeIcon()}</div>
-            <h3>Edit {getContentTypeName()}</h3>
+            <h3>{getEditTitle()}</h3>
           </div>
           <button className={styles.closeButton} onClick={onClose}>
             <svg
@@ -542,7 +611,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
               <line x1="10" y1="11" x2="10" y2="17"></line>
               <line x1="14" y1="11" x2="14" y2="17"></line>
             </svg>
-            Delete
+            {translations.buttons.delete}
           </button>
         </div>
       </div>

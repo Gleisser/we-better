@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { XIcon, TrashIcon } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './NotificationsPopup.module.css';
 import UserAvatar from '@/shared/components/common/UserAvatar/UserAvatar';
 
@@ -23,6 +24,7 @@ export interface NotificationItem {
 }
 
 const NotificationsPopup = ({ onClose }: { onClose: () => void }): JSX.Element => {
+  const { t } = useCommonTranslation();
   const [activeTab, setActiveTab] = useState<Tab>('all');
   const [notifications] = useState<NotificationItem[]>([
     {
@@ -105,9 +107,9 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }): JSX.Element =
   ]);
 
   const tabs = [
-    { id: 'all', label: 'All', count: 8 },
-    { id: 'following', label: 'Following', count: 5 },
-    { id: 'archive', label: 'Archive', count: 12 },
+    { id: 'all', label: t('notifications.tabs.all'), count: 8 },
+    { id: 'following', label: t('notifications.tabs.following'), count: 5 },
+    { id: 'archive', label: t('notifications.tabs.archive'), count: 12 },
   ];
 
   return (
@@ -119,7 +121,7 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }): JSX.Element =
     >
       {/* Header */}
       <div className={styles.header}>
-        <h2 className={styles.title}>Notifications</h2>
+        <h2 className={styles.title}>{t('notifications.title')}</h2>
         <button onClick={onClose} className={styles.closeButton}>
           <XIcon className={styles.closeIcon} />
         </button>
@@ -161,25 +163,37 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }): JSX.Element =
 
               <div className={styles.actions}>
                 {notification.type === 'follow' && (
-                  <button className={styles.followButton}>Follow back</button>
+                  <button className={styles.followButton}>
+                    {t('notifications.actions.followBack')}
+                  </button>
                 )}
                 {notification.type === 'reply' && (
                   <>
-                    <button className={styles.replyButton}>Reply</button>
-                    <button className={styles.viewButton}>View</button>
+                    <button className={styles.replyButton}>
+                      {t('notifications.actions.reply')}
+                    </button>
+                    <button className={styles.viewButton}>{t('notifications.actions.view')}</button>
                   </>
                 )}
                 {notification.type === 'mention' && (
-                  <button className={styles.viewButton}>View thread</button>
+                  <button className={styles.viewButton}>
+                    {t('notifications.actions.viewThread')}
+                  </button>
                 )}
                 {notification.type === 'task' && (
-                  <button className={styles.viewButton}>View task</button>
+                  <button className={styles.viewButton}>
+                    {t('notifications.actions.viewTask')}
+                  </button>
                 )}
                 {notification.type === 'like' && (
-                  <button className={styles.viewButton}>View article</button>
+                  <button className={styles.viewButton}>
+                    {t('notifications.actions.viewArticle')}
+                  </button>
                 )}
                 {notification.type === 'achievement' && (
-                  <button className={styles.viewButton}>View badge</button>
+                  <button className={styles.viewButton}>
+                    {t('notifications.actions.viewBadge')}
+                  </button>
                 )}
               </div>
             </div>
@@ -193,8 +207,8 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }): JSX.Element =
 
       {/* Footer */}
       <div className={styles.footer}>
-        <button className={styles.markReadButton}>Mark all as read</button>
-        <button className={styles.viewAllButton}>View all notifications</button>
+        <button className={styles.markReadButton}>{t('header.markAllAsRead')}</button>
+        <button className={styles.viewAllButton}>{t('header.viewAllNotifications')}</button>
       </div>
     </motion.div>
   );

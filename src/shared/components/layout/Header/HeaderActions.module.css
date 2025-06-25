@@ -41,6 +41,10 @@
   @apply flex items-center gap-4 ml-6;
 }
 
+.languageSwitcher {
+  @apply flex items-center;
+}
+
 .themeToggle,
 .notificationButton {
   @apply w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center
@@ -95,14 +99,14 @@
 }
 
 .profileButton::before {
-  content: "";
+  content: '';
   @apply absolute inset-[-2px] rounded-full
          bg-green-400/20 
          animate-pulse;
 }
 
 .profileButton::after {
-  content: "";
+  content: '';
   @apply absolute inset-0 rounded-full
          border-2 border-green-400
          ring-2 ring-green-400/20;

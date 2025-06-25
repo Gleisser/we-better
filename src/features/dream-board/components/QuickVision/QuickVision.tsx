@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Dream } from '../../types';
 import { useDreamProgress } from '../../hooks/useDreamProgress';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from '../../DreamBoardPage.module.css';
 
 interface QuickVisionProps {
@@ -18,6 +19,8 @@ const QuickVision: React.FC<QuickVisionProps> = ({
   updateDreamProgress: externalUpdateDreamProgress,
   openDreamBoardModal,
 }) => {
+  const { t } = useCommonTranslation();
+
   const {
     updateDreamProgress: updateProgressBackend,
     getProgressForDream,
@@ -142,17 +145,21 @@ const QuickVision: React.FC<QuickVisionProps> = ({
   return (
     <section className={`${styles.miniBoard} ${expandedMiniBoard ? styles.expanded : ''}`}>
       <div className={styles.miniBoardHeader}>
-        <h2>Quick Vision</h2>
+        <h2>{t('dreamBoard.quickVision.title')}</h2>
         <div className={styles.miniBoardHeaderControls}>
           <button className={styles.dreamBoardButton} onClick={openDreamBoardModal}>
             <span className={styles.dreamBoardButtonIcon}>🎨</span>
-            <span>My Dream Board</span>
+            <span>{t('dreamBoard.quickVision.myDreamBoard')}</span>
           </button>
           <button
             className={expandedMiniBoard ? styles.minimizeButton : styles.expandButton}
             onClick={toggleMiniBoard}
           >
-            <span>{expandedMiniBoard ? 'Minimize' : 'Expand'}</span>
+            <span>
+              {expandedMiniBoard
+                ? t('dreamBoard.quickVision.minimize')
+                : t('dreamBoard.quickVision.expand')}
+            </span>
           </button>
         </div>
       </div>
@@ -160,7 +167,7 @@ const QuickVision: React.FC<QuickVisionProps> = ({
       {/* Show error state */}
       {error && (
         <div className={styles.errorState}>
-          <span>Error: {error}</span>
+          <span>{t('dreamBoard.quickVision.errorLoading', { error })}</span>
         </div>
       )}
 
@@ -195,7 +202,7 @@ const QuickVision: React.FC<QuickVisionProps> = ({
                         handleDreamProgressUpdate(dream.id, -0.1);
                       }}
                       disabled={currentProgress <= 0 || loading}
-                      aria-label="Decrease progress"
+                      aria-label={t('dreamBoard.quickVision.decreaseProgress') as string}
                     >
                       <span className={styles.buttonIcon}>-</span>
                     </button>
@@ -207,7 +214,7 @@ const QuickVision: React.FC<QuickVisionProps> = ({
                         handleDreamProgressUpdate(dream.id, 0.1);
                       }}
                       disabled={currentProgress >= 1 || loading}
-                      aria-label="Increase progress"
+                      aria-label={t('dreamBoard.quickVision.increaseProgress') as string}
                     >
                       <span className={styles.buttonIcon}>+</span>
                     </button>
@@ -223,7 +230,7 @@ const QuickVision: React.FC<QuickVisionProps> = ({
           <button
             className={styles.scrollIndicator}
             onClick={handleScrollDown}
-            aria-label="Scroll to see more dreams"
+            aria-label={t('dreamBoard.quickVision.scrollToSeeMore') as string}
           >
             <span className={styles.scrollArrow}>⬇</span>
           </button>

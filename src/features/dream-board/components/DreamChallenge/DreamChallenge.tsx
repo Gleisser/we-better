@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, TouchEvent } from 'react';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream } from '../../types';
 import { DreamChallenge as DreamChallengeType } from '../../api/dreamChallengesApi';
@@ -31,6 +32,7 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
   onUndoDayCompleted,
   onGetProgressHistory,
 }) => {
+  const { t } = useCommonTranslation();
   const hasActiveChallenges = activeChallenges.length > 0;
 
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
@@ -165,9 +167,7 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
 
   // Handle deleting a challenge
   const handleDeleteChallenge = async (challengeId: string): Promise<void> => {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete this challenge? This action cannot be undone.'
-    );
+    const confirmed = window.confirm(t('dreamBoard.challenge.deleteConfirm') as string);
 
     if (confirmed) {
       try {
@@ -189,13 +189,13 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
     return (
       <div className={styles.dreamChallengeContainer}>
         <div className={styles.challengeHeader}>
-          <h3 className={styles.challengeTitle}>Challenge Mode</h3>
+          <h3 className={styles.challengeTitle}>{t('dreamBoard.challenge.title')}</h3>
           <button className={styles.newChallengeButton} onClick={onOpenChallengeModal}>
-            New Challenge
+            {t('dreamBoard.challenge.newChallenge')}
           </button>
         </div>
         <div className={styles.noChallengeState}>
-          <p>Loading challenges...</p>
+          <p>{t('dreamBoard.challenge.loading')}</p>
         </div>
       </div>
     );
@@ -206,13 +206,13 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
     return (
       <div className={styles.dreamChallengeContainer}>
         <div className={styles.challengeHeader}>
-          <h3 className={styles.challengeTitle}>Challenge Mode</h3>
+          <h3 className={styles.challengeTitle}>{t('dreamBoard.challenge.title')}</h3>
           <button className={styles.newChallengeButton} onClick={onOpenChallengeModal}>
-            New Challenge
+            {t('dreamBoard.challenge.newChallenge')}
           </button>
         </div>
         <div className={styles.noChallengeState}>
-          <p>Error loading challenges: {error}</p>
+          <p>{t('dreamBoard.challenge.errorLoading', { error })}</p>
         </div>
       </div>
     );
@@ -221,9 +221,9 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
   return (
     <div className={styles.dreamChallengeContainer}>
       <div className={styles.challengeHeader}>
-        <h3 className={styles.challengeTitle}>Challenge Mode</h3>
+        <h3 className={styles.challengeTitle}>{t('dreamBoard.challenge.title')}</h3>
         <button className={styles.newChallengeButton} onClick={onOpenChallengeModal}>
-          New Challenge
+          {t('dreamBoard.challenge.newChallenge')}
         </button>
       </div>
 
@@ -255,7 +255,10 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
 
               <div className={styles.challengeProgress}>
                 <div className={styles.progressText}>
-                  Day {currentChallenge?.current_day} of {currentChallenge?.duration}
+                  {t('dreamBoard.challenge.progress.dayOf', {
+                    current: currentChallenge?.current_day,
+                    total: currentChallenge?.duration,
+                  })}
                 </div>
                 <div className={styles.progressBarContainer}>
                   <div
@@ -282,7 +285,7 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
                           )
                         }
                       >
-                        Undo Today Complete
+                        {t('dreamBoard.challenge.actions.undoComplete')}
                       </button>
                     ) : (
                       <button
@@ -291,7 +294,7 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
                           handleMarkDayComplete(currentChallenge.id, currentChallenge.current_day)
                         }
                       >
-                        Mark Today Complete
+                        {t('dreamBoard.challenge.actions.markComplete')}
                       </button>
                     )}
                   </div>
@@ -300,14 +303,14 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
                     <button
                       className={styles.editButton}
                       onClick={() => onEditChallenge(currentChallenge.id)}
-                      title="Edit Challenge"
+                      title={t('dreamBoard.challenge.actions.editChallenge') as string}
                     >
                       ✏️
                     </button>
                     <button
                       className={styles.deleteButton}
                       onClick={() => handleDeleteChallenge(currentChallenge.id)}
-                      title="Delete Challenge"
+                      title={t('dreamBoard.challenge.actions.deleteChallenge') as string}
                     >
                       🗑️
                     </button>
@@ -322,17 +325,20 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
               <button
                 className={styles.carouselButton}
                 onClick={() => navigateToChallenge('prev')}
-                aria-label="Previous challenge"
+                aria-label={t('dreamBoard.challenge.actions.previousChallenge') as string}
               >
                 ←
               </button>
               <div className={styles.carouselCounter}>
-                {currentChallengeIndex + 1} / {activeChallenges.length}
+                {t('dreamBoard.challenge.carousel.counter', {
+                  current: currentChallengeIndex + 1,
+                  total: activeChallenges.length,
+                })}
               </div>
               <button
                 className={styles.carouselButton}
                 onClick={() => navigateToChallenge('next')}
-                aria-label="Next challenge"
+                aria-label={t('dreamBoard.challenge.actions.nextChallenge') as string}
               >
                 →
               </button>
@@ -341,7 +347,7 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
         </>
       ) : (
         <div className={styles.noChallengeState}>
-          <p>No active challenges. Start a new one!</p>
+          <p>{t('dreamBoard.challenge.noActiveChallenges')}</p>
         </div>
       )}
     </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
 import { Portal } from '@/shared/components/common/Portal/Portal';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { Goal, GoalCategory } from './types';
 import { CATEGORY_CONFIG } from './config';
 import styles from './GoalFormModal.module.css';
@@ -79,6 +80,8 @@ export const GoalFormModal = ({
   onSave,
   initialGoal,
 }: GoalFormModalProps): JSX.Element => {
+  const { t } = useCommonTranslation();
+
   /**
    * Form state containing all goal data except the ID.
    * Initialized with initial goal data or default values.
@@ -220,171 +223,176 @@ export const GoalFormModal = ({
           exit={{ scale: 0.95, opacity: 0 }}
         >
           <div className={styles.header}>
-            <h2 className={styles.title}>{initialGoal ? 'Edit Goal' : 'Create New Goal'}</h2>
-            <button className={styles.closeButton} onClick={onClose} aria-label="Close modal">
-              <XIcon className={styles.closeIcon} />
+            <h2 className={styles.title}>
+              {initialGoal ? t('widgets.goals.form.editGoal') : t('widgets.goals.form.newGoal')}
+            </h2>
+            <button
+              className={styles.closeButton}
+              onClick={onClose}
+              aria-label={t('actions.close') as string}
+            >
+              <XIcon className={styles.icon} />
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className={styles.content}>
             <div className={styles.section}>
-              <label className={styles.label}>
-                Goal Title
-                <input
-                  type="text"
-                  className={styles.input}
-                  value={formData.title}
-                  onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="Enter your goal"
-                  required
-                />
+              <label htmlFor="goalTitle" className={styles.label}>
+                {t('widgets.goals.form.title')}
               </label>
+              <input
+                id="goalTitle"
+                type="text"
+                value={formData.title}
+                onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder={t('widgets.goals.form.titlePlaceholder') as string}
+                className={styles.input}
+                required
+              />
             </div>
 
             <div className={styles.section}>
-              <label className={styles.label}>Category</label>
+              <label className={styles.label}>{t('widgets.goals.form.category')}</label>
               <div className={styles.categoryOptions}>
-                {Object.entries(CATEGORY_CONFIG).map(([category, config]) => (
+                {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
                   <button
-                    key={category}
+                    key={key}
                     type="button"
                     className={`${styles.categoryButton} ${
-                      formData.category === category ? styles.selected : ''
+                      formData.category === key ? styles.selected : ''
                     }`}
                     onClick={() =>
-                      setFormData(prev => ({
-                        ...prev,
-                        category: category as GoalCategory,
-                      }))
+                      setFormData(prev => ({ ...prev, category: key as GoalCategory }))
                     }
                   >
                     <span className={styles.categoryIcon}>{config.icon}</span>
-                    <span className={styles.categoryLabel}>{config.label}</span>
+                    <span className={styles.categoryLabel}>
+                      {t(`widgets.goals.categories.${key}`)}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
 
             <div className={styles.section}>
-              <label className={styles.label}>Target Date</label>
-              <div className={styles.dateInputWrapper}>
-                <input
-                  type="date"
-                  className={styles.input}
-                  value={formData.targetDate}
-                  onChange={e =>
-                    setFormData(prev => ({
-                      ...prev,
-                      targetDate: e.target.value,
-                    }))
-                  }
-                  required
-                />
-                <button
-                  type="button"
-                  className={styles.calendarButton}
-                  onClick={() => {
-                    const dateInput = document.querySelector(
-                      'input[type="date"]'
-                    ) as HTMLInputElement;
-                    dateInput?.showPicker?.();
-                  }}
-                >
-                  📅
-                </button>
-              </div>
+              <label htmlFor="targetDate" className={styles.label}>
+                {t('widgets.goals.form.targetDate')}
+              </label>
+              <input
+                id="targetDate"
+                type="date"
+                value={formData.targetDate}
+                onChange={e => setFormData(prev => ({ ...prev, targetDate: e.target.value }))}
+                className={styles.input}
+                placeholder={t('widgets.goals.form.targetDatePlaceholder') as string}
+              />
             </div>
 
             <div className={styles.section}>
-              <label className={styles.label}>Milestones</label>
+              <div className={styles.milestonesHeader}>
+                <h3 className={styles.milestonesTitle}>{t('widgets.goals.form.milestones')}</h3>
+                <p className={styles.milestonesDescription}>
+                  {t('widgets.goals.form.milestonesDescription')}
+                </p>
+              </div>
+
               <div className={styles.milestoneInput}>
                 <input
                   type="text"
-                  className={styles.input}
                   value={newMilestone}
                   onChange={e => setNewMilestone(e.target.value)}
-                  placeholder="Add a milestone"
-                  onKeyPress={e => e.key === 'Enter' && handleAddMilestone()}
+                  onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddMilestone())}
+                  placeholder={t('widgets.goals.form.milestonePlaceholder') as string}
+                  className={styles.input}
                 />
-                <button type="button" className={styles.addButton} onClick={handleAddMilestone}>
-                  Add
+                <button type="button" onClick={handleAddMilestone} className={styles.addButton}>
+                  {t('widgets.goals.form.addMilestone')}
                 </button>
               </div>
-              <ul className={styles.milestoneList}>
-                {formData.milestones.map(milestone => (
-                  <li
-                    key={milestone.id}
-                    className={`${styles.milestoneItem} ${milestone.completed ? styles.completed : ''}`}
-                  >
-                    <div className={styles.milestoneContent}>
-                      <label className={styles.checkboxContainer}>
-                        <input
-                          type="checkbox"
-                          checked={milestone.completed}
-                          onChange={() => handleToggleMilestone(milestone.id)}
-                          className={styles.checkbox}
-                        />
-                        <span className={styles.checkmark}></span>
-                      </label>
 
-                      {editingMilestoneId === milestone.id ? (
-                        <div className={styles.editingContainer}>
-                          <input
-                            type="text"
-                            value={editingMilestoneTitle}
-                            onChange={e => setEditingMilestoneTitle(e.target.value)}
-                            className={styles.editInput}
-                            onKeyPress={e => {
-                              if (e.key === 'Enter') handleSaveEditMilestone();
-                              if (e.key === 'Escape') handleCancelEditMilestone();
-                            }}
-                            autoFocus
-                          />
-                          <div className={styles.editActions}>
-                            <button
-                              type="button"
-                              onClick={handleSaveEditMilestone}
-                              className={styles.saveEditButton}
-                            >
-                              ✓
-                            </button>
-                            <button
-                              type="button"
-                              onClick={handleCancelEditMilestone}
-                              className={styles.cancelEditButton}
-                            >
-                              ✕
-                            </button>
-                          </div>
+              {/* Milestone list and actions */}
+              <div className={styles.milestoneList}>
+                {formData.milestones.map(milestone => (
+                  <div key={milestone.id} className={styles.milestoneItem}>
+                    {editingMilestoneId === milestone.id ? (
+                      <div className={styles.editingMilestone}>
+                        <input
+                          type="text"
+                          value={editingMilestoneTitle}
+                          onChange={e => setEditingMilestoneTitle(e.target.value)}
+                          onKeyPress={e => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleSaveEditMilestone();
+                            } else if (e.key === 'Escape') {
+                              handleCancelEditMilestone();
+                            }
+                          }}
+                          className={styles.editInput}
+                          autoFocus
+                        />
+                        <div className={styles.editActions}>
+                          <button
+                            type="button"
+                            onClick={handleSaveEditMilestone}
+                            className={styles.saveEditButton}
+                          >
+                            {t('widgets.goals.milestones.save')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleCancelEditMilestone}
+                            className={styles.cancelEditButton}
+                          >
+                            {t('widgets.goals.milestones.cancel')}
+                          </button>
                         </div>
-                      ) : (
+                      </div>
+                    ) : (
+                      <div className={styles.milestoneContent}>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleMilestone(milestone.id)}
+                          className={`${styles.checkmark} ${milestone.completed ? styles.completed : ''}`}
+                          aria-label={
+                            milestone.completed
+                              ? (t('widgets.goals.milestones.completed') as string)
+                              : (t('widgets.goals.milestones.pending') as string)
+                          }
+                        >
+                          {milestone.completed && <span className={styles.checkmark}>✓</span>}
+                        </button>
                         <span
-                          className={styles.milestoneTitle}
+                          className={`${styles.milestoneTitle} ${milestone.completed ? styles.completedText : ''}`}
                           onClick={() => handleStartEditMilestone(milestone.id, milestone.title)}
+                          title={t('widgets.goals.milestones.edit') as string}
                         >
                           {milestone.title}
                         </span>
-                      )}
-                    </div>
-
-                    <button
-                      type="button"
-                      className={styles.removeButton}
-                      onClick={() => handleRemoveMilestone(milestone.id)}
-                    >
-                      <XIcon className={styles.removeIcon} />
-                    </button>
-                  </li>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMilestone(milestone.id)}
+                          className={styles.removeButton}
+                          aria-label={t('widgets.goals.milestones.delete') as string}
+                          title={t('widgets.goals.milestones.delete') as string}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
 
             <div className={styles.footer}>
-              <button type="button" className={styles.cancelButton} onClick={onClose}>
-                Cancel
+              <button type="button" onClick={onClose} className={styles.cancelButton}>
+                {t('widgets.goals.form.cancel')}
               </button>
               <button type="submit" className={styles.saveButton}>
-                {initialGoal ? 'Save Changes' : 'Create Goal'}
+                {initialGoal
+                  ? t('widgets.goals.form.saveButton')
+                  : t('widgets.goals.form.createButton')}
               </button>
             </div>
           </form>

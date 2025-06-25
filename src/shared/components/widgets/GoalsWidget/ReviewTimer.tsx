@@ -1,4 +1,6 @@
 import { format, differenceInDays, isToday as isTodayFn, isPast } from 'date-fns';
+import { enUS, ptBR } from 'date-fns/locale';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './ReviewTimer.module.css';
 
 interface ReviewTimerProps {
@@ -10,20 +12,24 @@ export const ReviewTimer = ({
   nextReviewDate,
   onCompleteReview,
 }: ReviewTimerProps): JSX.Element => {
+  const { t, currentLanguage } = useCommonTranslation();
   const daysUntilReview = differenceInDays(nextReviewDate, new Date());
   const isToday = isTodayFn(nextReviewDate);
   const isOverdue = isPast(nextReviewDate) && !isToday;
 
+  // Get the appropriate locale for date formatting
+  const dateLocale = currentLanguage === 'pt' ? ptBR : enUS;
+
   const getTimerDisplay = (): string => {
     if (isOverdue) {
       const daysPast = Math.abs(daysUntilReview);
-      return `Overdue by ${daysPast} day${daysPast === 1 ? '' : 's'}`;
+      return t('widgets.goals.reviewTimer.overdue', { count: daysPast }) as string;
     } else if (isToday) {
-      return 'Due Today';
+      return t('widgets.goals.reviewTimer.dueToday') as string;
     } else if (daysUntilReview === 1) {
-      return 'Tomorrow';
+      return t('widgets.goals.reviewTimer.tomorrow') as string;
     } else {
-      return `in ${daysUntilReview} days`;
+      return t('widgets.goals.reviewTimer.inDays', { count: daysUntilReview }) as string;
     }
   };
 
@@ -52,13 +58,19 @@ export const ReviewTimer = ({
       className={getTimerClass()}
       onClick={handleClick}
       style={{ cursor: (isToday || isOverdue) && onCompleteReview ? 'pointer' : 'default' }}
-      title={(isToday || isOverdue) && onCompleteReview ? 'Click to complete review' : undefined}
+      title={
+        (isToday || isOverdue) && onCompleteReview
+          ? (t('widgets.goals.reviewTimer.clickToComplete') as string)
+          : undefined
+      }
     >
       <div className={styles.timerIcon}>{getTimerIcon()}</div>
       <div className={styles.timerInfo}>
-        <span className={styles.timerLabel}>Goals Review</span>
+        <span className={styles.timerLabel}>{t('widgets.goals.reviewTimer.label')}</span>
         <span className={styles.timerValue}>{getTimerDisplay()}</span>
-        <span className={styles.timerDate}>{format(nextReviewDate, 'MMM d, yyyy')}</span>
+        <span className={styles.timerDate}>
+          {format(nextReviewDate, 'MMM d, yyyy', { locale: dateLocale })}
+        </span>
       </div>
     </div>
   );

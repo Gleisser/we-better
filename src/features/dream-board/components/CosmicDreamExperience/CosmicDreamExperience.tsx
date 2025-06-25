@@ -4,6 +4,7 @@ import styles from './CosmicDreamExperience.module.css';
 import { createPortal } from 'react-dom';
 import { useDreamProgress } from '../../hooks/useDreamProgress';
 import { getDreamMilestonesForContent } from '../../api/dreamMilestonesApi';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 
 interface CosmicDreamExperienceProps {
   dreams: Dream[];
@@ -89,6 +90,63 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   onDreamSelect,
   activeDream,
 }) => {
+  const { t } = useCommonTranslation();
+
+  // Helper function to get translated category name
+  const getTranslatedCategoryName = (categoryName: string): string => {
+    // Convert category name to lowercase for key matching
+    const normalizedName = categoryName.toLowerCase();
+
+    // Try to get translation, fallback to original name if not found
+    const translationKey = `dreamBoard.categories.names.${normalizedName}`;
+    const translated = t(translationKey);
+
+    // Handle array return type from translation function
+    const translatedString = Array.isArray(translated) ? translated[0] : translated;
+
+    // If translation key is returned as-is, it means no translation was found
+    return translatedString !== translationKey ? translatedString : categoryName;
+  };
+
+  // Memoize translated values to prevent infinite re-renders
+  const translations = useMemo(
+    () => ({
+      title: t('dreamBoard.cosmic.title') as string,
+      viewModes: {
+        cosmic: t('dreamBoard.cosmic.viewModes.cosmic') as string,
+        constellation: t('dreamBoard.cosmic.viewModes.constellation') as string,
+      },
+      tooltips: {
+        exitFullscreen: t('dreamBoard.cosmic.tooltips.exitFullscreen') as string,
+        fullscreen: t('dreamBoard.cosmic.tooltips.fullscreen') as string,
+        zoomOut: t('dreamBoard.cosmic.tooltips.zoomOut') as string,
+        resetView: t('dreamBoard.cosmic.tooltips.resetView') as string,
+        zoomIn: t('dreamBoard.cosmic.tooltips.zoomIn') as string,
+      },
+      category: {
+        label: t('dreamBoard.cosmic.category.label') as string,
+        all: t('dreamBoard.cosmic.category.all') as string,
+        legendTitle: t('dreamBoard.cosmic.category.legendTitle') as string,
+      },
+      loading: {
+        text: t('dreamBoard.cosmic.loading.text') as string,
+      },
+      emptyState: {
+        text: t('dreamBoard.cosmic.emptyState.text') as string,
+        subtext: t('dreamBoard.cosmic.emptyState.subtext') as string,
+        button: t('dreamBoard.cosmic.emptyState.button') as string,
+      },
+      detail: {
+        progress: t('dreamBoard.cosmic.detail.progress') as string,
+        milestones: t('dreamBoard.cosmic.detail.milestones') as string,
+        completed: t('dreamBoard.cosmic.detail.completed') as string,
+        sharedWith: t('dreamBoard.cosmic.detail.sharedWith') as string,
+        created: t('dreamBoard.cosmic.detail.created') as string,
+      },
+    }),
+    [t]
+  );
+
   // Create a comprehensive list of categories that includes both actual categories from dreams
   // and predefined categories to ensure we show all possible categories
   const displayCategories = useMemo(() => {
@@ -1115,14 +1173,14 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
             backgroundColor: getCategoryColor(dream.category),
           }}
         >
-          {dream.category}
+          {getTranslatedCategoryName(dream.category)}
         </div>
 
         <p className={styles.dreamDetailDescription}>{dream.description}</p>
 
         <div className={styles.dreamDetailProgress}>
           <div className={styles.dreamDetailProgressHeader}>
-            <div className={styles.dreamDetailProgressLabel}>Progress</div>
+            <div className={styles.dreamDetailProgressLabel}>{translations.detail.progress}</div>
             <div className={styles.dreamDetailProgressValue}>
               {Math.round(currentProgress * 100)}%
             </div>
@@ -1139,10 +1197,10 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         </div>
 
         <div className={styles.dreamDetailMilestonesHeader}>
-          <h3 className={styles.dreamDetailMilestonesTitle}>Milestones</h3>
+          <h3 className={styles.dreamDetailMilestonesTitle}>{translations.detail.milestones}</h3>
           <div className={styles.dreamDetailMilestonesSummary}>
             {currentMilestones.filter(m => m.completed).length} of {currentMilestones.length}{' '}
-            completed
+            {translations.detail.completed}
           </div>
         </div>
 
@@ -1175,7 +1233,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         {dream.isShared && (
           <div className={styles.dreamDetailSharing}>
             <div className={styles.dreamDetailSharingHeader}>
-              <h3 className={styles.dreamDetailSharingTitle}>Shared With</h3>
+              <h3 className={styles.dreamDetailSharingTitle}>{translations.detail.sharedWith}</h3>
             </div>
             <div className={styles.dreamDetailAvatars}>
               {dream.sharedWith?.map((userId, index) => (
@@ -1193,7 +1251,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
         <div className={styles.dreamDetailFooter}>
           <div className={styles.dreamDetailCreated}>
-            Created: {formatDate(dream.createdAt || '')}
+            {translations.detail.created}: {formatDate(dream.createdAt || '')}
           </div>
         </div>
       </div>
@@ -1221,27 +1279,31 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
           {/* Header Controls */}
           <div className={styles.header}>
-            <h2 className={styles.title}>Dream Universe</h2>
+            <h2 className={styles.title}>{translations.title}</h2>
             <div className={styles.controls}>
               <div className={styles.viewModeToggle}>
                 <button
                   className={`${styles.viewModeButton} ${viewMode === 'cosmic' ? styles.activeViewMode : ''}`}
                   onClick={() => setViewMode('cosmic')}
                 >
-                  Cosmic
+                  {translations.viewModes.cosmic}
                 </button>
                 <button
                   className={`${styles.viewModeButton} ${viewMode === 'constellation' ? styles.activeViewMode : ''}`}
                   onClick={() => setViewMode('constellation')}
                 >
-                  Constellation
+                  {translations.viewModes.constellation}
                 </button>
               </div>
 
               <button
                 className={styles.fullscreenButton}
                 onClick={toggleFullscreen}
-                title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+                title={
+                  isFullscreen
+                    ? translations.tooltips.exitFullscreen
+                    : translations.tooltips.fullscreen
+                }
               >
                 {isFullscreen ? (
                   <svg viewBox="0 0 24 24" width="18" height="18">
@@ -1265,13 +1327,21 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
           {/* Navigation Controls */}
           <div className={styles.navigationControls}>
             <div className={styles.zoomControls}>
-              <button className={styles.controlButton} onClick={handleZoomOut} title="Zoom Out">
+              <button
+                className={styles.controlButton}
+                onClick={handleZoomOut}
+                title={translations.tooltips.zoomOut}
+              >
                 <svg viewBox="0 0 24 24" width="16" height="16">
                   <path d="M19 13H5v-2h14v2z" fill="currentColor" />
                 </svg>
               </button>
 
-              <button className={styles.controlButton} onClick={handleResetView} title="Reset View">
+              <button
+                className={styles.controlButton}
+                onClick={handleResetView}
+                title={translations.tooltips.resetView}
+              >
                 <svg viewBox="0 0 24 24" width="16" height="16">
                   <path
                     d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
@@ -1280,7 +1350,11 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
                 </svg>
               </button>
 
-              <button className={styles.controlButton} onClick={handleZoomIn} title="Zoom In">
+              <button
+                className={styles.controlButton}
+                onClick={handleZoomIn}
+                title={translations.tooltips.zoomIn}
+              >
                 <svg viewBox="0 0 24 24" width="16" height="16">
                   <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor" />
                 </svg>
@@ -1288,16 +1362,16 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
             </div>
 
             <div className={styles.categorySelector}>
-              <span className={styles.categoryLabel}>Category:</span>
+              <span className={styles.categoryLabel}>{translations.category.label}</span>
               <select
                 className={styles.categoryDropdown}
                 value={selectedCategory}
                 onChange={handleCategorySelect}
               >
-                <option value="all">All Categories</option>
+                <option value="all">{translations.category.all}</option>
                 {displayCategories.map(category => (
                   <option key={category} value={category}>
-                    {category}
+                    {getTranslatedCategoryName(category)}
                   </option>
                 ))}
               </select>
@@ -1306,7 +1380,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
           {/* Category Legend */}
           <div className={styles.categoryLegend}>
-            <div className={styles.legendTitle}>Dream Categories</div>
+            <div className={styles.legendTitle}>{translations.category.legendTitle}</div>
             <div className={styles.legendItems}>
               {displayCategories.map(category => {
                 const count = dreams.filter(d => normalizeCategory(d.category) === category).length;
@@ -1324,7 +1398,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
                       style={{ backgroundColor: getCategoryColor(category) }}
                     />
                     <div className={styles.legendLabel}>
-                      {category}
+                      {getTranslatedCategoryName(category)}
                       <span className={styles.legendCount}>{count}</span>
                     </div>
                   </div>
@@ -1343,7 +1417,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       ) : (
         <div className={styles.loadingContainer}>
           <div className={styles.loadingSpinner}></div>
-          <div className={styles.loadingText}>Initializing Dream Universe...</div>
+          <div className={styles.loadingText}>{translations.loading.text}</div>
         </div>
       )}
 
@@ -1351,11 +1425,11 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         <div className={styles.emptyStateContainer}>
           <div className={styles.emptyStateIcon}>✨</div>
           <div className={styles.emptyStateText}>
-            Your dream universe is empty.
+            {translations.emptyState.text}
             <br />
-            Start by adding your first dream.
+            {translations.emptyState.subtext}
           </div>
-          <button className={styles.addDreamButton}>Add Your First Dream</button>
+          <button className={styles.addDreamButton}>{translations.emptyState.button}</button>
         </div>
       )}
     </div>
