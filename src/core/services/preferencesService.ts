@@ -1,3 +1,8 @@
+import { supabase } from './supabaseClient';
+
+// Define the API URL - following the same pattern as dream board and life wheel
+const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/preferences`;
+
 // User Preferences Types (mirroring backend types)
 export interface UserPreferences {
   id?: string;
@@ -24,6 +29,86 @@ export interface UserPreferencesUpdateRequest {
 export interface UserPreferencesResponse {
   preferences: UserPreferences;
 }
+
+/**
+ * Get the auth token from Supabase session or storage
+ */
+const getAuthToken = async (): Promise<string | null> => {
+  try {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token || null;
+  } catch (error) {
+    console.error('Error getting auth token:', error);
+    return null;
+  }
+};
+
+/**
+ * Handle API requests with proper authentication and error handling
+ */
+const apiRequest = async <T>(
+  endpoint: string,
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' = 'GET',
+  body?: Record<string, unknown> | UserPreferencesUpdateRequest
+): Promise<T | null> => {
+  try {
+    const token = await getAuthToken();
+    if (!token) {
+      throw new Error('Not authenticated');
+    }
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    };
+
+    const config: RequestInit = {
+      method,
+      headers,
+      credentials: 'include',
+    };
+
+    if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+      config.body = JSON.stringify(body);
+    }
+
+    // Implement exponential backoff for retries
+    const MAX_RETRIES = 3;
+    let retries = 0;
+    let response: Response;
+
+    while (true) {
+      try {
+        response = await fetch(endpoint, config);
+        break;
+      } catch (error) {
+        retries++;
+        if (retries >= MAX_RETRIES) throw error;
+        // Exponential backoff: 1s, 2s, 4s, etc.
+        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, retries - 1)));
+      }
+    }
+
+    if (!response.ok) {
+      // Handle specific error cases
+      if (response.status === 401) {
+        // Trigger auth refresh or redirect to login
+        throw new Error('Authentication expired');
+      }
+      throw new Error(`API request failed: ${response.statusText}`);
+    }
+
+    // For DELETE operations that don't return content
+    if (method === 'DELETE' && response.status === 204) {
+      return { success: true } as unknown as T;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`API ${method} request to ${endpoint} failed:`, error);
+    throw error;
+  }
+};
 
 /**
  * Frontend service for managing user preferences
@@ -53,28 +138,22 @@ export class PreferencesService {
         return { data: this.cache, error: null };
       }
 
-      const response = await fetch('/api/preferences', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await apiRequest<UserPreferencesResponse>(API_URL);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        return { data: null, error: errorData.error || 'Failed to fetch preferences' };
+      if (response?.preferences) {
+        // Update cache
+        this.cache = response.preferences;
+        this.cacheTimestamp = Date.now();
+        return { data: response.preferences, error: null };
+      } else {
+        return { data: null, error: 'No preferences found' };
       }
-
-      const data: UserPreferencesResponse = await response.json();
-
-      // Update cache
-      this.cache = data.preferences;
-      this.cacheTimestamp = Date.now();
-
-      return { data: data.preferences, error: null };
     } catch (error) {
       console.error('Error fetching user preferences:', error);
-      return { data: null, error: 'Network error' };
+      return {
+        data: null,
+        error: error instanceof Error ? error.message : 'Network error',
+      };
     }
   }
 
@@ -85,29 +164,22 @@ export class PreferencesService {
     preferences: UserPreferencesUpdateRequest
   ): Promise<{ data: UserPreferences | null; error: string | null }> {
     try {
-      const response = await fetch('/api/preferences', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(preferences),
-      });
+      const response = await apiRequest<UserPreferencesResponse>(API_URL, 'PUT', preferences);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        return { data: null, error: errorData.error || 'Failed to update preferences' };
+      if (response?.preferences) {
+        // Update cache
+        this.cache = response.preferences;
+        this.cacheTimestamp = Date.now();
+        return { data: response.preferences, error: null };
+      } else {
+        return { data: null, error: 'Failed to update preferences' };
       }
-
-      const data = await response.json();
-
-      // Update cache
-      this.cache = data.preferences;
-      this.cacheTimestamp = Date.now();
-
-      return { data: data.preferences, error: null };
     } catch (error) {
       console.error('Error updating user preferences:', error);
-      return { data: null, error: 'Network error' };
+      return {
+        data: null,
+        error: error instanceof Error ? error.message : 'Network error',
+      };
     }
   }
 
@@ -118,29 +190,22 @@ export class PreferencesService {
     preferences: Partial<UserPreferencesUpdateRequest>
   ): Promise<{ data: UserPreferences | null; error: string | null }> {
     try {
-      const response = await fetch('/api/preferences', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(preferences),
-      });
+      const response = await apiRequest<UserPreferencesResponse>(API_URL, 'PATCH', preferences);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        return { data: null, error: errorData.error || 'Failed to update preferences' };
+      if (response?.preferences) {
+        // Update cache
+        this.cache = response.preferences;
+        this.cacheTimestamp = Date.now();
+        return { data: response.preferences, error: null };
+      } else {
+        return { data: null, error: 'Failed to update preferences' };
       }
-
-      const data = await response.json();
-
-      // Update cache
-      this.cache = data.preferences;
-      this.cacheTimestamp = Date.now();
-
-      return { data: data.preferences, error: null };
     } catch (error) {
       console.error('Error patching user preferences:', error);
-      return { data: null, error: 'Network error' };
+      return {
+        data: null,
+        error: error instanceof Error ? error.message : 'Network error',
+      };
     }
   }
 
@@ -199,7 +264,7 @@ export class PreferencesService {
   }
 
   /**
-   * Get cached preferences without API call
+   * Get cached preferences if available
    */
   getCachedPreferences(): UserPreferences | null {
     if (this.cache && Date.now() - this.cacheTimestamp < this.CACHE_TTL) {
@@ -216,7 +281,7 @@ export class PreferencesService {
   }
 
   /**
-   * Force refresh preferences from API
+   * Refresh preferences from API (bypass cache)
    */
   async refreshPreferences(): Promise<{ data: UserPreferences | null; error: string | null }> {
     this.clearCache();

@@ -7,6 +7,7 @@ import {
   applyCSSVariables,
 } from '@/types/theme';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
+import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
 
 /**
  * Theme Context for managing application theme state
@@ -32,13 +33,45 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   const [timeBasedTheme, setTimeBasedThemeState] = useState<boolean>(initialTimeBasedTheme);
   const [isLoading, setIsLoading] = useState(true);
   const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('dark');
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Integration with existing time-based theme hook
   const { timeOfDay, theme: timeThemeColors } = useTimeBasedTheme();
 
+  // User preferences integration
+  const { preferences, isLoading: preferencesLoading } = useUserPreferences();
+
+  /**
+   * Get effective theme mode considering auto mode and time-based preferences
+   */
+  const getEffectiveThemeMode = useCallback((): 'light' | 'dark' => {
+    if (themeMode === 'auto') {
+      if (timeBasedTheme) {
+        // Use time-based theme logic
+        const hour = new Date().getHours();
+
+        // Morning (6-11): Light
+        // Afternoon (12-16): Light
+        // Evening (17-20): Dark
+        // Night (21-5): Dark
+        if (hour >= 6 && hour < 17) {
+          return 'light';
+        } else {
+          return 'dark';
+        }
+      } else {
+        // Use system preference
+        return systemTheme;
+      }
+    }
+
+    return themeMode as 'light' | 'dark';
+  }, [themeMode, timeBasedTheme, systemTheme]);
+
   // Derived state
+  const effectiveThemeMode = getEffectiveThemeMode();
   const currentTheme: ThemeConfig = getThemeConfig(
-    themeMode,
+    effectiveThemeMode,
     timeBasedTheme ? timeOfDay : undefined
   );
 
@@ -72,15 +105,30 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   }, []);
 
   /**
+   * Sync with user preferences from backend
+   */
+  useEffect(() => {
+    if (preferences && !preferencesLoading) {
+      setThemeModeState(preferences.theme_mode);
+      setTimeBasedThemeState(preferences.time_based_theme);
+    }
+  }, [preferences, preferencesLoading]);
+
+  /**
    * Set theme mode and persist to localStorage
    */
   const setThemeMode = useCallback((mode: ThemeMode) => {
+    setIsTransitioning(true);
     setThemeModeState(mode);
+
     try {
       localStorage.setItem('theme-mode', mode);
     } catch (error) {
       console.error('Failed to save theme mode to localStorage:', error);
     }
+
+    // Reset transition state after animation
+    setTimeout(() => setIsTransitioning(false), 300);
   }, []);
 
   /**
@@ -100,14 +148,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
    */
   const toggleTheme = useCallback(() => {
     if (themeMode === 'auto') {
-      // If auto, switch to the opposite of current system theme
-      setThemeMode(systemTheme === 'dark' ? 'light' : 'dark');
+      // If auto, switch to the opposite of current effective theme
+      setThemeMode(effectiveThemeMode === 'dark' ? 'light' : 'dark');
     } else if (themeMode === 'light') {
       setThemeMode('dark');
     } else {
       setThemeMode('light');
     }
-  }, [themeMode, systemTheme, setThemeMode]);
+  }, [themeMode, effectiveThemeMode, setThemeMode]);
 
   /**
    * Handle system theme changes
@@ -124,19 +172,49 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   }, []);
 
   /**
+   * Auto-refresh theme every hour for time-based themes
+   */
+  useEffect(() => {
+    if (themeMode === 'auto' && timeBasedTheme) {
+      const interval = setInterval(
+        () => {
+          // Force re-evaluation of theme
+          const newEffectiveMode = getEffectiveThemeMode();
+          if (newEffectiveMode !== effectiveThemeMode) {
+            setIsTransitioning(true);
+            setTimeout(() => setIsTransitioning(false), 300);
+          }
+        },
+        60 * 60 * 1000
+      ); // Check every hour
+
+      return () => clearInterval(interval);
+    }
+  }, [themeMode, timeBasedTheme, getEffectiveThemeMode, effectiveThemeMode]);
+
+  /**
    * Apply CSS variables when theme changes
    */
   useEffect(() => {
     if (!isLoading && currentTheme.cssVariables) {
+      // Add transition class for smooth theme changes
+      if (isTransitioning) {
+        document.documentElement.classList.add('theme-transitioning');
+      } else {
+        document.documentElement.classList.remove('theme-transitioning');
+      }
+
       applyCSSVariables(currentTheme.cssVariables);
 
       // Apply theme mode as data attribute for CSS targeting
       document.documentElement.setAttribute('data-theme', currentTheme.mode);
+      document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+      document.documentElement.setAttribute('data-time-based-theme', timeBasedTheme.toString());
 
       // Apply theme class for backward compatibility
-      document.documentElement.className = `theme-${currentTheme.mode}`;
+      document.documentElement.className = `theme-${currentTheme.mode} time-${timeOfDay}`;
     }
-  }, [currentTheme, isLoading]);
+  }, [currentTheme, isLoading, isTransitioning, timeOfDay, timeBasedTheme]);
 
   /**
    * Initialize theme on mount
@@ -166,6 +244,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
         '--gradient-middle': timeThemeColors.gradientMiddle,
         '--gradient-end': timeThemeColors.gradientEnd,
         '--accent-rgb': timeThemeColors.accentRGB,
+        '--time-gradient': `linear-gradient(135deg, ${timeThemeColors.gradientStart}, ${timeThemeColors.gradientMiddle}, ${timeThemeColors.gradientEnd})`,
       };
 
       applyCSSVariables(timeBasedVariables);
