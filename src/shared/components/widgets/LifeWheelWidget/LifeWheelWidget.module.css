@@ -1,7 +1,9 @@
 .lifeWheelWidget {
-  @apply bg-gradient-to-br from-gray-900 to-purple-900/80
-           rounded-xl shadow-lg p-2 pb-4 h-full w-full;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  @apply h-full w-full rounded-xl shadow-lg p-2 pb-4;
+  background: var(--theme-gradient-widget);
+  border: 1px solid var(--theme-border-primary);
+  box-shadow: var(--theme-shadow-large);
+  transition: var(--theme-transition);
   /* Test containment */
   isolation: isolate;
   position: relative;
@@ -22,15 +24,18 @@
 
 .headerIcon {
   @apply w-10 h-10 rounded-xl
-         bg-black/80
          flex items-center justify-center
          text-xl
-         border border-white/[0.08]
-         shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
+         border;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-primary);
+  box-shadow: var(--theme-shadow-inset);
 }
 
 .headerText {
-  @apply text-sm text-white/80 font-medium;
+  @apply text-sm font-medium;
+  color: var(--theme-text-primary);
 }
 
 .headerActions {
@@ -39,12 +44,17 @@
 
 .actionButton {
   @apply w-8 h-8 rounded-full
-         bg-black/60 backdrop-blur-sm
-         border border-white/[0.08]
          flex items-center justify-center
-         text-white/70
-         transition-all duration-300
-         hover:bg-black/80 hover:text-white;
+         border
+         transition-all duration-300;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-secondary);
+}
+
+.actionButton:hover {
+  background-color: var(--theme-interactive-hover);
+  color: var(--theme-text-inverse);
 }
 
 .actionIcon {
@@ -52,8 +62,13 @@
 }
 
 .viewToggleButton {
-  @apply p-2 rounded-full bg-gray-800/60 hover:bg-gray-700/80 
-           text-white text-sm transition-colors;
+  @apply p-2 rounded-full text-sm transition-colors;
+  background-color: var(--theme-bg-tertiary);
+  color: var(--theme-text-primary);
+}
+
+.viewToggleButton:hover {
+  background-color: var(--theme-interactive-hover);
 }
 
 .radarViewContainer {
@@ -73,18 +88,26 @@
 
 .radarTooltip {
   @apply absolute top-4 left-1/2 transform -translate-x-1/2
-           bg-gray-900/95 text-white px-4 py-2 rounded-lg text-sm
-           backdrop-blur-sm border border-purple-500/50 font-medium z-50;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+         px-4 py-2 rounded-lg text-sm
+         font-medium z-50;
+  background-color: var(--theme-bg-elevated);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-interactive-primary);
+  box-shadow: var(--theme-shadow-large);
+  backdrop-filter: blur(8px);
   min-width: 120px;
   text-align: center;
 }
 
 .wheelTooltip {
   @apply absolute bottom-3 left-1/2 transform -translate-x-1/2
-         bg-gray-900/95 text-white px-4 py-2 rounded-lg text-sm
-         backdrop-blur-sm border border-purple-500/50 font-medium z-50;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+         px-4 py-2 rounded-lg text-sm
+         font-medium z-50;
+  background-color: var(--theme-bg-elevated);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-interactive-primary);
+  box-shadow: var(--theme-shadow-large);
+  backdrop-filter: blur(8px);
   min-width: 120px;
   text-align: center;
   /* Use transition instead of animation for predictable behavior */
@@ -97,18 +120,25 @@
 }
 
 .seeMoreButton {
-  @apply px-4 py-2 bg-purple-600/80 hover:bg-purple-500/90 
-           text-white rounded-lg text-sm transition-colors;
+  @apply px-4 py-2 rounded-lg text-sm transition-colors;
+  background-color: var(--theme-interactive-primary);
+  color: var(--theme-text-inverse);
+}
+
+.seeMoreButton:hover {
+  background-color: var(--theme-interactive-hover);
 }
 
 .loadingIndicator {
-  @apply flex flex-col items-center justify-center h-64 text-gray-300;
+  @apply flex flex-col items-center justify-center h-64;
+  color: var(--theme-text-secondary);
   min-height: 200px;
 }
 
 .spinner {
-  @apply w-8 h-8 border-4 border-gray-600 border-t-purple-500 
-           rounded-full mb-3;
+  @apply w-8 h-8 border-4 rounded-full mb-3;
+  border-color: var(--theme-border-secondary);
+  border-top-color: var(--theme-interactive-primary);
   animation: spin 1s linear infinite;
 }
 
@@ -118,5 +148,44 @@
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* Theme-specific enhancements */
+[data-theme='dark'] .lifeWheelWidget {
+  background: linear-gradient(to bottom right, rgba(75, 85, 99, 0.8), rgba(139, 92, 246, 0.2));
+}
+
+[data-theme='light'] .lifeWheelWidget {
+  background: linear-gradient(to bottom right, rgba(248, 250, 252, 0.8), rgba(139, 92, 246, 0.1));
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .actionButton,
+  .viewToggleButton {
+    border-width: 2px;
+  }
+
+  .radarTooltip,
+  .wheelTooltip {
+    background-color: var(--theme-bg-primary);
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .lifeWheelWidget,
+  .actionButton,
+  .viewToggleButton,
+  .seeMoreButton,
+  .radarTooltip,
+  .wheelTooltip {
+    transition: none;
+  }
+
+  .spinner {
+    animation: none;
   }
 }

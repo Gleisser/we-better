@@ -1,15 +1,13 @@
 .container {
   @apply relative w-full h-full
          rounded-[32px] overflow-hidden
-         border border-white/10
+         border 
          shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)];
-  background: linear-gradient(
-    135deg,
-    var(--gradient-start) 0%,
-    var(--gradient-middle) 50%,
-    var(--gradient-end) 100%
-  );
-  transition: background 2s ease-in-out;
+  border-color: var(--theme-border-primary);
+  background: var(--theme-gradient-widget);
+  transition:
+    var(--theme-transition),
+    background 2s ease-in-out;
 }
 
 .header {
@@ -26,36 +24,49 @@
 
 .headerIcon {
   @apply w-10 h-10 rounded-xl
-         bg-black/80
          flex items-center justify-center
          text-xl
-         border border-white/[0.08]
-         shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
+         border;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-primary);
+  box-shadow: var(--theme-shadow-inset);
 }
 
 .headerText {
-  @apply text-lg text-white font-plus-jakarta;
+  @apply text-lg font-plus-jakarta;
+  color: var(--theme-text-primary);
 }
 
 .addButton {
   @apply w-7 h-7 rounded-lg
          flex items-center justify-center
-         bg-black/40
-         border border-white/[0.08]
-         text-white/70
+         border
          transition-all duration-300
-         hover:bg-black/60 hover:text-white
          ml-2;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-secondary);
+}
+
+.addButton:hover {
+  background-color: var(--theme-interactive-hover);
+  color: var(--theme-text-inverse);
 }
 
 .collapseButton {
   @apply w-8 h-8 rounded-lg
          flex items-center justify-center
-         bg-black/40
-         border border-white/[0.08]
-         text-white/70
-         transition-all duration-200
-         hover:bg-black/60 hover:text-white;
+         border
+         transition-all duration-200;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-secondary);
+}
+
+.collapseButton:hover {
+  background-color: var(--theme-interactive-hover);
+  color: var(--theme-text-inverse);
 }
 
 .collapseIcon {
@@ -85,19 +96,25 @@
 .categoryButton {
   @apply flex items-center gap-2
          px-3 py-1.5 rounded-full
-         bg-black/40 backdrop-blur-[2px]
-         border border-white/[0.08]
-         text-sm text-white/70
+         border
+         text-sm
          whitespace-nowrap
          transition-all duration-300;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-secondary);
 }
 
 .categoryButton:hover {
-  @apply text-white bg-black/60;
+  color: var(--theme-text-primary);
+  background-color: var(--theme-interactive-hover);
 }
 
 .categoryButton.selected {
-  @apply text-white bg-primary-purple/20 border-primary-purple/30;
+  color: var(--theme-text-inverse);
+  background-color: var(--theme-interactive-primary);
+  border-color: var(--theme-interactive-primary);
+  box-shadow: var(--theme-shadow-medium);
 }
 
 .content {
@@ -108,22 +125,27 @@
 .loadingIndicator {
   @apply flex items-center justify-center
          h-40 w-full
-         text-white/70 text-sm
+         text-sm
          animate-pulse;
+  color: var(--theme-text-secondary);
 }
 
 .errorMessage {
   @apply flex items-center justify-center
          h-40 w-full
-         text-red-400 text-sm
+         text-sm
          p-4 rounded-lg
-         bg-red-500/10 border border-red-500/20;
+         border;
+  color: var(--theme-error-text);
+  background-color: var(--theme-error-bg);
+  border-color: var(--theme-error-border);
 }
 
 .emptyState {
   @apply flex flex-col items-center justify-center
          gap-4 h-40 w-full
-         text-white/70 text-sm;
+         text-sm;
+  color: var(--theme-text-secondary);
 }
 
 .emptyStateIcon {
@@ -132,10 +154,16 @@
 
 .createButton {
   @apply px-4 py-2 rounded-lg
-         bg-white/10 hover:bg-white/20
-         border border-white/10
-         text-white text-sm
+         border
+         text-sm
          transition-all duration-300;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-primary);
+}
+
+.createButton:hover {
+  background-color: var(--theme-interactive-hover);
 }
 
 .goalsList {
@@ -144,10 +172,14 @@
 
 .goalCard {
   @apply p-4 rounded-xl
-         bg-black/40 backdrop-blur-[2px]
-         border border-white/[0.08]
-         transition-all duration-300
-         hover:bg-black/50;
+         border
+         transition-all duration-300;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+}
+
+.goalCard:hover {
+  background-color: var(--theme-interactive-hover);
 }
 
 .goalInfo {
@@ -166,7 +198,8 @@
 .progressText {
   @apply absolute inset-0
          flex items-center justify-center
-         text-xs text-white font-medium;
+         text-xs font-medium;
+  color: var(--theme-text-primary);
 }
 
 .goalContent {
@@ -179,45 +212,71 @@
 
 .goalIcon {
   @apply w-8 h-8 rounded-lg
-         bg-black/40
          flex items-center justify-center
          text-base
-         border border-white/[0.08];
+         border;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
 }
 
 .goalTitle {
-  @apply text-base text-white font-plus-jakarta;
+  @apply text-base font-plus-jakarta;
+  color: var(--theme-text-primary);
 }
 
 .milestoneCount {
-  @apply text-xs text-white/60
+  @apply text-xs
          px-2 py-1 rounded-lg
-         bg-black/30
-         border border-white/[0.05];
+         border;
+  color: var(--theme-text-muted);
+  background-color: var(--theme-bg-secondary);
+  border-color: var(--theme-border-tertiary);
 }
 
-.goalActions {
-  @apply flex items-center gap-2;
+/* Theme-specific enhancements */
+[data-theme='dark'] .container {
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start, rgba(139, 92, 246, 0.1)) 0%,
+    var(--gradient-middle, rgba(168, 85, 247, 0.05)) 50%,
+    var(--gradient-end, rgba(217, 70, 239, 0.1)) 100%
+  );
 }
 
-.actionButton {
-  @apply w-8 h-8 rounded-lg
-         flex items-center justify-center
-         bg-black/40
-         border border-white/[0.08]
-         text-white/70
-         transition-all duration-200
-         hover:bg-black/60 hover:text-white;
+[data-theme='light'] .container {
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start, rgba(139, 92, 246, 0.05)) 0%,
+    var(--gradient-middle, rgba(168, 85, 247, 0.02)) 50%,
+    var(--gradient-end, rgba(217, 70, 239, 0.05)) 100%
+  );
 }
 
-.actionIcon {
-  @apply w-4 h-4;
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .goalCard,
+  .categoryButton,
+  .addButton,
+  .collapseButton {
+    border-width: 2px;
+  }
+
+  .categoryButton.selected {
+    background-color: var(--theme-interactive-primary);
+    color: var(--theme-text-inverse);
+  }
 }
 
-/* Remove the old progress bar styles */
-.progressBar,
-.progressFill {
-  display: none;
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .addButton,
+  .collapseButton,
+  .categoryButton,
+  .goalCard,
+  .collapseIcon {
+    transition: none;
+  }
 }
 
 .headerRight {

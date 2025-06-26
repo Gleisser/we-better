@@ -8,14 +8,44 @@ import ProfileMenu from './ProfileMenu/ProfileMenu';
 import { useHeader } from '@/shared/hooks/useHeader';
 import LanguageSwitcher from '@/shared/components/i18n/LanguageSwitcher';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useThemeToggle } from '@/shared/hooks/useTheme';
+import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
 import styles from './HeaderActions.module.css';
 
 const HeaderActions = (): JSX.Element => {
   const { t } = useCommonTranslation();
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [notificationCount] = useState(10);
   const { activePopup, setActivePopup } = useHeader();
   const [isMobile, setIsMobile] = useState(false);
+
+  // Theme functionality
+  const { currentMode, effectiveTheme, toggleTheme, isDark } = useThemeToggle();
+  const { updateThemeMode, isLoading: preferencesLoading } = useUserPreferences();
+
+  // Handle theme toggle with backend sync
+  const handleThemeToggle = async (): Promise<void> => {
+    // Optimistically update UI
+    toggleTheme();
+
+    // Sync with backend
+    try {
+      let newMode: 'light' | 'dark' | 'auto';
+
+      if (currentMode === 'auto') {
+        // If auto, switch to opposite of current effective theme
+        newMode = effectiveTheme === 'dark' ? 'light' : 'dark';
+      } else if (currentMode === 'light') {
+        newMode = 'dark';
+      } else {
+        newMode = 'light';
+      }
+
+      await updateThemeMode(newMode);
+    } catch (error) {
+      console.error('Failed to sync theme preference:', error);
+      // The UI will still work with localStorage fallback
+    }
+  };
 
   // Mock notifications data with undefined images to trigger initials fallback
   const notifications: NotificationItem[] = [
@@ -92,10 +122,12 @@ const HeaderActions = (): JSX.Element => {
       {/* Theme Toggle */}
       <button
         className={styles.themeToggle}
-        onClick={() => setIsDarkMode(!isDarkMode)}
+        onClick={handleThemeToggle}
+        disabled={preferencesLoading}
         aria-label={t('header.toggleTheme') as string}
+        title={`Current: ${currentMode} (${effectiveTheme})`}
       >
-        {isDarkMode ? (
+        {isDark ? (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={styles.themeIcon}>
             <path
               strokeLinecap="round"
@@ -106,13 +138,21 @@ const HeaderActions = (): JSX.Element => {
           </svg>
         ) : (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={styles.themeIcon}>
+            <circle cx="12" cy="12" r="5" />
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"
+              d="M12 1v2m0 16v2m9-9h-2M4 12H2m15.364 6.364l-1.414-1.414M6.343 6.343L4.929 4.929m12.728 0l-1.414 1.414M6.343 17.657l-1.414 1.414"
             />
           </svg>
+        )}
+
+        {/* Loading indicator */}
+        {preferencesLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-theme-bg-elevated/80 rounded-xl">
+            <div className="w-3 h-3 border border-theme-interactive-primary border-t-transparent rounded-full animate-spin" />
+          </div>
         )}
       </button>
 
