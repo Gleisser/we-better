@@ -140,3 +140,41 @@
     opacity: 1;
   }
 }
+
+/* Light theme overrides for text colors */
+[data-theme='light'] .timerLabel {
+  @apply text-black;
+}
+
+[data-theme='light'] .timerValue {
+  @apply text-black;
+}
+
+[data-theme='light'] .timerDate {
+  @apply text-black;
+}
+
+/* Light theme overrides for different states */
+[data-theme='light'] .reviewTimer.overdue .timerValue {
+  @apply text-red-600;
+}
+
+[data-theme='light'] .reviewTimer.soon .timerValue {
+  @apply text-yellow-600;
+}
+
+/* Light theme active/today state text colors */
+[data-theme='light'] .reviewTimer.active .timerLabel,
+[data-theme='light'] .reviewTimer.today .timerLabel {
+  @apply text-black font-medium;
+}
+
+[data-theme='light'] .reviewTimer.active .timerValue,
+[data-theme='light'] .reviewTimer.today .timerValue {
+  @apply text-black font-bold;
+}
+
+[data-theme='light'] .reviewTimer.active .timerDate,
+[data-theme='light'] .reviewTimer.today .timerDate {
+  @apply text-black;
+}
