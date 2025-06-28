@@ -44,7 +44,29 @@
 }
 
 .actionsContainer {
-  @apply flex items-center gap-4 ml-6;
+  @apply flex items-center gap-4 ml-6 p-2 rounded-2xl;
+  transition: all 0.3s ease;
+}
+
+/* Light theme glass effect */
+[data-theme='light'] .actionsContainer {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset,
+    0 -1px 1px rgba(0, 0, 0, 0.04) inset;
+}
+
+[data-theme='light'] .actionsContainer:hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.12),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset,
+    0 -1px 1px rgba(0, 0, 0, 0.06) inset;
+  transform: translateY(-1px);
 }
 
 .languageSwitcher {
@@ -171,7 +193,26 @@
 /* Mobile styles */
 @media (max-width: 768px) {
   .actionsContainer {
-    @apply gap-2;
+    @apply gap-2 p-1.5 rounded-xl;
+  }
+
+  /* Mobile glass effect adjustments */
+  [data-theme='light'] .actionsContainer {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      0 1px 1px rgba(255, 255, 255, 0.3) inset;
+  }
+
+  [data-theme='dark'] .actionsContainer {
+    background: rgba(26, 26, 26, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      0 1px 1px rgba(255, 255, 255, 0.06) inset;
   }
 
   .themeToggle,
@@ -195,21 +236,74 @@
   .profileStatus {
     @apply w-2.5 h-2.5;
   }
+
+  /* Reduce hover transforms on mobile */
+  [data-theme='light'] .actionsContainer:hover,
+  [data-theme='dark'] .actionsContainer:hover {
+    transform: none;
+  }
+
+  [data-theme='light'] .themeToggle:hover,
+  [data-theme='light'] .notificationButton:hover {
+    transform: none;
+  }
 }
 
 /* Theme-specific adjustments */
+[data-theme='dark'] .actionsContainer {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+[data-theme='dark'] .actionsContainer:hover {
+  background: rgba(26, 26, 26, 0.9);
+  transform: translateY(-1px);
+}
+
 [data-theme='dark'] .themeToggle,
 [data-theme='dark'] .notificationButton {
   box-shadow: var(--theme-shadow-lg);
 }
 
+/* Light theme button enhancements */
+[data-theme='light'] .themeToggle,
+[data-theme='light'] .notificationButton {
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.8) inset;
+}
+
 [data-theme='light'] .themeToggle:hover,
 [data-theme='light'] .notificationButton:hover {
-  box-shadow: var(--theme-shadow-lg);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(139, 92, 246, 0.2);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 1px 1px rgba(255, 255, 255, 0.9) inset,
+    0 0 0 1px rgba(139, 92, 246, 0.1);
+  transform: translateY(-1px);
+}
+
+[data-theme='light'] .profileButton {
+  backdrop-filter: blur(10px);
+}
+
+[data-theme='light'] .profileButton:hover {
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 0 0 2px rgba(139, 92, 246, 0.2);
 }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+  .actionsContainer,
   .themeToggle,
   .notificationButton,
   .profileButton,
@@ -220,5 +314,13 @@
 
   .notificationBadge {
     @apply animate-none;
+  }
+
+  /* Disable transforms and hover effects for reduced motion */
+  [data-theme='light'] .actionsContainer:hover,
+  [data-theme='dark'] .actionsContainer:hover,
+  [data-theme='light'] .themeToggle:hover,
+  [data-theme='light'] .notificationButton:hover {
+    transform: none;
   }
 }

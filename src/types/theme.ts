@@ -128,9 +128,9 @@ export const LIGHT_THEME: ThemeConfig = {
   mode: 'light',
   colors: {
     background: {
-      primary: '#ffffff',
-      secondary: '#f8f9fa',
-      tertiary: '#f1f3f4',
+      primary: '#f8f9fa',
+      secondary: '#f1f3f4',
+      tertiary: '#e9ecef',
       elevated: '#ffffff',
     },
     text: {
@@ -177,8 +177,8 @@ export const LIGHT_THEME: ThemeConfig = {
     primary: 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)',
     secondary: 'linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)',
     accent: 'linear-gradient(135deg, #F59E0B 0%, #EF4444 100%)',
-    background: 'linear-gradient(to bottom, #ffffff, #f8f9fa)',
-    surface: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 249, 250, 0.9))',
+    background: 'linear-gradient(to bottom, #f8f9fa, #f1f3f4)',
+    surface: 'linear-gradient(135deg, rgba(248, 249, 250, 0.9), rgba(241, 243, 244, 0.9))',
   },
   cssVariables: {},
 };
