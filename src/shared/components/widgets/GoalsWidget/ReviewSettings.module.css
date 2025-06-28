@@ -137,3 +137,212 @@
          hover:bg-primary-purple/30;
   @apply font-plus-jakarta;
 }
+
+/* Light Theme Styles */
+[data-theme='light'] .overlay {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[data-theme='light'] .modal {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+[data-theme='light'] .header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .title {
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .closeButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .closeButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+[data-theme='light'] .sectionTitle {
+  color: var(--theme-text-secondary);
+}
+
+/* Light theme frequency buttons */
+[data-theme='light'] .frequencyButton {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-secondary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .frequencyButton:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .frequencyButton.selected {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+/* Light theme notification buttons */
+[data-theme='light'] .notificationButton {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-secondary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .notificationButton:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .notificationButton.selected {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+/* Light theme reminder settings */
+[data-theme='light'] .label {
+  color: var(--theme-text-secondary);
+}
+
+[data-theme='light'] .select {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-primary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .select:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+[data-theme='light'] .select:focus {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow:
+    0 0 0 3px rgba(139, 92, 246, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+/* Light theme footer */
+[data-theme='light'] .footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .cancelButton {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-secondary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .cancelButton:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .saveButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .saveButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+/* Mobile responsiveness for light theme */
+@media (max-width: 768px) {
+  [data-theme='light'] .modal {
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.08),
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 1px 1px rgba(255, 255, 255, 0.3) inset;
+  }
+
+  [data-theme='light'] .frequencyButton,
+  [data-theme='light'] .notificationButton,
+  [data-theme='light'] .cancelButton {
+    box-shadow:
+      0 1px 4px rgba(0, 0, 0, 0.02),
+      0 1px 1px rgba(255, 255, 255, 0.4) inset;
+  }
+
+  [data-theme='light'] .frequencyButton.selected,
+  [data-theme='light'] .notificationButton.selected,
+  [data-theme='light'] .saveButton {
+    box-shadow:
+      0 2px 8px rgba(139, 92, 246, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  [data-theme='light'] .closeButton {
+    box-shadow:
+      0 2px 8px rgba(139, 92, 246, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  /* Disable transforms on mobile for better performance */
+  [data-theme='light'] .closeButton:hover,
+  [data-theme='light'] .saveButton:hover {
+    transform: none;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='light'] .closeButton:hover,
+  [data-theme='light'] .saveButton:hover {
+    transform: none;
+    box-shadow:
+      0 4px 12px rgba(139, 92, 246, 0.3),
+      0 1px 1px rgba(255, 255, 255, 0.2) inset;
+  }
+}
