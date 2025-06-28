@@ -157,7 +157,67 @@
 }
 
 [data-theme='light'] .lifeWheelWidget {
-  background: linear-gradient(to bottom right, rgba(248, 250, 252, 0.8), rgba(139, 92, 246, 0.1));
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+/* Light theme button styling with gradient */
+[data-theme='light'] .actionButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .actionButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+[data-theme='light'] .seeMoreButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  font-weight: 600;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .seeMoreButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+/* Light theme header icon styling */
+[data-theme='light'] .headerIcon {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: var(--theme-interactive-primary);
+}
+
+/* Light theme tooltips */
+[data-theme='light'] .radarTooltip,
+[data-theme='light'] .wheelTooltip {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset;
+  color: var(--theme-text-primary);
 }
 
 /* High contrast mode support */
@@ -174,6 +234,33 @@
   }
 }
 
+/* Mobile responsiveness for light theme */
+@media (max-width: 768px) {
+  [data-theme='light'] .lifeWheelWidget {
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      0 1px 1px rgba(255, 255, 255, 0.3) inset;
+  }
+
+  [data-theme='light'] .actionButton {
+    box-shadow:
+      0 2px 8px rgba(139, 92, 246, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  [data-theme='light'] .seeMoreButton {
+    box-shadow:
+      0 2px 8px rgba(139, 92, 246, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  /* Disable transforms on mobile for better performance */
+  [data-theme='light'] .actionButton:hover,
+  [data-theme='light'] .seeMoreButton:hover {
+    transform: none;
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .lifeWheelWidget,
@@ -187,5 +274,14 @@
 
   .spinner {
     animation: none;
+  }
+
+  /* Disable transforms for reduced motion */
+  [data-theme='light'] .actionButton:hover,
+  [data-theme='light'] .seeMoreButton:hover {
+    transform: none;
+    box-shadow:
+      0 4px 12px rgba(139, 92, 246, 0.3),
+      0 1px 1px rgba(255, 255, 255, 0.2) inset;
   }
 }
