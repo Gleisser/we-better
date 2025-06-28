@@ -308,3 +308,315 @@ input[type='date'].input {
 .completedText {
   @apply line-through opacity-70;
 }
+
+/* Light Theme Styles */
+[data-theme='light'] .overlay {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[data-theme='light'] .modal {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+[data-theme='light'] .header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .title {
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .closeButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .closeButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+[data-theme='light'] .label {
+  color: var(--theme-text-secondary);
+}
+
+[data-theme='light'] .milestonesTitle {
+  color: var(--theme-text-secondary);
+}
+
+[data-theme='light'] .milestonesDescription {
+  color: var(--theme-text-muted);
+}
+
+/* Light theme form inputs */
+[data-theme='light'] .input {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-primary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .input:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+[data-theme='light'] .input:focus {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow:
+    0 0 0 3px rgba(139, 92, 246, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+/* Light theme date input */
+[data-theme='light'] input[type='date'].input {
+  color: var(--theme-text-primary);
+  color-scheme: light;
+}
+
+[data-theme='light'] input[type='date'].input::-webkit-calendar-picker-indicator {
+  filter: none;
+  opacity: 0.6;
+}
+
+[data-theme='light'] input[type='date'].input::placeholder {
+  color: var(--theme-text-muted);
+}
+
+[data-theme='light'] .calendarButton {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-secondary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .calendarButton:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: var(--theme-text-primary);
+}
+
+/* Light theme category buttons */
+[data-theme='light'] .categoryButton {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-secondary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .categoryButton:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .categoryButton.selected {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+/* Light theme milestone components */
+[data-theme='light'] .addButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .addButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+[data-theme='light'] .milestoneItem {
+  background: rgba(248, 249, 250, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-primary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .milestoneItem.completed {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+[data-theme='light'] .checkmark {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+[data-theme='light'] .checkbox:checked + .checkmark {
+  background: rgb(16, 185, 129);
+  border-color: rgb(16, 185, 129);
+}
+
+[data-theme='light'] .milestoneTitle {
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .milestoneTitle:hover {
+  color: var(--theme-text-secondary);
+}
+
+[data-theme='light'] .editInput {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .editInput:focus {
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+}
+
+[data-theme='light'] .saveEditButton {
+  background: rgba(16, 185, 129, 0.2);
+  color: rgb(16, 185, 129);
+}
+
+[data-theme='light'] .saveEditButton:hover {
+  background: rgba(16, 185, 129, 0.3);
+}
+
+[data-theme='light'] .cancelEditButton {
+  background: rgba(239, 68, 68, 0.2);
+  color: rgb(239, 68, 68);
+}
+
+[data-theme='light'] .cancelEditButton:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+[data-theme='light'] .removeButton {
+  color: var(--theme-text-muted);
+}
+
+[data-theme='light'] .removeButton:hover {
+  color: rgb(239, 68, 68);
+}
+
+/* Light theme footer */
+[data-theme='light'] .footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .cancelButton {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-secondary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .cancelButton:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .saveButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .saveButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+/* Mobile responsiveness for light theme */
+@media (max-width: 768px) {
+  [data-theme='light'] .modal {
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.08),
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 1px 1px rgba(255, 255, 255, 0.3) inset;
+  }
+
+  [data-theme='light'] .categoryButton,
+  [data-theme='light'] .cancelButton,
+  [data-theme='light'] .calendarButton {
+    box-shadow:
+      0 1px 4px rgba(0, 0, 0, 0.02),
+      0 1px 1px rgba(255, 255, 255, 0.4) inset;
+  }
+
+  [data-theme='light'] .categoryButton.selected,
+  [data-theme='light'] .addButton,
+  [data-theme='light'] .saveButton {
+    box-shadow:
+      0 2px 8px rgba(139, 92, 246, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  [data-theme='light'] .closeButton {
+    box-shadow:
+      0 2px 8px rgba(139, 92, 246, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  [data-theme='light'] .milestoneItem {
+    box-shadow:
+      0 1px 4px rgba(0, 0, 0, 0.02),
+      0 1px 1px rgba(255, 255, 255, 0.4) inset;
+  }
+
+  /* Disable transforms on mobile for better performance */
+  [data-theme='light'] .closeButton:hover,
+  [data-theme='light'] .addButton:hover,
+  [data-theme='light'] .saveButton:hover {
+    transform: none;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='light'] .closeButton:hover,
+  [data-theme='light'] .addButton:hover,
+  [data-theme='light'] .saveButton:hover {
+    transform: none;
+    box-shadow:
+      0 4px 12px rgba(139, 92, 246, 0.3),
+      0 1px 1px rgba(255, 255, 255, 0.2) inset;
+  }
+}
