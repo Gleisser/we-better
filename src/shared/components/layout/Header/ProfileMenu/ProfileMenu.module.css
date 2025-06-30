@@ -1,10 +1,11 @@
 .profileMenu {
   @apply absolute right-0 top-full mt-2
          w-64 py-2
-         bg-black/90 backdrop-blur-sm
-         border border-white/[0.08]
          rounded-xl shadow-lg
          z-50;
+  background-color: var(--theme-bg-elevated);
+  border: 1px solid var(--theme-border-primary);
+  box-shadow: var(--theme-shadow-xl);
 }
 
 .menuHeader {
@@ -12,33 +13,73 @@
 }
 
 .userName {
-  @apply text-white font-medium;
+  @apply font-medium;
+  color: var(--theme-text-primary);
 }
 
 .userEmail {
-  @apply text-white/50 text-sm;
+  @apply text-sm;
+  color: var(--theme-text-secondary);
 }
 
 .menuDivider {
-  @apply my-2 border-t border-white/[0.08];
+  @apply my-2;
+  border-top: 1px solid var(--theme-border-secondary);
 }
 
 .menuItem {
   @apply w-full flex items-center gap-3
          px-3 py-2.5
-         text-sm text-white/70
-         hover:bg-white/5
+         text-sm
          transition-colors duration-200;
+  color: var(--theme-text-secondary);
+}
+
+.menuItem:hover {
+  background-color: var(--theme-bg-tertiary);
+  color: var(--theme-text-primary);
 }
 
 .menuItemIcon {
   @apply w-4 h-4;
+  color: inherit;
 }
 
 .bookmarkCount {
   @apply ml-auto
          px-2 py-0.5 rounded-full
-         bg-purple-500/20
-         text-xs text-purple-400
-         border border-purple-500/20;
+         text-xs
+         border;
+  background-color: var(--theme-interactive-primary);
+  color: var(--theme-text-inverse);
+  border-color: var(--theme-interactive-primary);
+  opacity: 0.9;
+}
+
+/* Light theme specific overrides */
+[data-theme='light'] .profileMenu {
+  background-color: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border-primary);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 0 0 1px var(--theme-border-secondary);
+}
+
+[data-theme='light'] .menuDivider {
+  border-top: 1px solid var(--theme-border-tertiary);
+}
+
+[data-theme='light'] .menuItem:hover {
+  background-color: var(--theme-bg-secondary);
+}
+
+/* Dark theme specific overrides */
+[data-theme='dark'] .profileMenu {
+  background-color: var(--theme-bg-elevated);
+  border: 1px solid var(--theme-border-primary);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.4),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2),
+    0 0 0 1px var(--theme-border-secondary);
 }
