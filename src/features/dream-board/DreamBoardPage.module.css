@@ -3868,4 +3868,45 @@
   border-color: rgba(245, 158, 11, 0.4);
 }
 
+/* Light Theme Main Tabs - Match style for consistency */
+[data-theme='light'] .tab {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #374151;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .tab:hover {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #1f2937;
+}
+
+[data-theme='light'] .activeTab {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #1f2937;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+}
+
+/* Light Theme Insights Filter Tabs - Match main tab style */
+[data-theme='light'] .filterButton {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #374151;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .filterButton:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #1f2937;
+  transform: translateY(-2px);
+}
+
+[data-theme='light'] .filterButton.active {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #1f2937;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+}
+
 /* ===== END LIGHT THEME OVERRIDES FOR MILESTONES POPUP ===== */
