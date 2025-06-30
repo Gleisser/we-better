@@ -1,40 +1,63 @@
 .container {
   @apply absolute right-0 top-12 w-[480px] rounded-2xl
-         bg-black/40 backdrop-blur-xl border border-white/10
          overflow-hidden z-50 shadow-2xl;
+  background-color: var(--theme-bg-elevated);
+  border: 1px solid var(--theme-border-primary);
+  box-shadow: var(--theme-shadow-xl);
 }
 
 .header {
-  @apply flex items-center justify-between px-6 py-4 border-b border-white/10;
+  @apply flex items-center justify-between px-6 py-4;
+  border-bottom: 1px solid var(--theme-border-primary);
 }
 
 .title {
-  @apply text-xl font-plus-jakarta font-medium text-white;
+  @apply text-xl font-plus-jakarta font-medium;
+  color: var(--theme-text-primary);
 }
 
 .closeButton {
-  @apply p-2 rounded-lg hover:bg-white/5 transition-colors;
+  @apply p-2 rounded-lg transition-colors;
+  background-color: transparent;
+}
+
+.closeButton:hover {
+  background-color: var(--theme-bg-tertiary);
 }
 
 .closeIcon {
-  @apply w-5 h-5 text-white/70;
+  @apply w-5 h-5;
+  color: var(--theme-text-secondary);
+}
+
+.closeButton:hover .closeIcon {
+  color: var(--theme-text-primary);
 }
 
 .tabs {
-  @apply flex gap-1 p-2 border-b border-white/10;
+  @apply flex gap-1 p-2;
+  border-bottom: 1px solid var(--theme-border-primary);
 }
 
 .tab {
-  @apply flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-white/70
-         hover:text-white hover:bg-white/5 transition-all duration-200;
+  @apply flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all duration-200;
+  color: var(--theme-text-secondary);
+}
+
+.tab:hover {
+  color: var(--theme-text-primary);
+  background-color: var(--theme-bg-tertiary);
 }
 
 .activeTab {
-  @apply text-white bg-white/5;
+  color: var(--theme-text-primary);
+  background-color: var(--theme-bg-tertiary);
 }
 
 .count {
-  @apply px-2 py-0.5 text-xs rounded-md bg-white/10;
+  @apply px-2 py-0.5 text-xs rounded-md;
+  background-color: var(--theme-bg-secondary);
+  color: var(--theme-text-secondary);
 }
 
 .notificationsList {
@@ -42,8 +65,12 @@
 }
 
 .notificationItem {
-  @apply flex items-start gap-4 p-4 hover:bg-white/5 transition-all duration-200
-         border-b border-white/10;
+  @apply flex items-start gap-4 p-4 transition-all duration-200;
+  border-bottom: 1px solid var(--theme-border-secondary);
+}
+
+.notificationItem:hover {
+  background-color: var(--theme-bg-secondary);
 }
 
 .userImage {
@@ -55,8 +82,9 @@
 }
 
 .onlineStatus {
-  @apply absolute bottom-0 right-0 w-3 h-3 
-         bg-green-400 rounded-full border-2 border-black;
+  @apply absolute bottom-0 right-0 w-3 h-3 rounded-full border-2;
+  background-color: var(--theme-status-success);
+  border-color: var(--theme-bg-elevated);
 }
 
 .content {
@@ -68,19 +96,27 @@
 }
 
 .userName {
-  @apply font-medium text-white;
+  @apply font-medium;
+  color: var(--theme-text-primary);
 }
 
 .action {
-  @apply text-white/70;
+  color: var(--theme-text-secondary);
 }
 
 .target {
-  @apply text-white underline decoration-white/20 hover:decoration-white;
+  @apply underline;
+  color: var(--theme-text-primary);
+  text-decoration-color: var(--theme-border-secondary);
+}
+
+.target:hover {
+  text-decoration-color: var(--theme-text-primary);
 }
 
 .timestamp {
-  @apply block text-xs text-white/50 mt-1;
+  @apply block text-xs mt-1;
+  color: var(--theme-text-tertiary);
 }
 
 .actions {
@@ -89,33 +125,101 @@
 
 .followButton,
 .replyButton {
-  @apply px-4 py-1.5 rounded-lg bg-primary-purple text-white text-sm
-         hover:bg-primary-purple/80 transition-all duration-200;
+  @apply px-4 py-1.5 rounded-lg text-sm transition-all duration-200;
+  background-color: var(--theme-interactive-primary);
+  color: var(--theme-text-inverse);
+}
+
+.followButton:hover,
+.replyButton:hover {
+  background-color: var(--theme-interactive-hover);
 }
 
 .viewButton {
-  @apply px-4 py-1.5 rounded-lg bg-white/5 text-white text-sm
-         hover:bg-white/10 transition-all duration-200;
+  @apply px-4 py-1.5 rounded-lg text-sm transition-all duration-200;
+  background-color: var(--theme-bg-tertiary);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-border-secondary);
+}
+
+.viewButton:hover {
+  background-color: var(--theme-bg-quaternary);
+  border-color: var(--theme-border-primary);
 }
 
 .deleteButton {
-  @apply p-2 rounded-lg hover:bg-white/5 transition-colors;
+  @apply p-2 rounded-lg transition-colors;
+}
+
+.deleteButton:hover {
+  background-color: var(--theme-bg-tertiary);
 }
 
 .trashIcon {
-  @apply w-4 h-4 text-white/50 hover:text-red-400;
+  @apply w-4 h-4;
+  color: var(--theme-text-tertiary);
+}
+
+.deleteButton:hover .trashIcon {
+  color: var(--theme-status-error);
 }
 
 .footer {
-  @apply flex items-center justify-between p-4 border-t border-white/10;
+  @apply flex items-center justify-between p-4;
+  border-top: 1px solid var(--theme-border-primary);
 }
 
 .markReadButton {
-  @apply text-sm text-white/70 hover:text-white transition-colors;
+  @apply text-sm transition-colors;
+  color: var(--theme-text-secondary);
+}
+
+.markReadButton:hover {
+  color: var(--theme-text-primary);
 }
 
 .viewAllButton {
-  @apply px-4 py-2 rounded-lg text-sm text-white
-         bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]
-         hover:opacity-90 transition-opacity;
+  @apply px-4 py-2 rounded-lg text-sm transition-opacity;
+  background: var(--theme-gradient-primary);
+  color: var(--theme-text-inverse);
+}
+
+.viewAllButton:hover {
+  @apply opacity-90;
+}
+
+/* Light theme specific overrides */
+[data-theme='light'] .container {
+  background-color: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border-primary);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 0 0 1px var(--theme-border-secondary);
+}
+
+[data-theme='light'] .header {
+  border-bottom: 1px solid var(--theme-border-secondary);
+}
+
+[data-theme='light'] .tabs {
+  border-bottom: 1px solid var(--theme-border-secondary);
+}
+
+[data-theme='light'] .notificationItem {
+  border-bottom: 1px solid var(--theme-border-tertiary);
+}
+
+[data-theme='light'] .notificationItem:hover {
+  background-color: var(--theme-bg-secondary);
+}
+
+/* Dark theme specific overrides */
+[data-theme='dark'] .container {
+  background-color: var(--theme-bg-elevated);
+  border: 1px solid var(--theme-border-primary);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.4),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2),
+    0 0 0 1px var(--theme-border-secondary);
 }
