@@ -3526,3 +3526,325 @@
     opacity: 0.5;
   }
 }
+
+/* ===== LIGHT THEME OVERRIDES FOR MILESTONES POPUP ===== */
+
+/* Modal Overlay and Structure */
+[data-theme='light'] .modalOverlay {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='light'] .milestoneModal {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='light'] .milestoneModal h3 {
+  color: #1f2937;
+}
+
+[data-theme='light'] .milestonesPopup {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme='light'] .milestonesPopupHeader {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(37, 99, 235, 0.05));
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+[data-theme='light'] .milestonesPopupHeader h3 {
+  color: #1f2937;
+}
+
+[data-theme='light'] .closePopupButton {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme='light'] .closePopupButton:hover {
+  color: #000000;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Progress Summary */
+[data-theme='light'] .milestonesProgressSummary {
+  background-color: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+[data-theme='light'] .milestonesProgressSummary p {
+  color: #374151;
+}
+
+/* Form Components */
+[data-theme='light'] .formGroup label {
+  color: #374151;
+}
+
+[data-theme='light'] .formGroup input,
+[data-theme='light'] .formGroup textarea {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #1f2937;
+}
+
+[data-theme='light'] .formGroup input:focus,
+[data-theme='light'] .formGroup textarea:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+[data-theme='light'] .cancelButton {
+  background: none;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+}
+
+[data-theme='light'] .cancelButton:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+[data-theme='light'] .saveButton {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+[data-theme='light'] .saveButton:hover {
+  background-color: #2563eb;
+}
+
+/* Containers */
+[data-theme='light'] .milestonesContainer {
+  background-color: rgba(59, 130, 246, 0.02);
+  border: 1px solid rgba(59, 130, 246, 0.08);
+}
+
+[data-theme='light'] .milestoneFormContainer {
+  background-color: rgba(59, 130, 246, 0.03);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+[data-theme='light'] .milestoneFormHeader h4 {
+  color: #1f2937;
+}
+
+[data-theme='light'] .closeFormButton {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme='light'] .closeFormButton:hover {
+  color: #000000;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Milestone List */
+[data-theme='light'] .milestoneItem {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='light'] .milestoneItem:hover {
+  background-color: rgba(59, 130, 246, 0.02);
+}
+
+[data-theme='light'] .milestoneLabel {
+  color: #1f2937;
+}
+
+[data-theme='light'] .milestoneCheckbox:checked + .milestoneLabel {
+  color: #6b7280;
+}
+
+[data-theme='light'] .milestoneDate {
+  color: #6b7280;
+}
+
+[data-theme='light'] .emptyMilestones {
+  color: #9ca3af;
+}
+
+/* Buttons */
+[data-theme='light'] .addMilestoneButton {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+[data-theme='light'] .addMilestoneButton:hover {
+  background-color: rgba(59, 130, 246, 0.15);
+}
+
+[data-theme='light'] .manageMilestonesButton {
+  background-color: rgba(59, 130, 246, 0.08);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+[data-theme='light'] .manageMilestonesButton:hover {
+  background-color: rgba(59, 130, 246, 0.12);
+}
+
+/* Visualization Tabs */
+[data-theme='light'] .vizTab {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #374151;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .vizTab:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .activeVizTab {
+  background-color: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #1f2937;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+/* Visualization Containers */
+[data-theme='light'] .timelineVisualization,
+[data-theme='light'] .chartVisualization,
+[data-theme='light'] .achievementsVisualization {
+  background-color: rgba(59, 130, 246, 0.02);
+  border: 1px solid rgba(59, 130, 246, 0.08);
+}
+
+[data-theme='light'] .timelineVisualization h4,
+[data-theme='light'] .chartVisualization h4,
+[data-theme='light'] .achievementsVisualization h4 {
+  color: #1f2937;
+}
+
+[data-theme='light'] .emptyVisualization {
+  color: #9ca3af;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Timeline Components */
+[data-theme='light'] .timelineAxis {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .markerLine {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='light'] .markerLabel {
+  color: #6b7280;
+}
+
+[data-theme='light'] .pointConnector {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme='light'] .pointDot {
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='light'] .pointTitle {
+  color: #1f2937;
+}
+
+[data-theme='light'] .pointDate {
+  color: #6b7280;
+}
+
+/* Progress Chart */
+[data-theme='light'] .chartLabels {
+  color: #6b7280;
+}
+
+/* Achievement Badges */
+[data-theme='light'] .achievementBadge {
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .achievementBadge.earnedBadge {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(46, 125, 50, 0.05));
+  border-color: rgba(76, 175, 80, 0.25);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.1);
+}
+
+[data-theme='light'] .achievementBadge.earnedBadge:hover {
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.15);
+}
+
+[data-theme='light'] .achievementBadge.unearnedBadge {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.05);
+  opacity: 0.6;
+}
+
+[data-theme='light'] .badgeTitle {
+  color: #1f2937;
+}
+
+[data-theme='light'] .achievementBadge.unearnedBadge .badgeTitle {
+  color: #9ca3af;
+}
+
+[data-theme='light'] .badgeDescription {
+  color: #6b7280;
+}
+
+[data-theme='light'] .achievementBadge.unearnedBadge .badgeDescription {
+  color: #d1d5db;
+}
+
+[data-theme='light'] .badgeLock {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* Milestone History */
+[data-theme='light'] .milestoneHistorySection details {
+  background-color: rgba(59, 130, 246, 0.02);
+  border: 1px solid rgba(59, 130, 246, 0.08);
+}
+
+[data-theme='light'] .milestoneHistorySection summary {
+  color: #1f2937;
+}
+
+[data-theme='light'] .historyItem {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='light'] .historyAction {
+  color: #3b82f6;
+}
+
+[data-theme='light'] .historyMilestone {
+  color: #1f2937;
+}
+
+[data-theme='light'] .historyTime {
+  color: #9ca3af;
+}
+
+/* Section Headers */
+[data-theme='light'] .milestoneSectionHeader h4 {
+  color: #1f2937;
+}
+
+/* Mobile Responsive Overrides for Light Theme */
+@media (max-width: 768px) {
+  [data-theme='light'] .achievementBadges {
+    grid-template-columns: 1fr;
+  }
+
+  [data-theme='light'] .badgeTitle {
+    color: #1f2937;
+  }
+
+  [data-theme='light'] .badgeDescription {
+    color: #6b7280;
+  }
+}
+
+/* ===== END LIGHT THEME OVERRIDES FOR MILESTONES POPUP ===== */
