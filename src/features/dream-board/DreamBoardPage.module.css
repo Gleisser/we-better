@@ -1,3 +1,18 @@
+/* Section Title - Theme aware styling */
+.sectionTitle {
+  color: var(--theme-text-primary);
+}
+
+/* Light theme override for section titles */
+[data-theme='light'] .sectionTitle {
+  color: #000000;
+}
+
+/* Dark theme override for section titles */
+[data-theme='dark'] .sectionTitle {
+  color: #ffffff;
+}
+
 .dreamBoardContainer {
   padding: 2rem;
   max-width: 1200px;

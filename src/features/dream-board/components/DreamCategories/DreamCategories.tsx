@@ -112,7 +112,7 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
   return (
     <section className={styles.categoriesDashboard}>
       <div className={styles.categoriesHeader}>
-        <h2>{t('dreamBoard.categories.title')}</h2>
+        <h2 className={styles.sectionTitle}>{t('dreamBoard.categories.title')}</h2>
         <div className={styles.categoriesControls}>
           {filterCategory && (
             <button className={styles.clearFilterButton} onClick={() => setFilterCategory(null)}>

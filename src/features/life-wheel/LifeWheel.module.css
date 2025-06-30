@@ -1,3 +1,18 @@
+/* Enhanced Page Title - Theme aware styling */
+.enhancedPageTitle {
+  color: var(--theme-text-primary);
+}
+
+/* Light theme override for enhanced page title */
+[data-theme='light'] .enhancedPageTitle {
+  color: #000000;
+}
+
+/* Dark theme override for enhanced page title */
+[data-theme='dark'] .enhancedPageTitle {
+  color: #ffffff;
+}
+
 .lifeWheelContainer {
   width: 100%;
   max-width: 1200px;
