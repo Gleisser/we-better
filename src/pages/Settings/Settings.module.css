@@ -73,6 +73,10 @@
   @apply py-4;
 }
 
+.languageSelector {
+  @apply py-4;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .settingsContainer {

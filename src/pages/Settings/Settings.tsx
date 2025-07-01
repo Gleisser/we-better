@@ -1,6 +1,7 @@
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { SettingsIcon } from '@/shared/components/common/icons';
 import ThemeSelector from '@/shared/components/theme/ThemeSelector';
+import LanguageSelector from '@/shared/components/i18n/LanguageSelector';
 import styles from './Settings.module.css';
 
 const Settings = (): JSX.Element => {
@@ -25,15 +26,7 @@ const Settings = (): JSX.Element => {
 
           <ThemeSelector className={styles.themeSelector} />
 
-          <div className={styles.settingItem}>
-            <div className={styles.settingInfo}>
-              <h3 className={styles.settingLabel}>Language</h3>
-              <p className={styles.settingDescription}>Select your preferred language</p>
-            </div>
-            <div className={styles.settingControl}>
-              <span className={styles.comingSoon}>Coming Soon</span>
-            </div>
-          </div>
+          <LanguageSelector className={styles.languageSelector} />
         </div>
 
         <div className={styles.section}>
