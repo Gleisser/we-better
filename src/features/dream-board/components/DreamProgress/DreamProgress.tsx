@@ -64,7 +64,7 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
 
   return (
     <section className={styles.progressSection}>
-      <h2>{t('dreamBoard.progress.title')}</h2>
+      <h2 className={styles.sectionTitle}>{t('dreamBoard.progress.title')}</h2>
       <div className={styles.dreamsProgress}>
         {dreams.map(dream => {
           const categoryDetail = getCategoryDetails(dream.category);

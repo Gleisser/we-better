@@ -10,7 +10,9 @@
     var(--gradient-middle) 50%,
     var(--gradient-end) 100%
   );
-  transition: background 2s ease-in-out, transform 0.1s ease-out;
+  transition:
+    background 2s ease-in-out,
+    transform 0.1s ease-out;
   transform-style: preserve-3d;
   will-change: transform;
 }
@@ -42,7 +44,8 @@
 
 /* Add breathing animation keyframes */
 @keyframes breathe {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 0%;
     background-size: 100% 100%;
   }
@@ -53,12 +56,15 @@
 }
 
 @keyframes contentGlow {
-  0%, 100% {
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05),
+  0%,
+  100% {
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.05),
       0 0 30px rgba(var(--accent-rgb), 0.1);
   }
   50% {
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05),
+    box-shadow:
+      inset 0 1px 1px rgba(255, 255, 255, 0.05),
       0 0 50px rgba(var(--accent-rgb), 0.15);
   }
 }
@@ -66,11 +72,7 @@
 /* Update any buttons or interactive elements to use the accent color */
 .actionButton {
   @apply transition-all duration-300;
-  background: linear-gradient(
-    to right,
-    rgba(var(--accent-rgb), 0.5),
-    rgba(var(--accent-rgb), 0.7)
-  );
+  background: linear-gradient(to right, rgba(var(--accent-rgb), 0.5), rgba(var(--accent-rgb), 0.7));
   box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.2);
 }
 
@@ -81,16 +83,9 @@
 /* Background gradient effect */
 .backgroundGradient {
   @apply absolute inset-0 opacity-40;
-  background: radial-gradient(
-      circle at top right,
-      rgba(139, 92, 246, 0.2),
-      transparent 60%
-    ),
-    radial-gradient(
-      circle at bottom left,
-      rgba(217, 70, 239, 0.2),
-      transparent 60%
-    );
+  background:
+    radial-gradient(circle at top right, rgba(139, 92, 246, 0.2), transparent 60%),
+    radial-gradient(circle at bottom left, rgba(217, 70, 239, 0.2), transparent 60%);
 }
 
 .header {
@@ -490,4 +485,251 @@
          bg-white/10 hover:bg-white/20
          text-sm font-medium
          transition-colors duration-200;
+}
+
+/* Light Theme Styles */
+[data-theme='light'] .container {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+[data-theme='light'] .content {
+  background: #f2f2f2;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset,
+    0 -1px 1px rgba(0, 0, 0, 0.02) inset;
+}
+
+[data-theme='light'] .quoteContent {
+  background: rgba(248, 249, 250, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.8) inset;
+}
+
+/* Light theme header styling */
+[data-theme='light'] .iconWrapper {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+[data-theme='light'] .headerIcon {
+  color: var(--theme-interactive-primary);
+}
+
+[data-theme='light'] .headerText {
+  color: var(--theme-text-primary);
+}
+
+/* Light theme quote text */
+[data-theme='light'] .quoteText {
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .word {
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .author {
+  background: var(--theme-gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Light theme action buttons with gradient */
+[data-theme='light'] .actionButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .actionButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+[data-theme='light'] .actionIcon {
+  color: white;
+}
+
+/* Light theme bookmark button */
+[data-theme='light'] .bookmarkButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .bookmarkButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+[data-theme='light'] .bookmarkIcon {
+  color: white;
+}
+
+/* Light theme menus */
+[data-theme='light'] .shareMenu,
+[data-theme='light'] .reactionsMenu,
+[data-theme='light'] .moreOptionsMenu {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+[data-theme='light'] .shareOption,
+[data-theme='light'] .moreOption {
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .shareOption:hover,
+[data-theme='light'] .moreOption:hover {
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--theme-interactive-primary);
+}
+
+[data-theme='light'] .socialIcon,
+[data-theme='light'] .moreOptionIcon {
+  color: var(--theme-text-secondary);
+}
+
+[data-theme='light'] .shareOption:hover .socialIcon,
+[data-theme='light'] .moreOption:hover .moreOptionIcon {
+  color: var(--theme-interactive-primary);
+}
+
+/* Light theme theme tag */
+[data-theme='light'] .themeTag {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .themeText {
+  color: var(--theme-text-secondary);
+}
+
+/* Light theme borders */
+[data-theme='light'] .header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .quoteFooter {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .menuDivider {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Light theme tooltip */
+[data-theme='light'] .tooltip {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: var(--theme-text-primary);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+/* Light theme error and loading states */
+[data-theme='light'] .error {
+  color: var(--theme-text-secondary);
+}
+
+[data-theme='light'] .retryButton {
+  background: var(--theme-gradient-primary);
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .retryButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+[data-theme='light'] .skeletonTag,
+[data-theme='light'] .skeletonLine,
+[data-theme='light'] .skeletonAuthor,
+[data-theme='light'] .skeletonActions {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Mobile responsiveness for light theme */
+@media (max-width: 640px) {
+  [data-theme='light'] .container {
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      0 1px 1px rgba(255, 255, 255, 0.3) inset;
+  }
+
+  [data-theme='light'] .content {
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 1px 1px rgba(255, 255, 255, 0.4) inset;
+  }
+
+  [data-theme='light'] .actionButton,
+  [data-theme='light'] .bookmarkButton {
+    box-shadow:
+      0 2px 8px rgba(139, 92, 246, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  [data-theme='light'] .retryButton {
+    box-shadow:
+      0 2px 8px rgba(139, 92, 246, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  /* Disable transforms on mobile for better performance */
+  [data-theme='light'] .actionButton:hover,
+  [data-theme='light'] .bookmarkButton:hover,
+  [data-theme='light'] .retryButton:hover {
+    transform: none;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='light'] .actionButton:hover,
+  [data-theme='light'] .bookmarkButton:hover,
+  [data-theme='light'] .retryButton:hover {
+    transform: none;
+    box-shadow:
+      0 4px 12px rgba(139, 92, 246, 0.3),
+      0 1px 1px rgba(255, 255, 255, 0.2) inset;
+  }
 }

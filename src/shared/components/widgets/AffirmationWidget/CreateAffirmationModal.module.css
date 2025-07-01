@@ -105,6 +105,100 @@
          font-plus-jakarta;
 }
 
+/* Light theme styles */
+[data-theme='light'] .backdrop {
+  @apply bg-black/30 backdrop-blur-sm;
+}
+
+[data-theme='light'] .container {
+  @apply bg-white backdrop-blur-xl
+         border border-gray-200
+         shadow-2xl;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='light'] .header {
+  @apply border-b border-gray-200;
+}
+
+[data-theme='light'] .title {
+  @apply text-gray-900;
+}
+
+[data-theme='light'] .closeButton {
+  @apply hover:bg-gray-100;
+}
+
+[data-theme='light'] .closeIcon {
+  @apply text-gray-500;
+}
+
+[data-theme='light'] .input {
+  @apply bg-gray-50 border-gray-200
+         text-gray-900 placeholder:text-gray-400
+         focus:border-purple-300 focus:ring-2 focus:ring-purple-100;
+  transition: all 0.2s ease;
+}
+
+[data-theme='light'] .charCount {
+  @apply text-gray-500;
+}
+
+[data-theme='light'] .preview {
+  @apply bg-gray-50 border-gray-200;
+}
+
+[data-theme='light'] .previewLabel {
+  @apply text-gray-600;
+}
+
+[data-theme='light'] .previewText {
+  @apply text-gray-900;
+}
+
+[data-theme='light'] .confirmMessage {
+  @apply bg-purple-50 border-purple-200
+         text-purple-800;
+}
+
+[data-theme='light'] .cancelButton {
+  @apply bg-gray-100 text-gray-700
+         hover:bg-gray-200 hover:text-gray-900
+         shadow-sm;
+  transition: all 0.2s ease;
+}
+
+[data-theme='light'] .cancelButton:hover {
+  @apply transform hover:scale-[1.02]
+         shadow-md;
+}
+
+[data-theme='light'] .saveButton {
+  @apply text-white shadow-lg;
+  background: var(--theme-gradient-primary);
+  transition: all 0.2s ease;
+}
+
+[data-theme='light'] .saveButton:hover {
+  @apply transform hover:scale-105
+         shadow-xl;
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+}
+
+[data-theme='light'] .saveButton:disabled {
+  @apply opacity-50 cursor-not-allowed;
+  background: #9ca3af;
+  box-shadow: none;
+}
+
+[data-theme='light'] .saveButton:disabled:hover {
+  @apply transform-none;
+  box-shadow: none;
+}
+
 /* Mobile styles */
 @media (max-width: 768px) {
   .container {
@@ -129,5 +223,32 @@
 
   .actions {
     @apply mt-auto pt-4; /* Push buttons to bottom */
+  }
+
+  /* Light theme mobile optimizations */
+  [data-theme='light'] .container {
+    box-shadow:
+      0 -10px 25px -5px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  [data-theme='light'] .cancelButton:hover,
+  [data-theme='light'] .saveButton:hover {
+    @apply transform-none; /* Disable hover transforms on mobile */
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='light'] .cancelButton,
+  [data-theme='light'] .saveButton,
+  [data-theme='light'] .input {
+    @apply transition-none;
+  }
+
+  [data-theme='light'] .cancelButton:hover,
+  [data-theme='light'] .saveButton:hover {
+    @apply transform-none;
   }
 }

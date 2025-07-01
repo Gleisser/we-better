@@ -1,15 +1,13 @@
 .container {
   @apply relative w-full h-full
          rounded-[32px] overflow-hidden
-         border border-white/10
+         border 
          shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)];
-  background: linear-gradient(
-    135deg,
-    var(--gradient-start) 0%,
-    var(--gradient-middle) 50%,
-    var(--gradient-end) 100%
-  );
-  transition: background 2s ease-in-out;
+  border-color: var(--theme-border-primary);
+  background: var(--theme-gradient-widget);
+  transition:
+    var(--theme-transition),
+    background 2s ease-in-out;
 }
 
 .header {
@@ -26,36 +24,49 @@
 
 .headerIcon {
   @apply w-10 h-10 rounded-xl
-         bg-black/80
          flex items-center justify-center
          text-xl
-         border border-white/[0.08]
-         shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
+         border;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-primary);
+  box-shadow: var(--theme-shadow-inset);
 }
 
 .headerText {
-  @apply text-lg text-white font-plus-jakarta;
+  @apply text-lg font-plus-jakarta;
+  color: var(--theme-text-primary);
 }
 
 .addButton {
   @apply w-7 h-7 rounded-lg
          flex items-center justify-center
-         bg-black/40
-         border border-white/[0.08]
-         text-white/70
+         border
          transition-all duration-300
-         hover:bg-black/60 hover:text-white
          ml-2;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-secondary);
+}
+
+.addButton:hover {
+  background-color: var(--theme-interactive-hover);
+  color: var(--theme-text-inverse);
 }
 
 .collapseButton {
   @apply w-8 h-8 rounded-lg
          flex items-center justify-center
-         bg-black/40
-         border border-white/[0.08]
-         text-white/70
-         transition-all duration-200
-         hover:bg-black/60 hover:text-white;
+         border
+         transition-all duration-200;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-secondary);
+}
+
+.collapseButton:hover {
+  background-color: var(--theme-interactive-hover);
+  color: var(--theme-text-inverse);
 }
 
 .collapseIcon {
@@ -85,19 +96,25 @@
 .categoryButton {
   @apply flex items-center gap-2
          px-3 py-1.5 rounded-full
-         bg-black/40 backdrop-blur-[2px]
-         border border-white/[0.08]
-         text-sm text-white/70
+         border
+         text-sm
          whitespace-nowrap
          transition-all duration-300;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-secondary);
 }
 
 .categoryButton:hover {
-  @apply text-white bg-black/60;
+  color: var(--theme-text-primary);
+  background-color: var(--theme-interactive-hover);
 }
 
 .categoryButton.selected {
-  @apply text-white bg-primary-purple/20 border-primary-purple/30;
+  color: var(--theme-text-inverse);
+  background-color: var(--theme-interactive-primary);
+  border-color: var(--theme-interactive-primary);
+  box-shadow: var(--theme-shadow-medium);
 }
 
 .content {
@@ -108,22 +125,27 @@
 .loadingIndicator {
   @apply flex items-center justify-center
          h-40 w-full
-         text-white/70 text-sm
+         text-sm
          animate-pulse;
+  color: var(--theme-text-secondary);
 }
 
 .errorMessage {
   @apply flex items-center justify-center
          h-40 w-full
-         text-red-400 text-sm
+         text-sm
          p-4 rounded-lg
-         bg-red-500/10 border border-red-500/20;
+         border;
+  color: var(--theme-error-text);
+  background-color: var(--theme-error-bg);
+  border-color: var(--theme-error-border);
 }
 
 .emptyState {
   @apply flex flex-col items-center justify-center
          gap-4 h-40 w-full
-         text-white/70 text-sm;
+         text-sm;
+  color: var(--theme-text-secondary);
 }
 
 .emptyStateIcon {
@@ -132,10 +154,16 @@
 
 .createButton {
   @apply px-4 py-2 rounded-lg
-         bg-white/10 hover:bg-white/20
-         border border-white/10
-         text-white text-sm
+         border
+         text-sm
          transition-all duration-300;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-primary);
+}
+
+.createButton:hover {
+  background-color: var(--theme-interactive-hover);
 }
 
 .goalsList {
@@ -144,10 +172,14 @@
 
 .goalCard {
   @apply p-4 rounded-xl
-         bg-black/40 backdrop-blur-[2px]
-         border border-white/[0.08]
-         transition-all duration-300
-         hover:bg-black/50;
+         border
+         transition-all duration-300;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+}
+
+.goalCard:hover {
+  background-color: var(--theme-interactive-hover);
 }
 
 .goalInfo {
@@ -166,7 +198,8 @@
 .progressText {
   @apply absolute inset-0
          flex items-center justify-center
-         text-xs text-white font-medium;
+         text-xs font-medium;
+  color: var(--theme-text-primary);
 }
 
 .goalContent {
@@ -179,45 +212,64 @@
 
 .goalIcon {
   @apply w-8 h-8 rounded-lg
-         bg-black/40
          flex items-center justify-center
          text-base
-         border border-white/[0.08];
+         border;
+  background-color: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
 }
 
 .goalTitle {
-  @apply text-base text-white font-plus-jakarta;
+  @apply text-base font-plus-jakarta;
+  color: var(--theme-text-primary);
 }
 
 .milestoneCount {
-  @apply text-xs text-white/60
+  @apply text-xs
          px-2 py-1 rounded-lg
-         bg-black/30
-         border border-white/[0.05];
+         border;
+  color: var(--theme-text-muted);
+  background-color: var(--theme-bg-secondary);
+  border-color: var(--theme-border-tertiary);
 }
 
-.goalActions {
-  @apply flex items-center gap-2;
+/* Theme-specific enhancements */
+[data-theme='dark'] .container {
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start, rgba(139, 92, 246, 0.1)) 0%,
+    var(--gradient-middle, rgba(168, 85, 247, 0.05)) 50%,
+    var(--gradient-end, rgba(217, 70, 239, 0.1)) 100%
+  );
 }
 
-.actionButton {
-  @apply w-8 h-8 rounded-lg
-         flex items-center justify-center
-         bg-black/40
-         border border-white/[0.08]
-         text-white/70
-         transition-all duration-200
-         hover:bg-black/60 hover:text-white;
+/* Light theme gradient override - now handled in comprehensive light theme section below */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .goalCard,
+  .categoryButton,
+  .addButton,
+  .collapseButton {
+    border-width: 2px;
+  }
+
+  .categoryButton.selected {
+    background-color: var(--theme-interactive-primary);
+    color: var(--theme-text-inverse);
+  }
 }
 
-.actionIcon {
-  @apply w-4 h-4;
-}
-
-/* Remove the old progress bar styles */
-.progressBar,
-.progressFill {
-  display: none;
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .addButton,
+  .collapseButton,
+  .categoryButton,
+  .goalCard,
+  .collapseIcon {
+    transition: none;
+  }
 }
 
 .headerRight {
@@ -483,4 +535,309 @@
          text-sm text-white/70
          transition-all duration-200
          hover:bg-black/60 hover:text-white;
+}
+
+/* Add missing goalActions style */
+.goalActions {
+  @apply flex items-center gap-2;
+}
+
+.actionButton {
+  @apply w-8 h-8 rounded-lg
+         flex items-center justify-center
+         bg-black/40
+         border border-white/[0.08]
+         text-white/70
+         transition-all duration-300
+         hover:bg-black/60 hover:text-white;
+}
+
+.actionIcon {
+  @apply w-4 h-4;
+}
+
+/* Light Theme Styles */
+[data-theme='light'] .container {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+/* Light theme header styling */
+[data-theme='light'] .headerIcon {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: var(--theme-interactive-primary);
+}
+
+[data-theme='light'] .headerText {
+  color: var(--theme-text-primary);
+}
+
+/* Light theme category buttons */
+[data-theme='light'] .categoryButton {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-secondary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .categoryButton:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: var(--theme-interactive-primary);
+}
+
+[data-theme='light'] .categoryButton.selected {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+/* Light theme goal cards */
+[data-theme='light'] .goalCard {
+  background: #f2f2f2;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset,
+    0 -1px 1px rgba(0, 0, 0, 0.02) inset;
+}
+
+[data-theme='light'] .goalCard:hover {
+  background: #f2f2f2;
+  border-color: rgba(139, 92, 246, 0.2);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.08),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset,
+    0 -1px 1px rgba(0, 0, 0, 0.02) inset;
+}
+
+[data-theme='light'] .goalIcon {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .goalTitle {
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .progressText {
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .milestoneCount {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: rgb(245, 158, 11);
+}
+
+/* Light theme action buttons with gradient */
+[data-theme='light'] .actionButton,
+[data-theme='light'] .addButton,
+[data-theme='light'] .collapseButton,
+[data-theme='light'] .settingsButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .actionButton:hover,
+[data-theme='light'] .addButton:hover,
+[data-theme='light'] .collapseButton:hover,
+[data-theme='light'] .settingsButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+[data-theme='light'] .actionIcon,
+[data-theme='light'] .collapseIcon {
+  color: white;
+}
+
+/* Light theme create button */
+[data-theme='light'] .createButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .createButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+/* Light theme load more button */
+[data-theme='light'] .loadMoreButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .loadMoreButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+/* Light theme review timer */
+[data-theme='light'] .reviewTimer {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+[data-theme='light'] .reviewTimer:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.16),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .timerIcon {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: var(--theme-interactive-primary);
+}
+
+/* Text colors now handled in ReviewTimer.module.css for proper specificity */
+
+/* Light theme active review timer */
+[data-theme='light'] .reviewTimer.active {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+[data-theme='light'] .reviewTimer.active::after {
+  background: linear-gradient(90deg, #8b5cf6, #d946ef, #ec4899, #8b5cf6);
+  background-size: 300% 100%;
+}
+
+[data-theme='light'] .reviewTimer.active .timerIcon {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
+
+/* Active state text colors now handled in ReviewTimer.module.css for proper specificity */
+
+/* Light theme states */
+[data-theme='light'] .loadingIndicator {
+  color: var(--theme-text-secondary);
+}
+
+[data-theme='light'] .errorMessage {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: rgb(239, 68, 68);
+}
+
+[data-theme='light'] .emptyState {
+  color: var(--theme-text-secondary);
+}
+
+[data-theme='light'] .emptyStateIcon {
+  color: var(--theme-text-muted);
+}
+
+/* Mobile responsiveness for light theme */
+@media (max-width: 768px) {
+  [data-theme='light'] .container {
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      0 1px 1px rgba(255, 255, 255, 0.3) inset;
+  }
+
+  [data-theme='light'] .goalCard {
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 1px 1px rgba(255, 255, 255, 0.4) inset;
+  }
+
+  [data-theme='light'] .goalCard:hover {
+    transform: none;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 1px 1px rgba(255, 255, 255, 0.4) inset;
+  }
+
+  [data-theme='light'] .actionButton,
+  [data-theme='light'] .addButton,
+  [data-theme='light'] .collapseButton,
+  [data-theme='light'] .settingsButton,
+  [data-theme='light'] .createButton,
+  [data-theme='light'] .loadMoreButton {
+    box-shadow:
+      0 2px 8px rgba(139, 92, 246, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  [data-theme='light'] .reviewTimer {
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.08),
+      0 1px 1px rgba(255, 255, 255, 0.3) inset;
+  }
+
+  /* Disable transforms on mobile for better performance */
+  [data-theme='light'] .actionButton:hover,
+  [data-theme='light'] .addButton:hover,
+  [data-theme='light'] .collapseButton:hover,
+  [data-theme='light'] .settingsButton:hover,
+  [data-theme='light'] .createButton:hover,
+  [data-theme='light'] .loadMoreButton:hover {
+    transform: none;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='light'] .actionButton:hover,
+  [data-theme='light'] .addButton:hover,
+  [data-theme='light'] .collapseButton:hover,
+  [data-theme='light'] .settingsButton:hover,
+  [data-theme='light'] .createButton:hover,
+  [data-theme='light'] .loadMoreButton:hover {
+    transform: none;
+    box-shadow:
+      0 4px 12px rgba(139, 92, 246, 0.3),
+      0 1px 1px rgba(255, 255, 255, 0.2) inset;
+  }
+
+  [data-theme='light'] .goalCard:hover {
+    transform: none;
+  }
 }

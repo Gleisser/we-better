@@ -1,18 +1,427 @@
-/* Add these styles to prevent any unwanted margins or padding */
-html,
+/* Global styles with enhanced theme system */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Root CSS Variables - Light Theme (Default) */
+:root {
+  /* Basic color palette */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-transparent: transparent;
+
+  /* Light theme colors */
+  --theme-bg-primary: #ffffff;
+  --theme-bg-secondary: #f8fafc;
+  --theme-bg-elevated: #ffffff;
+  --theme-bg-hover: #f1f5f9;
+  --theme-bg-active: #e2e8f0;
+  --theme-bg-overlay: rgba(255, 255, 255, 0.95);
+
+  /* Text colors */
+  --theme-text-primary: #0f172a;
+  --theme-text-secondary: #475569;
+  --theme-text-tertiary: #64748b;
+  --theme-text-inverse: #ffffff;
+  --theme-text-muted: #94a3b8;
+
+  /* Border colors */
+  --theme-border-primary: #e2e8f0;
+  --theme-border-secondary: #cbd5e1;
+  --theme-border-hover: #94a3b8;
+  --theme-border-focus: #3b82f6;
+
+  /* Interactive colors */
+  --theme-interactive-primary: #3b82f6;
+  --theme-interactive-primary-hover: #2563eb;
+  --theme-interactive-primary-active: #1d4ed8;
+  --theme-interactive-secondary: #6b7280;
+  --theme-interactive-secondary-hover: #4b5563;
+
+  /* Status colors */
+  --theme-success: #10b981;
+  --theme-warning: #f59e0b;
+  --theme-error: #ef4444;
+  --theme-info: #3b82f6;
+
+  /* Shadow colors */
+  --theme-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --theme-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --theme-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --theme-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Gradient colors */
+  --theme-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --theme-gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+
+  /* Time-based gradients (default/morning) */
+  --gradient-start: #fbbf24;
+  --gradient-middle: #f59e0b;
+  --gradient-end: #d97706;
+  --accent-rgb: 251, 191, 36;
+  --time-gradient: linear-gradient(
+    135deg,
+    var(--gradient-start),
+    var(--gradient-middle),
+    var(--gradient-end)
+  );
+
+  /* Animation durations */
+  --theme-transition-fast: 150ms;
+  --theme-transition-normal: 250ms;
+  --theme-transition-slow: 350ms;
+
+  /* Animation easings */
+  --theme-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --theme-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --theme-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --theme-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Dark theme colors */
+[data-theme='dark'] {
+  --theme-bg-primary: #0f172a;
+  --theme-bg-secondary: #1e293b;
+  --theme-bg-elevated: #334155;
+  --theme-bg-hover: #475569;
+  --theme-bg-active: #64748b;
+  --theme-bg-overlay: rgba(15, 23, 42, 0.95);
+
+  --theme-text-primary: #f8fafc;
+  --theme-text-secondary: #cbd5e1;
+  --theme-text-tertiary: #94a3b8;
+  --theme-text-inverse: #0f172a;
+  --theme-text-muted: #64748b;
+
+  --theme-border-primary: #334155;
+  --theme-border-secondary: #475569;
+  --theme-border-hover: #64748b;
+  --theme-border-focus: #60a5fa;
+
+  --theme-interactive-primary: #60a5fa;
+  --theme-interactive-primary-hover: #3b82f6;
+  --theme-interactive-primary-active: #2563eb;
+  --theme-interactive-secondary: #9ca3af;
+  --theme-interactive-secondary-hover: #d1d5db;
+
+  --theme-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --theme-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --theme-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --theme-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Auto theme (follows system preference) */
+@media (prefers-color-scheme: dark) {
+  [data-theme='auto'] {
+    --theme-bg-primary: #0f172a;
+    --theme-bg-secondary: #1e293b;
+    --theme-bg-elevated: #334155;
+    --theme-bg-hover: #475569;
+    --theme-bg-active: #64748b;
+    --theme-bg-overlay: rgba(15, 23, 42, 0.95);
+
+    --theme-text-primary: #f8fafc;
+    --theme-text-secondary: #cbd5e1;
+    --theme-text-tertiary: #94a3b8;
+    --theme-text-inverse: #0f172a;
+    --theme-text-muted: #64748b;
+
+    --theme-border-primary: #334155;
+    --theme-border-secondary: #475569;
+    --theme-border-hover: #64748b;
+    --theme-border-focus: #60a5fa;
+
+    --theme-interactive-primary: #60a5fa;
+    --theme-interactive-primary-hover: #3b82f6;
+    --theme-interactive-primary-active: #2563eb;
+    --theme-interactive-secondary: #9ca3af;
+    --theme-interactive-secondary-hover: #d1d5db;
+
+    --theme-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --theme-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --theme-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --theme-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Time-based theme color variations */
+[data-time-of-day='morning'] {
+  --gradient-start: #fbbf24;
+  --gradient-middle: #f59e0b;
+  --gradient-end: #d97706;
+  --accent-rgb: 251, 191, 36;
+}
+
+[data-time-of-day='afternoon'] {
+  --gradient-start: #3b82f6;
+  --gradient-middle: #1d4ed8;
+  --gradient-end: #1e40af;
+  --accent-rgb: 59, 130, 246;
+}
+
+[data-time-of-day='evening'] {
+  --gradient-start: #f97316;
+  --gradient-middle: #ea580c;
+  --gradient-end: #c2410c;
+  --accent-rgb: 249, 115, 22;
+}
+
+[data-time-of-day='night'] {
+  --gradient-start: #8b5cf6;
+  --gradient-middle: #7c3aed;
+  --gradient-end: #6d28d9;
+  --accent-rgb: 139, 92, 246;
+}
+
+/* Enhanced theme transition animations */
+.theme-transitioning,
+.theme-transitioning * {
+  transition:
+    background-color var(--theme-transition-normal) var(--theme-ease-out),
+    color var(--theme-transition-normal) var(--theme-ease-out),
+    border-color var(--theme-transition-normal) var(--theme-ease-out),
+    box-shadow var(--theme-transition-normal) var(--theme-ease-out),
+    opacity var(--theme-transition-fast) var(--theme-ease-out);
+}
+
+/* Smooth transitions for all theme-aware elements */
+* {
+  transition:
+    background-color var(--theme-transition-fast) var(--theme-ease-out),
+    color var(--theme-transition-fast) var(--theme-ease-out),
+    border-color var(--theme-transition-fast) var(--theme-ease-out);
+}
+
+/* Prevent flash of unstyled content */
+.theme-loading {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.theme-loading.theme-loaded {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity var(--theme-transition-normal) var(--theme-ease-out);
+}
+
+/* High contrast mode support */
+[data-high-contrast='true'] {
+  --theme-border-primary: currentColor;
+  --theme-border-secondary: currentColor;
+  filter: contrast(1.2);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  .theme-transitioning,
+  .theme-transitioning * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+[data-reduced-motion='true'] *,
+[data-reduced-motion='true'] .theme-transitioning,
+[data-reduced-motion='true'] .theme-transitioning * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Base styles */
+html {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  width: 100%;
-  max-width: 100%;
+  background-color: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 400;
+  min-height: 100vh;
 }
 
-#__next, /* for Next.js */
-#root /* for standard React */ {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
+/* Typography scale */
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+/* Font size preferences */
+[data-font-size='small'] {
+  --base-font-size: 0.875rem;
+}
+
+[data-font-size='medium'] {
+  --base-font-size: 1rem;
+}
+
+[data-font-size='large'] {
+  --base-font-size: 1.125rem;
+}
+
+body {
+  font-size: var(--base-font-size, 1rem);
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--theme-border-focus);
+  outline-offset: 2px;
+}
+
+/* Selection styles */
+::selection {
+  background-color: rgba(var(--accent-rgb), 0.2);
+  color: var(--theme-text-primary);
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--theme-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--theme-border-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-border-hover);
+}
+
+/* Time-based theme enhanced animations */
+@keyframes timeGradientShift {
+  0% {
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  50% {
+    filter: hue-rotate(15deg) brightness(1.1);
+  }
+  100% {
+    filter: hue-rotate(0deg) brightness(1);
+  }
+}
+
+[data-time-based-theme='true'] .time-gradient-element {
+  animation: timeGradientShift 10s ease-in-out infinite;
+}
+
+/* Theme-aware component utilities */
+.bg-theme-primary {
+  background-color: var(--theme-bg-primary);
+}
+.bg-theme-secondary {
+  background-color: var(--theme-bg-secondary);
+}
+.bg-theme-elevated {
+  background-color: var(--theme-bg-elevated);
+}
+
+.text-theme-primary {
+  color: var(--theme-text-primary);
+}
+.text-theme-secondary {
+  color: var(--theme-text-secondary);
+}
+.text-theme-tertiary {
+  color: var(--theme-text-tertiary);
+}
+
+.border-theme-primary {
+  border-color: var(--theme-border-primary);
+}
+.border-theme-secondary {
+  border-color: var(--theme-border-secondary);
+}
+
+.shadow-theme-sm {
+  box-shadow: var(--theme-shadow-sm);
+}
+.shadow-theme-md {
+  box-shadow: var(--theme-shadow-md);
+}
+.shadow-theme-lg {
+  box-shadow: var(--theme-shadow-lg);
+}
+
+/* Interactive states */
+.hover-theme-bg:hover {
+  background-color: var(--theme-bg-hover);
+}
+.hover-theme-border:hover {
+  border-color: var(--theme-border-hover);
+}
+
+/* Time gradient utility */
+.bg-time-gradient {
+  background: var(--time-gradient);
+}
+
+.text-time-gradient {
+  background: var(--time-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Enhanced loading states */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--theme-bg-secondary) 0%,
+    var(--theme-bg-hover) 50%,
+    var(--theme-bg-secondary) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Theme-aware toast notifications */
+.toast-theme {
+  background-color: var(--theme-bg-elevated);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-border-primary);
+  box-shadow: var(--theme-shadow-lg);
 }
