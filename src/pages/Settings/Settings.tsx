@@ -1,5 +1,6 @@
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { SettingsIcon } from '@/shared/components/common/icons';
+import ThemeSelector from '@/shared/components/theme/ThemeSelector';
 import styles from './Settings.module.css';
 
 const Settings = (): JSX.Element => {
@@ -22,15 +23,7 @@ const Settings = (): JSX.Element => {
             Basic settings for your account and preferences
           </p>
 
-          <div className={styles.settingItem}>
-            <div className={styles.settingInfo}>
-              <h3 className={styles.settingLabel}>Theme</h3>
-              <p className={styles.settingDescription}>Choose your preferred color theme</p>
-            </div>
-            <div className={styles.settingControl}>
-              <span className={styles.comingSoon}>Coming Soon</span>
-            </div>
-          </div>
+          <ThemeSelector className={styles.themeSelector} />
 
           <div className={styles.settingItem}>
             <div className={styles.settingInfo}>

@@ -69,6 +69,10 @@
   font-family: var(--font-plus-jakarta);
 }
 
+.themeSelector {
+  @apply py-4;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .settingsContainer {
