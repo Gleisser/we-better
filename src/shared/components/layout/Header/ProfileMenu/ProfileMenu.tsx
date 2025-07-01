@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { SettingsIcon, LogoutIcon, BookmarkIcon } from '@/shared/components/common/icons';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
@@ -49,10 +50,10 @@ const ProfileMenu = ({ onClose }: ProfileMenuProps): JSX.Element => {
         <span className={styles.bookmarkCount}>5</span>
       </button>
 
-      <button className={styles.menuItem}>
+      <Link to="/app/settings" className={styles.menuItem} onClick={onClose}>
         <SettingsIcon className={styles.menuItemIcon} />
         <span>{t('navigation.settings')}</span>
-      </button>
+      </Link>
 
       <div className={styles.menuDivider} />
 

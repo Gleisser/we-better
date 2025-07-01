@@ -1,0 +1,85 @@
+.settingsContainer {
+  @apply w-full max-w-4xl mx-auto p-6 space-y-8;
+}
+
+.header {
+  @apply space-y-2;
+}
+
+.titleSection {
+  @apply flex items-center gap-3;
+}
+
+.titleIcon {
+  @apply w-8 h-8 text-theme-interactive-primary;
+}
+
+.title {
+  @apply text-3xl font-semibold text-theme-text-primary;
+  font-family: var(--font-plus-jakarta);
+}
+
+.subtitle {
+  @apply text-theme-text-secondary text-lg;
+  font-family: var(--font-plus-jakarta);
+}
+
+.content {
+  @apply space-y-8;
+}
+
+.section {
+  @apply bg-theme-bg-elevated border border-theme-border-primary rounded-xl p-6 space-y-6;
+}
+
+.sectionTitle {
+  @apply text-xl font-semibold text-theme-text-primary;
+  font-family: var(--font-plus-jakarta);
+}
+
+.sectionDescription {
+  @apply text-theme-text-secondary;
+  font-family: var(--font-plus-jakarta);
+}
+
+.settingItem {
+  @apply flex items-center justify-between py-4 border-b border-theme-border-primary last:border-b-0;
+}
+
+.settingInfo {
+  @apply flex flex-col gap-1;
+}
+
+.settingLabel {
+  @apply text-theme-text-primary font-medium;
+  font-family: var(--font-plus-jakarta);
+}
+
+.settingDescription {
+  @apply text-sm text-theme-text-secondary;
+  font-family: var(--font-plus-jakarta);
+}
+
+.settingControl {
+  @apply flex items-center;
+}
+
+.comingSoon {
+  @apply px-3 py-1 bg-theme-bg-secondary text-theme-text-secondary text-sm rounded-full border border-theme-border-primary;
+  font-family: var(--font-plus-jakarta);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .settingsContainer {
+    @apply p-4;
+  }
+
+  .settingItem {
+    @apply flex-col items-start gap-3;
+  }
+
+  .settingControl {
+    @apply w-full justify-end;
+  }
+}

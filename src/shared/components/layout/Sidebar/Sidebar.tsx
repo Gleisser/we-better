@@ -93,7 +93,11 @@ const Sidebar = (): JSX.Element => {
 
         {/* Bottom Navigation */}
         <nav className={styles.bottomNav}>
-          <Link to="/settings" className={styles.navItem}>
+          <Link
+            to="/app/settings"
+            className={styles.navItem}
+            data-active={isActiveRoute('/app/settings')}
+          >
             <SettingsIcon className={styles.icon} />
             {!isCollapsed && <span className={styles.label}>{t('navigation.settings')}</span>}
           </Link>

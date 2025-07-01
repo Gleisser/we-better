@@ -14,6 +14,7 @@ import ResetPassword from '@/features/auth/pages/ResetPassword';
 import { SpotifyCallback } from '@/features/auth/pages/SpotifyCallback';
 import { EnhancedLifeWheelPage } from '@/features/life-wheel';
 import { DreamBoardPage } from '@/features/dream-board';
+import Settings from '@/pages/Settings/Settings';
 
 export const router = createBrowserRouter([
   {
@@ -72,6 +73,10 @@ export const router = createBrowserRouter([
       {
         path: 'dream-board',
         element: <DreamBoardPage />,
+      },
+      {
+        path: 'settings',
+        element: <Settings />,
       },
     ],
   },
