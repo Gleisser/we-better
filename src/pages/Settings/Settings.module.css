@@ -1,93 +1,197 @@
+/* Settings Container */
 .settingsContainer {
-  @apply w-full max-w-4xl mx-auto p-6 space-y-8;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  background: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+  min-height: 100vh;
 }
 
+/* Header */
 .header {
-  @apply space-y-2;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--theme-border-primary);
 }
 
 .titleSection {
-  @apply flex items-center gap-3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
 .titleIcon {
-  @apply w-8 h-8 text-theme-interactive-primary;
+  width: 32px;
+  height: 32px;
+  color: var(--theme-accent-primary);
 }
 
 .title {
-  @apply text-3xl font-semibold text-theme-text-primary;
-  font-family: var(--font-plus-jakarta);
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--theme-text-primary);
 }
 
 .subtitle {
-  @apply text-theme-text-secondary text-lg;
-  font-family: var(--font-plus-jakarta);
+  margin: 0;
+  font-size: 16px;
+  color: var(--theme-text-secondary);
+  line-height: 1.5;
 }
 
+/* Content */
 .content {
-  @apply space-y-8;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
+/* Profile Settings Integration */
+.profileSettings {
+  /* ProfileSettings component handles its own styling */
+}
+
+/* Sections */
 .section {
-  @apply bg-theme-bg-elevated border border-theme-border-primary rounded-xl p-6 space-y-6;
+  background: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  padding: 24px;
 }
 
 .sectionTitle {
-  @apply text-xl font-semibold text-theme-text-primary;
-  font-family: var(--font-plus-jakarta);
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
 }
 
 .sectionDescription {
-  @apply text-theme-text-secondary;
-  font-family: var(--font-plus-jakarta);
+  margin: 0 0 24px 0;
+  font-size: 14px;
+  color: var(--theme-text-secondary);
+  line-height: 1.5;
 }
 
+/* Theme Selector */
+.themeSelector {
+  margin-bottom: 24px;
+}
+
+/* Language Selector */
+.languageSelector {
+  /* LanguageSelector component handles its own styling */
+}
+
+/* Setting Items */
 .settingItem {
-  @apply flex items-center justify-between py-4 border-b border-theme-border-primary last:border-b-0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--theme-border-primary);
+}
+
+.settingItem:last-child {
+  border-bottom: none;
 }
 
 .settingInfo {
-  @apply flex flex-col gap-1;
+  flex: 1;
 }
 
 .settingLabel {
-  @apply text-theme-text-primary font-medium;
-  font-family: var(--font-plus-jakarta);
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
 }
 
 .settingDescription {
-  @apply text-sm text-theme-text-secondary;
-  font-family: var(--font-plus-jakarta);
+  margin: 0;
+  font-size: 14px;
+  color: var(--theme-text-secondary);
+  line-height: 1.4;
 }
 
 .settingControl {
-  @apply flex items-center;
+  margin-left: 16px;
 }
 
 .comingSoon {
-  @apply px-3 py-1 bg-theme-bg-secondary text-theme-text-secondary text-sm rounded-full border border-theme-border-primary;
-  font-family: var(--font-plus-jakarta);
+  padding: 6px 12px;
+  background: var(--theme-bg-secondary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--theme-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.themeSelector {
-  @apply py-4;
-}
-
-.languageSelector {
-  @apply py-4;
-}
-
-/* Responsive design */
+/* Responsive Design */
 @media (max-width: 768px) {
   .settingsContainer {
-    @apply p-4;
+    max-width: none;
+    padding: 20px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .titleIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .section {
+    padding: 20px;
   }
 
   .settingItem {
-    @apply flex-col items-start gap-3;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .settingControl {
-    @apply w-full justify-end;
+    margin-left: 0;
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .settingsContainer {
+    padding: 16px;
+  }
+
+  .content {
+    gap: 24px;
+  }
+
+  .header {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .section {
+    padding: 16px;
+  }
+
+  .sectionTitle {
+    font-size: 18px;
+  }
+
+  .settingControl {
+    align-self: flex-start;
   }
 }

@@ -2,6 +2,7 @@ import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { SettingsIcon } from '@/shared/components/common/icons';
 import ThemeSelector from '@/shared/components/theme/ThemeSelector';
 import LanguageSelector from '@/shared/components/i18n/LanguageSelector';
+import ProfileSettings from '@/shared/components/user/ProfileSettings';
 import styles from './Settings.module.css';
 
 const Settings = (): JSX.Element => {
@@ -18,6 +19,8 @@ const Settings = (): JSX.Element => {
       </div>
 
       <div className={styles.content}>
+        <ProfileSettings className={styles.profileSettings} />
+
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>General</h2>
           <p className={styles.sectionDescription}>

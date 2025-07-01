@@ -1,0 +1,453 @@
+.profileSettings {
+  background: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--theme-border-primary);
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
+}
+
+.editButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--theme-bg-secondary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 8px;
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editButton:hover {
+  background: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+}
+
+.editIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.cancelButton,
+.saveButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid;
+}
+
+.cancelButton {
+  background: var(--theme-bg-secondary);
+  border-color: var(--theme-border-primary);
+  color: var(--theme-text-secondary);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+}
+
+.saveButton {
+  background: var(--theme-gradient-primary);
+  border-color: transparent;
+  color: white;
+}
+
+.saveButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+.saveButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.buttonIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Content */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Profile Picture Section */
+.profilePictureSection {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatarContainer {
+  position: relative;
+}
+
+.avatar {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--theme-border-primary);
+  transition: all 0.2s ease;
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: var(--theme-gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 600;
+  color: white;
+}
+
+.avatarOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.avatar:hover .avatarOverlay {
+  opacity: 1;
+}
+
+.cameraButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 0.2s ease;
+}
+
+.cameraButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.cameraIcon {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
+.fileInput {
+  display: none;
+}
+
+.avatarInfo {
+  flex: 1;
+}
+
+.avatarTitle {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
+}
+
+.avatarDescription {
+  margin: 0;
+  font-size: 14px;
+  color: var(--theme-text-secondary);
+  line-height: 1.4;
+}
+
+/* Fields Section */
+.fieldsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fieldLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  margin: 0;
+  font-family: var(--font-plus-jakarta);
+}
+
+.fieldInput {
+  padding: 12px 16px;
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 8px;
+  background: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fieldInput:focus {
+  outline: none;
+  border-color: var(--theme-interactive-primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.fieldInput:disabled {
+  background: var(--theme-bg-secondary);
+  color: var(--theme-text-secondary);
+  cursor: not-allowed;
+}
+
+.fieldInput::placeholder {
+  color: var(--theme-text-tertiary);
+}
+
+/* Password Section */
+.passwordSection {
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px solid var(--theme-border-primary);
+}
+
+.passwordHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.passwordTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
+}
+
+.optional {
+  color: var(--theme-text-tertiary);
+  font-weight: 400;
+  font-size: 13px;
+}
+
+.passwordFields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: var(--theme-bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--theme-border-primary);
+}
+
+.passwordInputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordInputContainer .fieldInput {
+  padding-right: 48px;
+}
+
+.passwordToggleButton {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: var(--theme-text-secondary);
+  transition: color 0.2s ease;
+}
+
+.passwordToggleButton:hover {
+  color: var(--theme-text-primary);
+}
+
+.eyeIcon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Light Theme Specific Overrides */
+[data-theme='light'] .profileSettings {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .passwordFields {
+  background: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .fieldInput {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme='light'] .fieldInput:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+[data-theme='light'] .fieldInput:disabled {
+  background: #f8f9fa;
+  color: #6b7280;
+}
+
+[data-theme='light'] .editButton {
+  background: #f8f9fa;
+  border: 1px solid #e2e8f0;
+  color: #374151;
+}
+
+[data-theme='light'] .editButton:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+[data-theme='light'] .cancelButton {
+  background: #f8f9fa;
+  border-color: #e2e8f0;
+  color: #6b7280;
+}
+
+[data-theme='light'] .cancelButton:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* Save button with gradient in light theme */
+[data-theme='light'] .saveButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+[data-theme='light'] .saveButton:hover:not(:disabled) {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profileSettings {
+    padding: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .actionButtons {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .profilePictureSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .avatarContainer {
+    align-self: center;
+  }
+
+  .fieldsSection {
+    gap: 16px;
+  }
+
+  .passwordFields {
+    gap: 12px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileSettings {
+    padding: 16px;
+  }
+
+  .actionButtons {
+    flex-direction: column-reverse;
+  }
+
+  .cancelButton,
+  .saveButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .avatarPlaceholder {
+    font-size: 24px;
+  }
+}
