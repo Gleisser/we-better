@@ -1,7 +1,10 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Dream } from '../../types';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { Dream, Milestone } from '../../types';
 import styles from './CosmicDreamExperience.module.css';
 import { createPortal } from 'react-dom';
+import { useDreamProgress } from '../../hooks/useDreamProgress';
+import { getDreamMilestonesForContent } from '../../api/dreamMilestonesApi';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 
 interface CosmicDreamExperienceProps {
   dreams: Dream[];
@@ -52,20 +55,34 @@ interface Supernova {
   createdAt: number;
 }
 
-// Color palette for categories
-const categoryColors: Record<string, string> = {
-  Travel: '#4FD1C5',
-  Skills: '#9F7AEA',
-  Finance: '#F6AD55',
-  Health: '#68D391',
-  Relationships: '#FC8181',
-  Career: '#63B3ED',
-  Education: '#F687B3',
-  Spirituality: '#B794F4',
+// Helper function to normalize category names (capitalize first letter)
+const normalizeCategory = (category: string): string => {
+  return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
 };
 
-// Default color for categories not in the palette
-const defaultColor = '#8B5CF6';
+// Helper function to get category color (case-insensitive)
+const getCategoryColor = (category: string): string => {
+  const categoryColors: Record<string, string> = {
+    travel: '#4FD1C5',
+    skills: '#9F7AEA',
+    finance: '#F6AD55',
+    finances: '#F6AD55', // Handle both "finance" and "finances"
+    health: '#68D391',
+    relationships: '#FC8181',
+    career: '#63B3ED',
+    education: '#F687B3',
+    spirituality: '#B794F4',
+  };
+
+  const normalizedCategory = category.toLowerCase();
+  return categoryColors[normalizedCategory] || '#8B5CF6';
+};
+
+// Helper function to check if a dream matches the selected category (case-insensitive)
+const dreamMatchesCategory = (dream: Dream, selectedCategory: string): boolean => {
+  if (selectedCategory === 'all') return true;
+  return normalizeCategory(dream.category) === selectedCategory;
+};
 
 export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   dreams,
@@ -73,6 +90,83 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   onDreamSelect,
   activeDream,
 }) => {
+  const { t } = useCommonTranslation();
+
+  // Helper function to get translated category name
+  const getTranslatedCategoryName = (categoryName: string): string => {
+    // Convert category name to lowercase for key matching
+    const normalizedName = categoryName.toLowerCase();
+
+    // Try to get translation, fallback to original name if not found
+    const translationKey = `dreamBoard.categories.names.${normalizedName}`;
+    const translated = t(translationKey);
+
+    // Handle array return type from translation function
+    const translatedString = Array.isArray(translated) ? translated[0] : translated;
+
+    // If translation key is returned as-is, it means no translation was found
+    return translatedString !== translationKey ? translatedString : categoryName;
+  };
+
+  // Memoize translated values to prevent infinite re-renders
+  const translations = useMemo(
+    () => ({
+      title: t('dreamBoard.cosmic.title') as string,
+      viewModes: {
+        cosmic: t('dreamBoard.cosmic.viewModes.cosmic') as string,
+        constellation: t('dreamBoard.cosmic.viewModes.constellation') as string,
+      },
+      tooltips: {
+        exitFullscreen: t('dreamBoard.cosmic.tooltips.exitFullscreen') as string,
+        fullscreen: t('dreamBoard.cosmic.tooltips.fullscreen') as string,
+        zoomOut: t('dreamBoard.cosmic.tooltips.zoomOut') as string,
+        resetView: t('dreamBoard.cosmic.tooltips.resetView') as string,
+        zoomIn: t('dreamBoard.cosmic.tooltips.zoomIn') as string,
+      },
+      category: {
+        label: t('dreamBoard.cosmic.category.label') as string,
+        all: t('dreamBoard.cosmic.category.all') as string,
+        legendTitle: t('dreamBoard.cosmic.category.legendTitle') as string,
+      },
+      loading: {
+        text: t('dreamBoard.cosmic.loading.text') as string,
+      },
+      emptyState: {
+        text: t('dreamBoard.cosmic.emptyState.text') as string,
+        subtext: t('dreamBoard.cosmic.emptyState.subtext') as string,
+        button: t('dreamBoard.cosmic.emptyState.button') as string,
+      },
+      detail: {
+        progress: t('dreamBoard.cosmic.detail.progress') as string,
+        milestones: t('dreamBoard.cosmic.detail.milestones') as string,
+        completed: t('dreamBoard.cosmic.detail.completed') as string,
+        sharedWith: t('dreamBoard.cosmic.detail.sharedWith') as string,
+        created: t('dreamBoard.cosmic.detail.created') as string,
+      },
+    }),
+    [t]
+  );
+
+  // Create a comprehensive list of categories that includes both actual categories from dreams
+  // and predefined categories to ensure we show all possible categories
+  const displayCategories = useMemo(() => {
+    const allPossibleCategories = [
+      'Travel',
+      'Skills',
+      'Finance',
+      'Health',
+      'Relationships',
+      'Career',
+      'Education',
+      'Spirituality',
+    ];
+
+    // Normalize categories from dreams (capitalize first letter)
+    const normalizedDreamCategories = categories.map(cat => normalizeCategory(cat));
+
+    // Combine normalized categories from dreams with predefined ones, removing duplicates
+    return [...new Set([...normalizedDreamCategories, ...allPossibleCategories])];
+  }, [categories]);
   // Basic state
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -100,6 +194,11 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   // State for positioning the detail card
   const [detailCardPosition, setDetailCardPosition] = useState({ x: 0, y: 0 });
   const [showPortalCard, setShowPortalCard] = useState(false);
+
+  // Backend integration for progress and milestones
+  const { getProgressForDream } = useDreamProgress();
+  const [dreamProgresses, setDreamProgresses] = useState<Record<string, number>>({});
+  const [dreamMilestones, setDreamMilestones] = useState<Record<string, Milestone[]>>({});
 
   // Format date helper
   const formatDate = (dateString: string): string => {
@@ -187,7 +286,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         const nodeRadius = 15 + importanceFactor * 10;
 
         // Color based on category
-        const color = categoryColors[dream.category] || defaultColor;
+        const color = getCategoryColor(dream.category);
 
         // Initial brightness based on progress
         const brightness = 0.4 + dream.progress * 0.6;
@@ -261,6 +360,79 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     }
   }, [dimensions, isInitialized, initializeUniverse]);
 
+  // Load backend data for progress and milestones
+  useEffect(() => {
+    const loadBackendData = async (): Promise<void> => {
+      if (dreams.length === 0) return;
+
+      try {
+        // Load progress data
+        const progressMap: Record<string, number> = {};
+        for (const dream of dreams) {
+          try {
+            const latestProgress = await getProgressForDream(dream.id);
+            progressMap[dream.id] = latestProgress !== undefined ? latestProgress : dream.progress;
+          } catch (error) {
+            console.error(`Error loading progress for dream ${dream.id}:`, error);
+            progressMap[dream.id] = dream.progress;
+          }
+        }
+        setDreamProgresses(progressMap);
+
+        // Load milestones data
+        const milestonesMap: Record<string, Milestone[]> = {};
+        for (const dream of dreams) {
+          try {
+            const milestones = await getDreamMilestonesForContent(dream.id);
+            // Convert backend milestones to frontend format
+            milestonesMap[dream.id] = milestones.map(m => ({
+              id: m.id,
+              title: m.title,
+              description: m.description || '',
+              completed: m.completed,
+              date: m.due_date || m.created_at,
+            }));
+          } catch (error) {
+            console.error(`Error loading milestones for dream ${dream.id}:`, error);
+            // Fallback to dream's existing milestones
+            milestonesMap[dream.id] = dream.milestones || [];
+          }
+        }
+        setDreamMilestones(milestonesMap);
+      } catch (error) {
+        console.error('Error loading backend data:', error);
+      }
+    };
+
+    loadBackendData();
+  }, [dreams, getProgressForDream]);
+
+  // Handle fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = (): void => {
+      const isCurrentlyFullscreen = !!document.fullscreenElement;
+      setIsFullscreen(isCurrentlyFullscreen);
+
+      // Reset view when toggling fullscreen
+      setPanOffset({ x: 0, y: 0 });
+      setZoomLevel(1);
+
+      // Allow time for the container to resize before updating dimensions
+      setTimeout(() => {
+        if (containerRef.current) {
+          const { width, height } = containerRef.current.getBoundingClientRect();
+          setDimensions({ width, height });
+        }
+      }, 100);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   // Animation loop to render the cosmic dream map
   const animate = useCallback(() => {
     if (!canvasRef.current || !isInitialized) return;
@@ -322,7 +494,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         }
 
         // Draw nebula glow
-        const color = categoryColors[category] || defaultColor;
+        const color = getCategoryColor(category);
         const radialGradient = ctx.createRadialGradient(
           centerX,
           centerY,
@@ -353,7 +525,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     // Update and draw connections
     dreamNodes.forEach(node => {
       // Skip if node is filtered out by category selection
-      if (selectedCategory !== 'all' && node.category !== selectedCategory) return;
+      if (!dreamMatchesCategory(node.dream, selectedCategory)) return;
 
       const isActive = activeDream?.id === node.dream.id;
       const isHovered = hoveredDream?.id === node.dream.id;
@@ -364,7 +536,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         if (!target) return;
 
         // Skip if target is filtered out by category selection
-        if (selectedCategory !== 'all' && target.category !== selectedCategory) return;
+        if (!dreamMatchesCategory(target.dream, selectedCategory)) return;
 
         // Skip if connection is offscreen
         const midX = (node.x + target.x) / 2;
@@ -428,7 +600,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     // Update and draw nodes
     dreamNodes.forEach(node => {
       // Skip if node is filtered out by category selection
-      if (selectedCategory !== 'all' && node.category !== selectedCategory) return;
+      if (!dreamMatchesCategory(node.dream, selectedCategory)) return;
 
       // Skip if offscreen (with buffer for glow)
       const screenX = node.x * zoomLevel + panOffset.x;
@@ -538,15 +710,16 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       ctx.fillStyle = nodeGradient;
       ctx.fill();
 
-      // Draw progress ring
-      if (node.dream.progress > 0) {
+      // Draw progress ring using backend data
+      const nodeProgress = dreamProgresses[node.dream.id] ?? node.dream.progress;
+      if (nodeProgress > 0) {
         ctx.beginPath();
         ctx.arc(
           node.x,
           node.y,
           node.radius + 2,
           -Math.PI / 2,
-          -Math.PI / 2 + Math.PI * 2 * node.dream.progress
+          -Math.PI / 2 + Math.PI * 2 * nodeProgress
         );
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 2;
@@ -584,7 +757,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       if (!parentNode) return;
 
       // Skip if parent is filtered out by category selection
-      if (selectedCategory !== 'all' && parentNode.category !== selectedCategory) return;
+      if (!dreamMatchesCategory(parentNode.dream, selectedCategory)) return;
 
       // Update badge position to orbit parent
       badge.angle += 0.01;
@@ -656,6 +829,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     selectedCategory,
     viewMode,
     dreams,
+    dreamProgresses,
   ]);
 
   // Start animation when initialized
@@ -671,19 +845,19 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
   // Toggle fullscreen mode
   const toggleFullscreen = (): void => {
-    setIsFullscreen(!isFullscreen);
+    if (!containerRef.current) return;
 
-    // Reset view when toggling fullscreen
-    setPanOffset({ x: 0, y: 0 });
-    setZoomLevel(1);
-
-    // Allow time for the container to resize before re-initializing
-    setTimeout(() => {
-      if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        setDimensions({ width, height });
-      }
-    }, 100);
+    if (!document.fullscreenElement) {
+      // Enter fullscreen
+      containerRef.current.requestFullscreen().catch(err => {
+        console.error('Error attempting to enable fullscreen:', err);
+      });
+    } else {
+      // Exit fullscreen
+      document.exitFullscreen().catch(err => {
+        console.error('Error attempting to exit fullscreen:', err);
+      });
+    }
   };
 
   // Toggle view mode between cosmic and constellation
@@ -781,7 +955,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     let hoveredNode = null;
     for (const node of dreamNodes) {
       // Skip if node is filtered out by category selection
-      if (selectedCategory !== 'all' && node.category !== selectedCategory) continue;
+      if (!dreamMatchesCategory(node.dream, selectedCategory)) continue;
 
       const dx = node.x - mouseX;
       const dy = node.y - mouseY;
@@ -790,8 +964,8 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       if (distance < node.radius) {
         hoveredNode = node;
 
-        // Update card position for portal
-        if (hoveredNode) {
+        // Update card position for portal (only needed in normal mode)
+        if (hoveredNode && !isFullscreen) {
           // Convert node position to screen coordinates
           const screenX = node.x * zoomLevel + panOffset.x;
           const screenY = node.y * zoomLevel + panOffset.y;
@@ -887,7 +1061,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     let clickedNode = null;
     for (const node of dreamNodes) {
       // Skip if node is filtered out by category selection
-      if (selectedCategory !== 'all' && node.category !== selectedCategory) continue;
+      if (!dreamMatchesCategory(node.dream, selectedCategory)) continue;
 
       const dx = node.x - mouseX;
       const dy = node.y - mouseY;
@@ -958,17 +1132,34 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     const dream = activeDream || hoveredDream;
     if (!dream) return null;
 
-    return (
-      <div
-        className={`${styles.dreamDetailCard} ${showDetailCard ? styles.dreamDetailCardVisible : ''}`}
-        ref={detailCardRef}
-        style={{
-          position: 'fixed',
+    // Get backend data for this dream
+    const currentProgress = dreamProgresses[dream.id] ?? dream.progress;
+    const currentMilestones = dreamMilestones[dream.id] ?? dream.milestones ?? [];
+
+    // Use different positioning for fullscreen vs normal mode
+    const cardStyle = isFullscreen
+      ? {
+          // In fullscreen, use absolute positioning relative to the container
+          position: 'absolute' as const,
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 50,
+        }
+      : {
+          // In normal mode, use fixed positioning relative to viewport
+          position: 'fixed' as const,
           top: `${detailCardPosition.y}px`,
           left: `${detailCardPosition.x}px`,
           transform: 'translate(-50%, -120%)',
           zIndex: 9999,
-        }}
+        };
+
+    return (
+      <div
+        className={`${styles.dreamDetailCard} ${showDetailCard ? styles.dreamDetailCardVisible : ''}`}
+        ref={detailCardRef}
+        style={cardStyle}
       >
         <button className={styles.closeDetailButton} onClick={() => displayDreamDetails(null)}>
           ×
@@ -979,42 +1170,42 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         <div
           className={styles.dreamDetailCategory}
           style={{
-            backgroundColor: categoryColors[dream.category] || defaultColor,
+            backgroundColor: getCategoryColor(dream.category),
           }}
         >
-          {dream.category}
+          {getTranslatedCategoryName(dream.category)}
         </div>
 
         <p className={styles.dreamDetailDescription}>{dream.description}</p>
 
         <div className={styles.dreamDetailProgress}>
           <div className={styles.dreamDetailProgressHeader}>
-            <div className={styles.dreamDetailProgressLabel}>Progress</div>
+            <div className={styles.dreamDetailProgressLabel}>{translations.detail.progress}</div>
             <div className={styles.dreamDetailProgressValue}>
-              {Math.round(dream.progress * 100)}%
+              {Math.round(currentProgress * 100)}%
             </div>
           </div>
           <div className={styles.dreamDetailProgressBar}>
             <div
               className={styles.dreamDetailProgressFill}
               style={{
-                width: `${dream.progress * 100}%`,
-                backgroundColor: categoryColors[dream.category] || defaultColor,
+                width: `${currentProgress * 100}%`,
+                backgroundColor: getCategoryColor(dream.category),
               }}
             />
           </div>
         </div>
 
         <div className={styles.dreamDetailMilestonesHeader}>
-          <h3 className={styles.dreamDetailMilestonesTitle}>Milestones</h3>
+          <h3 className={styles.dreamDetailMilestonesTitle}>{translations.detail.milestones}</h3>
           <div className={styles.dreamDetailMilestonesSummary}>
-            {dream.milestones.filter(m => m.completed).length} of {dream.milestones.length}{' '}
-            completed
+            {currentMilestones.filter(m => m.completed).length} of {currentMilestones.length}{' '}
+            {translations.detail.completed}
           </div>
         </div>
 
         <div className={styles.dreamDetailMilestones}>
-          {dream.milestones.map(milestone => (
+          {currentMilestones.map(milestone => (
             <div
               key={milestone.id}
               className={`${styles.dreamDetailMilestone} ${milestone.completed ? styles.completedMilestone : ''}`}
@@ -1042,7 +1233,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         {dream.isShared && (
           <div className={styles.dreamDetailSharing}>
             <div className={styles.dreamDetailSharingHeader}>
-              <h3 className={styles.dreamDetailSharingTitle}>Shared With</h3>
+              <h3 className={styles.dreamDetailSharingTitle}>{translations.detail.sharedWith}</h3>
             </div>
             <div className={styles.dreamDetailAvatars}>
               {dream.sharedWith?.map((userId, index) => (
@@ -1059,14 +1250,8 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         )}
 
         <div className={styles.dreamDetailFooter}>
-          <div className={styles.dreamDetailTimeframe}>
-            {dream.timeframe
-              .split('-')
-              .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}
-          </div>
           <div className={styles.dreamDetailCreated}>
-            Created: {formatDate(dream.createdAt || '')}
+            {translations.detail.created}: {formatDate(dream.createdAt || '')}
           </div>
         </div>
       </div>
@@ -1094,27 +1279,31 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
           {/* Header Controls */}
           <div className={styles.header}>
-            <h2 className={styles.title}>Dream Universe</h2>
+            <h2 className={styles.title}>{translations.title}</h2>
             <div className={styles.controls}>
               <div className={styles.viewModeToggle}>
                 <button
                   className={`${styles.viewModeButton} ${viewMode === 'cosmic' ? styles.activeViewMode : ''}`}
                   onClick={() => setViewMode('cosmic')}
                 >
-                  Cosmic
+                  {translations.viewModes.cosmic}
                 </button>
                 <button
                   className={`${styles.viewModeButton} ${viewMode === 'constellation' ? styles.activeViewMode : ''}`}
                   onClick={() => setViewMode('constellation')}
                 >
-                  Constellation
+                  {translations.viewModes.constellation}
                 </button>
               </div>
 
               <button
                 className={styles.fullscreenButton}
                 onClick={toggleFullscreen}
-                title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+                title={
+                  isFullscreen
+                    ? translations.tooltips.exitFullscreen
+                    : translations.tooltips.fullscreen
+                }
               >
                 {isFullscreen ? (
                   <svg viewBox="0 0 24 24" width="18" height="18">
@@ -1138,13 +1327,21 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
           {/* Navigation Controls */}
           <div className={styles.navigationControls}>
             <div className={styles.zoomControls}>
-              <button className={styles.controlButton} onClick={handleZoomOut} title="Zoom Out">
+              <button
+                className={styles.controlButton}
+                onClick={handleZoomOut}
+                title={translations.tooltips.zoomOut}
+              >
                 <svg viewBox="0 0 24 24" width="16" height="16">
                   <path d="M19 13H5v-2h14v2z" fill="currentColor" />
                 </svg>
               </button>
 
-              <button className={styles.controlButton} onClick={handleResetView} title="Reset View">
+              <button
+                className={styles.controlButton}
+                onClick={handleResetView}
+                title={translations.tooltips.resetView}
+              >
                 <svg viewBox="0 0 24 24" width="16" height="16">
                   <path
                     d="M12 5V2L8 6l4 4V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
@@ -1153,7 +1350,11 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
                 </svg>
               </button>
 
-              <button className={styles.controlButton} onClick={handleZoomIn} title="Zoom In">
+              <button
+                className={styles.controlButton}
+                onClick={handleZoomIn}
+                title={translations.tooltips.zoomIn}
+              >
                 <svg viewBox="0 0 24 24" width="16" height="16">
                   <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor" />
                 </svg>
@@ -1161,16 +1362,16 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
             </div>
 
             <div className={styles.categorySelector}>
-              <span className={styles.categoryLabel}>Category:</span>
+              <span className={styles.categoryLabel}>{translations.category.label}</span>
               <select
                 className={styles.categoryDropdown}
                 value={selectedCategory}
                 onChange={handleCategorySelect}
               >
-                <option value="all">All Categories</option>
-                {categories.map(category => (
+                <option value="all">{translations.category.all}</option>
+                {displayCategories.map(category => (
                   <option key={category} value={category}>
-                    {category}
+                    {getTranslatedCategoryName(category)}
                   </option>
                 ))}
               </select>
@@ -1179,10 +1380,10 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
           {/* Category Legend */}
           <div className={styles.categoryLegend}>
-            <div className={styles.legendTitle}>Dream Categories</div>
+            <div className={styles.legendTitle}>{translations.category.legendTitle}</div>
             <div className={styles.legendItems}>
-              {categories.map(category => {
-                const count = dreams.filter(d => d.category === category).length;
+              {displayCategories.map(category => {
+                const count = dreams.filter(d => normalizeCategory(d.category) === category).length;
                 return (
                   <div
                     key={category}
@@ -1194,10 +1395,10 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
                   >
                     <div
                       className={styles.legendColor}
-                      style={{ backgroundColor: categoryColors[category] || defaultColor }}
+                      style={{ backgroundColor: getCategoryColor(category) }}
                     />
                     <div className={styles.legendLabel}>
-                      {category}
+                      {getTranslatedCategoryName(category)}
                       <span className={styles.legendCount}>{count}</span>
                     </div>
                   </div>
@@ -1207,12 +1408,16 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
           </div>
 
           {/* Use Portal for Dream Detail Card */}
-          {showPortalCard && createPortal(<DreamDetailCard />, document.body)}
+          {showPortalCard &&
+            createPortal(
+              <DreamDetailCard />,
+              isFullscreen && containerRef.current ? containerRef.current : document.body
+            )}
         </>
       ) : (
         <div className={styles.loadingContainer}>
           <div className={styles.loadingSpinner}></div>
-          <div className={styles.loadingText}>Initializing Dream Universe...</div>
+          <div className={styles.loadingText}>{translations.loading.text}</div>
         </div>
       )}
 
@@ -1220,11 +1425,11 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         <div className={styles.emptyStateContainer}>
           <div className={styles.emptyStateIcon}>✨</div>
           <div className={styles.emptyStateText}>
-            Your dream universe is empty.
+            {translations.emptyState.text}
             <br />
-            Start by adding your first dream.
+            {translations.emptyState.subtext}
           </div>
-          <button className={styles.addDreamButton}>Add Your First Dream</button>
+          <button className={styles.addDreamButton}>{translations.emptyState.button}</button>
         </div>
       )}
     </div>

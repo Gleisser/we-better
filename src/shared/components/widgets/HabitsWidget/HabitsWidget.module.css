@@ -601,3 +601,254 @@
            text-white;
   }
 }
+
+/* Light Theme Styles */
+[data-theme='light'] .container {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+/* Light theme header styling */
+[data-theme='light'] .headerIcon {
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: var(--theme-interactive-primary);
+}
+
+[data-theme='light'] .headerText {
+  color: var(--theme-text-primary);
+}
+
+/* Light theme category buttons */
+[data-theme='light'] .categoryButton {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-secondary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .categoryButton:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: var(--theme-interactive-primary);
+}
+
+[data-theme='light'] .categoryButton.selected {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+/* Light theme habit cards */
+[data-theme='light'] .habitCard {
+  background: #f2f2f2;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset,
+    0 -1px 1px rgba(0, 0, 0, 0.02) inset;
+}
+
+[data-theme='light'] .habitIcon {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .habitName {
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .dayLabel {
+  color: var(--theme-text-secondary);
+}
+
+/* Light theme day check buttons */
+[data-theme='light'] .dayCheck {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--theme-text-secondary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+[data-theme='light'] .dayCheck:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .dayCheck.hasStatus {
+  color: var(--theme-text-primary);
+}
+
+[data-theme='light'] .dayCheck[data-status='completed'] {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .checkmarkIcon {
+  color: white;
+}
+
+/* Light theme streak badge */
+[data-theme='light'] .streakBadge {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: rgb(245, 158, 11);
+}
+
+/* Light theme action buttons with gradient */
+[data-theme='light'] .actionButton,
+[data-theme='light'] .monthlyViewButton,
+[data-theme='light'] .addButton,
+[data-theme='light'] .collapseButton,
+[data-theme='light'] .toggleButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .actionButton:hover,
+[data-theme='light'] .monthlyViewButton:hover,
+[data-theme='light'] .addButton:hover,
+[data-theme='light'] .collapseButton:hover,
+[data-theme='light'] .toggleButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+[data-theme='light'] .actionIcon,
+[data-theme='light'] .collapseIcon,
+[data-theme='light'] .toggleIcon {
+  color: white;
+}
+
+/* Light theme create button */
+[data-theme='light'] .createButton {
+  background: var(--theme-gradient-primary);
+  border: none;
+  color: white;
+  box-shadow:
+    0 4px 12px rgba(139, 92, 246, 0.3),
+    0 1px 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+[data-theme='light'] .createButton:hover {
+  background: var(--theme-gradient-primary);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(139, 92, 246, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.3) inset;
+}
+
+/* Light theme states */
+[data-theme='light'] .loadingIndicator {
+  color: var(--theme-text-secondary);
+}
+
+[data-theme='light'] .errorMessage {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: rgb(239, 68, 68);
+}
+
+[data-theme='light'] .emptyState {
+  color: var(--theme-text-secondary);
+}
+
+/* Light theme tooltip */
+[data-theme='light'] .dayColumn::after {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: var(--theme-text-primary);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 1px 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+/* Mobile responsiveness for light theme */
+@media (max-width: 768px) {
+  [data-theme='light'] .container {
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.06),
+      0 1px 1px rgba(255, 255, 255, 0.3) inset;
+  }
+
+  [data-theme='light'] .habitCard {
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 1px 1px rgba(255, 255, 255, 0.4) inset;
+  }
+
+  [data-theme='light'] .actionButton,
+  [data-theme='light'] .monthlyViewButton,
+  [data-theme='light'] .addButton,
+  [data-theme='light'] .collapseButton,
+  [data-theme='light'] .toggleButton,
+  [data-theme='light'] .createButton {
+    box-shadow:
+      0 2px 8px rgba(139, 92, 246, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  [data-theme='light'] .dayCheck {
+    box-shadow:
+      0 1px 4px rgba(0, 0, 0, 0.02),
+      0 1px 1px rgba(255, 255, 255, 0.4) inset;
+  }
+
+  [data-theme='light'] .dayCheck[data-status='completed'] {
+    box-shadow:
+      0 2px 8px rgba(139, 92, 246, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  /* Disable transforms on mobile for better performance */
+  [data-theme='light'] .actionButton:hover,
+  [data-theme='light'] .monthlyViewButton:hover,
+  [data-theme='light'] .addButton:hover,
+  [data-theme='light'] .collapseButton:hover,
+  [data-theme='light'] .toggleButton:hover,
+  [data-theme='light'] .createButton:hover {
+    transform: none;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='light'] .actionButton:hover,
+  [data-theme='light'] .monthlyViewButton:hover,
+  [data-theme='light'] .addButton:hover,
+  [data-theme='light'] .collapseButton:hover,
+  [data-theme='light'] .toggleButton:hover,
+  [data-theme='light'] .createButton:hover {
+    transform: none;
+    box-shadow:
+      0 4px 12px rgba(139, 92, 246, 0.3),
+      0 1px 1px rgba(255, 255, 255, 0.2) inset;
+  }
+}

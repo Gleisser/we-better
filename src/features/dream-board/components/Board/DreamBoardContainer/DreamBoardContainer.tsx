@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import {
   DreamBoardProps,
   DreamBoardData,
@@ -78,10 +79,12 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   error,
   onSave,
   onShare,
-  onComplete,
+  onComplete: _onComplete,
   onDelete,
   readOnly = false,
 }) => {
+  const { t } = useCommonTranslation();
+
   // Canvas state
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -89,8 +92,8 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
 
   // Board data state
   const [boardData, setBoardData] = useState<DreamBoardData>({
-    title: 'My Dream Board',
-    description: 'Visualize • Believe • Achieve',
+    title: t('dreamBoard.board.defaultTitle') as string,
+    description: t('dreamBoard.board.defaultDescription') as string,
     categories: lifeWheelCategories.map(cat => cat.id),
     content: [],
   });
@@ -121,13 +124,13 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
       });
     } else {
       setBoardData({
-        title: 'My Dream Board',
-        description: 'Visualize • Believe • Achieve',
+        title: t('dreamBoard.board.defaultTitle') as string,
+        description: t('dreamBoard.board.defaultDescription') as string,
         categories: lifeWheelCategories.map(cat => cat.id),
         content: [],
       });
     }
-  }, [data, lifeWheelCategories]);
+  }, [data, lifeWheelCategories]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Trigger animation
   const startAnimation = useCallback((): void => {
@@ -226,26 +229,6 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
     setShowControls(false);
   };
 
-  // Handle save and complete - first save the board, then call onComplete callback
-  const handleComplete = async (): Promise<void> => {
-    // First save the current state
-    const saved = await handleSave();
-
-    if (saved) {
-      showToast.success('Vision board completed!');
-
-      // If the save was successful and we have a completion callback, call it
-      if (onComplete) {
-        // Add a small delay to show the success message
-        setTimeout(() => {
-          onComplete();
-        }, 1000);
-      }
-    } else {
-      showToast.error('Please save your vision board before completing');
-    }
-  };
-
   // Handle save
   const handleSave = async (): Promise<boolean> => {
     if (isSaving) return false;
@@ -283,15 +266,15 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
       const result = await onSave(dataToSave);
 
       if (result) {
-        showToast.success('Vision board saved successfully!');
+        showToast.success(t('dreamBoard.board.saved') as string);
       } else {
-        showToast.error('Failed to save vision board');
+        showToast.error(t('dreamBoard.board.failedToSave') as string);
       }
 
       return result;
     } catch (error) {
       console.error('Error saving vision board:', error);
-      showToast.error('An error occurred while saving');
+      showToast.error(t('dreamBoard.board.errorSaving') as string);
       return false;
     } finally {
       setIsSaving(false);
@@ -386,7 +369,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
 
     // Check if the limit has been reached
     if (imageCount >= 7) {
-      showToast.error('You can only add up to 7 images to your vision board.');
+      showToast.error(t('dreamBoard.board.imageLimit') as string);
       return;
     }
 
@@ -416,11 +399,6 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
     };
 
     fileInput.click();
-  };
-
-  // Handle AI image generation
-  const handleGenerateAIImage = (): void => {
-    showToast.info('AI image generation is coming soon! Stay tuned for updates.');
   };
 
   // Handle auto arrange
@@ -474,7 +452,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
           <div className={styles.glassCard}>
             <div className={styles.loadingContainer}>
               <div className={styles.spinner}></div>
-              <p>Loading your vision board...</p>
+              <p>{t('dreamBoard.board.loading')}</p>
             </div>
           </div>
         </div>
@@ -491,10 +469,10 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
           <div className={styles.glassCard}>
             <div className={styles.errorContainer}>
               <div className={styles.errorIcon}>⚠️</div>
-              <h3>Something went wrong</h3>
+              <h3>{t('dreamBoard.board.errorTitle')}</h3>
               <p>{error}</p>
               <button className={styles.retryButton} onClick={() => window.location.reload()}>
-                Retry
+                {t('dreamBoard.board.retry')}
               </button>
             </div>
           </div>
@@ -509,9 +487,17 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
       <div>
         <div className={styles.glassCard}>
           {/* Vision Board Title */}
-          <h1 className={styles.dreamBoardTitle}>{boardData.title || 'Vision Board'}</h1>
+          <h1 className={styles.dreamBoardTitle}>
+            {boardData.title === 'My Dream Board'
+              ? t('dreamBoard.board.defaultTitle')
+              : boardData.title || t('dreamBoard.board.title')}
+          </h1>
           {boardData.description && (
-            <p className={styles.dreamBoardSubtitle}>{boardData.description}</p>
+            <p className={styles.dreamBoardSubtitle}>
+              {boardData.description === 'Vision board created with my dreams and goals'
+                ? t('dreamBoard.board.defaultDescription')
+                : boardData.description}
+            </p>
           )}
 
           {/* Canvas container */}
@@ -537,11 +523,9 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
                 mode={toolbarMode}
                 onModeChange={setToolbarMode}
                 onAddImage={handleImageUpload}
-                onGenerateAI={handleGenerateAIImage}
                 onAutoArrange={handleAutoArrange}
                 onSave={handleSave}
                 onShare={shareHandler}
-                onComplete={onComplete ? handleComplete : undefined}
                 onDelete={onDelete}
                 onFilterByCategory={handleFilterByCategory}
                 categories={lifeWheelCategories}

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { PencilIcon, TrashIcon } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { createPortal } from 'react-dom';
 import styles from './GoalActionsMenu.module.css';
 
@@ -18,6 +19,8 @@ export const GoalActionsMenu = ({
   onDelete,
   position,
 }: GoalActionsMenuProps): JSX.Element => {
+  const { t } = useCommonTranslation();
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -41,7 +44,7 @@ export const GoalActionsMenu = ({
               }}
             >
               <PencilIcon className={styles.menuIcon} />
-              <span>Edit</span>
+              <span>{t('widgets.goals.actions.edit')}</span>
             </button>
             <button
               className={`${styles.menuItem} ${styles.delete}`}
@@ -51,7 +54,7 @@ export const GoalActionsMenu = ({
               }}
             >
               <TrashIcon className={styles.menuIcon} />
-              <span>Delete</span>
+              <span>{t('widgets.goals.actions.delete')}</span>
             </button>
           </motion.div>
         </>

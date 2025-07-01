@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import styles from './HabitsWidget.module.css';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { format, startOfWeek, addDays } from 'date-fns';
+import { enUS, ptBR } from 'date-fns/locale';
 import { MonthlyView } from './MonthlyView';
 import {
   ChartIcon,
@@ -42,8 +44,12 @@ const transformApiHabit = (apiHabit: ApiHabit, logs: HabitLog[] = []): LocalHabi
 };
 
 const HabitsWidget = (): JSX.Element => {
+  const { t, currentLanguage } = useCommonTranslation();
   const [selectedCategory, setSelectedCategory] = useState<HabitCategory | 'all'>('all');
   const { theme } = useTimeBasedTheme();
+
+  // Get the appropriate locale for date formatting
+  const dateLocale = currentLanguage === 'pt' ? ptBR : enUS;
   const [selectedHabit, setSelectedHabit] = useState<LocalHabit | null>(null);
   const [showMonthlyView, setShowMonthlyView] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -288,11 +294,11 @@ const HabitsWidget = (): JSX.Element => {
         <div className={styles.headerMain}>
           <div className={styles.headerLeft}>
             <span className={styles.headerIcon}>✅</span>
-            <span className={styles.headerText}>Daily Habits</span>
+            <span className={styles.headerText}>{t('widgets.habits.title')}</span>
             <button
               className={styles.addButton}
               onClick={() => setShowHabitForm(true)}
-              aria-label="Add new habit"
+              aria-label={t('widgets.habits.addNew') as string}
             >
               <PlusIcon className={styles.actionIcon} />
             </button>
@@ -301,7 +307,11 @@ const HabitsWidget = (): JSX.Element => {
           <button
             className={`${styles.collapseButton} ${isCollapsed ? styles.collapsed : ''}`}
             onClick={() => setIsCollapsed(!isCollapsed)}
-            aria-label={isCollapsed ? 'Expand habits widget' : 'Collapse habits widget'}
+            aria-label={
+              (isCollapsed
+                ? t('widgets.habits.expandWidget')
+                : t('widgets.habits.collapseWidget')) as string
+            }
           >
             <ChevronDownIcon className={styles.collapseIcon} />
           </button>
@@ -326,7 +336,7 @@ const HabitsWidget = (): JSX.Element => {
             }`}
             onClick={() => setSelectedCategory('all')}
           >
-            All
+            {t('widgets.habits.categories.all')}
           </button>
           {Object.entries(CATEGORY_CONFIG).map(([category, config]) => (
             <button
@@ -342,20 +352,28 @@ const HabitsWidget = (): JSX.Element => {
               }
             >
               <span className={styles.categoryIcon}>{config.icon}</span>
-              <span className={styles.categoryLabel}>{config.label}</span>
+              <span className={styles.categoryLabel}>
+                {t(`widgets.habits.categories.${category}`)}
+              </span>
             </button>
           ))}
         </div>
 
         <div className={styles.content}>
-          {isLoading && <div className={styles.loadingIndicator}>Loading habits...</div>}
-          {error && <div className={styles.errorMessage}>Error: {error.message}</div>}
+          {isLoading && (
+            <div className={styles.loadingIndicator}>{t('widgets.habits.loading')}</div>
+          )}
+          {error && (
+            <div className={styles.errorMessage}>
+              {t('widgets.habits.errorLoading')}: {error.message}
+            </div>
+          )}
 
           {!isLoading && !error && filteredHabits.length === 0 && (
             <div className={styles.emptyState}>
-              <p>No habits found. Create your first habit to get started!</p>
+              <p>{t('widgets.habits.emptyState')}</p>
               <button className={styles.createButton} onClick={() => setShowHabitForm(true)}>
-                Create Habit
+                {t('widgets.habits.createHabit')}
               </button>
             </div>
           )}
@@ -383,7 +401,11 @@ const HabitsWidget = (): JSX.Element => {
                   <button
                     className={styles.toggleButton}
                     onClick={() => toggleHabit(habit.id)}
-                    aria-label={collapsedHabits.has(habit.id) ? 'Expand habit' : 'Collapse habit'}
+                    aria-label={
+                      (collapsedHabits.has(habit.id)
+                        ? t('widgets.habits.expandHabit')
+                        : t('widgets.habits.collapseHabit')) as string
+                    }
                   >
                     <ChevronDownIcon className={styles.toggleIcon} />
                   </button>
@@ -394,11 +416,21 @@ const HabitsWidget = (): JSX.Element => {
                     <div
                       key={date.toString()}
                       className={styles.dayColumn}
-                      data-tooltip="Click to set status"
+                      data-tooltip={t('widgets.habits.setStatusTooltip')}
                       role="button"
-                      aria-label={`Set status for ${format(date, 'EEEE')}`}
+                      aria-label={
+                        t('widgets.habits.setStatusFor', {
+                          day: format(date, 'EEEE', { locale: dateLocale }),
+                        }) as string
+                      }
                     >
-                      <span className={styles.dayLabel}>{format(date, 'EEE')}</span>
+                      <span className={styles.dayLabel}>
+                        {currentLanguage === 'pt'
+                          ? ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'][
+                              date.getDay() === 0 ? 6 : date.getDay() - 1
+                            ]
+                          : format(date, 'EEE', { locale: dateLocale })}
+                      </span>
                       <div
                         className={`${styles.dayCheck} ${
                           getDateStatus(habit, date) ? styles.hasStatus : ''

@@ -1,32 +1,40 @@
 import { Dream } from '../../types';
 
-const achievementBadges = [
+interface AchievementBadge {
+  id: string;
+  titleKey: string;
+  descriptionKey: string;
+  icon: string;
+  condition: (dream: Dream) => boolean;
+}
+
+const achievementBadges: AchievementBadge[] = [
   {
     id: 'first-milestone',
-    title: 'First Step',
-    description: 'Completed your first milestone',
+    titleKey: 'dreamBoard.milestones.achievements.badges.firstStep.title',
+    descriptionKey: 'dreamBoard.milestones.achievements.badges.firstStep.description',
     icon: '🚀',
     condition: (dream: Dream) => dream.milestones.some(m => m.completed),
   },
   {
     id: 'halfway',
-    title: 'Halfway There',
-    description: 'Reached 50% completion',
+    titleKey: 'dreamBoard.milestones.achievements.badges.halfwayThere.title',
+    descriptionKey: 'dreamBoard.milestones.achievements.badges.halfwayThere.description',
     icon: '🏆',
     condition: (dream: Dream) => dream.progress >= 0.5,
   },
   {
     id: 'all-dated',
-    title: 'Well Planned',
-    description: 'Set target dates for all milestones',
+    titleKey: 'dreamBoard.milestones.achievements.badges.wellPlanned.title',
+    descriptionKey: 'dreamBoard.milestones.achievements.badges.wellPlanned.description',
     icon: '📅',
     condition: (dream: Dream) =>
       dream.milestones.length > 0 && dream.milestones.every(m => m.date !== undefined),
   },
   {
     id: 'completed',
-    title: 'Dream Achieved',
-    description: 'Completed all milestones',
+    titleKey: 'dreamBoard.milestones.achievements.badges.dreamAchieved.title',
+    descriptionKey: 'dreamBoard.milestones.achievements.badges.dreamAchieved.description',
     icon: '✨',
     condition: (dream: Dream) => dream.progress >= 1,
   },

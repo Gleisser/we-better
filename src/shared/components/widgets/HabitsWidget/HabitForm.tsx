@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { XIcon } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { Habit, HabitCategory } from './types';
 import { CATEGORY_CONFIG } from './config';
 import styles from './HabitForm.module.css';
@@ -103,6 +104,7 @@ export const HabitForm = ({
   initialValues,
   mode,
 }: HabitFormProps): JSX.Element => {
+  const { t } = useCommonTranslation();
   const [name, setName] = useState(initialValues?.name ?? '');
   const [category, setCategory] = useState<HabitCategory>(initialValues?.category ?? 'health');
 
@@ -130,7 +132,11 @@ export const HabitForm = ({
             exit={{ opacity: 0, scale: 0.95 }}
           >
             <div className={styles.header}>
-              <h3 className={styles.title}>{mode === 'create' ? 'New Habit' : 'Edit Habit'}</h3>
+              <h3 className={styles.title}>
+                {mode === 'create'
+                  ? t('widgets.habits.form.newHabit')
+                  : t('widgets.habits.form.editHabit')}
+              </h3>
               <button onClick={onClose} className={styles.closeButton}>
                 <XIcon className={styles.closeIcon} />
               </button>
@@ -139,7 +145,7 @@ export const HabitForm = ({
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.field}>
                 <label htmlFor="name" className={styles.label}>
-                  Name
+                  {t('widgets.habits.form.name')}
                 </label>
                 <input
                   id="name"
@@ -147,13 +153,13 @@ export const HabitForm = ({
                   value={name}
                   onChange={e => setName(e.target.value)}
                   className={styles.input}
-                  placeholder="e.g., Morning Meditation"
+                  placeholder={t('widgets.habits.form.placeholder') as string}
                   required
                 />
               </div>
 
               <div className={styles.field}>
-                <label className={styles.label}>Category</label>
+                <label className={styles.label}>{t('widgets.habits.form.category')}</label>
                 <div className={styles.categories}>
                   {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
                     <button
@@ -165,7 +171,9 @@ export const HabitForm = ({
                       onClick={() => setCategory(key as HabitCategory)}
                     >
                       <span className={styles.categoryIcon}>{config.icon}</span>
-                      <span className={styles.categoryLabel}>{config.label}</span>
+                      <span className={styles.categoryLabel}>
+                        {t(`widgets.habits.categories.${key}`)}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -173,7 +181,9 @@ export const HabitForm = ({
 
               <div className={styles.actions}>
                 <button type="submit" className={styles.submitButton}>
-                  {mode === 'create' ? 'Create Habit' : 'Save Changes'}
+                  {mode === 'create'
+                    ? t('widgets.habits.form.createButton')
+                    : t('widgets.habits.form.saveButton')}
                 </button>
               </div>
             </form>

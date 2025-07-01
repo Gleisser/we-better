@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { PencilIcon, TrashIcon } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './HabitActionsMenu.module.css';
 import { createPortal } from 'react-dom';
 
@@ -18,6 +19,8 @@ export const HabitActionsMenu = ({
   onDelete,
   position,
 }: HabitActionsMenuProps): JSX.Element => {
+  const { t } = useCommonTranslation();
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -41,7 +44,7 @@ export const HabitActionsMenu = ({
               }}
             >
               <PencilIcon className={styles.menuIcon} />
-              <span>Edit</span>
+              <span>{t('widgets.habits.actions.edit')}</span>
             </button>
             <button
               className={`${styles.menuItem} ${styles.delete}`}
@@ -51,7 +54,7 @@ export const HabitActionsMenu = ({
               }}
             >
               <TrashIcon className={styles.menuIcon} />
-              <span>Delete</span>
+              <span>{t('widgets.habits.actions.delete')}</span>
             </button>
           </motion.div>
         </>

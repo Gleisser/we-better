@@ -53,6 +53,7 @@ export const authService = {
         password,
         options: {
           data: {
+            display_name: fullName,
             full_name: fullName,
           },
           // Add explicit redirect URL

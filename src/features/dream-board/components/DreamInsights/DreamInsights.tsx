@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream } from '../../types';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 
 interface Insight {
   id: string;
@@ -31,6 +32,66 @@ const InsightTypeIcons: Record<string, string> = {
 };
 
 const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
+  const { t } = useCommonTranslation();
+
+  // Helper function to get translated category name
+  const getTranslatedCategoryName = (categoryName: string): string => {
+    // Convert category name to lowercase for key matching
+    const normalizedName = categoryName.toLowerCase();
+
+    // Try to get translation, fallback to original name if not found
+    const translationKey = `dreamBoard.categories.names.${normalizedName}`;
+    const translated = t(translationKey);
+
+    // Handle array return type from translation function
+    const translatedString = Array.isArray(translated) ? translated[0] : translated;
+
+    // If translation key is returned as-is, it means no translation was found
+    return translatedString !== translationKey ? translatedString : categoryName;
+  };
+
+  // Helper function to get translated insight title
+  const getTranslatedInsightTitle = (title: string): string => {
+    // Convert title to lowercase and replace spaces with underscores for key matching
+    const normalizedTitle = title.toLowerCase().replace(/\s+/g, '_');
+
+    // Try to get translation, fallback to original title if not found
+    const translationKey = `dreamBoard.insights.titles.${normalizedTitle}`;
+    const translated = t(translationKey);
+
+    // Handle array return type from translation function
+    const translatedString = Array.isArray(translated) ? translated[0] : translated;
+
+    // If translation key is returned as-is, it means no translation was found
+    return translatedString !== translationKey ? translatedString : title;
+  };
+
+  // Memoize translated values to prevent infinite re-renders
+  const translations = useMemo(
+    () => ({
+      filters: {
+        all: t('dreamBoard.insights.filters.all') as string,
+        patterns: t('dreamBoard.insights.filters.patterns') as string,
+        balance: t('dreamBoard.insights.filters.balance') as string,
+        progress: t('dreamBoard.insights.filters.progress') as string,
+      },
+      keyTakeaways: {
+        title: t('dreamBoard.insights.keyTakeaways.title') as string,
+        emptyMessage: t('dreamBoard.insights.keyTakeaways.emptyMessage') as string,
+      },
+      relatedDreams: {
+        title: t('dreamBoard.insights.relatedDreams.title') as string,
+        noRelated: t('dreamBoard.insights.relatedDreams.noRelated') as string,
+      },
+      modal: {
+        title: t('dreamBoard.insights.modal.title') as string,
+        dataVisualization: t('dreamBoard.insights.modal.dataVisualization') as string,
+        visualizationPlaceholder: t('dreamBoard.insights.modal.visualizationPlaceholder') as string,
+      },
+    }),
+    [t]
+  );
+
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [focusedInsight, setFocusedInsight] = useState<string | null>(null);
   const [detailModal, setDetailModal] = useState<{ isOpen: boolean; insightId: string | null }>({
@@ -96,25 +157,25 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
             className={`${styles.filterButton} ${activeFilter === null ? styles.active : ''}`}
             onClick={() => setActiveFilter(null)}
           >
-            All
+            {translations.filters.all}
           </button>
           <button
             className={`${styles.filterButton} ${activeFilter === 'pattern' ? styles.active : ''}`}
             onClick={() => setActiveFilter('pattern')}
           >
-            Patterns
+            {translations.filters.patterns}
           </button>
           <button
             className={`${styles.filterButton} ${activeFilter === 'balance' ? styles.active : ''}`}
             onClick={() => setActiveFilter('balance')}
           >
-            Balance
+            {translations.filters.balance}
           </button>
           <button
             className={`${styles.filterButton} ${activeFilter === 'progress' ? styles.active : ''}`}
             onClick={() => setActiveFilter('progress')}
           >
-            Progress
+            {translations.filters.progress}
           </button>
         </div>
       </div>
@@ -125,12 +186,10 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
           <span role="img" aria-label="key">
             🔑
           </span>
-          <h3>Key Takeaways</h3>
+          <h3>{translations.keyTakeaways.title}</h3>
         </div>
         <div className={styles.keyTakeawaysContent}>
-          {keyInsight
-            ? keyInsight.description
-            : 'Start adding more dreams to get personalized insights!'}
+          {keyInsight ? keyInsight.description : translations.keyTakeaways.emptyMessage}
         </div>
       </div>
 
@@ -147,7 +206,7 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
                 {InsightTypeIcons[insight.type]}
               </span>
             </div>
-            <h3>{insight.title}</h3>
+            <h3>{getTranslatedInsightTitle(insight.title)}</h3>
             <p>{insight.description}</p>
 
             {/* Related categories */}
@@ -155,7 +214,7 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
               <div className={styles.relatedCategories}>
                 {insight.relatedCategories.map(category => (
                   <span key={category} className={styles.relatedCategoryTag}>
-                    {category}
+                    {getTranslatedCategoryName(category)}
                   </span>
                 ))}
               </div>
@@ -164,7 +223,7 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
             {/* Related dreams section (visible on focused cards) */}
             {focusedInsight === insight.id && (
               <div className={styles.relatedDreamsSection}>
-                <div className={styles.relatedDreamsTitle}>Related Dreams</div>
+                <div className={styles.relatedDreamsTitle}>{translations.relatedDreams.title}</div>
                 <div className={styles.relatedDreamsList}>
                   {getRelatedDreams(insight).map(dream => (
                     <span key={dream.id} className={styles.relatedDreamTag}>
@@ -172,7 +231,9 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
                     </span>
                   ))}
                   {getRelatedDreams(insight).length === 0 && (
-                    <span className={styles.relatedDreamTag}>No related dreams yet</span>
+                    <span className={styles.relatedDreamTag}>
+                      {translations.relatedDreams.noRelated}
+                    </span>
                   )}
                 </div>
               </div>
@@ -187,7 +248,8 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
           <div className={styles.insightDetailModal} onClick={e => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h2>
-                {insights.find(i => i.id === detailModal.insightId)?.title || 'Insight Details'}
+                {insights.find(i => i.id === detailModal.insightId)?.title ||
+                  translations.modal.title}
               </h2>
               <button className={styles.modalCloseButton} onClick={closeDetailModal}>
                 ×
@@ -198,17 +260,17 @@ const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
               <p>{insights.find(i => i.id === detailModal.insightId)?.description}</p>
 
               <div className={styles.dataVisSection}>
-                <h3>Data Visualization</h3>
+                <h3>{translations.modal.dataVisualization}</h3>
                 <div className={styles.timelineContainer}>
                   {/* In a real app, this would contain actual visualizations */}
                   <p style={{ textAlign: 'center', paddingTop: '80px' }}>
-                    Interactive visualization would appear here
+                    {translations.modal.visualizationPlaceholder}
                   </p>
                 </div>
               </div>
 
               <div className={styles.relatedDreamsSection}>
-                <h3>Related Dreams</h3>
+                <h3>{translations.relatedDreams.title}</h3>
                 <div className={styles.relatedDreamsList}>
                   {getRelatedDreams(
                     insights.find(i => i.id === detailModal.insightId) || insights[0]

@@ -2,10 +2,16 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import RadarChart from './components/RadarChart/EnhancedRadarChart';
 import { LifeCategory } from './types';
-import { DEFAULT_LIFE_CATEGORIES } from './constants/categories';
+import { getLocalizedCategories } from './constants/categories';
 import styles from './LifeWheel.module.css';
-import { getLatestLifeWheelData, saveLifeWheelData, getLifeWheelHistory } from './api/lifeWheelApi';
+import {
+  getLatestLifeWheelData,
+  saveLifeWheelData,
+  getLifeWheelHistory,
+  getTodaysLifeWheelData,
+} from './api/lifeWheelApi';
 import ReactDOM from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 // Add keyframe animation for the background gradient
 const animatedGradientStyle: React.CSSProperties = {
@@ -33,8 +39,10 @@ const EnhancedLifeWheel = ({
   readOnly = false,
   className = '',
 }: EnhancedLifeWheelProps): JSX.Element => {
+  const { t } = useTranslation('common');
+
   // Current wheel data
-  const [categories, setCategories] = useState<LifeCategory[]>(DEFAULT_LIFE_CATEGORIES);
+  const [categories, setCategories] = useState<LifeCategory[]>(getLocalizedCategories(t));
 
   // States for loading, error, saving
   const [isLoading, setIsLoading] = useState(true);
@@ -73,14 +81,48 @@ const EnhancedLifeWheel = ({
     'magnitude' | 'value' | 'alphabetical' | 'improved'
   >('magnitude');
 
-  // Load current life wheel data
+  // New states for today's entry tracking
+  const [todaysEntry, setTodaysEntry] = useState<{
+    id: string;
+    date: string;
+    categories: LifeCategory[];
+  } | null>(null);
+  const [hasEntryToday, setHasEntryToday] = useState(false);
+
+  // Load current life wheel data and check for today's entry
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
         setIsLoading(true);
-        const response = await getLatestLifeWheelData();
-        if (response.entry) {
-          setCategories(response.entry.categories);
+
+        // First check if user has an entry for today
+        const todaysResponse = await getTodaysLifeWheelData();
+        setHasEntryToday(todaysResponse.hasEntryToday);
+
+        if (todaysResponse.entry) {
+          // User has an entry for today, use it
+          setTodaysEntry(todaysResponse.entry);
+          const localizedCategories = getLocalizedCategories(t);
+          const mergedCategories = todaysResponse.entry.categories.map(serverCat => {
+            const localizedCat = localizedCategories.find(local => local.id === serverCat.id);
+            return localizedCat ? { ...localizedCat, value: serverCat.value } : serverCat;
+          });
+          setCategories(mergedCategories);
+        } else {
+          // No entry for today, try to get latest entry for reference
+          const response = await getLatestLifeWheelData();
+          if (response.entry) {
+            // Merge server data with localized category names and descriptions
+            const localizedCategories = getLocalizedCategories(t);
+            const mergedCategories = response.entry.categories.map(serverCat => {
+              const localizedCat = localizedCategories.find(local => local.id === serverCat.id);
+              return localizedCat ? { ...localizedCat, value: serverCat.value } : serverCat;
+            });
+            setCategories(mergedCategories);
+          } else {
+            // If no server data at all, use localized categories
+            setCategories(getLocalizedCategories(t));
+          }
         }
       } catch (err) {
         console.error('Error loading life wheel data:', err);
@@ -91,7 +133,7 @@ const EnhancedLifeWheel = ({
     };
 
     fetchData();
-  }, []);
+  }, [t]);
 
   // Load history data
   useEffect(() => {
@@ -142,21 +184,37 @@ const EnhancedLifeWheel = ({
       setSaveSuccess(false);
       setError(null);
 
-      await saveLifeWheelData({ categories });
+      // If user has an entry for today, update it; otherwise create new
+      const saveData = {
+        categories,
+        ...(hasEntryToday && todaysEntry ? { entryId: todaysEntry.id } : {}),
+      };
 
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+      const result = await saveLifeWheelData(saveData);
 
-      // Reload history after saving
-      const response = await getLifeWheelHistory();
-      if (response.entries && response.entries.length > 0) {
-        setHistoryEntries(
-          response.entries.map(entry => ({
-            id: entry.id,
-            date: entry.date,
-            categories: entry.categories,
-          }))
-        );
+      if (result.success) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+
+        // Update today's entry state if we just created/updated it
+        if (result.entry) {
+          setTodaysEntry(result.entry);
+          setHasEntryToday(true);
+        }
+
+        // Reload history after saving
+        const response = await getLifeWheelHistory();
+        if (response.entries && response.entries.length > 0) {
+          setHistoryEntries(
+            response.entries.map(entry => ({
+              id: entry.id,
+              date: entry.date,
+              categories: entry.categories,
+            }))
+          );
+        }
+      } else {
+        throw new Error(result.error || 'Failed to save data');
       }
     } catch (err) {
       console.error('Error saving life wheel data:', err);
@@ -169,7 +227,7 @@ const EnhancedLifeWheel = ({
     } finally {
       setIsSaving(false);
     }
-  }, [categories, readOnly]);
+  }, [categories, readOnly, hasEntryToday, todaysEntry]);
 
   // Switch between selected history entries
   const handleHistoryEntrySelect = useCallback((entryId: string) => {
@@ -211,25 +269,37 @@ const EnhancedLifeWheel = ({
     setTooltipInfo(prev => ({ ...prev, visible: false }));
   }, []);
 
+  // Helper function to localize category data
+  const localizeCategories = useCallback(
+    (categoryData: LifeCategory[]) => {
+      const localizedCategories = getLocalizedCategories(t);
+      return categoryData.map(cat => {
+        const localizedCat = localizedCategories.find(local => local.id === cat.id);
+        return localizedCat ? { ...localizedCat, value: cat.value } : cat;
+      });
+    },
+    [t]
+  );
+
   // Get the current view data based on active tab and selections
   const getCurrentViewData = useCallback(() => {
     if (activeTab === 'current') {
       return categories;
     } else if (activeTab === 'history' && selectedHistoryEntry) {
       const entry = historyEntries.find(e => e.id === selectedHistoryEntry);
-      return entry ? entry.categories : categories;
+      return entry ? localizeCategories(entry.categories) : categories;
     }
     return categories;
-  }, [activeTab, categories, historyEntries, selectedHistoryEntry]);
+  }, [activeTab, categories, historyEntries, selectedHistoryEntry, localizeCategories]);
 
   // Get comparison data if comparison mode is enabled
   const getComparisonData = useCallback(() => {
     if (showComparison && comparisonEntry) {
       const entry = historyEntries.find(e => e.id === comparisonEntry);
-      return entry ? entry.categories : null;
+      return entry ? localizeCategories(entry.categories) : null;
     }
     return null;
-  }, [showComparison, comparisonEntry, historyEntries]);
+  }, [showComparison, comparisonEntry, historyEntries, localizeCategories]);
 
   // Calculate insights between two points in time
   const calculateInsights = useCallback(() => {
@@ -240,14 +310,17 @@ const EnhancedLifeWheel = ({
 
     if (!currentEntry || !compareEntry) return [];
 
-    const insights = currentEntry.categories
+    // Localize the current entry categories to get proper category names
+    const localizedCurrentCategories = localizeCategories(currentEntry.categories);
+
+    const insights = localizedCurrentCategories
       .map(currentCat => {
         const compareCat = compareEntry.categories.find(c => c.id === currentCat.id);
         if (!compareCat) return null;
 
         const change = currentCat.value - compareCat.value;
         return {
-          category: currentCat.name,
+          category: currentCat.name, // This will now be the localized name
           change,
           currentValue: currentCat.value,
           previousValue: compareCat.value,
@@ -265,7 +338,7 @@ const EnhancedLifeWheel = ({
     }>;
 
     return insights;
-  }, [selectedHistoryEntry, comparisonEntry, historyEntries]);
+  }, [selectedHistoryEntry, comparisonEntry, historyEntries, localizeCategories]);
 
   // Determine the most improved and most declined categories
   const getHighlightedAreas = useCallback(() => {
@@ -307,11 +380,11 @@ const EnhancedLifeWheel = ({
   // Helper function to get category health indicator text
   const getCategoryHealthText = (value: number): { text: string; color: string } => {
     if (value < 5) {
-      return { text: 'Needs Attention', color: '#ef4444' };
+      return { text: t('widgets.lifeWheel.healthStatus.needsAttention'), color: '#ef4444' };
     } else if (value >= 5 && value <= 7) {
-      return { text: 'Developing', color: '#f59e0b' };
+      return { text: t('widgets.lifeWheel.healthStatus.developing'), color: '#f59e0b' };
     } else {
-      return { text: 'Thriving', color: '#10b981' };
+      return { text: t('widgets.lifeWheel.healthStatus.thriving'), color: '#10b981' };
     }
   };
 
@@ -385,15 +458,18 @@ const EnhancedLifeWheel = ({
     const previousEntry = historyEntries[currentIndex - 1];
     const currentEntry = historyEntries[currentIndex];
 
+    // Localize the current entry categories to get proper category names
+    const localizedCurrentCategories = localizeCategories(currentEntry.categories);
+
     // Calculate changes
-    const changes = currentEntry.categories
+    const changes = localizedCurrentCategories
       .map(currentCat => {
         const previousCat = previousEntry.categories.find(c => c.id === currentCat.id);
         if (!previousCat) return null;
 
         const change = currentCat.value - previousCat.value;
         return {
-          category: currentCat.name,
+          category: currentCat.name, // This will now be the localized name
           change,
           previousValue: previousCat.value,
           currentValue: currentCat.value,
@@ -412,7 +488,7 @@ const EnhancedLifeWheel = ({
 
     // Sort by change magnitude (absolute value)
     return changes.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
-  }, [selectedHistoryEntry, historyEntries]);
+  }, [selectedHistoryEntry, historyEntries, localizeCategories]);
 
   // Add a function to handle sort method changes
   const handleSortMethodChange = useCallback(() => {
@@ -434,20 +510,23 @@ const EnhancedLifeWheel = ({
   }, []);
 
   // Helper function to get sort method display text
-  const getSortMethodText = useCallback((method: string): string => {
-    switch (method) {
-      case 'magnitude':
-        return 'Largest Change';
-      case 'value':
-        return 'Current Value';
-      case 'improved':
-        return 'Most Improved';
-      case 'alphabetical':
-        return 'Alphabetical';
-      default:
-        return 'Largest Change';
-    }
-  }, []);
+  const getSortMethodText = useCallback(
+    (method: string): string => {
+      switch (method) {
+        case 'magnitude':
+          return t('widgets.lifeWheel.insights.sortMethods.magnitude');
+        case 'value':
+          return t('widgets.lifeWheel.insights.sortMethods.value');
+        case 'improved':
+          return t('widgets.lifeWheel.insights.sortMethods.improved');
+        case 'alphabetical':
+          return t('widgets.lifeWheel.insights.sortMethods.alphabetical');
+        default:
+          return t('widgets.lifeWheel.insights.sortMethods.magnitude');
+      }
+    },
+    [t]
+  );
 
   // Define a proper interface for the insights object used in sortInsights
   interface InsightItem {
@@ -487,7 +566,7 @@ const EnhancedLifeWheel = ({
       <div className={`${styles.lifeWheelContainer} ${className}`} style={animatedGradientStyle}>
         <div className={styles.loadingState}>
           <div className={styles.spinner}></div>
-          <p>Loading your life wheel data...</p>
+          <p>{t('widgets.lifeWheel.loading')}</p>
         </div>
       </div>
     );
@@ -497,10 +576,10 @@ const EnhancedLifeWheel = ({
     return (
       <div className={`${styles.lifeWheelContainer} ${className}`} style={animatedGradientStyle}>
         <div className={styles.errorState}>
-          <h3>Something went wrong</h3>
-          <p>{error.message || 'Failed to load life wheel data'}</p>
+          <h3>{t('widgets.lifeWheel.errors.somethingWentWrong')}</h3>
+          <p>{error.message || t('widgets.lifeWheel.errors.failedToLoad')}</p>
           <button onClick={() => setError(null)} className={styles.retryButton}>
-            Try Again
+            {t('widgets.lifeWheel.errors.tryAgain')}
           </button>
         </div>
       </div>
@@ -517,19 +596,19 @@ const EnhancedLifeWheel = ({
             className={`${styles.tab} ${activeTab === 'current' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('current')}
           >
-            Current Assessment
+            {t('widgets.lifeWheel.tabs.current')}
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'history' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('history')}
           >
-            History & Progress
+            {t('widgets.lifeWheel.tabs.history')}
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'insights' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('insights')}
           >
-            Insights
+            {t('widgets.lifeWheel.tabs.insights')}
           </button>
         </div>
 
@@ -547,12 +626,13 @@ const EnhancedLifeWheel = ({
               <div
                 style={{
                   width: '100%',
-                  height: '500px',
+                  height: '600px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
                   position: 'relative',
                   margin: '20px 0',
+                  padding: '40px 20px',
                 }}
               >
                 <RadarChart
@@ -650,14 +730,18 @@ const EnhancedLifeWheel = ({
                     disabled={isSaving}
                     type="button"
                   >
-                    {isSaving ? 'Saving...' : 'Save Assessment'}
+                    {isSaving
+                      ? t('widgets.lifeWheel.actions.saving')
+                      : hasEntryToday
+                        ? t('widgets.lifeWheel.actions.updateAssessment')
+                        : t('widgets.lifeWheel.actions.saveAssessment')}
                   </button>
                 </div>
               )}
 
               {saveSuccess && (
                 <div className={styles.successMessage}>
-                  Your Life Wheel data has been saved successfully!
+                  {t('widgets.lifeWheel.actions.saveSuccess')}
                 </div>
               )}
             </motion.div>
@@ -673,18 +757,16 @@ const EnhancedLifeWheel = ({
               transition={{ duration: 0.3 }}
               className={styles.tabContent}
             >
-              <h1 className={styles.titleAlt}>Progress Over Time</h1>
+              <h1 className={styles.titleAlt}>{t('widgets.lifeWheel.history.title')}</h1>
 
               {historyLoading ? (
                 <div className={styles.loadingState}>
                   <div className={styles.spinner}></div>
-                  <p>Loading history...</p>
+                  <p>{t('widgets.lifeWheel.history.loadingHistory')}</p>
                 </div>
               ) : historyEntries.length === 0 ? (
                 <div className={styles.emptyState}>
-                  <p>
-                    No history entries yet. Save your first assessment to start tracking progress
-                  </p>
+                  <p>{t('widgets.lifeWheel.history.noHistoryYet')}</p>
                 </div>
               ) : (
                 <>
@@ -703,7 +785,7 @@ const EnhancedLifeWheel = ({
                             onChange={() => handleToggleComparison(entry.id)}
                             onClick={e => e.stopPropagation()}
                           />
-                          <span>Compare</span>
+                          <span>{t('widgets.lifeWheel.history.compare')}</span>
                         </div>
                       </button>
                     ))}
@@ -715,31 +797,35 @@ const EnhancedLifeWheel = ({
                       className={`${styles.timelineButton} ${isPlaying ? styles.pauseButton : styles.playButton}`}
                       onClick={handlePlayTimeline}
                       disabled={historyEntries.length <= 1}
-                      title={isPlaying ? 'Pause Animation' : 'Play Timeline Animation'}
+                      title={
+                        isPlaying
+                          ? t('widgets.lifeWheel.history.timeline.pauseAnimation')
+                          : t('widgets.lifeWheel.history.timeline.playAnimation')
+                      }
                     >
                       {isPlaying ? '❚❚' : '▶'}
                     </button>
 
                     <div className={styles.speedControls}>
-                      <span>Speed:</span>
+                      <span>{t('widgets.lifeWheel.history.speed')}</span>
                       <button
                         onClick={() => handleSpeedChange(2000)}
                         className={`${styles.speedButton} ${playbackSpeed === 2000 ? styles.activeSpeed : ''}`}
-                        title="Slow"
+                        title={t('widgets.lifeWheel.history.timeline.speeds.slow')}
                       >
                         0.5x
                       </button>
                       <button
                         onClick={() => handleSpeedChange(1000)}
                         className={`${styles.speedButton} ${playbackSpeed === 1000 ? styles.activeSpeed : ''}`}
-                        title="Normal"
+                        title={t('widgets.lifeWheel.history.timeline.speeds.normal')}
                       >
                         1x
                       </button>
                       <button
                         onClick={() => handleSpeedChange(500)}
                         className={`${styles.speedButton} ${playbackSpeed === 500 ? styles.activeSpeed : ''}`}
-                        title="Fast"
+                        title={t('widgets.lifeWheel.history.timeline.speeds.fast')}
                       >
                         2x
                       </button>
@@ -748,7 +834,10 @@ const EnhancedLifeWheel = ({
                     <div className={styles.timelineProgress}>
                       <div className={styles.progressIndicator}>
                         <span>
-                          {timelineIndex + 1} / {historyEntries.length}
+                          {t('widgets.lifeWheel.history.progressIndicator', {
+                            current: timelineIndex + 1,
+                            total: historyEntries.length,
+                          })}
                         </span>
                       </div>
                     </div>
@@ -793,7 +882,7 @@ const EnhancedLifeWheel = ({
                         {isPlaying && (
                           <div className={styles.animatingIndicator}>
                             <div className={styles.pulse}></div>
-                            <span>Animating</span>
+                            <span>{t('widgets.lifeWheel.history.animating')}</span>
                           </div>
                         )}
                       </motion.div>
@@ -802,12 +891,13 @@ const EnhancedLifeWheel = ({
                     <div
                       style={{
                         width: '100%',
-                        height: '500px',
+                        height: '600px',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
                         position: 'relative',
                         margin: '20px 0',
+                        padding: '40px 20px',
                       }}
                     >
                       <RadarChart
@@ -846,7 +936,7 @@ const EnhancedLifeWheel = ({
                         {comparisonEntry && (
                           <div className={styles.comparisonInfo}>
                             <p>
-                              Comparing with:{' '}
+                              {t('widgets.lifeWheel.history.comparingWith')}{' '}
                               {formatDate(
                                 historyEntries.find(e => e.id === comparisonEntry)?.date || ''
                               )}
@@ -858,7 +948,9 @@ const EnhancedLifeWheel = ({
 
                     {isPlaying && (
                       <div className={styles.changeSummary}>
-                        <h3 className={styles.changeSummaryTitle}>Changes from Previous Period</h3>
+                        <h3 className={styles.changeSummaryTitle}>
+                          {t('widgets.lifeWheel.history.changesFromPrevious')}
+                        </h3>
                         <div className={styles.changesList}>
                           {getChangeSummary()
                             ?.slice(0, 3)
@@ -907,14 +999,12 @@ const EnhancedLifeWheel = ({
               transition={{ duration: 0.3 }}
               className={styles.tabContent}
             >
-              <h1 className={styles.title}>Life Wheel Insights</h1>
+              <h1 className={styles.title}>{t('widgets.lifeWheel.insights.title')}</h1>
 
               {historyEntries.length < 2 ? (
                 <div className={styles.emptyState}>
-                  <p>You need at least two dates to compare and get insights.</p>
-                  <p>
-                    Complete and save more life wheel assessments over time to track your progress.
-                  </p>
+                  <p>{t('widgets.lifeWheel.insights.needTwoDates')}</p>
+                  <p>{t('widgets.lifeWheel.insights.saveMoreAssessments')}</p>
                 </div>
               ) : (
                 <>
@@ -923,7 +1013,9 @@ const EnhancedLifeWheel = ({
                     <div className={styles.datePickerContainer}>
                       <div className={styles.dateSelectorCard}>
                         <div className={styles.dateSelectorHeader}>
-                          <span className={styles.dateSelectorLabel}>Select Dates to Compare</span>
+                          <span className={styles.dateSelectorLabel}>
+                            {t('widgets.lifeWheel.insights.selectDatesToCompare')}
+                          </span>
                         </div>
                         <div className={styles.dateSelectors}>
                           <div className={styles.dateColumn}>
@@ -932,7 +1024,7 @@ const EnhancedLifeWheel = ({
                                 className={styles.dateColorIndicator}
                                 style={{ background: '#8B5CF6' }}
                               ></div>
-                              <span>Base Date</span>
+                              <span>{t('widgets.lifeWheel.insights.baseDate')}</span>
                             </div>
                             <select
                               id="baseDate"
@@ -941,7 +1033,7 @@ const EnhancedLifeWheel = ({
                               className={`${styles.dateDropdown} ${styles.baseDateDropdown}`}
                             >
                               <option value="" disabled>
-                                Select a date
+                                {t('widgets.lifeWheel.insights.selectDate')}
                               </option>
                               {historyEntries.map(entry => (
                                 <option key={`base-${entry.id}`} value={entry.id}>
@@ -975,7 +1067,7 @@ const EnhancedLifeWheel = ({
                                 className={styles.dateColorIndicator}
                                 style={{ background: '#EC4899' }}
                               ></div>
-                              <span>Compare With</span>
+                              <span>{t('widgets.lifeWheel.insights.compareWith')}</span>
                             </div>
                             <select
                               id="compareDate"
@@ -984,7 +1076,7 @@ const EnhancedLifeWheel = ({
                               className={`${styles.dateDropdown} ${styles.compareDateDropdown}`}
                             >
                               <option value="" disabled>
-                                Select a date
+                                {t('widgets.lifeWheel.insights.selectDate')}
                               </option>
                               {historyEntries
                                 .filter(entry => entry.id !== selectedHistoryEntry)
@@ -1000,14 +1092,14 @@ const EnhancedLifeWheel = ({
                         {selectedHistoryEntry && comparisonEntry && (
                           <div className={styles.comparingDates}>
                             <span>
-                              Comparing{' '}
+                              {t('widgets.lifeWheel.insights.comparing')}{' '}
                               <span className={styles.baseDate}>
                                 {formatDate(
                                   historyEntries.find(e => e.id === selectedHistoryEntry)?.date ||
                                     ''
                                 )}
                               </span>{' '}
-                              with{' '}
+                              {t('widgets.lifeWheel.insights.with')}{' '}
                               <span className={styles.compareDate}>
                                 {formatDate(
                                   historyEntries.find(e => e.id === comparisonEntry)?.date || ''
@@ -1022,7 +1114,7 @@ const EnhancedLifeWheel = ({
 
                   {!selectedHistoryEntry || !comparisonEntry ? (
                     <div className={styles.promptState}>
-                      <p>Select two dates above to compare and see insights.</p>
+                      <p>{t('widgets.lifeWheel.insights.selectTwoDates')}</p>
                     </div>
                   ) : (
                     <>
@@ -1052,7 +1144,7 @@ const EnhancedLifeWheel = ({
                                   />
                                 </svg>
                               </div>
-                              <h4>Most Improved</h4>
+                              <h4>{t('widgets.lifeWheel.insights.mostImproved')}</h4>
                               <div className={styles.insightHighlight}>
                                 <span className={styles.insightCategory}>
                                   {getHighlightedAreas().improved?.category}
@@ -1062,7 +1154,9 @@ const EnhancedLifeWheel = ({
                                 </span>
                               </div>
                               <p>
-                                From {getHighlightedAreas().improved?.previousValue} to{' '}
+                                {t('widgets.lifeWheel.insights.from')}{' '}
+                                {getHighlightedAreas().improved?.previousValue}{' '}
+                                {t('widgets.lifeWheel.insights.to')}{' '}
                                 {getHighlightedAreas().improved?.currentValue}
                               </p>
                             </motion.div>
@@ -1092,7 +1186,7 @@ const EnhancedLifeWheel = ({
                                   />
                                 </svg>
                               </div>
-                              <h4>Most Declined</h4>
+                              <h4>{t('widgets.lifeWheel.insights.mostDeclined')}</h4>
                               <div className={styles.insightHighlight}>
                                 <span className={styles.insightCategory}>
                                   {getHighlightedAreas().declined?.category}
@@ -1102,7 +1196,9 @@ const EnhancedLifeWheel = ({
                                 </span>
                               </div>
                               <p>
-                                From {getHighlightedAreas().declined?.previousValue} to{' '}
+                                {t('widgets.lifeWheel.insights.from')}{' '}
+                                {getHighlightedAreas().declined?.previousValue}{' '}
+                                {t('widgets.lifeWheel.insights.to')}{' '}
                                 {getHighlightedAreas().declined?.currentValue}
                               </p>
                             </motion.div>
@@ -1131,22 +1227,28 @@ const EnhancedLifeWheel = ({
                                 />
                               </svg>
                             </div>
-                            <h4>Summary</h4>
+                            <h4>{t('widgets.lifeWheel.insights.summary')}</h4>
                             <div className={styles.insightsSummaryStats}>
                               <div className={styles.statItem}>
-                                <span className={styles.statLabel}>Improved Areas</span>
+                                <span className={styles.statLabel}>
+                                  {t('widgets.lifeWheel.insights.stats.improvedAreas')}
+                                </span>
                                 <span className={styles.statValue}>
                                   {calculateInsights().filter(i => i.change > 0).length}
                                 </span>
                               </div>
                               <div className={styles.statItem}>
-                                <span className={styles.statLabel}>Declined Areas</span>
+                                <span className={styles.statLabel}>
+                                  {t('widgets.lifeWheel.insights.stats.declinedAreas')}
+                                </span>
                                 <span className={styles.statValue}>
                                   {calculateInsights().filter(i => i.change < 0).length}
                                 </span>
                               </div>
                               <div className={styles.statItem}>
-                                <span className={styles.statLabel}>Unchanged</span>
+                                <span className={styles.statLabel}>
+                                  {t('widgets.lifeWheel.insights.stats.unchanged')}
+                                </span>
                                 <span className={styles.statValue}>
                                   {calculateInsights().filter(i => i.change === 0).length}
                                 </span>
@@ -1157,13 +1259,15 @@ const EnhancedLifeWheel = ({
 
                         <div className={styles.insightsDetailsContainer}>
                           <h3 className={styles.insightsDetailHeader}>
-                            <span>Changes by Category</span>
+                            <span>{t('widgets.lifeWheel.insights.changesByCategory')}</span>
                             <div className={styles.insightsSorter}>
-                              <span className={styles.sorterLabel}>Sort by:</span>
+                              <span className={styles.sorterLabel}>
+                                {t('widgets.lifeWheel.insights.sortBy')}
+                              </span>
                               <button
                                 className={styles.sorterButton}
                                 onClick={handleSortMethodChange}
-                                title="Click to change sorting method"
+                                title={t('widgets.lifeWheel.insights.clickToChangeSort')}
                               >
                                 {getSortMethodText(insightsSortMethod)}
                                 <svg
@@ -1208,14 +1312,18 @@ const EnhancedLifeWheel = ({
                                     </span>
                                     <div className={styles.insightItemValues}>
                                       <div className={styles.valueWithLabel}>
-                                        <span className={styles.valueLabel}>From</span>
+                                        <span className={styles.valueLabel}>
+                                          {t('widgets.lifeWheel.insights.from')}
+                                        </span>
                                         <span className={styles.insightItemPrevious}>
                                           {insight.previousValue}
                                         </span>
                                       </div>
                                       <span className={styles.insightItemArrow}>→</span>
                                       <div className={styles.valueWithLabel}>
-                                        <span className={styles.valueLabel}>To</span>
+                                        <span className={styles.valueLabel}>
+                                          {t('widgets.lifeWheel.insights.to')}
+                                        </span>
                                         <span className={styles.insightItemCurrent}>
                                           {insight.currentValue}
                                         </span>

@@ -1,11 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { AuthProvider } from '@/shared/contexts/AuthContext';
+import { ThemeProvider } from '@/shared/contexts/ThemeContext';
 import { RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { router } from './core/router/index';
 import { initializeDatabase } from './core/database';
 import './styles/index.css';
+
+// Initialize i18n
+import './core/i18n';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -32,7 +36,9 @@ if (rootElement) {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <RouterProvider router={router} />
+          <ThemeProvider>
+            <RouterProvider router={router} />
+          </ThemeProvider>
         </AuthProvider>
       </QueryClientProvider>
     </React.StrictMode>

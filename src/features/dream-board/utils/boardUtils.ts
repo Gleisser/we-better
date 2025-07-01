@@ -7,7 +7,8 @@ import { LifeCategory } from '@/features/life-wheel/types';
  */
 export const createNewVisionBoard = (
   userId: string,
-  lifeWheelCategories: LifeCategory[]
+  lifeWheelCategories: LifeCategory[],
+  defaultTitle: string = 'My Dream Board'
 ): DreamBoardData => {
   const sortedCategories = [...lifeWheelCategories].sort((a, b) => a.value - b.value);
   const now = new Date();
@@ -40,7 +41,7 @@ export const createNewVisionBoard = (
   return {
     id: uuidv4(),
     userId,
-    title: 'My Dream Board',
+    title: defaultTitle,
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
     categories: lifeWheelCategories.map(category => category.id),

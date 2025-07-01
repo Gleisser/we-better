@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './ChallengeModal.module.css';
 import { Dream } from '../../types';
 import { CreateDreamChallengeInput, DreamChallenge } from '../../api/dreamChallengesApi';
@@ -18,6 +19,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   dreams,
   editingChallenge,
 }) => {
+  const { t } = useCommonTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState('30');
@@ -128,9 +130,15 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
       <div className={styles.challengeModal} onClick={e => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>
-            {editingChallenge ? 'Edit Challenge' : 'Create New Challenge'}
+            {editingChallenge
+              ? t('dreamBoard.challenge.modal.editTitle')
+              : t('dreamBoard.challenge.modal.createTitle')}
           </h2>
-          <button className={styles.closeButton} onClick={onClose} aria-label="Close modal">
+          <button
+            className={styles.closeButton}
+            onClick={onClose}
+            aria-label={t('dreamBoard.challenge.modal.close') as string}
+          >
             ×
           </button>
         </div>
@@ -140,28 +148,34 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             <div className={styles.formSection}>
               <div className={styles.formSectionHeader}>
                 <div className={styles.sectionIcon}>📝</div>
-                <h3 className={styles.sectionTitle}>Basic Information</h3>
+                <h3 className={styles.sectionTitle}>
+                  {t('dreamBoard.challenge.modal.sections.basicInfo')}
+                </h3>
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="title">Challenge Title</label>
+                <label htmlFor="title">{t('dreamBoard.challenge.modal.form.challengeTitle')}</label>
                 <input
                   type="text"
                   id="title"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  placeholder="30-Day Meditation Challenge"
+                  placeholder={t('dreamBoard.challenge.modal.form.titlePlaceholder') as string}
                   required
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="description">Description</label>
+                <label htmlFor="description">
+                  {t('dreamBoard.challenge.modal.form.description')}
+                </label>
                 <textarea
                   id="description"
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  placeholder="Meditate for 10 minutes each day to build a consistent practice"
+                  placeholder={
+                    t('dreamBoard.challenge.modal.form.descriptionPlaceholder') as string
+                  }
                   required
                 />
               </div>
@@ -170,11 +184,13 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             <div className={styles.formSection}>
               <div className={styles.formSectionHeader}>
                 <div className={styles.sectionIcon}>⏱️</div>
-                <h3 className={styles.sectionTitle}>Duration & Difficulty</h3>
+                <h3 className={styles.sectionTitle}>
+                  {t('dreamBoard.challenge.modal.sections.durationDifficulty')}
+                </h3>
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="duration">Duration</label>
+                <label htmlFor="duration">{t('dreamBoard.challenge.modal.form.duration')}</label>
                 <div className={styles.durationInputs}>
                   <input
                     type="number"
@@ -190,19 +206,21 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                       onChange={e => setDurationUnit(e.target.value as 'days' | 'weeks' | 'months')}
                       className={styles.unitSelect}
                     >
-                      <option value="days">Days</option>
-                      <option value="weeks">Weeks</option>
-                      <option value="months">Months</option>
+                      <option value="days">{t('dreamBoard.challenge.modal.units.days')}</option>
+                      <option value="weeks">{t('dreamBoard.challenge.modal.units.weeks')}</option>
+                      <option value="months">{t('dreamBoard.challenge.modal.units.months')}</option>
                     </select>
                   </div>
                 </div>
                 {durationUnit !== 'days' && (
-                  <div className={styles.durationHint}>{`Total: ${calculateTotalDays()} days`}</div>
+                  <div className={styles.durationHint}>
+                    {t('dreamBoard.challenge.progress.totalDays', { days: calculateTotalDays() })}
+                  </div>
                 )}
               </div>
 
               <div className={styles.formGroup}>
-                <label>Difficulty Level</label>
+                <label>{t('dreamBoard.challenge.modal.form.difficultyLevel')}</label>
                 <div className={styles.difficultyInputs}>
                   <button
                     type="button"
@@ -210,7 +228,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                     onClick={() => setDifficultyLevel('easy')}
                   >
                     <span className={styles.difficultyIcon}>🌱</span>
-                    Easy
+                    {t('dreamBoard.challenge.modal.difficulty.easy')}
                   </button>
                   <button
                     type="button"
@@ -218,7 +236,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                     onClick={() => setDifficultyLevel('medium')}
                   >
                     <span className={styles.difficultyIcon}>🔄</span>
-                    Medium
+                    {t('dreamBoard.challenge.modal.difficulty.medium')}
                   </button>
                   <button
                     type="button"
@@ -226,7 +244,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                     onClick={() => setDifficultyLevel('hard')}
                   >
                     <span className={styles.difficultyIcon}>🔥</span>
-                    Hard
+                    {t('dreamBoard.challenge.modal.difficulty.hard')}
                   </button>
                 </div>
               </div>
@@ -235,7 +253,9 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             <div className={styles.formSection}>
               <div className={styles.formSectionHeader}>
                 <div className={styles.sectionIcon}>🔄</div>
-                <h3 className={styles.sectionTitle}>Frequency</h3>
+                <h3 className={styles.sectionTitle}>
+                  {t('dreamBoard.challenge.modal.sections.frequency')}
+                </h3>
               </div>
 
               <div className={styles.formGroup}>
@@ -245,30 +265,38 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                     className={`${styles.frequencyBtn} ${frequency === 'daily' ? styles.active : ''}`}
                     onClick={() => setFrequency('daily')}
                   >
-                    Daily
+                    {t('dreamBoard.challenge.modal.frequency.daily')}
                   </button>
                   <button
                     type="button"
                     className={`${styles.frequencyBtn} ${frequency === 'weekly' ? styles.active : ''}`}
                     onClick={() => setFrequency('weekly')}
                   >
-                    Weekly
+                    {t('dreamBoard.challenge.modal.frequency.weekly')}
                   </button>
                   <button
                     type="button"
                     className={`${styles.frequencyBtn} ${frequency === 'custom' ? styles.active : ''}`}
                     onClick={() => setFrequency('custom')}
                   >
-                    Custom
+                    {t('dreamBoard.challenge.modal.frequency.custom')}
                   </button>
                 </div>
               </div>
 
               {frequency === 'custom' && (
                 <div className={styles.formGroup}>
-                  <label>Select Days</label>
+                  <label>{t('dreamBoard.challenge.modal.form.selectDays')}</label>
                   <div className={styles.daySelector}>
-                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => (
+                    {[
+                      t('dreamBoard.challenge.modal.weekDays.mon'),
+                      t('dreamBoard.challenge.modal.weekDays.tue'),
+                      t('dreamBoard.challenge.modal.weekDays.wed'),
+                      t('dreamBoard.challenge.modal.weekDays.thu'),
+                      t('dreamBoard.challenge.modal.weekDays.fri'),
+                      t('dreamBoard.challenge.modal.weekDays.sat'),
+                      t('dreamBoard.challenge.modal.weekDays.sun'),
+                    ].map((day, index) => (
                       <button
                         key={day}
                         type="button"
@@ -286,10 +314,10 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                 <div className={styles.tipIcon}>💡</div>
                 <div className={styles.tipText}>
                   {frequency === 'daily'
-                    ? 'Daily challenges help build consistent habits and routines.'
+                    ? t('dreamBoard.challenge.modal.tips.daily')
                     : frequency === 'weekly'
-                      ? 'Weekly challenges are great for activities that require more time or preparation.'
-                      : 'Custom scheduling gives you flexibility to fit challenges around your existing commitments.'}
+                      ? t('dreamBoard.challenge.modal.tips.weekly')
+                      : t('dreamBoard.challenge.modal.tips.custom')}
                 </div>
               </div>
             </div>
@@ -297,17 +325,21 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
             <div className={styles.formSection}>
               <div className={styles.formSectionHeader}>
                 <div className={styles.sectionIcon}>🔗</div>
-                <h3 className={styles.sectionTitle}>Connect & Remind</h3>
+                <h3 className={styles.sectionTitle}>
+                  {t('dreamBoard.challenge.modal.sections.connectRemind')}
+                </h3>
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="linkedDream">Link to Dream (Optional)</label>
+                <label htmlFor="linkedDream">
+                  {t('dreamBoard.challenge.modal.form.linkToDream')}
+                </label>
                 <select
                   id="linkedDream"
                   value={linkedDream}
                   onChange={e => setLinkedDream(e.target.value)}
                 >
-                  <option value="">None</option>
+                  <option value="">{t('dreamBoard.challenge.modal.form.none')}</option>
                   {dreams.map(dream => (
                     <option key={dream.id} value={dream.id}>
                       {dream.title}
@@ -319,7 +351,9 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
               <div className={styles.formGroup}>
                 <div className={styles.reminderToggle}>
                   <label htmlFor="enableReminders" className={styles.switchLabel}>
-                    <span className={styles.switchLabelText}>Enable Daily Reminders</span>
+                    <span className={styles.switchLabelText}>
+                      {t('dreamBoard.challenge.modal.form.enableReminders')}
+                    </span>
                     <div className={styles.switchWrapper}>
                       <input
                         type="checkbox"
@@ -346,10 +380,12 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
 
             <div className={styles.modalFooter}>
               <button type="button" onClick={onClose} className={styles.cancelButton}>
-                Cancel
+                {t('dreamBoard.challenge.modal.buttons.cancel')}
               </button>
               <button type="submit" className={styles.saveButton}>
-                {editingChallenge ? 'Update Challenge' : 'Create Challenge'}
+                {editingChallenge
+                  ? t('dreamBoard.challenge.modal.buttons.update')
+                  : t('dreamBoard.challenge.modal.buttons.create')}
               </button>
             </div>
           </form>

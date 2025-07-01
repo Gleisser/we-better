@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './DreamBoardPage.module.css';
 import {
   Dream,
@@ -51,6 +52,8 @@ const getCategoryDetails = (category: string): CategoryDetails => {
 };
 
 const DreamBoardPage: React.FC = () => {
+  const { t } = useCommonTranslation();
+
   // Dream Weather hook
   const { weather: dreamWeather, error: weatherError } = useDreamWeather({
     includeMetrics: false,
@@ -178,7 +181,7 @@ const DreamBoardPage: React.FC = () => {
   };
 
   const handleDeleteMilestone = async (dreamId: string, milestoneId: string): Promise<void> => {
-    if (window.confirm('Are you sure you want to delete this milestone?')) {
+    if (window.confirm(t('dreamBoard.milestones.deleteConfirm') as string)) {
       try {
         // Delete milestone from backend
         await deleteMilestoneForContent(milestoneId);
@@ -234,6 +237,8 @@ const DreamBoardPage: React.FC = () => {
 
   // Convert DreamBoardData to Dreams format for frontend
   const convertDreamBoardDataToDreams = (data: DreamBoardData): Dream[] => {
+    const backendData = data as DreamBoardData & { created_at?: string; updated_at?: string };
+
     return data.content.map((contentItem, index) => ({
       id: contentItem.id,
       title: contentItem.caption || contentItem.alt || `Dream ${index + 1}`,
@@ -241,7 +246,7 @@ const DreamBoardPage: React.FC = () => {
       category: contentItem.categoryId || 'General',
       timeframe: 'mid-term' as const,
       progress: 0,
-      createdAt: data.createdAt || new Date().toISOString(),
+      createdAt: data.createdAt || backendData.created_at || new Date().toISOString(),
       imageUrl: contentItem.src,
       milestones: [],
       isShared: false,
@@ -269,8 +274,8 @@ const DreamBoardPage: React.FC = () => {
     }));
 
     return {
-      title: 'My Dream Board',
-      description: 'Vision board created with my dreams and goals',
+      title: t('dreamBoard.board.defaultTitle') as string,
+      description: t('dreamBoard.board.defaultDescription') as string,
       categories,
       content,
     };
@@ -291,7 +296,7 @@ const DreamBoardPage: React.FC = () => {
         }
       } catch (error) {
         console.error('Error loading dream board:', error);
-        setLoadError('Failed to load your dream board. Please try again.');
+        setLoadError('LOAD_FAILED');
       } finally {
         setIsLoading(false);
       }
@@ -337,11 +342,11 @@ const DreamBoardPage: React.FC = () => {
         setHasUnsavedChanges(false);
         handleCloseDreamBoardModal();
       } else {
-        setSaveError('Failed to save dream board. Please try again.');
+        setSaveError('SAVE_FAILED');
       }
     } catch (error) {
       console.error('Error saving dream board:', error);
-      setSaveError('Failed to save dream board. Please try again.');
+      setSaveError('SAVE_FAILED');
     } finally {
       setIsSaving(false);
     }
@@ -355,9 +360,7 @@ const DreamBoardPage: React.FC = () => {
     }
 
     // Show confirmation dialog
-    const confirmed = window.confirm(
-      'Are you sure you want to delete your dream board? This action cannot be undone.'
-    );
+    const confirmed = window.confirm(t('dreamBoard.deleteConfirm.message') as string);
 
     if (!confirmed) {
       return;
@@ -376,11 +379,11 @@ const DreamBoardPage: React.FC = () => {
         setHasUnsavedChanges(false);
         handleCloseDreamBoardModal();
       } else {
-        setSaveError('Failed to delete dream board. Please try again.');
+        setSaveError('DELETE_FAILED');
       }
     } catch (error) {
       console.error('Error deleting dream board:', error);
-      setSaveError('Failed to delete dream board. Please try again.');
+      setSaveError('DELETE_FAILED');
     } finally {
       setIsSaving(false);
     }
@@ -482,7 +485,7 @@ const DreamBoardPage: React.FC = () => {
 
   // Format date for display
   const formatDisplayDate = (dateString?: string): string => {
-    if (!dateString) return 'No date set';
+    if (!dateString) return t('dreamBoard.milestones.noDateSet') as string;
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
@@ -586,14 +589,13 @@ const DreamBoardPage: React.FC = () => {
     <div className={styles.emptyDreamBoardContainer}>
       <div className={styles.emptyDreamBoardContent}>
         <div className={styles.emptyDreamBoardIcon}>✨</div>
-        <h2 className={styles.emptyDreamBoardTitle}>Create Your Dream Board</h2>
+        <h2 className={styles.emptyDreamBoardTitle}>{t('dreamBoard.emptyState.title')}</h2>
         <p className={styles.emptyDreamBoardDescription}>
-          Welcome to your dream journey! Start by creating your personal dream board. Visualize your
-          aspirations, track your progress, and turn your dreams into reality.
+          {t('dreamBoard.emptyState.description')}
         </p>
         <button className={styles.createDreamBoardButton} onClick={handleOpenDreamBoardModal}>
           <span className={styles.createButtonIcon}>+</span>
-          Create Dream Board
+          {t('dreamBoard.emptyState.createButton')}
         </button>
       </div>
     </div>
@@ -612,7 +614,7 @@ const DreamBoardPage: React.FC = () => {
       <header className={styles.header}>
         {!hasNoDreams && (
           <div className={styles.titleContainer}>
-            <h1 className={styles.title}>Dream Board</h1>
+            <h1 className={styles.title}>{t('dreamBoard.title')}</h1>
             {hasUnsavedChanges && <span className={styles.unsavedIndicator}>●</span>}
           </div>
         )}
@@ -622,19 +624,19 @@ const DreamBoardPage: React.FC = () => {
               className={`${styles.tab} ${activeTab === 'vision-board' ? styles.activeTab : ''}`}
               onClick={() => setActiveTab('vision-board')}
             >
-              Vision Board
+              {t('dreamBoard.tabs.visionBoard')}
             </button>
             <button
               className={`${styles.tab} ${activeTab === 'experience' ? styles.activeTab : ''}`}
               onClick={() => setActiveTab('experience')}
             >
-              Experience
+              {t('dreamBoard.tabs.experience')}
             </button>
             <button
               className={`${styles.tab} ${activeTab === 'insights' ? styles.activeTab : ''}`}
               onClick={() => setActiveTab('insights')}
             >
-              Insights
+              {t('dreamBoard.tabs.insights')}
             </button>
           </div>
         )}
@@ -646,12 +648,12 @@ const DreamBoardPage: React.FC = () => {
           <div className={styles.loadingOverlay}>
             <div className={styles.loadingSpinner}>
               <div className={styles.spinner}></div>
-              <p>Loading your dream board...</p>
+              <p>{t('dreamBoard.loading.dreamBoard')}</p>
             </div>
           </div>
         ) : loadError ? (
           <div className={styles.errorNotification}>
-            <p>{loadError}</p>
+            <p>{loadError === 'LOAD_FAILED' ? t('dreamBoard.errors.loadFailed') : loadError}</p>
             <button onClick={() => setLoadError(null)}>×</button>
           </div>
         ) : hasNoDreams ? (
@@ -684,7 +686,7 @@ const DreamBoardPage: React.FC = () => {
               <div className={styles.experienceTab}>
                 <CosmicDreamExperience
                   dreams={dreams}
-                  categories={mockCategories}
+                  categories={[...new Set(dreams.map(dream => dream.category))]}
                   onDreamSelect={handleDreamSelect}
                   activeDream={activeDream}
                 />
@@ -727,7 +729,13 @@ const DreamBoardPage: React.FC = () => {
       {/* Save Error Notification */}
       {saveError && (
         <div className={styles.errorNotification}>
-          <p>{saveError}</p>
+          <p>
+            {saveError === 'SAVE_FAILED'
+              ? t('dreamBoard.errors.saveFailed')
+              : saveError === 'DELETE_FAILED'
+                ? t('dreamBoard.errors.deleteFailed')
+                : saveError}
+          </p>
           <button onClick={() => setSaveError(null)}>×</button>
         </div>
       )}
@@ -737,7 +745,7 @@ const DreamBoardPage: React.FC = () => {
         <div className={styles.loadingOverlay}>
           <div className={styles.loadingSpinner}>
             <div className={styles.spinner}></div>
-            <p>Saving your dream board...</p>
+            <p>{t('dreamBoard.loading.saving')}</p>
           </div>
         </div>
       )}

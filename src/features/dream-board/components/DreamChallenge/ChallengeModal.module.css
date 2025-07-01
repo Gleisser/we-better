@@ -610,3 +610,297 @@
     width: 100%;
   }
 }
+
+/* ===== LIGHT THEME OVERRIDES FOR CHALLENGE MODAL ===== */
+
+/* Modal Overlay */
+[data-theme='light'] .modalOverlay {
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+/* Main Modal Container */
+[data-theme='light'] .challengeModal {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Modal Header */
+[data-theme='light'] .modalHeader {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(37, 99, 235, 0.05));
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+[data-theme='light'] .closeButton {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme='light'] .closeButton:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000000;
+}
+
+[data-theme='light'] .modalTitle {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+[data-theme='light'] .modalTitle::after {
+  background: linear-gradient(90deg, #3b82f6, transparent);
+}
+
+/* Form Sections */
+[data-theme='light'] .sectionIcon {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.1));
+  color: #3b82f6;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme='light'] .sectionTitle {
+  color: #1f2937;
+}
+
+/* Form Labels */
+[data-theme='light'] .formGroup label {
+  color: #374151;
+}
+
+/* Form Inputs */
+[data-theme='light'] .formGroup input[type='text'],
+[data-theme='light'] .formGroup input[type='number'],
+[data-theme='light'] .formGroup select,
+[data-theme='light'] .formGroup textarea {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #1f2937;
+}
+
+[data-theme='light'] .formGroup input[type='text']:focus,
+[data-theme='light'] .formGroup input[type='number']:focus,
+[data-theme='light'] .formGroup select:focus,
+[data-theme='light'] .formGroup textarea:focus {
+  background: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Duration Inputs */
+[data-theme='light'] .unitSelect {
+  border-left: 1px solid #d1d5db;
+  background: #f9fafb;
+  color: #1f2937;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23374151' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+[data-theme='light'] .unitSelect:focus {
+  background-color: #ffffff;
+  border-color: #3b82f6;
+}
+
+[data-theme='light'] .durationHint {
+  color: #6b7280;
+}
+
+/* Difficulty Buttons */
+[data-theme='light'] .difficultyBtn {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+[data-theme='light'] .difficultyBtn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+[data-theme='light'] .difficultyBtn.active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+  border-color: #3b82f6;
+  color: #1f2937;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme='light'] .easyBtn.active {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+  border-color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+[data-theme='light'] .mediumBtn.active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+  border-color: #3b82f6;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme='light'] .hardBtn.active {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+  border-color: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+}
+
+/* Frequency Buttons */
+[data-theme='light'] .frequencyBtn {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+[data-theme='light'] .frequencyBtn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+[data-theme='light'] .frequencyBtn.active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+  border-color: #3b82f6;
+  color: #1f2937;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme='light'] .frequencyBtn.active::before {
+  background: #3b82f6;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+}
+
+/* Day Selector */
+[data-theme='light'] .dayButton {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+[data-theme='light'] .dayButton:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+[data-theme='light'] .dayButton.selectedDay {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+  border-color: #3b82f6;
+  color: #1f2937;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+/* Switch Toggle */
+[data-theme='light'] .switchLabelText {
+  color: #374151;
+}
+
+[data-theme='light'] .switchSlider {
+  background-color: #e5e7eb;
+  border: 1px solid #d1d5db;
+}
+
+[data-theme='light'] .switchSlider:before {
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme='light'] .switchInput:checked + .switchSlider {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-color: #3b82f6;
+}
+
+[data-theme='light'] .switchInput:focus + .switchSlider {
+  box-shadow: 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Time Input */
+[data-theme='light'] .timeInput {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #1f2937;
+}
+
+[data-theme='light'] .timeInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Modal Footer */
+[data-theme='light'] .modalFooter {
+  background: rgba(249, 250, 251, 0.8);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Buttons */
+[data-theme='light'] .cancelButton {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+}
+
+[data-theme='light'] .cancelButton:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+[data-theme='light'] .saveButton {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+[data-theme='light'] .saveButton:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Tip Container */
+[data-theme='light'] .tipContainer {
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+[data-theme='light'] .tipIcon {
+  color: #3b82f6;
+}
+
+[data-theme='light'] .tipText {
+  color: #6b7280;
+}
+
+/* Mobile Responsive Overrides for Light Theme */
+@media (max-width: 768px) {
+  [data-theme='light'] .modalHeader {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(37, 99, 235, 0.05));
+  }
+
+  [data-theme='light'] .closeButton {
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  [data-theme='light'] .closeButton:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #000000;
+  }
+
+  [data-theme='light'] .frequencyBtn {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    color: #374151;
+  }
+
+  [data-theme='light'] .frequencyBtn:hover {
+    background: #f9fafb;
+  }
+
+  [data-theme='light'] .frequencyBtn.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+    border-color: #3b82f6;
+    color: #1f2937;
+  }
+
+  [data-theme='light'] .frequencyBtn.active::before {
+    background: #3b82f6;
+  }
+}
+
+/* ===== END LIGHT THEME OVERRIDES FOR CHALLENGE MODAL ===== */

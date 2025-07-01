@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './AIChatBox.module.css';
 import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
 
@@ -8,6 +9,7 @@ interface AIChatBoxProps {
 }
 
 const AIChatBox = ({ onClose }: AIChatBoxProps): JSX.Element | null => {
+  const { t } = useCommonTranslation();
   const isMobile = window.innerWidth <= 768;
   const { activeSheet, setActiveSheet } = useBottomSheet();
 
@@ -41,26 +43,30 @@ const AIChatBox = ({ onClose }: AIChatBoxProps): JSX.Element | null => {
       >
         {/* Header */}
         <div className={styles.header}>
-          <div className={styles.headerTitle}>AI Assistant</div>
-          <button onClick={handleClose} className={styles.closeButton} aria-label="Close chat">
+          <div className={styles.headerTitle}>{t('aiChat.title')}</div>
+          <button
+            onClick={handleClose}
+            className={styles.closeButton}
+            aria-label={t('aiChat.closeChat')}
+          >
             <XIcon className={styles.closeIcon} />
           </button>
         </div>
 
         {/* Chat Content */}
         <div className={styles.content}>
-          <div className={styles.message}>How can I help you today?</div>
+          <div className={styles.message}>{t('aiChat.greeting')}</div>
         </div>
 
         {/* Input Area */}
         <div className={styles.inputArea}>
           <input
             type="text"
-            placeholder="Type your message..."
+            placeholder={t('aiChat.placeholder')}
             className={styles.input}
             autoFocus
           />
-          <button className={styles.sendButton}>Send</button>
+          <button className={styles.sendButton}>{t('aiChat.send')}</button>
         </div>
       </motion.div>
     </>

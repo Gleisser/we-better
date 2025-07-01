@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './ConfirmationModal.module.css';
 import { createPortal } from 'react-dom';
 
@@ -18,6 +19,8 @@ export const ConfirmationModal = ({
   title,
   message,
 }: ConfirmationModalProps): JSX.Element => {
+  const { t } = useCommonTranslation();
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -37,7 +40,11 @@ export const ConfirmationModal = ({
           >
             <div className={styles.header}>
               <h2 className={styles.title}>{title}</h2>
-              <button className={styles.closeButton} onClick={onClose} aria-label="Close modal">
+              <button
+                className={styles.closeButton}
+                onClick={onClose}
+                aria-label={t('widgets.goals.confirmDelete.closeModal') as string}
+              >
                 <XIcon className={styles.closeIcon} />
               </button>
             </div>
@@ -48,7 +55,7 @@ export const ConfirmationModal = ({
 
             <div className={styles.footer}>
               <button className={styles.cancelButton} onClick={onClose}>
-                Cancel
+                {t('widgets.goals.confirmDelete.cancel')}
               </button>
               <button
                 className={styles.confirmButton}
@@ -57,7 +64,7 @@ export const ConfirmationModal = ({
                   onClose();
                 }}
               >
-                Delete
+                {t('widgets.goals.confirmDelete.delete')}
               </button>
             </div>
           </motion.div>
