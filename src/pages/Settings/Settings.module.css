@@ -25,7 +25,7 @@
 .titleIcon {
   width: 32px;
   height: 32px;
-  color: var(--theme-accent-primary);
+  color: var(--theme-interactive-primary);
 }
 
 .title {
@@ -33,6 +33,7 @@
   font-size: 32px;
   font-weight: 700;
   color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
 }
 
 .subtitle {
@@ -67,6 +68,7 @@
   font-size: 20px;
   font-weight: 600;
   color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
 }
 
 .sectionDescription {
@@ -89,10 +91,11 @@
 /* Setting Items */
 .settingItem {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding: 16px 0;
+  padding: 20px 0;
   border-bottom: 1px solid var(--theme-border-primary);
+  gap: 24px;
 }
 
 .settingItem:last-child {
@@ -101,13 +104,15 @@
 
 .settingInfo {
   flex: 1;
+  min-width: 0; /* Allows flex item to shrink below its content size */
 }
 
 .settingLabel {
-  margin: 0 0 4px 0;
+  margin: 0 0 6px 0;
   font-size: 16px;
   font-weight: 600;
   color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
 }
 
 .settingDescription {
@@ -118,7 +123,10 @@
 }
 
 .settingControl {
+  flex-shrink: 0;
   margin-left: 16px;
+  display: flex;
+  align-items: center;
 }
 
 .comingSoon {
@@ -131,6 +139,23 @@
   color: var(--theme-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Light Theme Overrides */
+[data-theme='light'] .settingsContainer {
+  background: #f8f9fa;
+}
+
+[data-theme='light'] .section {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .comingSoon {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
 }
 
 /* Responsive Design */
@@ -156,12 +181,15 @@
   .settingItem {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 16px;
+    padding: 16px 0;
   }
 
   .settingControl {
     margin-left: 0;
     align-self: flex-end;
+    width: 100%;
+    justify-content: flex-end;
   }
 }
 
@@ -191,7 +219,12 @@
     font-size: 18px;
   }
 
+  .settingItem {
+    padding: 12px 0;
+  }
+
   .settingControl {
     align-self: flex-start;
+    justify-content: flex-start;
   }
 }

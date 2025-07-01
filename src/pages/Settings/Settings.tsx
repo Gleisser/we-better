@@ -1,12 +1,39 @@
+import { useState } from 'react';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { SettingsIcon } from '@/shared/components/common/icons';
 import ThemeSelector from '@/shared/components/theme/ThemeSelector';
 import LanguageSelector from '@/shared/components/i18n/LanguageSelector';
 import ProfileSettings from '@/shared/components/user/ProfileSettings';
+import Toggle from '@/shared/components/common/Toggle';
 import styles from './Settings.module.css';
+
+interface NotificationSettings {
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+}
 
 const Settings = (): JSX.Element => {
   const { t } = useCommonTranslation();
+
+  // Notification settings state
+  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
+    emailNotifications: true,
+    pushNotifications: false,
+  });
+
+  // Handle notification setting changes
+  const handleNotificationChange = (
+    setting: keyof NotificationSettings,
+    enabled: boolean
+  ): void => {
+    setNotificationSettings(prev => ({
+      ...prev,
+      [setting]: enabled,
+    }));
+
+    // TODO: Save to backend/localStorage
+    console.info(`${setting} set to:`, enabled);
+  };
 
   return (
     <div className={styles.settingsContainer}>
@@ -39,10 +66,15 @@ const Settings = (): JSX.Element => {
           <div className={styles.settingItem}>
             <div className={styles.settingInfo}>
               <h3 className={styles.settingLabel}>Email Notifications</h3>
-              <p className={styles.settingDescription}>Receive updates via email</p>
+              <p className={styles.settingDescription}>Receive updates and alerts via email</p>
             </div>
             <div className={styles.settingControl}>
-              <span className={styles.comingSoon}>Coming Soon</span>
+              <Toggle
+                enabled={notificationSettings.emailNotifications}
+                onChange={enabled => handleNotificationChange('emailNotifications', enabled)}
+                aria-label="Toggle email notifications"
+                size="medium"
+              />
             </div>
           </div>
 
@@ -50,11 +82,16 @@ const Settings = (): JSX.Element => {
             <div className={styles.settingInfo}>
               <h3 className={styles.settingLabel}>Push Notifications</h3>
               <p className={styles.settingDescription}>
-                Receive push notifications in your browser
+                Receive push notifications in your browser for important updates
               </p>
             </div>
             <div className={styles.settingControl}>
-              <span className={styles.comingSoon}>Coming Soon</span>
+              <Toggle
+                enabled={notificationSettings.pushNotifications}
+                onChange={enabled => handleNotificationChange('pushNotifications', enabled)}
+                aria-label="Toggle push notifications"
+                size="medium"
+              />
             </div>
           </div>
         </div>
@@ -68,7 +105,7 @@ const Settings = (): JSX.Element => {
           <div className={styles.settingItem}>
             <div className={styles.settingInfo}>
               <h3 className={styles.settingLabel}>Data Privacy</h3>
-              <p className={styles.settingDescription}>Control how your data is used</p>
+              <p className={styles.settingDescription}>Control how your data is used and shared</p>
             </div>
             <div className={styles.settingControl}>
               <span className={styles.comingSoon}>Coming Soon</span>
@@ -77,8 +114,10 @@ const Settings = (): JSX.Element => {
 
           <div className={styles.settingItem}>
             <div className={styles.settingInfo}>
-              <h3 className={styles.settingLabel}>Change Password</h3>
-              <p className={styles.settingDescription}>Update your account password</p>
+              <h3 className={styles.settingLabel}>Two-Factor Authentication</h3>
+              <p className={styles.settingDescription}>
+                Add an extra layer of security to your account
+              </p>
             </div>
             <div className={styles.settingControl}>
               <span className={styles.comingSoon}>Coming Soon</span>
