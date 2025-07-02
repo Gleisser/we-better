@@ -392,6 +392,259 @@
   letter-spacing: 0.5px;
 }
 
+/* Privacy & Security Styles */
+.securityScore {
+  background: var(--theme-bg-secondary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.securityScoreHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.securityScoreInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.securityScoreIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--theme-interactive-primary);
+}
+
+.securityScoreTitle {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
+}
+
+.securityScoreDescription {
+  margin: 0;
+  font-size: 14px;
+  color: var(--theme-text-secondary);
+}
+
+.securityScoreValue {
+  text-align: right;
+}
+
+.securityScoreNumber {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--font-plus-jakarta);
+}
+
+.securityScoreBar {
+  width: 100%;
+  height: 8px;
+  background: var(--theme-bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.securityScoreProgress {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.privacySubsection {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--theme-border-primary);
+}
+
+.privacySubsection:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.subsectionTitle {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.actionButtonSmall {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 6px;
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-plus-jakarta);
+}
+
+.actionButtonSmall:hover {
+  background: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+}
+
+.primaryButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--theme-gradient-primary);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-plus-jakarta);
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+.dangerButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  color: #ef4444;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-plus-jakarta);
+}
+
+.dangerButton:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.buttonIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.enabledBadge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 4px 8px;
+  background: #10b981;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.loginSessionsPreview {
+  margin: 20px 0;
+  padding: 16px 0;
+}
+
+.loginSessionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loginSessionItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--theme-bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--theme-border-primary);
+}
+
+.sessionIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--theme-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sessionInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.sessionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.sessionDevice {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+}
+
+.currentSessionBadge {
+  padding: 2px 6px;
+  background: #10b981;
+  color: white;
+  font-size: 10px;
+  font-weight: 500;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sessionDetails {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--theme-text-secondary);
+}
+
+.sessionLocation {
+  font-weight: 500;
+}
+
+.sessionDot {
+  opacity: 0.5;
+}
+
+.sessionTime {
+  font-weight: 400;
+}
+
 /* Light Theme Overrides */
 [data-theme='light'] .settingsContainer {
   background: #f8f9fa;
@@ -443,6 +696,45 @@
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
   color: #64748b;
+}
+
+[data-theme='light'] .securityScore {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .securityScoreBar {
+  background: #e2e8f0;
+}
+
+[data-theme='light'] .actionButtonSmall {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #374151;
+}
+
+[data-theme='light'] .actionButtonSmall:hover {
+  background: #f8f9fa;
+  border-color: #cbd5e1;
+}
+
+[data-theme='light'] .primaryButton {
+  background: var(--theme-gradient-primary);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+[data-theme='light'] .primaryButton:hover {
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+[data-theme='light'] .loginSessionItem {
+  background: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .sessionIcon {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Responsive Design */
