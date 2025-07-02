@@ -16,6 +16,7 @@ import { EnhancedLifeWheelPage } from '@/features/life-wheel';
 import { DreamBoardPage } from '@/features/dream-board';
 import Settings from '@/pages/Settings';
 import Bookmarks from '@/pages/Bookmarks';
+import Notifications from '@/pages/Notifications';
 
 export const router = createBrowserRouter([
   {
@@ -82,6 +83,10 @@ export const router = createBrowserRouter([
       {
         path: 'bookmarks',
         element: <Bookmarks />,
+      },
+      {
+        path: 'notifications',
+        element: <Notifications />,
       },
     ],
   },
