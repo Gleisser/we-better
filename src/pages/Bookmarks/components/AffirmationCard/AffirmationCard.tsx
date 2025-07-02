@@ -4,7 +4,8 @@ import {
   useBookmarkedAffirmations,
   type BookmarkedAffirmation,
 } from '@/shared/hooks/useBookmarkedAffirmations';
-import { useState } from 'react';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useState, useMemo } from 'react';
 import styles from './AffirmationCard.module.css';
 
 interface AffirmationCardProps {
@@ -24,7 +25,20 @@ const CATEGORY_CONFIG: Record<string, { color: string; icon: string; gradient: s
 
 const AffirmationCard = ({ affirmation, onRemove }: AffirmationCardProps): JSX.Element => {
   const { removeBookmark } = useBookmarkedAffirmations();
+  const { t, currentLanguage } = useCommonTranslation();
   const [showMenu, setShowMenu] = useState(false);
+
+  // Memoize translated values to prevent infinite re-renders
+  const translations = useMemo(
+    () => ({
+      shareTitle: t('cards.affirmation.shareTitle') as string,
+      shareAction: t('cards.affirmation.shareAction') as string,
+      removeBookmark: t('cards.affirmation.removeBookmark') as string,
+      moreOptions: t('cards.affirmation.moreOptions') as string,
+      typeLabel: t('cards.affirmation.typeLabel') as string,
+    }),
+    [t]
+  );
 
   const categoryConfig = CATEGORY_CONFIG[affirmation.category] || CATEGORY_CONFIG.confidence;
 
@@ -38,7 +52,7 @@ const AffirmationCard = ({ affirmation, onRemove }: AffirmationCardProps): JSX.E
     const text = `${affirmation.text}`;
     if (navigator.share) {
       navigator.share({
-        title: 'Positive Affirmation',
+        title: translations.shareTitle,
         text,
         url: window.location.href,
       });
@@ -49,7 +63,8 @@ const AffirmationCard = ({ affirmation, onRemove }: AffirmationCardProps): JSX.E
   };
 
   const formatDate = (timestamp: number): string => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
+    const locale = currentLanguage === 'pt' ? 'pt-BR' : 'en-US';
+    return new Date(timestamp).toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -81,7 +96,7 @@ const AffirmationCard = ({ affirmation, onRemove }: AffirmationCardProps): JSX.E
           <button
             className={styles.actionButton}
             onClick={() => setShowMenu(!showMenu)}
-            aria-label="More options"
+            aria-label={translations.moreOptions}
           >
             <MoreVerticalIcon className={styles.actionIcon} />
           </button>
@@ -96,11 +111,11 @@ const AffirmationCard = ({ affirmation, onRemove }: AffirmationCardProps): JSX.E
             >
               <button className={styles.menuItem} onClick={handleShare}>
                 <ShareIcon className={styles.menuIcon} />
-                Share Affirmation
+                {translations.shareAction}
               </button>
               <button className={styles.menuItem} onClick={handleRemoveBookmark}>
                 <BookmarkIcon className={styles.menuIcon} filled />
-                Remove Bookmark
+                {translations.removeBookmark}
               </button>
             </motion.div>
           )}
@@ -124,7 +139,7 @@ const AffirmationCard = ({ affirmation, onRemove }: AffirmationCardProps): JSX.E
       {/* Footer */}
       <div className={styles.footer}>
         <div className={styles.type}>
-          <span className={styles.typeLabel}>Affirmation</span>
+          <span className={styles.typeLabel}>{translations.typeLabel}</span>
         </div>
         <div className={styles.meta}>
           <span className={styles.bookmarkDate}>{formatDate(affirmation.timestamp)}</span>

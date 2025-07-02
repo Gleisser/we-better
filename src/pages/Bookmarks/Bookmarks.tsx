@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBookmarkedQuotes } from '@/shared/hooks/useBookmarkedQuotes';
 import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { BookmarkIcon, SearchIcon, ChevronDownIcon } from '@/shared/components/common/icons';
 import QuoteCard from './components/QuoteCard/QuoteCard';
 import AffirmationCard from './components/AffirmationCard/AffirmationCard';
@@ -95,6 +96,7 @@ const ListIcon = ({ className }: { className?: string }): JSX.Element => (
 const Bookmarks = (): JSX.Element => {
   const { bookmarkedQuotes } = useBookmarkedQuotes();
   const { bookmarkedAffirmations } = useBookmarkedAffirmations();
+  const { t } = useCommonTranslation();
 
   // State
   const [searchTerm, setSearchTerm] = useState('');
@@ -173,6 +175,50 @@ const Bookmarks = (): JSX.Element => {
   const quotesCount = bookmarkedQuotes.length;
   const affirmationsCount = bookmarkedAffirmations.length;
 
+  // Memoize translated values to prevent infinite re-renders
+  const translations = useMemo(
+    () => ({
+      title: t('bookmarks.title') as string,
+      subtitle: t('bookmarks.subtitle') as string,
+      itemCount: t('bookmarks.itemCount', { count: totalBookmarks }) as string,
+      stats: {
+        quotes: t('bookmarks.stats.quotes') as string,
+        affirmations: t('bookmarks.stats.affirmations') as string,
+      },
+      search: {
+        placeholder: t('bookmarks.search.placeholder') as string,
+      },
+      controls: {
+        filter: t('bookmarks.controls.filter') as string,
+        sort: t('bookmarks.controls.sort') as string,
+        gridView: t('bookmarks.controls.gridView') as string,
+        listView: t('bookmarks.controls.listView') as string,
+      },
+      sorting: {
+        newest: t('bookmarks.sorting.newest') as string,
+        oldest: t('bookmarks.sorting.oldest') as string,
+        alphabetical: t('bookmarks.sorting.alphabetical') as string,
+      },
+      filters: {
+        typeLabel: t('bookmarks.filters.typeLabel') as string,
+        all: t('bookmarks.filters.all') as string,
+        quotes: t('bookmarks.filters.quotes') as string,
+        affirmations: t('bookmarks.filters.affirmations') as string,
+      },
+      emptyState: {
+        noBookmarks: {
+          title: t('bookmarks.emptyState.noBookmarks.title') as string,
+          description: t('bookmarks.emptyState.noBookmarks.description') as string,
+        },
+        noResults: {
+          title: t('bookmarks.emptyState.noResults.title') as string,
+          description: t('bookmarks.emptyState.noResults.description') as string,
+        },
+      },
+    }),
+    [t, totalBookmarks]
+  );
+
   return (
     <div className={styles.bookmarksPage}>
       {/* Header */}
@@ -180,10 +226,10 @@ const Bookmarks = (): JSX.Element => {
         <div className={styles.titleSection}>
           <div className={styles.iconTitle}>
             <BookmarkIcon className={styles.headerIcon} filled />
-            <h1 className={styles.title}>My Bookmarks</h1>
+            <h1 className={styles.title}>{translations.title}</h1>
           </div>
           <p className={styles.subtitle}>
-            Your saved quotes and affirmations • {totalBookmarks} items
+            {translations.subtitle} • {translations.itemCount}
           </p>
         </div>
 
@@ -191,12 +237,12 @@ const Bookmarks = (): JSX.Element => {
         <div className={styles.stats}>
           <div className={styles.statItem}>
             <span className={styles.statNumber}>{quotesCount}</span>
-            <span className={styles.statLabel}>Quotes</span>
+            <span className={styles.statLabel}>{translations.stats.quotes}</span>
           </div>
           <div className={styles.statDivider} />
           <div className={styles.statItem}>
             <span className={styles.statNumber}>{affirmationsCount}</span>
-            <span className={styles.statLabel}>Affirmations</span>
+            <span className={styles.statLabel}>{translations.stats.affirmations}</span>
           </div>
         </div>
       </div>
@@ -208,7 +254,7 @@ const Bookmarks = (): JSX.Element => {
           <SearchIcon className={styles.searchIcon} />
           <input
             type="text"
-            placeholder="Search bookmarks..."
+            placeholder={translations.search.placeholder}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             className={styles.searchInput}
@@ -222,14 +268,14 @@ const Bookmarks = (): JSX.Element => {
             <button
               className={`${styles.viewModeButton} ${viewMode === 'grid' ? styles.active : ''}`}
               onClick={() => setViewMode('grid')}
-              aria-label="Grid view"
+              aria-label={translations.controls.gridView}
             >
               <GridIcon className={styles.viewIcon} />
             </button>
             <button
               className={`${styles.viewModeButton} ${viewMode === 'list' ? styles.active : ''}`}
               onClick={() => setViewMode('list')}
-              aria-label="List view"
+              aria-label={translations.controls.listView}
             >
               <ListIcon className={styles.viewIcon} />
             </button>
@@ -241,7 +287,7 @@ const Bookmarks = (): JSX.Element => {
             onClick={() => setShowFilters(!showFilters)}
           >
             <FilterIcon className={styles.controlIcon} />
-            Filter
+            {translations.controls.filter}
           </button>
 
           {/* Sort Button */}
@@ -251,7 +297,7 @@ const Bookmarks = (): JSX.Element => {
               onClick={() => setShowSortMenu(!showSortMenu)}
             >
               <SortIcon className={styles.controlIcon} />
-              Sort
+              {translations.controls.sort}
               <ChevronDownIcon className={styles.chevronIcon} />
             </button>
 
@@ -270,7 +316,7 @@ const Bookmarks = (): JSX.Element => {
                     setShowSortMenu(false);
                   }}
                 >
-                  Newest First
+                  {translations.sorting.newest}
                 </button>
                 <button
                   className={`${styles.sortMenuItem} ${sortBy === 'oldest' ? styles.active : ''}`}
@@ -279,7 +325,7 @@ const Bookmarks = (): JSX.Element => {
                     setShowSortMenu(false);
                   }}
                 >
-                  Oldest First
+                  {translations.sorting.oldest}
                 </button>
                 <button
                   className={`${styles.sortMenuItem} ${sortBy === 'alphabetical' ? styles.active : ''}`}
@@ -288,7 +334,7 @@ const Bookmarks = (): JSX.Element => {
                     setShowSortMenu(false);
                   }}
                 >
-                  Alphabetical
+                  {translations.sorting.alphabetical}
                 </button>
               </motion.div>
             )}
@@ -307,17 +353,26 @@ const Bookmarks = (): JSX.Element => {
             transition={{ duration: 0.3 }}
           >
             <div className={styles.filterGroup}>
-              <span className={styles.filterLabel}>Type:</span>
+              <span className={styles.filterLabel}>{translations.filters.typeLabel}</span>
               <div className={styles.filterButtons}>
-                {(['all', 'quotes', 'affirmations'] as BookmarkType[]).map(type => (
-                  <button
-                    key={type}
-                    className={`${styles.filterButton} ${selectedType === type ? styles.active : ''}`}
-                    onClick={() => setSelectedType(type)}
-                  >
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </button>
-                ))}
+                <button
+                  className={`${styles.filterButton} ${selectedType === 'all' ? styles.active : ''}`}
+                  onClick={() => setSelectedType('all')}
+                >
+                  {translations.filters.all}
+                </button>
+                <button
+                  className={`${styles.filterButton} ${selectedType === 'quotes' ? styles.active : ''}`}
+                  onClick={() => setSelectedType('quotes')}
+                >
+                  {translations.filters.quotes}
+                </button>
+                <button
+                  className={`${styles.filterButton} ${selectedType === 'affirmations' ? styles.active : ''}`}
+                  onClick={() => setSelectedType('affirmations')}
+                >
+                  {translations.filters.affirmations}
+                </button>
               </div>
             </div>
           </motion.div>
@@ -330,12 +385,14 @@ const Bookmarks = (): JSX.Element => {
           <div className={styles.emptyState}>
             <BookmarkIcon className={styles.emptyIcon} />
             <h3 className={styles.emptyTitle}>
-              {totalBookmarks === 0 ? 'No bookmarks yet' : 'No results found'}
+              {totalBookmarks === 0
+                ? translations.emptyState.noBookmarks.title
+                : translations.emptyState.noResults.title}
             </h3>
             <p className={styles.emptyDescription}>
               {totalBookmarks === 0
-                ? 'Start bookmarking your favorite quotes and affirmations to see them here.'
-                : 'Try adjusting your search or filter criteria.'}
+                ? translations.emptyState.noBookmarks.description
+                : translations.emptyState.noResults.description}
             </p>
           </div>
         ) : (

@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { BookmarkIcon, MoreVerticalIcon, ShareIcon } from '@/shared/components/common/icons';
 import { useBookmarkedQuotes, type BookmarkedQuote } from '@/shared/hooks/useBookmarkedQuotes';
-import { useState } from 'react';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useState, useMemo } from 'react';
 import styles from './QuoteCard.module.css';
 
 interface QuoteCardProps {
@@ -19,7 +20,19 @@ const THEME_CONFIG: Record<string, { color: string; bgClass: string; icon: strin
 
 const QuoteCard = ({ quote, onRemove }: QuoteCardProps): JSX.Element => {
   const { removeBookmark } = useBookmarkedQuotes();
+  const { t, currentLanguage } = useCommonTranslation();
   const [showMenu, setShowMenu] = useState(false);
+
+  // Memoize translated values to prevent infinite re-renders
+  const translations = useMemo(
+    () => ({
+      shareTitle: t('cards.quote.shareTitle') as string,
+      shareAction: t('cards.quote.shareAction') as string,
+      removeBookmark: t('cards.quote.removeBookmark') as string,
+      moreOptions: t('cards.quote.moreOptions') as string,
+    }),
+    [t]
+  );
 
   const themeConfig = THEME_CONFIG[quote.theme] || THEME_CONFIG.wisdom;
 
@@ -33,7 +46,7 @@ const QuoteCard = ({ quote, onRemove }: QuoteCardProps): JSX.Element => {
     const text = `"${quote.text}" - ${quote.author}`;
     if (navigator.share) {
       navigator.share({
-        title: 'Inspirational Quote',
+        title: translations.shareTitle,
         text,
         url: window.location.href,
       });
@@ -44,7 +57,8 @@ const QuoteCard = ({ quote, onRemove }: QuoteCardProps): JSX.Element => {
   };
 
   const formatDate = (timestamp: number): string => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
+    const locale = currentLanguage === 'pt' ? 'pt-BR' : 'en-US';
+    return new Date(timestamp).toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -71,7 +85,7 @@ const QuoteCard = ({ quote, onRemove }: QuoteCardProps): JSX.Element => {
           <button
             className={styles.actionButton}
             onClick={() => setShowMenu(!showMenu)}
-            aria-label="More options"
+            aria-label={translations.moreOptions}
           >
             <MoreVerticalIcon className={styles.actionIcon} />
           </button>
@@ -86,11 +100,11 @@ const QuoteCard = ({ quote, onRemove }: QuoteCardProps): JSX.Element => {
             >
               <button className={styles.menuItem} onClick={handleShare}>
                 <ShareIcon className={styles.menuIcon} />
-                Share Quote
+                {translations.shareAction}
               </button>
               <button className={styles.menuItem} onClick={handleRemoveBookmark}>
                 <BookmarkIcon className={styles.menuIcon} filled />
-                Remove Bookmark
+                {translations.removeBookmark}
               </button>
             </motion.div>
           )}

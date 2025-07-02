@@ -499,6 +499,64 @@ const resources = {
           },
         },
       },
+      cards: {
+        quote: {
+          shareTitle: 'Inspirational Quote',
+          shareAction: 'Share Quote',
+          removeBookmark: 'Remove Bookmark',
+          moreOptions: 'More options',
+        },
+        affirmation: {
+          shareTitle: 'Positive Affirmation',
+          shareAction: 'Share Affirmation',
+          removeBookmark: 'Remove Bookmark',
+          moreOptions: 'More options',
+          typeLabel: 'Affirmation',
+        },
+      },
+      bookmarks: {
+        title: 'My Bookmarks',
+        subtitle: 'Your saved quotes and affirmations',
+        itemCount: '{{count}} items',
+        itemCount_zero: 'No items',
+        itemCount_one: '{{count}} item',
+        itemCount_other: '{{count}} items',
+        stats: {
+          quotes: 'Quotes',
+          affirmations: 'Affirmations',
+        },
+        search: {
+          placeholder: 'Search bookmarks...',
+        },
+        controls: {
+          filter: 'Filter',
+          sort: 'Sort',
+          gridView: 'Grid view',
+          listView: 'List view',
+        },
+        sorting: {
+          newest: 'Newest First',
+          oldest: 'Oldest First',
+          alphabetical: 'Alphabetical',
+        },
+        filters: {
+          typeLabel: 'Type:',
+          all: 'All',
+          quotes: 'Quotes',
+          affirmations: 'Affirmations',
+        },
+        emptyState: {
+          noBookmarks: {
+            title: 'No bookmarks yet',
+            description:
+              'Start bookmarking your favorite quotes and affirmations to see them here.',
+          },
+          noResults: {
+            title: 'No results found',
+            description: 'Try adjusting your search or filter criteria.',
+          },
+        },
+      },
       dreamBoard: {
         title: 'Dream Board',
         tabs: {
@@ -1587,6 +1645,63 @@ const resources = {
             failedToUpdate: 'Falha ao atualizar meta',
             failedToDelete: 'Falha ao excluir meta',
             failedToComplete: 'Falha ao completar revisão',
+          },
+        },
+      },
+      cards: {
+        quote: {
+          shareTitle: 'Frase Inspiradora',
+          shareAction: 'Compartilhar Frase',
+          removeBookmark: 'Remover Favorito',
+          moreOptions: 'Mais opções',
+        },
+        affirmation: {
+          shareTitle: 'Afirmação Positiva',
+          shareAction: 'Compartilhar Afirmação',
+          removeBookmark: 'Remover Favorito',
+          moreOptions: 'Mais opções',
+          typeLabel: 'Afirmação',
+        },
+      },
+      bookmarks: {
+        title: 'Meus Favoritos',
+        subtitle: 'Suas frases e afirmações salvas',
+        itemCount: '{{count}} itens',
+        itemCount_zero: 'Nenhum item',
+        itemCount_one: '{{count}} item',
+        itemCount_other: '{{count}} itens',
+        stats: {
+          quotes: 'Frases',
+          affirmations: 'Afirmações',
+        },
+        search: {
+          placeholder: 'Buscar favoritos...',
+        },
+        controls: {
+          filter: 'Filtrar',
+          sort: 'Ordenar',
+          gridView: 'Visualização em grade',
+          listView: 'Visualização em lista',
+        },
+        sorting: {
+          newest: 'Mais Recentes',
+          oldest: 'Mais Antigas',
+          alphabetical: 'Alfabética',
+        },
+        filters: {
+          typeLabel: 'Tipo:',
+          all: 'Todos',
+          quotes: 'Frases',
+          affirmations: 'Afirmações',
+        },
+        emptyState: {
+          noBookmarks: {
+            title: 'Nenhum favorito ainda',
+            description: 'Comece favoritando suas frases e afirmações favoritas para vê-las aqui.',
+          },
+          noResults: {
+            title: 'Nenhum resultado encontrado',
+            description: 'Tente ajustar sua busca ou critérios de filtro.',
           },
         },
       },
