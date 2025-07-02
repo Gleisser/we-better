@@ -78,6 +78,257 @@
   line-height: 1.5;
 }
 
+/* Plans & Billing Styles */
+.billingCard {
+  background: var(--theme-bg-secondary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.planHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--theme-border-primary);
+}
+
+.planInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.planIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--theme-gradient-primary);
+}
+
+.planIconSvg {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
+.planName {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
+}
+
+.planPrice {
+  margin: 0;
+  font-size: 14px;
+  color: var(--theme-text-secondary);
+  font-weight: 500;
+}
+
+.managePlanButton {
+  padding: 10px 20px;
+  background: var(--theme-gradient-primary);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-plus-jakarta);
+}
+
+.managePlanButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+/* Billing Details */
+.billingDetails {
+  margin-bottom: 24px;
+}
+
+.billingItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--theme-border-primary);
+}
+
+.billingItem:last-child {
+  border-bottom: none;
+}
+
+.billingItemIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--theme-bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  color: var(--theme-text-secondary);
+}
+
+.billingItemContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.billingLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--theme-text-secondary);
+  font-family: var(--font-plus-jakarta);
+}
+
+.billingValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+}
+
+.updateButton {
+  padding: 6px 12px;
+  background: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 6px;
+  color: var(--theme-text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.updateButton:hover {
+  background: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+}
+
+/* Usage Section */
+.usageSection {
+  margin-bottom: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--theme-border-primary);
+}
+
+.usageTitle {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
+}
+
+.usageStats {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.usageStat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.usageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.usageLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
+}
+
+.usageNumbers {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+}
+
+.progressBar {
+  width: 100%;
+  height: 6px;
+  background: var(--theme-bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--theme-gradient-primary);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Billing Actions */
+.billingActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+  border-top: 1px solid var(--theme-border-primary);
+}
+
+.actionButton {
+  padding: 10px 16px;
+  background: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 8px;
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-plus-jakarta);
+}
+
+.actionButton:hover {
+  background: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+}
+
+.actionButtonSecondary {
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-plus-jakarta);
+}
+
+.actionButtonSecondary:hover {
+  background: #ef4444;
+  color: white;
+}
+
 /* Theme Selector */
 .themeSelector {
   margin-bottom: 24px;
@@ -152,6 +403,42 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
+[data-theme='light'] .billingCard {
+  background: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .billingItemIcon {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .progressBar {
+  background: #e2e8f0;
+}
+
+[data-theme='light'] .updateButton,
+[data-theme='light'] .actionButton {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #374151;
+}
+
+[data-theme='light'] .updateButton:hover,
+[data-theme='light'] .actionButton:hover {
+  background: #f8f9fa;
+  border-color: #cbd5e1;
+}
+
+[data-theme='light'] .managePlanButton {
+  background: var(--theme-gradient-primary);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+[data-theme='light'] .managePlanButton:hover {
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
 [data-theme='light'] .comingSoon {
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
@@ -176,6 +463,35 @@
 
   .section {
     padding: 20px;
+  }
+
+  .billingCard {
+    padding: 20px;
+  }
+
+  .planHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .planInfo {
+    width: 100%;
+  }
+
+  .managePlanButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .billingActions {
+    flex-direction: column;
+  }
+
+  .actionButton,
+  .actionButtonSecondary {
+    width: 100%;
+    text-align: center;
   }
 
   .settingItem {
@@ -215,6 +531,10 @@
     padding: 16px;
   }
 
+  .billingCard {
+    padding: 16px;
+  }
+
   .sectionTitle {
     font-size: 18px;
   }
@@ -226,5 +546,13 @@
   .settingControl {
     align-self: flex-start;
     justify-content: flex-start;
+  }
+
+  .usageStats {
+    gap: 12px;
+  }
+
+  .billingItem {
+    padding: 12px 0;
   }
 }
