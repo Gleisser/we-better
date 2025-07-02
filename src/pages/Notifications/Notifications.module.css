@@ -307,6 +307,11 @@
   background: #f0f0f0;
 }
 
+[data-theme='light'] .viewButton:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
 /* Dark Theme Enhancement */
 [data-theme='dark'] .notificationItem {
   border: 1px solid rgba(255, 255, 255, 0.08);
