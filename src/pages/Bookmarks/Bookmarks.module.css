@@ -379,6 +379,11 @@
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+[data-theme='light'] .viewModeButton.active {
+  background: var(--theme-interactive-primary);
+  color: white;
+}
+
 [data-theme='light'] .controlButton {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -389,10 +394,21 @@
   border-color: rgba(0, 0, 0, 0.12);
 }
 
+[data-theme='light'] .controlButton.active {
+  background: var(--theme-interactive-primary);
+  border-color: var(--theme-interactive-primary);
+  color: white;
+}
+
 [data-theme='light'] .sortMenu {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+[data-theme='light'] .sortMenuItem.active {
+  background: var(--theme-interactive-primary);
+  color: white;
 }
 
 [data-theme='light'] .filtersPanel {
@@ -408,6 +424,12 @@
 [data-theme='light'] .filterButton:hover {
   background: #f8f9fa;
   border-color: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme='light'] .filterButton.active {
+  background: var(--theme-interactive-primary);
+  border-color: var(--theme-interactive-primary);
+  color: white;
 }
 
 /* Responsive Design */
