@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { SettingsIcon } from '@/shared/components/common/icons';
 import ThemeSelector from '@/shared/components/theme/ThemeSelector';
@@ -158,6 +158,147 @@ const QrCodeIcon = ({ className }: { className?: string }): JSX.Element => (
 const Settings = (): JSX.Element => {
   const { t } = useCommonTranslation();
 
+  // Memoize translated values to prevent infinite re-renders
+  const translations = useMemo(
+    () => ({
+      title: t('settings.title') as string,
+      subtitle: t('settings.subtitle') as string,
+      sections: {
+        plansAndBilling: t('settings.sections.plansAndBilling') as string,
+        general: t('settings.sections.general') as string,
+        notifications: t('settings.sections.notifications') as string,
+        privacyAndSecurity: t('settings.sections.privacyAndSecurity') as string,
+      },
+      descriptions: {
+        plansAndBilling: t('settings.descriptions.plansAndBilling') as string,
+        general: t('settings.descriptions.general') as string,
+        notifications: t('settings.descriptions.notifications') as string,
+        privacyAndSecurity: t('settings.descriptions.privacyAndSecurity') as string,
+      },
+      billing: {
+        managePlan: t('settings.billing.managePlan') as string,
+        nextBillingDate: t('settings.billing.nextBillingDate') as string,
+        paymentMethod: t('settings.billing.paymentMethod') as string,
+        update: t('settings.billing.update') as string,
+        currentUsage: t('settings.billing.currentUsage') as string,
+        viewBillingHistory: t('settings.billing.viewBillingHistory') as string,
+        downloadInvoice: t('settings.billing.downloadInvoice') as string,
+        cancelSubscription: t('settings.billing.cancelSubscription') as string,
+        usage: {
+          goals: t('settings.billing.usage.goals') as string,
+          habits: t('settings.billing.usage.habits') as string,
+          storage: t('settings.billing.usage.storage') as string,
+        },
+        billing: {
+          monthly: t('settings.billing.billing.monthly') as string,
+          yearly: t('settings.billing.billing.yearly') as string,
+        },
+      },
+      notifications: {
+        emailNotifications: t('settings.notifications.emailNotifications') as string,
+        emailDescription: t('settings.notifications.emailDescription') as string,
+        pushNotifications: t('settings.notifications.pushNotifications') as string,
+        pushDescription: t('settings.notifications.pushDescription') as string,
+      },
+      privacy: {
+        securityScore: {
+          title: t('settings.privacy.securityScore.title') as string,
+          description: t('settings.privacy.securityScore.description') as string,
+        },
+        dataManagement: {
+          title: t('settings.privacy.dataManagement.title') as string,
+          exportData: t('settings.privacy.dataManagement.exportData') as string,
+          exportDescription: t('settings.privacy.dataManagement.exportDescription') as string,
+          deleteAccount: t('settings.privacy.dataManagement.deleteAccount') as string,
+          deleteDescription: t('settings.privacy.dataManagement.deleteDescription') as string,
+          confirmDelete: t('settings.privacy.dataManagement.confirmDelete') as string,
+          finalConfirm: t('settings.privacy.dataManagement.finalConfirm') as string,
+          deletionInitiated: t('settings.privacy.dataManagement.deletionInitiated') as string,
+        },
+        profileVisibility: {
+          title: t('settings.privacy.profileVisibility.title') as string,
+          publicProfile: t('settings.privacy.profileVisibility.publicProfile') as string,
+          publicDescription: t('settings.privacy.profileVisibility.publicDescription') as string,
+          searchIndexing: t('settings.privacy.profileVisibility.searchIndexing') as string,
+          searchDescription: t('settings.privacy.profileVisibility.searchDescription') as string,
+          analyticsOptOut: t('settings.privacy.profileVisibility.analyticsOptOut') as string,
+          analyticsDescription: t(
+            'settings.privacy.profileVisibility.analyticsDescription'
+          ) as string,
+          marketingCommunications: t(
+            'settings.privacy.profileVisibility.marketingCommunications'
+          ) as string,
+          marketingDescription: t(
+            'settings.privacy.profileVisibility.marketingDescription'
+          ) as string,
+        },
+        cookies: {
+          title: t('settings.privacy.cookies.title') as string,
+          functional: t('settings.privacy.cookies.functional') as string,
+          functionalDescription: t('settings.privacy.cookies.functionalDescription') as string,
+          analytics: t('settings.privacy.cookies.analytics') as string,
+          analyticsDescription: t('settings.privacy.cookies.analyticsDescription') as string,
+          marketing: t('settings.privacy.cookies.marketing') as string,
+          marketingDescription: t('settings.privacy.cookies.marketingDescription') as string,
+        },
+        twoFactor: {
+          title: t('settings.privacy.twoFactor.title') as string,
+          description: t('settings.privacy.twoFactor.description') as string,
+          enabled: t('settings.privacy.twoFactor.enabled') as string,
+          enable: t('settings.privacy.twoFactor.enable') as string,
+          disable: t('settings.privacy.twoFactor.disable') as string,
+          backupCodes: t('settings.privacy.twoFactor.backupCodes') as string,
+          backupDescription: t('settings.privacy.twoFactor.backupDescription') as string,
+          generate: t('settings.privacy.twoFactor.generate') as string,
+          regenerate: t('settings.privacy.twoFactor.regenerate') as string,
+          smsBackup: t('settings.privacy.twoFactor.smsBackup') as string,
+          smsDescription: t('settings.privacy.twoFactor.smsDescription') as string,
+          setupModal: t('settings.privacy.twoFactor.setupModal') as string,
+          generatingCodes: t('settings.privacy.twoFactor.generatingCodes') as string,
+        },
+        accountSecurity: {
+          title: t('settings.privacy.accountSecurity.title') as string,
+          loginHistory: t('settings.privacy.accountSecurity.loginHistory') as string,
+          loginDescription: t('settings.privacy.accountSecurity.loginDescription') as string,
+          viewHistory: t('settings.privacy.accountSecurity.viewHistory') as string,
+          recentSessions: t('settings.privacy.accountSecurity.recentSessions') as string,
+          activeSessions: t('settings.privacy.accountSecurity.activeSessions') as string,
+          activeDescription: t('settings.privacy.accountSecurity.activeDescription') as string,
+          signOutAll: t('settings.privacy.accountSecurity.signOutAll') as string,
+          signOutConfirm: t('settings.privacy.accountSecurity.signOutConfirm') as string,
+          current: t('settings.privacy.accountSecurity.current') as string,
+          timeAgo: {
+            justNow: t('settings.privacy.accountSecurity.timeAgo.justNow') as string,
+            hoursAgo: t('settings.privacy.accountSecurity.timeAgo.hoursAgo') as string,
+            yesterday: t('settings.privacy.accountSecurity.timeAgo.yesterday') as string,
+            daysAgo: t('settings.privacy.accountSecurity.timeAgo.daysAgo') as string,
+          },
+          viewingHistory: t('settings.privacy.accountSecurity.viewingHistory') as string,
+          signingOutSessions: t('settings.privacy.accountSecurity.signingOutSessions') as string,
+        },
+      },
+      actions: {
+        json: t('settings.actions.json') as string,
+        csv: t('settings.actions.csv') as string,
+        delete: t('settings.actions.delete') as string,
+        update: t('settings.actions.update') as string,
+        enable: t('settings.actions.enable') as string,
+        disable: t('settings.actions.disable') as string,
+        generate: t('settings.actions.generate') as string,
+        regenerate: t('settings.actions.regenerate') as string,
+        viewHistory: t('settings.actions.viewHistory') as string,
+        signOut: t('settings.actions.signOut') as string,
+        save: t('settings.actions.save') as string,
+        cancel: t('settings.actions.cancel') as string,
+        edit: t('settings.actions.edit') as string,
+        upload: t('settings.actions.upload') as string,
+        replace: t('settings.actions.replace') as string,
+        manage: t('settings.actions.manage') as string,
+      },
+    }),
+    [t]
+  );
+
   // Notification settings state
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
     emailNotifications: true,
@@ -297,9 +438,13 @@ const Settings = (): JSX.Element => {
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
 
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours} hours ago`;
-    if (diffInHours < 48) return 'Yesterday';
+    if (diffInHours < 1) return translations.privacy.accountSecurity.timeAgo.justNow;
+    if (diffInHours < 24)
+      return translations.privacy.accountSecurity.timeAgo.hoursAgo.replace(
+        '{{count}}',
+        diffInHours.toString()
+      );
+    if (diffInHours < 48) return translations.privacy.accountSecurity.timeAgo.yesterday;
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
@@ -311,15 +456,11 @@ const Settings = (): JSX.Element => {
 
   // Handle account deletion
   const handleDeleteAccount = (): void => {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete your account? This action cannot be undone.'
-    );
+    const confirmed = window.confirm(translations.privacy.dataManagement.confirmDelete);
     if (confirmed) {
-      const finalConfirm = window.confirm(
-        'This will permanently delete all your data. Type "DELETE" to confirm.'
-      );
+      const finalConfirm = window.confirm(translations.privacy.dataManagement.finalConfirm);
       if (finalConfirm) {
-        console.info('Account deletion initiated');
+        console.info(translations.privacy.dataManagement.deletionInitiated);
         // TODO: Implement actual account deletion
       }
     }
@@ -327,28 +468,28 @@ const Settings = (): JSX.Element => {
 
   // Handle 2FA setup
   const handleTwoFactorSetup = (): void => {
-    console.info('Opening 2FA setup modal');
+    console.info(translations.privacy.twoFactor.setupModal);
     // TODO: Open 2FA setup modal
   };
 
   // Handle backup codes generation
   const handleGenerateBackupCodes = (): void => {
-    console.info('Generating backup codes');
+    console.info(translations.privacy.twoFactor.generatingCodes);
     setSecuritySettings(prev => ({ ...prev, hasBackupCodes: true }));
     // TODO: Generate and show backup codes
   };
 
   // Handle login history view
   const handleViewLoginHistory = (): void => {
-    console.info('Opening login history modal');
+    console.info(translations.privacy.accountSecurity.viewingHistory);
     // TODO: Open login history modal with detailed view
   };
 
   // Handle sign out all sessions
   const handleSignOutAllSessions = (): void => {
-    const confirmed = window.confirm('This will sign you out of all devices. Continue?');
+    const confirmed = window.confirm(translations.privacy.accountSecurity.signOutConfirm);
     if (confirmed) {
-      console.info('Signing out all sessions');
+      console.info(translations.privacy.accountSecurity.signingOutSessions);
       // TODO: Implement sign out all sessions
     }
   };
@@ -359,11 +500,15 @@ const Settings = (): JSX.Element => {
   ): { name: string; color: string; icon: string } => {
     switch (plan) {
       case 'free':
-        return { name: 'Free Plan', color: '#6b7280', icon: '📱' };
+        return { name: t('settings.billing.plans.free') as string, color: '#6b7280', icon: '📱' };
       case 'premium':
-        return { name: 'Premium Plan', color: '#8b5cf6', icon: '⭐' };
+        return {
+          name: t('settings.billing.plans.premium') as string,
+          color: '#8b5cf6',
+          icon: '⭐',
+        };
       case 'pro':
-        return { name: 'Pro Plan', color: '#f59e0b', icon: '👑' };
+        return { name: t('settings.billing.plans.pro') as string, color: '#f59e0b', icon: '👑' };
       default:
         return { name: 'Unknown Plan', color: '#6b7280', icon: '❓' };
     }
@@ -391,9 +536,9 @@ const Settings = (): JSX.Element => {
       <div className={styles.header}>
         <div className={styles.titleSection}>
           <SettingsIcon className={styles.titleIcon} />
-          <h1 className={styles.title}>{t('navigation.settings')}</h1>
+          <h1 className={styles.title}>{translations.title}</h1>
         </div>
-        <p className={styles.subtitle}>Manage your preferences and account settings</p>
+        <p className={styles.subtitle}>{translations.subtitle}</p>
       </div>
 
       <div className={styles.content}>
@@ -401,10 +546,8 @@ const Settings = (): JSX.Element => {
 
         {/* Plans & Billing Section */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Plans & Billing</h2>
-          <p className={styles.sectionDescription}>
-            Manage your subscription, billing information, and usage
-          </p>
+          <h2 className={styles.sectionTitle}>{translations.sections.plansAndBilling}</h2>
+          <p className={styles.sectionDescription}>{translations.descriptions.plansAndBilling}</p>
 
           {/* Current Plan */}
           <div className={styles.billingCard}>
@@ -417,11 +560,13 @@ const Settings = (): JSX.Element => {
                   <h3 className={styles.planName}>{planInfo.name}</h3>
                   <p className={styles.planPrice}>
                     ${billingInfo.amount}/
-                    {billingInfo.billingCycle === 'monthly' ? 'month' : 'year'}
+                    {billingInfo.billingCycle === 'monthly'
+                      ? translations.billing.billing.monthly
+                      : translations.billing.billing.yearly}
                   </p>
                 </div>
               </div>
-              <button className={styles.managePlanButton}>Manage Plan</button>
+              <button className={styles.managePlanButton}>{translations.billing.managePlan}</button>
             </div>
 
             {/* Billing Information */}
@@ -431,7 +576,9 @@ const Settings = (): JSX.Element => {
                   <CalendarIcon className={styles.icon} />
                 </div>
                 <div className={styles.billingItemContent}>
-                  <span className={styles.billingLabel}>Next Billing Date</span>
+                  <span className={styles.billingLabel}>
+                    {translations.billing.nextBillingDate}
+                  </span>
                   <span className={styles.billingValue}>
                     {formatDate(billingInfo.nextBillingDate)}
                   </span>
@@ -443,23 +590,23 @@ const Settings = (): JSX.Element => {
                   <CreditCardIcon className={styles.icon} />
                 </div>
                 <div className={styles.billingItemContent}>
-                  <span className={styles.billingLabel}>Payment Method</span>
+                  <span className={styles.billingLabel}>{translations.billing.paymentMethod}</span>
                   <span className={styles.billingValue}>
                     {billingInfo.paymentMethod.brand} ••••{billingInfo.paymentMethod.lastFour}
                   </span>
                 </div>
-                <button className={styles.updateButton}>Update</button>
+                <button className={styles.updateButton}>{translations.billing.update}</button>
               </div>
             </div>
 
             {/* Usage Statistics */}
             <div className={styles.usageSection}>
-              <h4 className={styles.usageTitle}>Current Usage</h4>
+              <h4 className={styles.usageTitle}>{translations.billing.currentUsage}</h4>
 
               <div className={styles.usageStats}>
                 <div className={styles.usageStat}>
                   <div className={styles.usageHeader}>
-                    <span className={styles.usageLabel}>Goals</span>
+                    <span className={styles.usageLabel}>{translations.billing.usage.goals}</span>
                     <span className={styles.usageNumbers}>
                       {billingInfo.usage.goalsUsed} / {billingInfo.usage.goalsLimit}
                     </span>
@@ -476,7 +623,7 @@ const Settings = (): JSX.Element => {
 
                 <div className={styles.usageStat}>
                   <div className={styles.usageHeader}>
-                    <span className={styles.usageLabel}>Habits</span>
+                    <span className={styles.usageLabel}>{translations.billing.usage.habits}</span>
                     <span className={styles.usageNumbers}>
                       {billingInfo.usage.habitsUsed} / {billingInfo.usage.habitsLimit}
                     </span>
@@ -493,7 +640,7 @@ const Settings = (): JSX.Element => {
 
                 <div className={styles.usageStat}>
                   <div className={styles.usageHeader}>
-                    <span className={styles.usageLabel}>Storage</span>
+                    <span className={styles.usageLabel}>{translations.billing.usage.storage}</span>
                     <span className={styles.usageNumbers}>
                       {billingInfo.usage.storageUsed}MB / {billingInfo.usage.storageLimit}MB
                     </span>
@@ -512,18 +659,22 @@ const Settings = (): JSX.Element => {
 
             {/* Quick Actions */}
             <div className={styles.billingActions}>
-              <button className={styles.actionButton}>View Billing History</button>
-              <button className={styles.actionButton}>Download Invoice</button>
-              <button className={styles.actionButtonSecondary}>Cancel Subscription</button>
+              <button className={styles.actionButton}>
+                {translations.billing.viewBillingHistory}
+              </button>
+              <button className={styles.actionButton}>
+                {translations.billing.downloadInvoice}
+              </button>
+              <button className={styles.actionButtonSecondary}>
+                {translations.billing.cancelSubscription}
+              </button>
             </div>
           </div>
         </div>
 
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>General</h2>
-          <p className={styles.sectionDescription}>
-            Basic settings for your account and preferences
-          </p>
+          <h2 className={styles.sectionTitle}>{translations.sections.general}</h2>
+          <p className={styles.sectionDescription}>{translations.descriptions.general}</p>
 
           <ThemeSelector className={styles.themeSelector} />
 
@@ -531,19 +682,23 @@ const Settings = (): JSX.Element => {
         </div>
 
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Notifications</h2>
-          <p className={styles.sectionDescription}>Control what notifications you receive</p>
+          <h2 className={styles.sectionTitle}>{translations.sections.notifications}</h2>
+          <p className={styles.sectionDescription}>{translations.descriptions.notifications}</p>
 
           <div className={styles.settingItem}>
             <div className={styles.settingInfo}>
-              <h3 className={styles.settingLabel}>Email Notifications</h3>
-              <p className={styles.settingDescription}>Receive updates and alerts via email</p>
+              <h3 className={styles.settingLabel}>
+                {translations.notifications.emailNotifications}
+              </h3>
+              <p className={styles.settingDescription}>
+                {translations.notifications.emailDescription}
+              </p>
             </div>
             <div className={styles.settingControl}>
               <Toggle
                 enabled={notificationSettings.emailNotifications}
                 onChange={enabled => handleNotificationChange('emailNotifications', enabled)}
-                aria-label="Toggle email notifications"
+                aria-label={`Toggle ${translations.notifications.emailNotifications}`}
                 size="medium"
               />
             </div>
@@ -551,16 +706,18 @@ const Settings = (): JSX.Element => {
 
           <div className={styles.settingItem}>
             <div className={styles.settingInfo}>
-              <h3 className={styles.settingLabel}>Push Notifications</h3>
+              <h3 className={styles.settingLabel}>
+                {translations.notifications.pushNotifications}
+              </h3>
               <p className={styles.settingDescription}>
-                Receive push notifications in your browser for important updates
+                {translations.notifications.pushDescription}
               </p>
             </div>
             <div className={styles.settingControl}>
               <Toggle
                 enabled={notificationSettings.pushNotifications}
                 onChange={enabled => handleNotificationChange('pushNotifications', enabled)}
-                aria-label="Toggle push notifications"
+                aria-label={`Toggle ${translations.notifications.pushNotifications}`}
                 size="medium"
               />
             </div>
@@ -569,9 +726,9 @@ const Settings = (): JSX.Element => {
 
         {/* Privacy & Security Section */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Privacy & Security</h2>
+          <h2 className={styles.sectionTitle}>{translations.sections.privacyAndSecurity}</h2>
           <p className={styles.sectionDescription}>
-            Manage your privacy settings and account security
+            {translations.descriptions.privacyAndSecurity}
           </p>
 
           {/* Security Score */}
@@ -580,9 +737,11 @@ const Settings = (): JSX.Element => {
               <div className={styles.securityScoreInfo}>
                 <ShieldIcon className={styles.securityScoreIcon} />
                 <div>
-                  <h3 className={styles.securityScoreTitle}>Security Score</h3>
+                  <h3 className={styles.securityScoreTitle}>
+                    {translations.privacy.securityScore.title}
+                  </h3>
                   <p className={styles.securityScoreDescription}>
-                    Your account security level based on enabled features
+                    {translations.privacy.securityScore.description}
                   </p>
                 </div>
               </div>
@@ -608,13 +767,15 @@ const Settings = (): JSX.Element => {
 
           {/* Data Management */}
           <div className={styles.privacySubsection}>
-            <h3 className={styles.subsectionTitle}>Data Management</h3>
+            <h3 className={styles.subsectionTitle}>{translations.privacy.dataManagement.title}</h3>
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>Export Your Data</h4>
+                <h4 className={styles.settingLabel}>
+                  {translations.privacy.dataManagement.exportData}
+                </h4>
                 <p className={styles.settingDescription}>
-                  Download a copy of all your data in JSON or CSV format
+                  {translations.privacy.dataManagement.exportDescription}
                 </p>
               </div>
               <div className={styles.settingControl}>
@@ -624,14 +785,14 @@ const Settings = (): JSX.Element => {
                     onClick={() => handleDataExport('json')}
                   >
                     <DownloadIcon className={styles.buttonIcon} />
-                    JSON
+                    {translations.actions.json}
                   </button>
                   <button
                     className={styles.actionButtonSmall}
                     onClick={() => handleDataExport('csv')}
                   >
                     <DownloadIcon className={styles.buttonIcon} />
-                    CSV
+                    {translations.actions.csv}
                   </button>
                 </div>
               </div>
@@ -639,15 +800,17 @@ const Settings = (): JSX.Element => {
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>Delete Account</h4>
+                <h4 className={styles.settingLabel}>
+                  {translations.privacy.dataManagement.deleteAccount}
+                </h4>
                 <p className={styles.settingDescription}>
-                  Permanently delete your account and all associated data
+                  {translations.privacy.dataManagement.deleteDescription}
                 </p>
               </div>
               <div className={styles.settingControl}>
                 <button className={styles.dangerButton} onClick={handleDeleteAccount}>
                   <TrashIcon className={styles.buttonIcon} />
-                  Delete Account
+                  {translations.privacy.dataManagement.deleteAccount}
                 </button>
               </div>
             </div>
@@ -655,20 +818,24 @@ const Settings = (): JSX.Element => {
 
           {/* Profile Visibility */}
           <div className={styles.privacySubsection}>
-            <h3 className={styles.subsectionTitle}>Profile Visibility</h3>
+            <h3 className={styles.subsectionTitle}>
+              {translations.privacy.profileVisibility.title}
+            </h3>
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>Public Profile</h4>
+                <h4 className={styles.settingLabel}>
+                  {translations.privacy.profileVisibility.publicProfile}
+                </h4>
                 <p className={styles.settingDescription}>
-                  Allow others to view your profile and goals
+                  {translations.privacy.profileVisibility.publicDescription}
                 </p>
               </div>
               <div className={styles.settingControl}>
                 <Toggle
                   enabled={privacySettings.profileVisibility}
                   onChange={enabled => handlePrivacyChange('profileVisibility', enabled)}
-                  aria-label="Toggle public profile visibility"
+                  aria-label={`Toggle ${translations.privacy.profileVisibility.publicProfile}`}
                   size="medium"
                 />
               </div>
@@ -676,16 +843,18 @@ const Settings = (): JSX.Element => {
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>Search Engine Indexing</h4>
+                <h4 className={styles.settingLabel}>
+                  {translations.privacy.profileVisibility.searchIndexing}
+                </h4>
                 <p className={styles.settingDescription}>
-                  Allow search engines to index your public profile
+                  {translations.privacy.profileVisibility.searchDescription}
                 </p>
               </div>
               <div className={styles.settingControl}>
                 <Toggle
                   enabled={privacySettings.searchIndexing}
                   onChange={enabled => handlePrivacyChange('searchIndexing', enabled)}
-                  aria-label="Toggle search engine indexing"
+                  aria-label={`Toggle ${translations.privacy.profileVisibility.searchIndexing}`}
                   size="medium"
                 />
               </div>
@@ -693,16 +862,18 @@ const Settings = (): JSX.Element => {
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>Analytics Opt-out</h4>
+                <h4 className={styles.settingLabel}>
+                  {translations.privacy.profileVisibility.analyticsOptOut}
+                </h4>
                 <p className={styles.settingDescription}>
-                  Disable usage analytics collection to improve the platform
+                  {translations.privacy.profileVisibility.analyticsDescription}
                 </p>
               </div>
               <div className={styles.settingControl}>
                 <Toggle
                   enabled={privacySettings.analyticsOptOut}
                   onChange={enabled => handlePrivacyChange('analyticsOptOut', enabled)}
-                  aria-label="Toggle analytics opt-out"
+                  aria-label={`Toggle ${translations.privacy.profileVisibility.analyticsOptOut}`}
                   size="medium"
                 />
               </div>
@@ -710,16 +881,18 @@ const Settings = (): JSX.Element => {
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>Marketing Communications</h4>
+                <h4 className={styles.settingLabel}>
+                  {translations.privacy.profileVisibility.marketingCommunications}
+                </h4>
                 <p className={styles.settingDescription}>
-                  Receive promotional emails and product updates
+                  {translations.privacy.profileVisibility.marketingDescription}
                 </p>
               </div>
               <div className={styles.settingControl}>
                 <Toggle
                   enabled={privacySettings.marketingCommunications}
                   onChange={enabled => handlePrivacyChange('marketingCommunications', enabled)}
-                  aria-label="Toggle marketing communications"
+                  aria-label={`Toggle ${translations.privacy.profileVisibility.marketingCommunications}`}
                   size="medium"
                 />
               </div>
@@ -728,20 +901,20 @@ const Settings = (): JSX.Element => {
 
           {/* Cookie Preferences */}
           <div className={styles.privacySubsection}>
-            <h3 className={styles.subsectionTitle}>Cookie Preferences</h3>
+            <h3 className={styles.subsectionTitle}>{translations.privacy.cookies.title}</h3>
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>Functional Cookies</h4>
+                <h4 className={styles.settingLabel}>{translations.privacy.cookies.functional}</h4>
                 <p className={styles.settingDescription}>
-                  Required for basic functionality (cannot be disabled)
+                  {translations.privacy.cookies.functionalDescription}
                 </p>
               </div>
               <div className={styles.settingControl}>
                 <Toggle
                   enabled={privacySettings.functionalCookies}
                   onChange={() => {}} // Disabled
-                  aria-label="Functional cookies (required)"
+                  aria-label={translations.privacy.cookies.functional}
                   size="medium"
                   disabled
                 />
@@ -750,16 +923,16 @@ const Settings = (): JSX.Element => {
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>Analytics Cookies</h4>
+                <h4 className={styles.settingLabel}>{translations.privacy.cookies.analytics}</h4>
                 <p className={styles.settingDescription}>
-                  Help us understand how you use the platform
+                  {translations.privacy.cookies.analyticsDescription}
                 </p>
               </div>
               <div className={styles.settingControl}>
                 <Toggle
                   enabled={privacySettings.analyticsCookies}
                   onChange={enabled => handlePrivacyChange('analyticsCookies', enabled)}
-                  aria-label="Toggle analytics cookies"
+                  aria-label={`Toggle ${translations.privacy.cookies.analytics}`}
                   size="medium"
                 />
               </div>
@@ -767,16 +940,16 @@ const Settings = (): JSX.Element => {
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>Marketing Cookies</h4>
+                <h4 className={styles.settingLabel}>{translations.privacy.cookies.marketing}</h4>
                 <p className={styles.settingDescription}>
-                  Used to show you relevant ads and offers
+                  {translations.privacy.cookies.marketingDescription}
                 </p>
               </div>
               <div className={styles.settingControl}>
                 <Toggle
                   enabled={privacySettings.marketingCookies}
                   onChange={enabled => handlePrivacyChange('marketingCookies', enabled)}
-                  aria-label="Toggle marketing cookies"
+                  aria-label={`Toggle ${translations.privacy.cookies.marketing}`}
                   size="medium"
                 />
               </div>
@@ -785,18 +958,20 @@ const Settings = (): JSX.Element => {
 
           {/* Two-Factor Authentication */}
           <div className={styles.privacySubsection}>
-            <h3 className={styles.subsectionTitle}>Two-Factor Authentication</h3>
+            <h3 className={styles.subsectionTitle}>{translations.privacy.twoFactor.title}</h3>
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
                 <h4 className={styles.settingLabel}>
-                  Two-Factor Authentication
+                  {translations.privacy.twoFactor.title}
                   {securitySettings.twoFactorEnabled && (
-                    <span className={styles.enabledBadge}>Enabled</span>
+                    <span className={styles.enabledBadge}>
+                      {translations.privacy.twoFactor.enabled}
+                    </span>
                   )}
                 </h4>
                 <p className={styles.settingDescription}>
-                  Add an extra layer of security using an authenticator app
+                  {translations.privacy.twoFactor.description}
                 </p>
               </div>
               <div className={styles.settingControl}>
@@ -805,12 +980,12 @@ const Settings = (): JSX.Element => {
                     className={styles.actionButtonSmall}
                     onClick={() => handleSecurityChange('twoFactorEnabled', false)}
                   >
-                    Disable 2FA
+                    {translations.privacy.twoFactor.disable}
                   </button>
                 ) : (
                   <button className={styles.primaryButton} onClick={handleTwoFactorSetup}>
                     <QrCodeIcon className={styles.buttonIcon} />
-                    Enable 2FA
+                    {translations.privacy.twoFactor.enable}
                   </button>
                 )}
               </div>
@@ -820,9 +995,11 @@ const Settings = (): JSX.Element => {
               <>
                 <div className={styles.settingItem}>
                   <div className={styles.settingInfo}>
-                    <h4 className={styles.settingLabel}>Backup Codes</h4>
+                    <h4 className={styles.settingLabel}>
+                      {translations.privacy.twoFactor.backupCodes}
+                    </h4>
                     <p className={styles.settingDescription}>
-                      Generate backup codes for account recovery
+                      {translations.privacy.twoFactor.backupDescription}
                     </p>
                   </div>
                   <div className={styles.settingControl}>
@@ -831,23 +1008,27 @@ const Settings = (): JSX.Element => {
                       onClick={handleGenerateBackupCodes}
                     >
                       <KeyIcon className={styles.buttonIcon} />
-                      {securitySettings.hasBackupCodes ? 'Regenerate' : 'Generate'} Codes
+                      {securitySettings.hasBackupCodes
+                        ? translations.privacy.twoFactor.regenerate
+                        : translations.privacy.twoFactor.generate}
                     </button>
                   </div>
                 </div>
 
                 <div className={styles.settingItem}>
                   <div className={styles.settingInfo}>
-                    <h4 className={styles.settingLabel}>SMS Backup</h4>
+                    <h4 className={styles.settingLabel}>
+                      {translations.privacy.twoFactor.smsBackup}
+                    </h4>
                     <p className={styles.settingDescription}>
-                      Use SMS as a backup method for two-factor authentication
+                      {translations.privacy.twoFactor.smsDescription}
                     </p>
                   </div>
                   <div className={styles.settingControl}>
                     <Toggle
                       enabled={securitySettings.smsBackup}
                       onChange={enabled => handleSecurityChange('smsBackup', enabled)}
-                      aria-label="Toggle SMS backup"
+                      aria-label={`Toggle ${translations.privacy.twoFactor.smsBackup}`}
                       size="medium"
                     />
                   </div>
@@ -858,26 +1039,30 @@ const Settings = (): JSX.Element => {
 
           {/* Account Security */}
           <div className={styles.privacySubsection}>
-            <h3 className={styles.subsectionTitle}>Account Security</h3>
+            <h3 className={styles.subsectionTitle}>{translations.privacy.accountSecurity.title}</h3>
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>Login History</h4>
+                <h4 className={styles.settingLabel}>
+                  {translations.privacy.accountSecurity.loginHistory}
+                </h4>
                 <p className={styles.settingDescription}>
-                  View recent login attempts and device information
+                  {translations.privacy.accountSecurity.loginDescription}
                 </p>
               </div>
               <div className={styles.settingControl}>
                 <button className={styles.actionButtonSmall} onClick={handleViewLoginHistory}>
                   <HistoryIcon className={styles.buttonIcon} />
-                  View History
+                  {translations.privacy.accountSecurity.viewHistory}
                 </button>
               </div>
             </div>
 
             {/* Recent Login Sessions Preview */}
             <div className={styles.loginSessionsPreview}>
-              <h4 className={styles.subsectionTitle}>Recent Sessions</h4>
+              <h4 className={styles.subsectionTitle}>
+                {translations.privacy.accountSecurity.recentSessions}
+              </h4>
               <div className={styles.loginSessionsList}>
                 {loginSessions.slice(0, 3).map(session => (
                   <div key={session.id} className={styles.loginSessionItem}>
@@ -888,7 +1073,9 @@ const Settings = (): JSX.Element => {
                       <div className={styles.sessionHeader}>
                         <span className={styles.sessionDevice}>{session.device}</span>
                         {session.isCurrent && (
-                          <span className={styles.currentSessionBadge}>Current</span>
+                          <span className={styles.currentSessionBadge}>
+                            {translations.privacy.accountSecurity.current}
+                          </span>
                         )}
                       </div>
                       <div className={styles.sessionDetails}>
@@ -906,12 +1093,16 @@ const Settings = (): JSX.Element => {
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>Active Sessions</h4>
-                <p className={styles.settingDescription}>Sign out of all devices except this one</p>
+                <h4 className={styles.settingLabel}>
+                  {translations.privacy.accountSecurity.activeSessions}
+                </h4>
+                <p className={styles.settingDescription}>
+                  {translations.privacy.accountSecurity.activeDescription}
+                </p>
               </div>
               <div className={styles.settingControl}>
                 <button className={styles.actionButtonSecondary} onClick={handleSignOutAllSessions}>
-                  Sign Out All Sessions
+                  {translations.privacy.accountSecurity.signOutAll}
                 </button>
               </div>
             </div>

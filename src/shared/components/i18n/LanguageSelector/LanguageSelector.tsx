@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/core/i18n';
 import { useTranslation } from '@/shared/hooks/useTranslation';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { ChevronDownIcon, CheckmarkIcon } from '@/shared/components/common/icons';
 import styles from './LanguageSelector.module.css';
 
@@ -11,6 +12,7 @@ interface LanguageSelectorProps {
 
 const LanguageSelector = ({ className }: LanguageSelectorProps): JSX.Element => {
   const { changeLanguage, currentLanguage } = useTranslation();
+  const { t } = useCommonTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -36,8 +38,8 @@ const LanguageSelector = ({ className }: LanguageSelectorProps): JSX.Element => 
   return (
     <div className={`${styles.languageSelector} ${className || ''}`} ref={dropdownRef}>
       <div className={styles.header}>
-        <h3 className={styles.title}>Language</h3>
-        <p className={styles.subtitle}>Default language for public dashboard.</p>
+        <h3 className={styles.title}>{t('settings.language.title')}</h3>
+        <p className={styles.subtitle}>{t('settings.language.subtitle')}</p>
       </div>
 
       <div className={styles.dropdown}>

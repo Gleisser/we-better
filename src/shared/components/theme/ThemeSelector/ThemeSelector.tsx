@@ -1,35 +1,37 @@
 import { motion } from 'framer-motion';
 import { useThemeToggle } from '@/shared/hooks/useTheme';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { CheckmarkIcon } from '@/shared/components/common/icons';
 import styles from './ThemeSelector.module.css';
 
 interface ThemeOption {
   id: 'light' | 'dark';
-  name: string;
-  description: string;
+  nameKey: string;
+  descriptionKey: string;
 }
-
-const THEME_OPTIONS: ThemeOption[] = [
-  {
-    id: 'light',
-    name: 'Light Mode',
-    description: 'Clean and bright interface',
-  },
-  {
-    id: 'dark',
-    name: 'Dark Mode',
-    description: 'Easy on the eyes',
-  },
-];
 
 interface ThemeSelectorProps {
   className?: string;
 }
 
 const ThemeSelector = ({ className }: ThemeSelectorProps): JSX.Element => {
+  const { t } = useCommonTranslation();
   const { currentMode, effectiveTheme } = useThemeToggle();
   const { updateThemeMode, isLoading } = useUserPreferences();
+
+  const THEME_OPTIONS: ThemeOption[] = [
+    {
+      id: 'light',
+      nameKey: 'settings.themes.lightMode',
+      descriptionKey: 'settings.themes.lightDescription',
+    },
+    {
+      id: 'dark',
+      nameKey: 'settings.themes.darkMode',
+      descriptionKey: 'settings.themes.darkDescription',
+    },
+  ];
 
   const handleThemeSelect = async (themeId: 'light' | 'dark'): Promise<void> => {
     if (isLoading) return;
@@ -91,8 +93,8 @@ const ThemeSelector = ({ className }: ThemeSelectorProps): JSX.Element => {
   return (
     <div className={`${styles.themeSelector} ${className || ''}`}>
       <div className={styles.header}>
-        <h3 className={styles.title}>Themes</h3>
-        <p className={styles.subtitle}>Choose your style or customize your theme</p>
+        <h3 className={styles.title}>{t('settings.themes.title')}</h3>
+        <p className={styles.subtitle}>{t('settings.themes.description')}</p>
       </div>
 
       <div className={styles.options}>
@@ -123,8 +125,8 @@ const ThemeSelector = ({ className }: ThemeSelectorProps): JSX.Element => {
             </div>
 
             <div className={styles.themeInfo}>
-              <h4 className={styles.themeName}>{option.name}</h4>
-              <p className={styles.themeDescription}>{option.description}</p>
+              <h4 className={styles.themeName}>{t(option.nameKey)}</h4>
+              <p className={styles.themeDescription}>{t(option.descriptionKey)}</p>
             </div>
           </motion.button>
         ))}
@@ -134,7 +136,7 @@ const ThemeSelector = ({ className }: ThemeSelectorProps): JSX.Element => {
       {currentMode === 'auto' && (
         <div className={styles.autoModeIndicator}>
           <p className={styles.autoModeText}>
-            Auto mode is enabled - currently using {effectiveTheme} theme based on system preference
+            {t('settings.themes.autoModeEnabled', { theme: effectiveTheme })}
           </p>
         </div>
       )}

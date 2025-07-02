@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { PencilIcon, CheckmarkIcon, CloseIcon, EyeOffIcon } from '@/shared/components/common/icons';
 import styles from './ProfileSettings.module.css';
 
@@ -44,6 +45,7 @@ const EyeIcon = ({ className }: { className?: string }): JSX.Element => (
 
 const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
   const { user } = useAuth();
+  const { t } = useCommonTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
@@ -74,13 +76,13 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
+        alert(t('settings.profile.invalidFileType'));
         return;
       }
 
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+        alert(t('settings.profile.fileSizeExceeded'));
         return;
       }
 
@@ -100,15 +102,15 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
       // Validate password fields if changing password
       if (formData.newPassword || formData.confirmPassword || formData.currentPassword) {
         if (!formData.currentPassword) {
-          alert('Current password is required to change password');
+          alert(t('settings.profile.currentPasswordRequired'));
           return;
         }
         if (formData.newPassword !== formData.confirmPassword) {
-          alert('New passwords do not match');
+          alert(t('settings.profile.passwordsDoNotMatch'));
           return;
         }
         if (formData.newPassword.length < 6) {
-          alert('New password must be at least 6 characters');
+          alert(t('settings.profile.newPasswordTooShort'));
           return;
         }
       }
@@ -130,7 +132,7 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
       }));
     } catch (error) {
       console.error('Failed to save profile:', error);
-      alert('Failed to save profile. Please try again.');
+      alert(t('settings.profile.failedToSave'));
     } finally {
       setIsLoading(false);
     }
@@ -152,21 +154,21 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
   return (
     <div className={`${styles.profileSettings} ${className || ''}`}>
       <div className={styles.header}>
-        <h3 className={styles.title}>Profile Information</h3>
+        <h3 className={styles.title}>{t('settings.profile.title')}</h3>
         {!isEditing ? (
           <button className={styles.editButton} onClick={() => setIsEditing(true)}>
             <PencilIcon className={styles.editIcon} />
-            Edit Profile
+            {t('settings.profile.editProfile')}
           </button>
         ) : (
           <div className={styles.actionButtons}>
             <button className={styles.cancelButton} onClick={handleCancel} disabled={isLoading}>
               <CloseIcon className={styles.buttonIcon} />
-              Cancel
+              {t('settings.profile.cancel')}
             </button>
             <button className={styles.saveButton} onClick={handleSave} disabled={isLoading}>
               <CheckmarkIcon className={styles.buttonIcon} />
-              {isLoading ? 'Saving...' : 'Save Changes'}
+              {isLoading ? t('settings.profile.saving') : t('settings.profile.saveChanges')}
             </button>
           </div>
         )}
@@ -180,7 +182,7 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
               {previewImage || user?.user_metadata?.avatar_url ? (
                 <img
                   src={previewImage || (user?.user_metadata?.avatar_url as string)}
-                  alt="Profile"
+                  alt={t('settings.profile.profilePicture') as string}
                   className={styles.avatarImage}
                 />
               ) : (
@@ -211,11 +213,11 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
           />
 
           <div className={styles.avatarInfo}>
-            <p className={styles.avatarTitle}>Profile Picture</p>
+            <p className={styles.avatarTitle}>{t('settings.profile.profilePicture')}</p>
             <p className={styles.avatarDescription}>
               {isEditing
-                ? 'Click to upload a new profile picture (max 5MB)'
-                : 'Your profile picture appears across the app'}
+                ? t('settings.profile.uploadDescription')
+                : t('settings.profile.profileDescription')}
             </p>
           </div>
         </div>
@@ -223,25 +225,25 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
         {/* Profile Information Fields */}
         <div className={styles.fieldsSection}>
           <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel}>Full Name</label>
+            <label className={styles.fieldLabel}>{t('settings.profile.fullName')}</label>
             <input
               type="text"
               className={styles.fieldInput}
               value={formData.fullName}
               onChange={e => handleInputChange('fullName', e.target.value)}
-              placeholder="Enter your full name"
+              placeholder={t('settings.profile.fullNamePlaceholder') as string}
               disabled={!isEditing}
             />
           </div>
 
           <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel}>Email Address</label>
+            <label className={styles.fieldLabel}>{t('settings.profile.emailAddress')}</label>
             <input
               type="email"
               className={styles.fieldInput}
               value={formData.email}
               onChange={e => handleInputChange('email', e.target.value)}
-              placeholder="Enter your email address"
+              placeholder={t('settings.profile.emailPlaceholder') as string}
               disabled={!isEditing}
             />
           </div>
@@ -250,20 +252,22 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
           {isEditing && (
             <div className={styles.passwordSection}>
               <div className={styles.passwordHeader}>
-                <h4 className={styles.passwordTitle}>Change Password</h4>
-                <span className={styles.optional}>(Optional)</span>
+                <h4 className={styles.passwordTitle}>{t('settings.profile.changePassword')}</h4>
+                <span className={styles.optional}>{t('settings.profile.optional')}</span>
               </div>
 
               <div className={styles.passwordFields}>
                 <div className={styles.fieldGroup}>
-                  <label className={styles.fieldLabel}>Current Password</label>
+                  <label className={styles.fieldLabel}>
+                    {t('settings.profile.currentPassword')}
+                  </label>
                   <div className={styles.passwordInputContainer}>
                     <input
                       type={showCurrentPassword ? 'text' : 'password'}
                       className={styles.fieldInput}
                       value={formData.currentPassword}
                       onChange={e => handleInputChange('currentPassword', e.target.value)}
-                      placeholder="Enter current password"
+                      placeholder={t('settings.profile.currentPasswordPlaceholder') as string}
                     />
                     <button
                       type="button"
@@ -280,14 +284,14 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
                 </div>
 
                 <div className={styles.fieldGroup}>
-                  <label className={styles.fieldLabel}>New Password</label>
+                  <label className={styles.fieldLabel}>{t('settings.profile.newPassword')}</label>
                   <div className={styles.passwordInputContainer}>
                     <input
                       type={showNewPassword ? 'text' : 'password'}
                       className={styles.fieldInput}
                       value={formData.newPassword}
                       onChange={e => handleInputChange('newPassword', e.target.value)}
-                      placeholder="Enter new password (min 6 characters)"
+                      placeholder={t('settings.profile.newPasswordPlaceholder') as string}
                     />
                     <button
                       type="button"
@@ -304,14 +308,16 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
                 </div>
 
                 <div className={styles.fieldGroup}>
-                  <label className={styles.fieldLabel}>Confirm New Password</label>
+                  <label className={styles.fieldLabel}>
+                    {t('settings.profile.confirmNewPassword')}
+                  </label>
                   <div className={styles.passwordInputContainer}>
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       className={styles.fieldInput}
                       value={formData.confirmPassword}
                       onChange={e => handleInputChange('confirmPassword', e.target.value)}
-                      placeholder="Confirm new password"
+                      placeholder={t('settings.profile.confirmPasswordPlaceholder') as string}
                     />
                     <button
                       type="button"
