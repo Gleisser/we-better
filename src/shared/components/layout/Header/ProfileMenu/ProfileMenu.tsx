@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { useBookmarkedQuotes } from '@/shared/hooks/useBookmarkedQuotes';
+import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
 import { SettingsIcon, LogoutIcon, BookmarkIcon } from '@/shared/components/common/icons';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './ProfileMenu.module.css';
@@ -12,6 +14,10 @@ interface ProfileMenuProps {
 const ProfileMenu = ({ onClose }: ProfileMenuProps): JSX.Element => {
   const { user, logout } = useAuth();
   const { t } = useCommonTranslation();
+  const { bookmarkedQuotes } = useBookmarkedQuotes();
+  const { bookmarkedAffirmations } = useBookmarkedAffirmations();
+
+  const totalBookmarks = bookmarkedQuotes.length + bookmarkedAffirmations.length;
 
   const handleSignOut = async (): Promise<void> => {
     try {
@@ -38,17 +44,11 @@ const ProfileMenu = ({ onClose }: ProfileMenuProps): JSX.Element => {
       <div className={styles.menuDivider} />
 
       {/* Bookmarks Section */}
-      <button
-        className={styles.menuItem}
-        onClick={() => {
-          // TODO: Navigate to bookmarks page
-          onClose();
-        }}
-      >
+      <Link to="/app/bookmarks" className={styles.menuItem} onClick={onClose}>
         <BookmarkIcon className={styles.menuItemIcon} filled={true} />
         <span>{t('header.bookmarks')}</span>
-        <span className={styles.bookmarkCount}>5</span>
-      </button>
+        <span className={styles.bookmarkCount}>{totalBookmarks}</span>
+      </Link>
 
       <Link to="/app/settings" className={styles.menuItem} onClick={onClose}>
         <SettingsIcon className={styles.menuItemIcon} />

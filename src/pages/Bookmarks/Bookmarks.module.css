@@ -1,0 +1,566 @@
+.bookmarksPage {
+  padding: 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 120px);
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 24px;
+}
+
+.titleSection {
+  flex: 1;
+}
+
+.iconTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.headerIcon {
+  width: 32px;
+  height: 32px;
+  color: var(--theme-interactive-primary);
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--theme-text-primary);
+  margin: 0;
+  font-family: var(--font-plus-jakarta);
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--theme-text-secondary);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Stats */
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--theme-bg-elevated);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 16px;
+  padding: 20px 24px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.statNumber {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statDivider {
+  width: 1px;
+  height: 32px;
+  background: var(--theme-border-primary);
+}
+
+/* Controls Section */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.searchContainer {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--theme-text-tertiary);
+  z-index: 1;
+}
+
+.searchInput {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px 0 48px;
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  background: var(--theme-bg-elevated);
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--theme-interactive-primary);
+  box-shadow: 0 0 0 3px rgba(var(--theme-interactive-primary-rgb), 0.1);
+}
+
+.searchInput::placeholder {
+  color: var(--theme-text-tertiary);
+}
+
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* View Mode Toggle */
+.viewModeToggle {
+  display: flex;
+  background: var(--theme-bg-elevated);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.viewModeButton {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--theme-text-secondary);
+}
+
+.viewModeButton.active {
+  background: var(--theme-interactive-primary);
+  color: white;
+}
+
+.viewModeButton:hover:not(.active) {
+  background: var(--theme-bg-secondary);
+  color: var(--theme-text-primary);
+}
+
+.viewIcon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Control Buttons */
+.controlButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  background: var(--theme-bg-elevated);
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.controlButton:hover {
+  border-color: var(--theme-border-secondary);
+  background: var(--theme-bg-secondary);
+}
+
+.controlButton.active {
+  border-color: var(--theme-interactive-primary);
+  background: var(--theme-interactive-primary);
+  color: white;
+}
+
+.controlIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.chevronIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Sort Menu */
+.sortContainer {
+  position: relative;
+}
+
+.sortMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: var(--theme-bg-elevated);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  padding: 8px;
+  min-width: 160px;
+  z-index: 10;
+}
+
+.sortMenuItem {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-align: left;
+}
+
+.sortMenuItem:hover {
+  background: var(--theme-bg-secondary);
+}
+
+.sortMenuItem.active {
+  background: var(--theme-interactive-primary);
+  color: white;
+}
+
+/* Filters Panel */
+.filtersPanel {
+  background: var(--theme-bg-elevated);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filterLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+  min-width: 60px;
+}
+
+.filterButtons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  padding: 8px 16px;
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 20px;
+  background: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterButton:hover {
+  border-color: var(--theme-border-secondary);
+  background: var(--theme-bg-secondary);
+}
+
+.filterButton.active {
+  border-color: var(--theme-interactive-primary);
+  background: var(--theme-interactive-primary);
+  color: white;
+}
+
+/* Content Area */
+.content {
+  min-height: 400px;
+}
+
+/* Bookmarks Grid */
+.bookmarksGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.bookmarksGrid.listView {
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--theme-text-secondary);
+}
+
+.emptyIcon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  color: var(--theme-text-tertiary);
+}
+
+.emptyTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  margin: 0 0 12px;
+  font-family: var(--font-plus-jakarta);
+}
+
+.emptyDescription {
+  font-size: 16px;
+  color: var(--theme-text-secondary);
+  margin: 0;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+/* Light theme overrides */
+[data-theme='light'] .stats {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme='light'] .searchInput {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .viewModeToggle {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .viewModeButton.active {
+  background: var(--theme-interactive-primary);
+  color: white;
+}
+
+[data-theme='light'] .controlButton {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .controlButton:hover {
+  background: #f8f9fa;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme='light'] .controlButton.active {
+  background: var(--theme-interactive-primary);
+  border-color: var(--theme-interactive-primary);
+  color: white;
+}
+
+[data-theme='light'] .sortMenu {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+[data-theme='light'] .sortMenuItem.active {
+  background: var(--theme-interactive-primary);
+  color: white;
+}
+
+[data-theme='light'] .filtersPanel {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .filterButton {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .filterButton:hover {
+  background: #f8f9fa;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme='light'] .filterButton.active {
+  background: var(--theme-interactive-primary);
+  border-color: var(--theme-interactive-primary);
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .bookmarksPage {
+    padding: 24px;
+  }
+
+  .bookmarksGrid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .stats {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .bookmarksPage {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .searchContainer {
+    min-width: unset;
+  }
+
+  .actionButtons {
+    justify-content: space-between;
+  }
+
+  .bookmarksGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .stats {
+    gap: 16px;
+    padding: 16px 20px;
+  }
+
+  .statNumber {
+    font-size: 20px;
+  }
+
+  .emptyState {
+    padding: 60px 20px;
+  }
+
+  .emptyTitle {
+    font-size: 20px;
+  }
+
+  .emptyDescription {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bookmarksPage {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .headerIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .statItem {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .statDivider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .actionButtons {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .controlButton {
+    height: 44px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  .viewModeButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .filterGroup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .filterLabel {
+    min-width: unset;
+  }
+}

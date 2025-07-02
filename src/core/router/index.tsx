@@ -15,6 +15,7 @@ import { SpotifyCallback } from '@/features/auth/pages/SpotifyCallback';
 import { EnhancedLifeWheelPage } from '@/features/life-wheel';
 import { DreamBoardPage } from '@/features/dream-board';
 import Settings from '@/pages/Settings';
+import Bookmarks from '@/pages/Bookmarks';
 
 export const router = createBrowserRouter([
   {
@@ -77,6 +78,10 @@ export const router = createBrowserRouter([
       {
         path: 'settings',
         element: <Settings />,
+      },
+      {
+        path: 'bookmarks',
+        element: <Bookmarks />,
       },
     ],
   },

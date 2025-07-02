@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { MOCK_AFFIRMATIONS } from '@/utils/mockData/bookmarks';
 
 const STORAGE_KEY = 'bookmarked_affirmations';
 
@@ -20,7 +21,12 @@ export const useBookmarkedAffirmations = (): UseBookmarkedAffirmationsResult => 
   const [bookmarkedAffirmations, setBookmarkedAffirmations] = useState<BookmarkedAffirmation[]>(
     () => {
       const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      // Initialize with mock data for development
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_AFFIRMATIONS));
+      return MOCK_AFFIRMATIONS;
     }
   );
 
