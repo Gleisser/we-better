@@ -159,6 +159,21 @@
   box-shadow: 0 0 0 2px var(--theme-interactive-primary) / 30;
 }
 
+.profileButton:disabled {
+  @apply opacity-60 cursor-not-allowed;
+}
+
+.profileButton:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.profileImage {
+  @apply w-full h-full rounded-full object-cover;
+  border: 2px solid var(--theme-bg-primary);
+  box-shadow: var(--theme-shadow-md);
+}
+
 .profileFallback {
   @apply w-full h-full rounded-full 
          flex items-center justify-center 

@@ -6,6 +6,7 @@ import type { NotificationItem } from '../NotificationsPopup/NotificationsPopup'
 import { MobileNotifications } from '../NotificationsPanel/MobileNotifications';
 import ProfileMenu from './ProfileMenu/ProfileMenu';
 import { useHeader } from '@/shared/hooks/useHeader';
+import { useAuth } from '@/shared/hooks/useAuth';
 import LanguageSwitcher from '@/shared/components/i18n/LanguageSwitcher';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useThemeToggle } from '@/shared/hooks/useTheme';
@@ -14,6 +15,7 @@ import styles from './HeaderActions.module.css';
 
 const HeaderActions = (): JSX.Element => {
   const { t } = useCommonTranslation();
+  const { user, isLoading: authLoading } = useAuth();
   const [notificationCount] = useState(10);
   const { activePopup, setActivePopup } = useHeader();
   const [isMobile, setIsMobile] = useState(false);
@@ -45,6 +47,39 @@ const HeaderActions = (): JSX.Element => {
       console.error('Failed to sync theme preference:', error);
       // The UI will still work with localStorage fallback
     }
+  };
+
+  // Generate user initials from profile data
+  const getUserInitials = (): string => {
+    if (!user) return 'U'; // Default fallback
+
+    // Try display_name first, then full_name, then email
+    const name = user.display_name?.trim() || user.full_name?.trim();
+
+    if (name) {
+      const parts = name.split(' ').filter(part => part.length > 0);
+      if (parts.length >= 2) {
+        // First and last name
+        return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+      } else if (parts.length === 1) {
+        // Single name - take first two characters if available
+        return parts[0].length >= 2
+          ? `${parts[0][0]}${parts[0][1]}`.toUpperCase()
+          : `${parts[0][0]}U`.toUpperCase();
+      }
+    }
+
+    // Fallback to email
+    if (user.email) {
+      const emailPart = user.email.split('@')[0];
+      if (emailPart.length >= 2) {
+        return `${emailPart[0]}${emailPart[1]}`.toUpperCase();
+      } else if (emailPart.length === 1) {
+        return `${emailPart[0]}U`.toUpperCase();
+      }
+    }
+
+    return 'U'; // Ultimate fallback
   };
 
   // Mock notifications data with undefined images to trigger initials fallback
@@ -198,10 +233,24 @@ const HeaderActions = (): JSX.Element => {
           onClick={() => setActivePopup(activePopup === 'profile' ? null : 'profile')}
           aria-expanded={activePopup === 'profile'}
           aria-haspopup="true"
+          disabled={authLoading}
         >
-          <div className={styles.profileFallback}>
-            <span>GS</span>
-          </div>
+          {/* Show avatar if user has one, otherwise show initials */}
+          {user?.user_metadata?.avatar_url ? (
+            <img
+              src={user.user_metadata.avatar_url as string}
+              alt={user.display_name || user.full_name || 'Profile'}
+              className={styles.profileImage}
+            />
+          ) : (
+            <div className={styles.profileFallback}>
+              {authLoading ? (
+                <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <span>{getUserInitials()}</span>
+              )}
+            </div>
+          )}
           <div className={styles.profileStatus} />
         </button>
 
