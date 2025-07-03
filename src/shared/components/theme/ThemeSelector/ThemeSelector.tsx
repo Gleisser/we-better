@@ -17,7 +17,7 @@ interface ThemeSelectorProps {
 
 const ThemeSelector = ({ className }: ThemeSelectorProps): JSX.Element => {
   const { t } = useCommonTranslation();
-  const { currentMode, effectiveTheme } = useThemeToggle();
+  const { currentMode, effectiveTheme, toggleTheme } = useThemeToggle();
   const { updateThemeMode, isLoading } = useUserPreferences();
 
   const THEME_OPTIONS: ThemeOption[] = [
@@ -37,9 +37,15 @@ const ThemeSelector = ({ className }: ThemeSelectorProps): JSX.Element => {
     if (isLoading) return;
 
     try {
+      // Optimistically update UI first
+      toggleTheme();
+
+      // Then sync with backend
       await updateThemeMode(themeId);
     } catch (error) {
       console.error('Failed to update theme:', error);
+      // Revert UI change on error by toggling again
+      toggleTheme();
     }
   };
 
