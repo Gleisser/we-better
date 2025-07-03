@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { XIcon, TrashIcon } from '@/shared/components/common/icons';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './NotificationsPopup.module.css';
@@ -25,6 +26,7 @@ export interface NotificationItem {
 
 const NotificationsPopup = ({ onClose }: { onClose: () => void }): JSX.Element => {
   const { t } = useCommonTranslation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('all');
   const [notifications] = useState<NotificationItem[]>([
     {
@@ -208,7 +210,15 @@ const NotificationsPopup = ({ onClose }: { onClose: () => void }): JSX.Element =
       {/* Footer */}
       <div className={styles.footer}>
         <button className={styles.markReadButton}>{t('header.markAllAsRead')}</button>
-        <button className={styles.viewAllButton}>{t('header.viewAllNotifications')}</button>
+        <button
+          className={styles.viewAllButton}
+          onClick={() => {
+            navigate('/app/notifications');
+            onClose();
+          }}
+        >
+          {t('header.viewAllNotifications')}
+        </button>
       </div>
     </motion.div>
   );
