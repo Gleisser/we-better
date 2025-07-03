@@ -7,6 +7,7 @@ import { MobileNotifications } from '../NotificationsPanel/MobileNotifications';
 import ProfileMenu from './ProfileMenu/ProfileMenu';
 import { useHeader } from '@/shared/hooks/useHeader';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { useProfile } from '@/shared/hooks/useProfile';
 import LanguageSwitcher from '@/shared/components/i18n/LanguageSwitcher';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useThemeToggle } from '@/shared/hooks/useTheme';
@@ -16,6 +17,7 @@ import styles from './HeaderActions.module.css';
 const HeaderActions = (): JSX.Element => {
   const { t } = useCommonTranslation();
   const { user, isLoading: authLoading } = useAuth();
+  const { profile, isLoading: profileLoading } = useProfile();
   const [notificationCount] = useState(10);
   const { activePopup, setActivePopup } = useHeader();
   const [isMobile, setIsMobile] = useState(false);
@@ -233,18 +235,25 @@ const HeaderActions = (): JSX.Element => {
           onClick={() => setActivePopup(activePopup === 'profile' ? null : 'profile')}
           aria-expanded={activePopup === 'profile'}
           aria-haspopup="true"
-          disabled={authLoading}
+          disabled={authLoading || profileLoading}
         >
           {/* Show avatar if user has one, otherwise show initials */}
-          {user?.user_metadata?.avatar_url ? (
+          {profile?.avatar_url ? (
             <img
-              src={user.user_metadata.avatar_url as string}
-              alt={user.display_name || user.full_name || 'Profile'}
-              className={styles.profileImage}
+              src={profile.avatar_url}
+              alt={profile.full_name || user?.display_name || user?.full_name || 'Profile'}
+              style={{
+                width: '100%',
+                height: '100%',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '2px solid var(--theme-bg-primary)',
+                boxShadow: 'var(--theme-shadow-md)',
+              }}
             />
           ) : (
             <div className={styles.profileFallback}>
-              {authLoading ? (
+              {authLoading || profileLoading ? (
                 <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <span>{getUserInitials()}</span>
