@@ -128,14 +128,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
    */
   const logout = async (): Promise<void> => {
     try {
-      setIsLoading(true);
-      await authService.signOut();
+      // Don't set loading state during logout to avoid interfering with ProtectedRoute
+      const { error } = await authService.signOut();
+
+      if (error) {
+        console.error('Logout error:', error);
+        throw error;
+      }
+
+      // Clear user state immediately - ProtectedRoute will handle the redirect
       setUser(null);
-      window.location.href = '/auth/login'; // Use consistent navigation
+
+      // The Supabase auth state listener will also set user to null
+      // and ProtectedRoute will automatically redirect to /auth/login
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
-      setIsLoading(false);
+      // Even if logout fails, clear local state for security
+      setUser(null);
     }
   };
 
