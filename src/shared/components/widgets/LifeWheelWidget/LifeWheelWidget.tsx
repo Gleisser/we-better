@@ -4,6 +4,7 @@ import LifeWheel from '@/shared/components/layout/LifeWheel/LifeWheel';
 import { getLatestLifeWheelData } from '@/features/life-wheel/api/lifeWheelApi';
 import { createLogger } from '@/shared/utils/debugUtils';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useProfile } from '@/shared/hooks/useProfile';
 import styles from './LifeWheelWidget.module.css';
 import { Tooltip } from '@/shared/components/common/Tooltip';
 
@@ -53,6 +54,7 @@ const ExternalLinkIcon = ({ className }: { className?: string }): JSX.Element =>
 const LifeWheelWidget = (): JSX.Element => {
   const { t } = useCommonTranslation();
   const navigate = useNavigate();
+  const { profile, isLoading: profileLoading } = useProfile();
 
   // Function to get translated category name
   const getTranslatedCategoryName = useCallback(
@@ -99,18 +101,11 @@ const LifeWheelWidget = (): JSX.Element => {
   const [tooltipContent, setTooltipContent] = useState<string | null>(null);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
-  // const renderCountRef = useRef(0); // Removed to prevent infinite loops
 
   // Handle navigation to LifeWheelPage
   const handleNavigateToLifeWheel = (): void => {
     navigate('/app/life-wheel');
   };
-
-  // Track render cycles (removed to prevent infinite loops)
-  // useEffect(() => {
-  //   renderCountRef.current += 1;
-  //   logger.log(`Widget render #${renderCountRef.current}`);
-  // });
 
   // Track component mount/unmount and performance
   useEffect(() => {
@@ -221,7 +216,7 @@ const LifeWheelWidget = (): JSX.Element => {
     logger.log('Tooltip content changed', { content: tooltipContent });
   }, [tooltipContent]);
 
-  if (isLoading) {
+  if (isLoading || profileLoading) {
     return (
       <div className={styles.lifeWheelWidget}>
         <div className={styles.loadingIndicator}>
@@ -241,7 +236,12 @@ const LifeWheelWidget = (): JSX.Element => {
             <span className={styles.headerText}>{t('widgets.lifeWheel.title')}</span>
           </div>
           <div className={styles.headerActions}>
-            <Tooltip content={t('widgets.lifeWheel.goToDetails')}>
+            <Tooltip
+              content={(() => {
+                const content = t('widgets.lifeWheel.goToDetails');
+                return Array.isArray(content) ? content[0] : content;
+              })()}
+            >
               <button
                 className={styles.actionButton}
                 onClick={handleNavigateToLifeWheel}
@@ -257,7 +257,12 @@ const LifeWheelWidget = (): JSX.Element => {
         </div>
       </div>
       <div className={styles.wheelViewContainer}>
-        <LifeWheel categories={categories} onCategorySelect={handleCategorySelect} />
+        <LifeWheel
+          categories={categories}
+          onCategorySelect={handleCategorySelect}
+          userName={profile?.full_name || 'User'}
+          avatar_url={profile?.avatar_url}
+        />
 
         {/* Fixed positioned tooltip to minimize layout changes */}
         <FixedTooltip content={tooltipContent} />

@@ -19,6 +19,7 @@ interface LifeWheelProps {
   categories: LifeCategory[];
   onCategorySelect: (category: LifeCategory) => void;
   userName?: string;
+  avatar_url?: string | null;
 }
 
 // Debug function to log component updates
@@ -30,6 +31,7 @@ const LifeWheel = ({
   categories = [],
   onCategorySelect,
   userName = 'Gleisser Santos',
+  avatar_url = null,
 }: LifeWheelProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -131,10 +133,25 @@ const LifeWheel = ({
           })}
         </div>
 
-        {/* Center button - moved after categories to render on top */}
+        {/* Center button with avatar or initials */}
         <button className={styles.centerPiece} onClick={toggleMenu}>
           <div className={styles.scoreRing}>
-            <div className={styles.initials}>{getInitials(userName)}</div>
+            {avatar_url ? (
+              <img
+                src={avatar_url}
+                alt={userName}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  border: '2px solid var(--theme-bg-primary)',
+                  boxShadow: 'var(--theme-shadow-md)',
+                }}
+              />
+            ) : (
+              <div className={styles.initials}>{getInitials(userName)}</div>
+            )}
           </div>
         </button>
 
