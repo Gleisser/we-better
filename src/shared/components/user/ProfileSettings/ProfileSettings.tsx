@@ -1,7 +1,19 @@
-import React, { useState, useRef } from 'react';
-import { useAuth } from '@/shared/hooks/useAuth';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { PencilIcon, CheckmarkIcon, CloseIcon, EyeOffIcon } from '@/shared/components/common/icons';
+import {
+  fetchUserProfile,
+  updateUserProfile,
+  changePassword,
+  uploadAvatar,
+  deleteAvatar,
+  validateAvatarFile,
+  validatePassword,
+  validateEmail,
+  type UserProfile,
+  type ValidationError,
+  type ApiError,
+} from '@/core/services/profileService';
 import styles from './ProfileSettings.module.css';
 
 interface ProfileSettingsProps {
@@ -14,6 +26,12 @@ interface ProfileFormData {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
+}
+
+interface NotificationState {
+  type: 'success' | 'error' | null;
+  message: string;
+  validationErrors?: ValidationError[];
 }
 
 // Create custom icons for Camera and Eye
@@ -44,14 +62,17 @@ const EyeIcon = ({ className }: { className?: string }): JSX.Element => (
 );
 
 const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
-  const { user } = useAuth();
   const { t } = useCommonTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Profile state
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+
   // Form state
   const [formData, setFormData] = useState<ProfileFormData>({
-    fullName: user?.full_name || '',
-    email: user?.email || '',
+    fullName: '',
+    email: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
@@ -64,6 +85,59 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+  // Notification state
+  const [notification, setNotification] = useState<NotificationState>({
+    type: null,
+    message: '',
+    validationErrors: [],
+  });
+
+  // Load profile data
+  const loadProfile = useCallback(async () => {
+    setIsLoadingProfile(true);
+    try {
+      const response = await fetchUserProfile();
+      if (response?.user) {
+        const userProfile = response.user;
+        setProfile(userProfile);
+        setFormData(prev => ({
+          ...prev,
+          fullName: userProfile.full_name || '',
+          email: userProfile.email || '',
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to load profile:', error);
+      setNotification({
+        type: 'error',
+        message: 'Failed to load profile data',
+        validationErrors: [],
+      });
+    } finally {
+      setIsLoadingProfile(false);
+    }
+  }, []);
+
+  // Load profile on component mount
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  // Show notification helper
+  const showNotification = useCallback(
+    (type: 'success' | 'error', message: string, validationErrors: ValidationError[] = []) => {
+      setNotification({ type, message, validationErrors });
+      // Auto-hide success notifications after 3 seconds
+      if (type === 'success') {
+        setTimeout(() => {
+          setNotification({ type: null, message: '', validationErrors: [] });
+        }, 3000);
+      }
+    },
+    []
+  );
 
   // Handle form input changes
   const handleInputChange = (field: keyof ProfileFormData, value: string): void => {
@@ -74,17 +148,15 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
     if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert(t('settings.profile.invalidFileType'));
+      // Validate file using the profileService validator
+      const validationError = validateAvatarFile(file);
+      if (validationError) {
+        showNotification('error', validationError.message);
         return;
       }
 
-      // Validate file size (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
-        alert(t('settings.profile.fileSizeExceeded'));
-        return;
-      }
+      // Store the file for later upload
+      setUploadedFile(file);
 
       // Create preview
       const reader = new FileReader();
@@ -98,41 +170,144 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
   // Handle save
   const handleSave = async (): Promise<void> => {
     setIsLoading(true);
+    setNotification({ type: null, message: '', validationErrors: [] });
+
     try {
-      // Validate password fields if changing password
-      if (formData.newPassword || formData.confirmPassword || formData.currentPassword) {
+      let hasUpdates = false;
+      const validationErrors: ValidationError[] = [];
+
+      // Validate and update basic profile info
+      const profileUpdateData: { full_name?: string; email?: string } = {};
+
+      if (formData.fullName !== (profile?.full_name || '')) {
+        if (!formData.fullName.trim()) {
+          validationErrors.push({ field: 'fullName', message: 'Full name is required' });
+        } else if (formData.fullName.trim().length < 2) {
+          validationErrors.push({
+            field: 'fullName',
+            message: 'Full name must be at least 2 characters',
+          });
+        } else {
+          profileUpdateData.full_name = formData.fullName.trim();
+          hasUpdates = true;
+        }
+      }
+
+      if (formData.email !== (profile?.email || '')) {
+        const emailError = validateEmail(formData.email);
+        if (emailError) {
+          validationErrors.push(emailError);
+        } else {
+          profileUpdateData.email = formData.email.trim();
+          hasUpdates = true;
+        }
+      }
+
+      // Validate password change if requested
+      const isChangingPassword =
+        formData.newPassword || formData.confirmPassword || formData.currentPassword;
+      if (isChangingPassword) {
         if (!formData.currentPassword) {
-          alert(t('settings.profile.currentPasswordRequired'));
-          return;
+          validationErrors.push({
+            field: 'currentPassword',
+            message: 'Current password is required',
+          });
+        }
+        if (!formData.newPassword) {
+          validationErrors.push({ field: 'newPassword', message: 'New password is required' });
+        } else {
+          const passwordError = validatePassword(formData.newPassword);
+          if (passwordError) {
+            validationErrors.push(passwordError);
+          }
         }
         if (formData.newPassword !== formData.confirmPassword) {
-          alert(t('settings.profile.passwordsDoNotMatch'));
-          return;
+          validationErrors.push({
+            field: 'confirmPassword',
+            message: 'Password confirmation does not match',
+          });
         }
-        if (formData.newPassword.length < 6) {
-          alert(t('settings.profile.newPasswordTooShort'));
+        if (
+          formData.currentPassword &&
+          formData.newPassword &&
+          formData.currentPassword === formData.newPassword
+        ) {
+          validationErrors.push({
+            field: 'newPassword',
+            message: 'New password must be different from current password',
+          });
+        }
+      }
+
+      // Show validation errors if any
+      if (validationErrors.length > 0) {
+        showNotification('error', 'Please fix the validation errors', validationErrors);
+        return;
+      }
+
+      // Upload avatar if changed
+      if (uploadedFile) {
+        try {
+          const avatarResponse = await uploadAvatar(uploadedFile);
+          if (avatarResponse?.user) {
+            setProfile(avatarResponse.user);
+            showNotification('success', 'Profile picture updated successfully');
+          }
+        } catch (error) {
+          const apiError = error as ApiError;
+          showNotification('error', apiError.error, apiError.validation_errors);
           return;
         }
       }
 
-      // TODO: Implement actual API calls here
-      console.info('Saving profile data:', formData);
-      console.info('Profile image:', previewImage);
+      // Update basic profile info
+      if (hasUpdates) {
+        try {
+          const profileResponse = await updateUserProfile(profileUpdateData);
+          if (profileResponse?.user) {
+            setProfile(profileResponse.user);
+            showNotification('success', 'Profile updated successfully');
+          }
+        } catch (error) {
+          const apiError = error as ApiError;
+          showNotification('error', apiError.error, apiError.validation_errors);
+          return;
+        }
+      }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Change password if requested
+      if (isChangingPassword) {
+        try {
+          await changePassword({
+            current_password: formData.currentPassword,
+            new_password: formData.newPassword,
+            confirm_password: formData.confirmPassword,
+          });
+          showNotification('success', 'Password changed successfully');
+        } catch (error) {
+          const apiError = error as ApiError;
+          showNotification('error', apiError.error, apiError.validation_errors);
+          return;
+        }
+      }
 
+      // Success - reset form
       setIsEditing(false);
-      // Reset password fields
+      setPreviewImage(null);
+      setUploadedFile(null);
       setFormData(prev => ({
         ...prev,
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
       }));
+
+      if (!hasUpdates && !isChangingPassword && !uploadedFile) {
+        showNotification('success', 'No changes to save');
+      }
     } catch (error) {
       console.error('Failed to save profile:', error);
-      alert(t('settings.profile.failedToSave'));
+      showNotification('error', 'Failed to save profile changes');
     } finally {
       setIsLoading(false);
     }
@@ -141,22 +316,58 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
   // Handle cancel
   const handleCancel = (): void => {
     setFormData({
-      fullName: user?.full_name || '',
-      email: user?.email || '',
+      fullName: profile?.full_name || '',
+      email: profile?.email || '',
       currentPassword: '',
       newPassword: '',
       confirmPassword: '',
     });
     setPreviewImage(null);
+    setUploadedFile(null);
+    setNotification({ type: null, message: '', validationErrors: [] });
     setIsEditing(false);
   };
 
   return (
     <div className={`${styles.profileSettings} ${className || ''}`}>
+      {/* Notification */}
+      {notification.type && (
+        <div className={`${styles.notification} ${styles[notification.type]}`}>
+          <p className={styles.notificationMessage}>{notification.message}</p>
+          {notification.validationErrors && notification.validationErrors.length > 0 && (
+            <ul className={styles.validationErrors}>
+              {notification.validationErrors.map((error, index) => (
+                <li key={index} className={styles.validationError}>
+                  {error.message}
+                </li>
+              ))}
+            </ul>
+          )}
+          <button
+            className={styles.notificationClose}
+            onClick={() => setNotification({ type: null, message: '', validationErrors: [] })}
+          >
+            <CloseIcon />
+          </button>
+        </div>
+      )}
+
+      {/* Loading overlay */}
+      {isLoadingProfile && (
+        <div className={styles.loadingOverlay}>
+          <div className={styles.loadingSpinner}></div>
+          <p>Loading profile...</p>
+        </div>
+      )}
+
       <div className={styles.header}>
         <h3 className={styles.title}>{t('settings.profile.title')}</h3>
         {!isEditing ? (
-          <button className={styles.editButton} onClick={() => setIsEditing(true)}>
+          <button
+            className={styles.editButton}
+            onClick={() => setIsEditing(true)}
+            disabled={isLoadingProfile}
+          >
             <PencilIcon className={styles.editIcon} />
             {t('settings.profile.editProfile')}
           </button>
@@ -179,15 +390,17 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
         <div className={styles.profilePictureSection}>
           <div className={styles.avatarContainer}>
             <div className={styles.avatar}>
-              {previewImage || user?.user_metadata?.avatar_url ? (
+              {previewImage || profile?.avatar_url ? (
                 <img
-                  src={previewImage || (user?.user_metadata?.avatar_url as string)}
+                  src={previewImage || profile?.avatar_url || ''}
                   alt={t('settings.profile.profilePicture') as string}
                   className={styles.avatarImage}
                 />
               ) : (
                 <div className={styles.avatarPlaceholder}>
-                  {user?.full_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+                  {profile?.full_name?.[0]?.toUpperCase() ||
+                    profile?.email?.[0]?.toUpperCase() ||
+                    'U'}
                 </div>
               )}
               {isEditing && (
@@ -195,9 +408,32 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
                   <button
                     className={styles.cameraButton}
                     onClick={() => fileInputRef.current?.click()}
+                    title="Upload new profile picture"
                   >
                     <CameraIcon className={styles.cameraIcon} />
                   </button>
+                  {(previewImage || profile?.avatar_url) && (
+                    <button
+                      className={styles.deleteButton}
+                      onClick={async () => {
+                        try {
+                          const response = await deleteAvatar();
+                          if (response?.user) {
+                            setProfile(response.user);
+                            setPreviewImage(null);
+                            setUploadedFile(null);
+                            showNotification('success', 'Profile picture removed successfully');
+                          }
+                        } catch (error) {
+                          const apiError = error as ApiError;
+                          showNotification('error', apiError.error, apiError.validation_errors);
+                        }
+                      }}
+                      title="Remove profile picture"
+                    >
+                      <CloseIcon className={styles.deleteIcon} />
+                    </button>
+                  )}
                 </div>
               )}
             </div>

@@ -1,4 +1,5 @@
 .profileSettings {
+  position: relative;
   background: var(--theme-bg-primary);
   border: 1px solid var(--theme-border-primary);
   border-radius: 12px;
@@ -450,4 +451,161 @@
   .avatarPlaceholder {
     font-size: 24px;
   }
+}
+
+/* Notification Styles */
+.notification {
+  position: relative;
+  margin-bottom: 20px;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid;
+  animation: slideIn 0.3s ease-out;
+}
+
+.notification.success {
+  background: rgba(34, 197, 94, 0.1);
+  border-left-color: #22c55e;
+  color: #15803d;
+}
+
+.notification.error {
+  background: rgba(239, 68, 68, 0.1);
+  border-left-color: #ef4444;
+  color: #dc2626;
+}
+
+.notificationMessage {
+  margin: 0 0 8px 0;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.validationErrors {
+  margin: 8px 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.validationError {
+  margin: 4px 0;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.notificationClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.notificationClose:hover {
+  opacity: 1;
+}
+
+.notificationClose svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Loading Overlay */
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 10;
+  border-radius: 12px;
+}
+
+.loadingSpinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(139, 92, 246, 0.3);
+  border-top: 3px solid #8b5cf6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loadingOverlay p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--theme-text-secondary);
+}
+
+/* Delete Button for Avatar */
+.deleteButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(239, 68, 68, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  background: rgba(239, 68, 68, 1);
+  transform: scale(1.1);
+}
+
+.deleteIcon {
+  width: 12px;
+  height: 12px;
+  color: white;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dark theme overrides for notifications */
+[data-theme='dark'] .notification.success {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+[data-theme='dark'] .notification.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+[data-theme='dark'] .loadingOverlay {
+  background: rgba(0, 0, 0, 0.8);
 }
