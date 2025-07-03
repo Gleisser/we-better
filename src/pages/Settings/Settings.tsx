@@ -1,10 +1,18 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { SettingsIcon } from '@/shared/components/common/icons';
 import ThemeSelector from '@/shared/components/theme/ThemeSelector';
 import LanguageSelector from '@/shared/components/i18n/LanguageSelector';
 import ProfileSettings from '@/shared/components/user/ProfileSettings';
 import Toggle from '@/shared/components/common/Toggle';
+import { preferencesService } from '@/core/services/preferencesService';
+import {
+  fetchSecuritySettings,
+  updateSecuritySettings,
+  setup2FA,
+  generateBackupCodes,
+  getSecurityScore,
+} from '@/core/services/securityService';
 import styles from './Settings.module.css';
 
 interface NotificationSettings {
@@ -299,6 +307,12 @@ const Settings = (): JSX.Element => {
     [t]
   );
 
+  // Loading states
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
   // Notification settings state
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
     emailNotifications: true,
@@ -323,6 +337,79 @@ const Settings = (): JSX.Element => {
     hasBackupCodes: false,
     trustedDevices: 3,
   });
+
+  // Security score state
+  const [securityScoreData, setSecurityScoreData] = useState<number>(0);
+
+  // Show notification helper
+  const showNotification = useCallback((message: string, type: 'success' | 'error') => {
+    if (type === 'success') {
+      setSuccess(message);
+      setError(null);
+      setTimeout(() => setSuccess(null), 3000);
+    } else {
+      setError(message);
+      setSuccess(null);
+      setTimeout(() => setError(null), 5000);
+    }
+  }, []);
+
+  // Load initial data
+  useEffect(() => {
+    const loadInitialData = async (): Promise<void> => {
+      setIsLoading(true);
+      try {
+        const [notificationsResult, privacyResult, securityResult, securityScoreResult] =
+          await Promise.all([
+            preferencesService.getNotificationSettings(),
+            preferencesService.getPrivacySettings(),
+            fetchSecuritySettings(),
+            getSecurityScore(),
+          ]);
+
+        if (notificationsResult.data) {
+          // Map backend format to frontend format
+          setNotificationSettings({
+            emailNotifications: notificationsResult.data.email_notifications,
+            pushNotifications: notificationsResult.data.push_notifications,
+          });
+        }
+
+        if (privacyResult.data) {
+          // Map backend format to frontend format
+          setPrivacySettings({
+            profileVisibility: privacyResult.data.profile_visibility,
+            searchIndexing: privacyResult.data.search_indexing,
+            analyticsOptOut: privacyResult.data.analytics_opt_out,
+            marketingCommunications: privacyResult.data.marketing_communications,
+            functionalCookies: privacyResult.data.functional_cookies,
+            analyticsCookies: privacyResult.data.analytics_cookies,
+            marketingCookies: privacyResult.data.marketing_cookies,
+          });
+        }
+
+        if (securityResult) {
+          setSecuritySettings({
+            twoFactorEnabled: securityResult.two_factor_enabled,
+            smsBackup: securityResult.sms_backup_enabled,
+            hasBackupCodes: securityResult.backup_codes_generated,
+            trustedDevices: 0, // TODO: Add trusted devices count from sessions API
+          });
+        }
+
+        if (securityScoreResult) {
+          setSecurityScoreData(securityScoreResult.overall_score);
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+        showNotification('Failed to load settings. Please refresh the page.', 'error');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, [showNotification]);
 
   // Mock login sessions data
   const [loginSessions] = useState<LoginSession[]>([
@@ -378,39 +465,171 @@ const Settings = (): JSX.Element => {
   });
 
   // Handle notification setting changes
-  const handleNotificationChange = (
+  const handleNotificationChange = async (
     setting: keyof NotificationSettings,
     enabled: boolean
-  ): void => {
-    setNotificationSettings(prev => ({
-      ...prev,
-      [setting]: enabled,
-    }));
+  ): Promise<void> => {
+    if (isSaving) return;
 
-    // TODO: Save to backend/localStorage
-    console.info(`${setting} set to:`, enabled);
+    setIsSaving(true);
+    try {
+      // Optimistically update UI
+      setNotificationSettings(prev => ({
+        ...prev,
+        [setting]: enabled,
+      }));
+
+      // Map frontend setting to backend field
+      const backendField =
+        setting === 'emailNotifications' ? 'email_notifications' : 'push_notifications';
+
+      const result = await preferencesService.patchNotificationSettings({
+        [backendField]: enabled,
+      });
+
+      if (result.error) {
+        // Revert on error
+        setNotificationSettings(prev => ({
+          ...prev,
+          [setting]: !enabled,
+        }));
+        showNotification(result.error, 'error');
+      } else {
+        showNotification('Notification setting updated successfully', 'success');
+      }
+    } catch {
+      // Revert on error
+      setNotificationSettings(prev => ({
+        ...prev,
+        [setting]: !enabled,
+      }));
+      showNotification('Failed to update notification setting', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handle privacy setting changes
-  const handlePrivacyChange = (setting: keyof PrivacySettings, enabled: boolean): void => {
-    setPrivacySettings(prev => ({
-      ...prev,
-      [setting]: enabled,
-    }));
+  const handlePrivacyChange = async (
+    setting: keyof PrivacySettings,
+    enabled: boolean
+  ): Promise<void> => {
+    if (isSaving) return;
 
-    // TODO: Save to backend/localStorage
-    console.info(`Privacy ${setting} set to:`, enabled);
+    setIsSaving(true);
+    try {
+      // Optimistically update UI
+      setPrivacySettings(prev => ({
+        ...prev,
+        [setting]: enabled,
+      }));
+
+      // Map frontend setting to backend field
+      const backendFieldMap: Record<keyof PrivacySettings, string> = {
+        profileVisibility: 'profile_visibility',
+        searchIndexing: 'search_indexing',
+        analyticsOptOut: 'analytics_opt_out',
+        marketingCommunications: 'marketing_communications',
+        functionalCookies: 'functional_cookies',
+        analyticsCookies: 'analytics_cookies',
+        marketingCookies: 'marketing_cookies',
+      };
+
+      const backendField = backendFieldMap[setting];
+
+      let result;
+      if (['functionalCookies', 'analyticsCookies', 'marketingCookies'].includes(setting)) {
+        // Use cookie consent endpoint for cookie settings
+        result = await preferencesService.updateCookieConsent({
+          [backendField]: enabled,
+        });
+      } else {
+        // Use regular privacy settings endpoint
+        const updateData: Record<string, boolean> = {};
+        updateData[backendField] = enabled;
+        result = await preferencesService.updatePrivacySettings(updateData);
+      }
+
+      if (result.error) {
+        // Revert on error
+        setPrivacySettings(prev => ({
+          ...prev,
+          [setting]: !enabled,
+        }));
+        showNotification(result.error, 'error');
+      } else {
+        showNotification('Privacy setting updated successfully', 'success');
+      }
+    } catch {
+      // Revert on error
+      setPrivacySettings(prev => ({
+        ...prev,
+        [setting]: !enabled,
+      }));
+      showNotification('Failed to update privacy setting', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handle security setting changes
-  const handleSecurityChange = (setting: keyof SecuritySettings, enabled: boolean): void => {
-    setSecuritySettings(prev => ({
-      ...prev,
-      [setting]: enabled,
-    }));
+  const handleSecurityChange = async (
+    setting: keyof SecuritySettings,
+    enabled: boolean
+  ): Promise<void> => {
+    if (isSaving) return;
 
-    // TODO: Save to backend/localStorage
-    console.info(`Security ${setting} set to:`, enabled);
+    setIsSaving(true);
+    try {
+      // Handle different security settings
+      if (setting === 'twoFactorEnabled') {
+        if (enabled) {
+          // Redirect to 2FA setup
+          handleTwoFactorSetup();
+        } else {
+          // Disable 2FA (this would need a confirmation dialog)
+          showNotification('2FA disable functionality coming soon', 'error');
+        }
+      } else {
+        // For other settings, optimistically update
+        setSecuritySettings(prev => ({
+          ...prev,
+          [setting]: enabled,
+        }));
+
+        const backendFieldMap: Record<string, string> = {
+          smsBackup: 'sms_backup_enabled',
+        };
+
+        const backendField = backendFieldMap[setting];
+        if (backendField) {
+          const updateData: Record<string, boolean> = {};
+          updateData[backendField] = enabled;
+
+          const result = await updateSecuritySettings(updateData);
+
+          if (!result) {
+            // Revert on error
+            setSecuritySettings(prev => ({
+              ...prev,
+              [setting]: !enabled,
+            }));
+            showNotification('Failed to update security setting', 'error');
+          } else {
+            showNotification('Security setting updated successfully', 'success');
+          }
+        }
+      }
+    } catch {
+      // Revert on error
+      setSecuritySettings(prev => ({
+        ...prev,
+        [setting]: !enabled,
+      }));
+      showNotification('Failed to update security setting', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Calculate security score
@@ -423,7 +642,7 @@ const Settings = (): JSX.Element => {
     return Math.min(score, 100);
   };
 
-  const securityScore = calculateSecurityScore();
+  const securityScore = securityScoreData || calculateSecurityScore();
 
   // Get security score color
   const getSecurityScoreColor = (score: number): string => {
@@ -449,48 +668,130 @@ const Settings = (): JSX.Element => {
   };
 
   // Handle data export
-  const handleDataExport = (format: 'json' | 'csv'): void => {
-    console.info(`Exporting data in ${format} format`);
-    // TODO: Implement actual data export
+  const handleDataExport = async (format: 'json' | 'csv'): Promise<void> => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      // For now, show a placeholder message - Data Management API will be integrated later
+      showNotification(`Data export in ${format} format will be available soon`, 'success');
+      // TODO: Integrate data management API when ready
+      // const response = await fetch(`${API_URL}/data/export`, {
+      //   method: 'POST',
+      //   body: JSON.stringify({ format, sections: ['all'] })
+      // });
+    } catch {
+      showNotification('Failed to initiate data export', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handle account deletion
-  const handleDeleteAccount = (): void => {
+  const handleDeleteAccount = async (): Promise<void> => {
+    if (isSaving) return;
+
     const confirmed = window.confirm(translations.privacy.dataManagement.confirmDelete);
-    if (confirmed) {
-      const finalConfirm = window.confirm(translations.privacy.dataManagement.finalConfirm);
-      if (finalConfirm) {
-        console.info(translations.privacy.dataManagement.deletionInitiated);
-        // TODO: Implement actual account deletion
-      }
+    if (!confirmed) return;
+
+    const finalConfirm = window.confirm(translations.privacy.dataManagement.finalConfirm);
+    if (!finalConfirm) return;
+
+    setIsSaving(true);
+    try {
+      // For now, show a placeholder message - Account deletion API will be integrated later
+      showNotification('Account deletion will be available soon', 'success');
+      // TODO: Integrate account deletion API when ready
+      // const response = await fetch(`${API_URL}/data/delete`, {
+      //   method: 'POST',
+      //   body: JSON.stringify({ reason: 'user_request' })
+      // });
+    } catch {
+      showNotification('Failed to initiate account deletion', 'error');
+    } finally {
+      setIsSaving(false);
     }
   };
 
   // Handle 2FA setup
-  const handleTwoFactorSetup = (): void => {
-    console.info(translations.privacy.twoFactor.setupModal);
-    // TODO: Open 2FA setup modal
+  const handleTwoFactorSetup = async (): Promise<void> => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      const result = await setup2FA();
+      if (result) {
+        showNotification('2FA setup initiated successfully', 'success');
+        // TODO: Open 2FA setup modal with QR code
+        console.info('2FA Setup Response:', result);
+      } else {
+        showNotification('Failed to initiate 2FA setup', 'error');
+      }
+    } catch {
+      showNotification('Failed to setup 2FA', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handle backup codes generation
-  const handleGenerateBackupCodes = (): void => {
-    console.info(translations.privacy.twoFactor.generatingCodes);
-    setSecuritySettings(prev => ({ ...prev, hasBackupCodes: true }));
-    // TODO: Generate and show backup codes
+  const handleGenerateBackupCodes = async (): Promise<void> => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      const result = await generateBackupCodes();
+      if (result) {
+        setSecuritySettings(prev => ({ ...prev, hasBackupCodes: true }));
+        showNotification('Backup codes generated successfully', 'success');
+        // TODO: Show backup codes in modal
+        console.info('Backup Codes:', result.backup_codes);
+      } else {
+        showNotification('Failed to generate backup codes', 'error');
+      }
+    } catch {
+      showNotification('Failed to generate backup codes', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handle login history view
-  const handleViewLoginHistory = (): void => {
-    console.info(translations.privacy.accountSecurity.viewingHistory);
-    // TODO: Open login history modal with detailed view
+  const handleViewLoginHistory = async (): Promise<void> => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      // For now, show a placeholder message - Sessions API will be integrated later
+      showNotification('Detailed login history will be available soon', 'success');
+      // TODO: Integrate sessions API when ready
+      // const sessions = await fetchLoginSessions();
+      // Show sessions in modal
+    } catch {
+      showNotification('Failed to load login history', 'error');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Handle sign out all sessions
-  const handleSignOutAllSessions = (): void => {
+  const handleSignOutAllSessions = async (): Promise<void> => {
+    if (isSaving) return;
+
     const confirmed = window.confirm(translations.privacy.accountSecurity.signOutConfirm);
-    if (confirmed) {
-      console.info(translations.privacy.accountSecurity.signingOutSessions);
-      // TODO: Implement sign out all sessions
+    if (!confirmed) return;
+
+    setIsSaving(true);
+    try {
+      // For now, show a placeholder message - Sessions API will be integrated later
+      showNotification('Sign out all sessions will be available soon', 'success');
+      // TODO: Integrate sessions API when ready
+      // const result = await signOutAllSessions();
+      // Refresh login sessions data
+    } catch {
+      showNotification('Failed to sign out all sessions', 'error');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -540,6 +841,30 @@ const Settings = (): JSX.Element => {
         </div>
         <p className={styles.subtitle}>{translations.subtitle}</p>
       </div>
+
+      {/* Loading overlay */}
+      {isLoading && (
+        <div className={styles.loadingOverlay}>
+          <div className={styles.loadingSpinner}></div>
+          <p>Loading settings...</p>
+        </div>
+      )}
+
+      {/* Error notification */}
+      {error && (
+        <div className={styles.errorNotification}>
+          <p>{error}</p>
+          <button onClick={() => setError(null)}>✕</button>
+        </div>
+      )}
+
+      {/* Success notification */}
+      {success && (
+        <div className={styles.successNotification}>
+          <p>{success}</p>
+          <button onClick={() => setSuccess(null)}>✕</button>
+        </div>
+      )}
 
       <div className={styles.content}>
         <ProfileSettings className={styles.profileSettings} />

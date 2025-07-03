@@ -848,3 +848,151 @@
     padding: 12px 0;
   }
 }
+
+/* Loading Overlay */
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 1000;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Notification Styles */
+.errorNotification,
+.successNotification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 1001;
+  min-width: 300px;
+  max-width: 500px;
+  font-weight: 500;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+}
+
+.errorNotification {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+}
+
+.successNotification {
+  background: #d1fae5;
+  border: 1px solid #86efac;
+  color: #059669;
+}
+
+.errorNotification p,
+.successNotification p {
+  margin: 0;
+  flex: 1;
+}
+
+.errorNotification button,
+.successNotification button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.errorNotification button {
+  color: #dc2626;
+}
+
+.successNotification button {
+  color: #059669;
+}
+
+.errorNotification button:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.successNotification button:hover {
+  background: rgba(5, 150, 105, 0.1);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Dark theme adjustments for notifications */
+[data-theme='dark'] .errorNotification {
+  background: #7f1d1d;
+  border: 1px solid #dc2626;
+  color: #fca5a5;
+}
+
+[data-theme='dark'] .successNotification {
+  background: #064e3b;
+  border: 1px solid #059669;
+  color: #86efac;
+}
+
+[data-theme='dark'] .errorNotification button {
+  color: #fca5a5;
+}
+
+[data-theme='dark'] .successNotification button {
+  color: #86efac;
+}
+
+[data-theme='dark'] .errorNotification button:hover {
+  background: rgba(252, 165, 165, 0.1);
+}
+
+[data-theme='dark'] .successNotification button:hover {
+  background: rgba(134, 239, 172, 0.1);
+}
