@@ -654,6 +654,7 @@ const mapToApiEventType = (eventType: InternalEventType): SecurityEventType => {
     case '2fa_setup_started':
     case '2fa_setup_completed':
     case '2fa_disabled':
+    case '2fa_setup_cancelled':
       return 'mfa_change';
     default:
       return eventType;

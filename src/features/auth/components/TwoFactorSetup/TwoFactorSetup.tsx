@@ -14,9 +14,18 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onComplete: () => void;
+  initialSetupData?: {
+    qrCode?: string;
+    manualCode?: string;
+  };
 }
 
-export const TwoFactorSetup: React.FC<Props> = ({ isOpen, onClose, onComplete }) => {
+export const TwoFactorSetup: React.FC<Props> = ({
+  isOpen,
+  onClose,
+  onComplete,
+  initialSetupData,
+}) => {
   const [stage, setStage] = useState<SetupStage>('welcome');
   const [setupData, setSetupData] = useState<{
     qrCode?: string;
@@ -26,6 +35,22 @@ export const TwoFactorSetup: React.FC<Props> = ({ isOpen, onClose, onComplete })
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [_verificationAttempts, setVerificationAttempts] = useState(0);
+
+  // Initialize setup data when initialSetupData changes
+  useEffect(() => {
+    if (initialSetupData) {
+      // Directly set the data without using prev state
+      setSetupData({
+        qrCode: initialSetupData.qrCode,
+        manualCode: initialSetupData.manualCode,
+      });
+
+      // Move to QR code stage immediately if we have data
+      if (stage === 'welcome') {
+        setStage('qr-code');
+      }
+    }
+  }, [initialSetupData, stage]);
 
   // Reset state when modal closes
   useEffect(() => {
@@ -58,6 +83,11 @@ export const TwoFactorSetup: React.FC<Props> = ({ isOpen, onClose, onComplete })
   }, [onClose]);
 
   const handleStart = async (): Promise<void> => {
+    if (initialSetupData?.qrCode) {
+      setStage('qr-code');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
@@ -105,7 +135,7 @@ export const TwoFactorSetup: React.FC<Props> = ({ isOpen, onClose, onComplete })
       setStage('backup');
 
       // Log security event
-      await logSecurityEvent('2fa_verification_success', {
+      await logSecurityEvent('2fa_setup_verified', {
         timestamp: new Date().toISOString(),
       });
       return true;
@@ -152,7 +182,6 @@ export const TwoFactorSetup: React.FC<Props> = ({ isOpen, onClose, onComplete })
   const handleCancel = async (): Promise<void> => {
     try {
       await logSecurityEvent('2fa_setup_cancelled', {
-        stage,
         timestamp: new Date().toISOString(),
       });
     } catch (error) {
@@ -189,6 +218,7 @@ export const TwoFactorSetup: React.FC<Props> = ({ isOpen, onClose, onComplete })
             manualCode={setupData.manualCode || ''}
             isLoading={isLoading}
             error={error || undefined}
+            onNext={() => setStage('verify')}
           />
         );
 

@@ -716,22 +716,34 @@ const Settings = (): JSX.Element => {
     }
   };
 
+  const [showTwoFactorSetup, setShowTwoFactorSetup] = useState(false);
+  const [twoFactorSetupData, setTwoFactorSetupData] = useState<{
+    qrCode?: string;
+    manualCode?: string;
+  } | null>(null);
+
   // Handle 2FA setup
   const handleTwoFactorSetup = async (): Promise<void> => {
     if (isSaving) return;
 
-    console.info('Starting 2FA setup process...');
     setIsSaving(true);
     try {
-      console.info('Calling setup2FA service...');
       const result = await setup2FA();
-      console.info('setup2FA result:', result);
 
-      if (result) {
+      if (result?.setup) {
+        // Access the first level setup object
+        const setupData = {
+          qrCode: result.setup.qr_code_url,
+          manualCode: result.setup.manual_entry_key,
+        };
+
+        // Set the state with the correct data
+        setTwoFactorSetupData(setupData);
+
         showNotification('2FA setup initiated successfully', 'success');
         setShowTwoFactorSetup(true);
       } else {
-        console.error('Failed to initiate 2FA setup - no result returned');
+        console.error('Failed to initiate 2FA setup - no setup data in response:', result);
         showNotification('Failed to initiate 2FA setup', 'error');
       }
     } catch (error) {
@@ -744,8 +756,8 @@ const Settings = (): JSX.Element => {
 
   // Handle 2FA setup completion
   const handleTwoFactorComplete = (): void => {
-    console.info('2FA setup completed successfully');
     setShowTwoFactorSetup(false);
+    setTwoFactorSetupData(null);
     setSecuritySettings(prev => ({
       ...prev,
       twoFactorEnabled: true,
@@ -849,8 +861,6 @@ const Settings = (): JSX.Element => {
   const getUsagePercentage = (used: number, limit: number): number => {
     return Math.round((used / limit) * 100);
   };
-
-  const [showTwoFactorSetup, setShowTwoFactorSetup] = useState(false);
 
   return (
     <div className={styles.settingsContainer}>
@@ -1469,8 +1479,10 @@ const Settings = (): JSX.Element => {
         onClose={() => {
           console.info('Closing 2FA setup modal');
           setShowTwoFactorSetup(false);
+          setTwoFactorSetupData(null);
         }}
         onComplete={handleTwoFactorComplete}
+        initialSetupData={twoFactorSetupData || undefined}
       />
     </div>
   );

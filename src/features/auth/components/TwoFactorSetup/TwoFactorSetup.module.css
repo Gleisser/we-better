@@ -65,7 +65,24 @@
 
 /* QR Code stage specific styles */
 .qrContainer {
-  @apply bg-white p-8 rounded-xl mx-auto mb-6;
+  @apply bg-white p-8 rounded-xl mx-auto mb-6
+         flex items-center justify-center
+         w-64 h-64; /* Fixed size for QR code */
+}
+
+.qrCode {
+  @apply w-full h-full;
+}
+
+.qrCode svg {
+  @apply w-full h-full;
+  /* Ensure black and white colors for QR code */
+  path[fill='#000000'] {
+    @apply fill-black;
+  }
+  path[fill='#FFFFFF'] {
+    @apply fill-white;
+  }
 }
 
 .manualCode {

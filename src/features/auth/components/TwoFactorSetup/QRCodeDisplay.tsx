@@ -8,6 +8,7 @@ interface QRCodeDisplayProps {
   manualCode: string;
   isLoading?: boolean;
   error?: string;
+  onNext: () => void;
 }
 
 export const QRCodeDisplay = ({
@@ -15,6 +16,7 @@ export const QRCodeDisplay = ({
   manualCode,
   isLoading,
   error,
+  onNext,
 }: QRCodeDisplayProps): JSX.Element => {
   const [isCopied, setIsCopied] = useState(false);
 
@@ -46,6 +48,14 @@ export const QRCodeDisplay = ({
     );
   }
 
+  if (!qrCodeUrl) {
+    return (
+      <div className={styles.errorContainer}>
+        <p className={styles.errorText}>QR code data is missing. Please try again.</p>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -73,6 +83,10 @@ export const QRCodeDisplay = ({
       <p className={styles.manualInstructions}>
         Can't scan the QR code? You can manually enter the code above in your authenticator app.
       </p>
+
+      <button onClick={onNext} className={styles.nextButton}>
+        Next
+      </button>
     </motion.div>
   );
 };
