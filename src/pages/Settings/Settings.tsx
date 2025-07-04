@@ -6,6 +6,7 @@ import LanguageSelector from '@/shared/components/i18n/LanguageSelector';
 import ProfileSettings from '@/shared/components/user/ProfileSettings';
 import Toggle from '@/shared/components/common/Toggle';
 import { preferencesService } from '@/core/services/preferencesService';
+import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
 import {
   fetchSecuritySettings,
   updateSecuritySettings,
@@ -165,6 +166,7 @@ const QrCodeIcon = ({ className }: { className?: string }): JSX.Element => (
 
 const Settings = (): JSX.Element => {
   const { t } = useCommonTranslation();
+  const { isLoading: preferencesLoading } = useUserPreferences();
 
   // Memoize translated values to prevent infinite re-renders
   const translations = useMemo(
@@ -1003,7 +1005,15 @@ const Settings = (): JSX.Element => {
 
           <ThemeSelector className={styles.themeSelector} />
 
-          <LanguageSelector className={styles.languageSelector} />
+          {/* Language selector with loading state */}
+          <div className={styles.languageSelectorWrapper}>
+            <LanguageSelector className={styles.languageSelector} />
+            {preferencesLoading && (
+              <div className={styles.loadingOverlay}>
+                <div className={styles.loadingSpinner} />
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={styles.section}>

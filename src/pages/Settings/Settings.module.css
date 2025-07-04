@@ -339,6 +339,10 @@
   /* LanguageSelector component handles its own styling */
 }
 
+.languageSelectorWrapper {
+  @apply relative;
+}
+
 /* Setting Items */
 .settingItem {
   display: flex;

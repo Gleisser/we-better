@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/core/i18n';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '@/shared/hooks/useTranslation';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
-import { ChevronDownIcon, CheckmarkIcon } from '@/shared/components/common/icons';
+import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
+import { ChevronDownIcon } from '@/shared/components/common/icons';
+import { SUPPORTED_LANGUAGES } from '@/core/i18n';
+import type { SupportedLanguage } from '@/core/i18n';
 import styles from './LanguageSelector.module.css';
 
 interface LanguageSelectorProps {
@@ -12,6 +13,7 @@ interface LanguageSelectorProps {
 
 const LanguageSelector = ({ className }: LanguageSelectorProps): JSX.Element => {
   const { changeLanguage, currentLanguage } = useTranslation();
+  const { updateLanguage } = useUserPreferences();
   const { t } = useCommonTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -19,8 +21,18 @@ const LanguageSelector = ({ className }: LanguageSelectorProps): JSX.Element => 
   const currentLangData = SUPPORTED_LANGUAGES[currentLanguage] || SUPPORTED_LANGUAGES.en;
 
   const handleLanguageChange = async (language: SupportedLanguage): Promise<void> => {
+    // Optimistically update UI
     await changeLanguage(language);
     setIsOpen(false);
+
+    // Persist to backend
+    try {
+      await updateLanguage(language);
+    } catch (error) {
+      console.error('Failed to persist language preference:', error);
+      // Note: We don't revert the UI change since the language switch already happened
+      // and reverting it would be more disruptive to the user experience
+    }
   };
 
   // Close dropdown when clicking outside
@@ -57,39 +69,25 @@ const LanguageSelector = ({ className }: LanguageSelectorProps): JSX.Element => 
           <ChevronDownIcon className={`${styles.chevron} ${isOpen ? styles.open : ''}`} />
         </button>
 
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              className={styles.dropdownMenu}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              {Object.entries(SUPPORTED_LANGUAGES).map(([code, lang]) => {
-                const isSelected = currentLanguage === code;
-
-                return (
-                  <motion.button
-                    key={code}
-                    className={`${styles.dropdownItem} ${isSelected ? styles.selected : ''}`}
-                    onClick={() => handleLanguageChange(code as SupportedLanguage)}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className={styles.optionContent}>
-                      <span className={styles.flag}>{lang.flag}</span>
-                      <div className={styles.languageInfo}>
-                        <span className={styles.languageName}>{lang.nativeName}</span>
-                        <span className={styles.languageSubtext}>({lang.name})</span>
-                      </div>
-                    </div>
-                    {isSelected && <CheckmarkIcon className={styles.checkmark} />}
-                  </motion.button>
-                );
-              })}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isOpen && (
+          <div className={styles.dropdownMenu} role="listbox">
+            {Object.entries(SUPPORTED_LANGUAGES).map(([code, lang]) => (
+              <button
+                key={code}
+                onClick={() => handleLanguageChange(code as SupportedLanguage)}
+                className={`${styles.dropdownItem} ${
+                  currentLanguage === code ? styles.selected : ''
+                }`}
+                role="option"
+                aria-selected={currentLanguage === code}
+              >
+                <span className={styles.flag}>{lang.flag}</span>
+                <span className={styles.languageName}>{lang.nativeName}</span>
+                {currentLanguage === code && <span className={styles.checkmark}>✓</span>}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
