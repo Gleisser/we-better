@@ -1,0 +1,17 @@
+export {
+  setup2FA,
+  verify2FA,
+  get2FAStatus,
+  logSecurityEvent,
+  fetchSecuritySettings,
+  updateSecuritySettings,
+  getBackupCodes,
+  generateBackupCodes,
+  getSecurityScore,
+  getSecurityRecommendations,
+  getSecurityScoreColor,
+  getSecurityScoreStatus,
+  isValidPhoneNumber,
+  isValidTOTPCode,
+  isValidBackupCode,
+} from './securityService';

@@ -15,6 +15,7 @@ import {
   getSecurityScore,
 } from '@/core/services/securityService';
 import styles from './Settings.module.css';
+import { TwoFactorSetup } from '@/features/auth/components/TwoFactorSetup';
 
 interface NotificationSettings {
   emailNotifications: boolean;
@@ -719,21 +720,36 @@ const Settings = (): JSX.Element => {
   const handleTwoFactorSetup = async (): Promise<void> => {
     if (isSaving) return;
 
+    console.info('Starting 2FA setup process...');
     setIsSaving(true);
     try {
+      console.info('Calling setup2FA service...');
       const result = await setup2FA();
+      console.info('setup2FA result:', result);
+
       if (result) {
         showNotification('2FA setup initiated successfully', 'success');
-        // TODO: Open 2FA setup modal with QR code
-        console.info('2FA Setup Response:', result);
+        setShowTwoFactorSetup(true);
       } else {
+        console.error('Failed to initiate 2FA setup - no result returned');
         showNotification('Failed to initiate 2FA setup', 'error');
       }
-    } catch {
+    } catch (error) {
+      console.error('Error in handleTwoFactorSetup:', error);
       showNotification('Failed to setup 2FA', 'error');
     } finally {
       setIsSaving(false);
     }
+  };
+
+  // Handle 2FA setup completion
+  const handleTwoFactorComplete = (): void => {
+    console.info('2FA setup completed successfully');
+    setShowTwoFactorSetup(false);
+    setSecuritySettings(prev => ({
+      ...prev,
+      twoFactorEnabled: true,
+    }));
   };
 
   // Handle backup codes generation
@@ -833,6 +849,8 @@ const Settings = (): JSX.Element => {
   const getUsagePercentage = (used: number, limit: number): number => {
     return Math.round((used / limit) * 100);
   };
+
+  const [showTwoFactorSetup, setShowTwoFactorSetup] = useState(false);
 
   return (
     <div className={styles.settingsContainer}>
@@ -1444,6 +1462,16 @@ const Settings = (): JSX.Element => {
           </div>
         </div>
       </div>
+
+      {/* Two-Factor Authentication Modal */}
+      <TwoFactorSetup
+        isOpen={showTwoFactorSetup}
+        onClose={() => {
+          console.info('Closing 2FA setup modal');
+          setShowTwoFactorSetup(false);
+        }}
+        onComplete={handleTwoFactorComplete}
+      />
     </div>
   );
 };

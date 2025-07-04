@@ -4,6 +4,7 @@
  */
 
 import { supabase } from './supabaseClient';
+import { twoFactorLimiter } from './rate-limiter';
 
 // Define the API URL
 const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/settings`;
@@ -34,11 +35,12 @@ export interface TwoFactorSetupRequest {
 }
 
 export interface TwoFactorSetupResponse {
-  success: boolean;
   message: string;
-  qr_code_url?: string;
-  manual_entry_key?: string;
-  backup_codes?: string[];
+  setup: {
+    qr_code_url: string;
+    manual_entry_key: string;
+    backup_codes?: string[];
+  };
 }
 
 export interface TwoFactorVerificationRequest {
@@ -60,12 +62,6 @@ export interface BackupCodesResponse {
   codes_remaining: number;
   generated_at: string;
   message: string;
-}
-
-export interface BackupCodeUsage {
-  code: string;
-  used_at: string;
-  used_for: string;
 }
 
 // Security Score Types
@@ -93,19 +89,10 @@ export interface SecurityRecommendation {
 }
 
 // Phone Verification Types
-export interface PhoneVerificationRequest {
-  phone_number: string;
-}
-
 export interface PhoneVerificationResponse {
   success: boolean;
   message: string;
   verification_code_sent: boolean;
-}
-
-export interface PhoneVerificationConfirmRequest {
-  phone_number: string;
-  verification_code: string;
 }
 
 // API Response types
@@ -113,19 +100,52 @@ export interface SecuritySettingsResponse {
   settings: SecuritySettings;
 }
 
-// API Error type
-export interface ApiError {
-  error: string;
-  status?: number;
-}
+// Session validation constants
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+const SESSION_REFRESH_THRESHOLD = 5 * 60 * 1000; // 5 minutes before expiry
+
+// Track the last activity timestamp
+let lastActivityTime = Date.now();
+
+// Update last activity time
+const updateLastActivity = (): void => {
+  lastActivityTime = Date.now();
+};
+
+// Check if session is valid
+const isSessionValid = (): boolean => {
+  const now = Date.now();
+  return now - lastActivityTime < SESSION_TIMEOUT;
+};
+
+// Check if session needs refresh
+const shouldRefreshSession = (): boolean => {
+  const now = Date.now();
+  const timeUntilExpiry = SESSION_TIMEOUT - (now - lastActivityTime);
+  return timeUntilExpiry < SESSION_REFRESH_THRESHOLD;
+};
 
 /**
  * Get the auth token from Supabase session or storage
  */
 const getAuthToken = async (): Promise<string | null> => {
   try {
+    // Check session validity
+    if (!isSessionValid()) {
+      throw new Error('Session expired');
+    }
+
+    // Check if we need to refresh the session
+    if (shouldRefreshSession()) {
+      await supabase.auth.refreshSession();
+    }
+
     const { data } = await supabase.auth.getSession();
-    return data.session?.access_token || null;
+    if (data.session) {
+      updateLastActivity(); // Update last activity time on successful token fetch
+      return data.session.access_token;
+    }
+    return null;
   } catch (error) {
     console.error('Error getting auth token:', error);
     return null;
@@ -149,6 +169,8 @@ const apiRequest = async <T>(
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
+      'X-CSRF-Token':
+        document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || '',
     };
 
     const config: RequestInit = {
@@ -275,19 +297,41 @@ export const setup2FA = async (
   }
 };
 
-// Verify and enable 2FA
+// Verify and enable 2FA with rate limiting
 export const verify2FA = async (
   request: TwoFactorVerificationRequest
 ): Promise<TwoFactorSetupResponse | null> => {
   try {
-    return await apiRequest<TwoFactorSetupResponse>(
+    // Check rate limiting
+    if (!(await twoFactorLimiter.checkLimit())) {
+      const timeUntilReset = twoFactorLimiter.getTimeUntilReset();
+      throw new Error(
+        twoFactorLimiter.isLocked()
+          ? `Too many attempts. Please try again in ${Math.ceil(timeUntilReset / 60000)} minutes.`
+          : `Rate limit exceeded. ${twoFactorLimiter.getRemainingAttempts()} attempts remaining.`
+      );
+    }
+
+    // Validate code format before making API call
+    if (!isValidTOTPCode(request.verification_code)) {
+      throw new Error('Invalid verification code format');
+    }
+
+    const response = await apiRequest<TwoFactorSetupResponse>(
       `${API_URL}/security/2fa`,
       'PUT',
       request as unknown as Record<string, unknown>
     );
+
+    // Reset rate limiter on successful verification
+    if (response?.setup) {
+      twoFactorLimiter.reset();
+    }
+
+    return response;
   } catch (error) {
     console.error('Error verifying 2FA:', error);
-    return null;
+    throw error; // Re-throw to handle in component
   }
 };
 
@@ -401,7 +445,7 @@ export const enable2FAWithPhoneBackup = async (
   try {
     // First setup 2FA with phone number
     const setupResponse = await setup2FA({ phone_number: phoneNumber });
-    if (!setupResponse?.success) {
+    if (!setupResponse?.setup) {
       throw new Error(setupResponse?.message || 'Failed to setup 2FA');
     }
 
@@ -572,4 +616,20 @@ export const getSecurityRecommendations = (
   // Sort by priority
   const priorityOrder = { high: 1, medium: 2, low: 3 };
   return recommendations.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+};
+
+// Add security event logging
+export const logSecurityEvent = async (
+  eventType: string,
+  details: Record<string, unknown>
+): Promise<void> => {
+  try {
+    await apiRequest(`${API_URL}/security/events`, 'POST', {
+      event_type: eventType,
+      details,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('Error logging security event:', error);
+  }
 };
