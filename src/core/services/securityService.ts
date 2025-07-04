@@ -618,18 +618,72 @@ export const getSecurityRecommendations = (
   return recommendations.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 };
 
+// Add security event types
+export type SecurityEventType =
+  | 'suspicious_activity'
+  | 'login_attempt'
+  | 'password_change'
+  | 'mfa_change'
+  | 'device_change';
+
+// Internal event types that we'll map to the API's accepted types
+export type InternalEventType =
+  | SecurityEventType
+  | '2fa_setup_started'
+  | '2fa_setup_completed'
+  | '2fa_disabled'
+  | '2fa_setup_cancelled';
+
+export interface SecurityEvent {
+  id: string;
+  user_id: string;
+  session_id: string;
+  event_type: SecurityEventType;
+  reason?: string;
+  created_at: string;
+}
+
+export interface SecurityEventResponse {
+  message: string;
+  event: SecurityEvent;
+}
+
+// Map internal event types to API event types
+const mapToApiEventType = (eventType: InternalEventType): SecurityEventType => {
+  switch (eventType) {
+    case '2fa_setup_started':
+    case '2fa_setup_completed':
+    case '2fa_disabled':
+      return 'mfa_change';
+    default:
+      return eventType;
+  }
+};
+
 // Add security event logging
 export const logSecurityEvent = async (
-  eventType: string,
-  details: Record<string, unknown>
-): Promise<void> => {
+  eventType: InternalEventType,
+  sessionId: string | { timestamp: string },
+  reason?: string
+): Promise<SecurityEventResponse | null> => {
   try {
-    await apiRequest(`${API_URL}/security/events`, 'POST', {
-      event_type: eventType,
-      details,
-      timestamp: new Date().toISOString(),
+    // Map the event type to an accepted API event type
+    const apiEventType = mapToApiEventType(eventType);
+
+    // Ensure sessionId is a string
+    const actualSessionId = typeof sessionId === 'string' ? sessionId : crypto.randomUUID();
+
+    // Add context about the original event type in the reason if it was mapped
+    const fullReason =
+      eventType !== apiEventType ? `${eventType}${reason ? ': ' + reason : ''}` : reason;
+
+    return await apiRequest<SecurityEventResponse>(`${API_URL}/security/events`, 'POST', {
+      event_type: apiEventType,
+      session_id: actualSessionId,
+      reason: fullReason,
     });
   } catch (error) {
     console.error('Error logging security event:', error);
+    return null;
   }
 };
