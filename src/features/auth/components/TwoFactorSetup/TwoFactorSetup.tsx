@@ -121,24 +121,28 @@ export const TwoFactorSetup: React.FC<Props> = ({
     setIsLoading(true);
     setError(null);
     try {
-      const response = await verify2FA({ verification_code: code });
+      const response = await verify2FA({ token: code });
 
-      if (!response || !response.setup) {
+      if (!response || !response.verification) {
         console.error('Verification failed:', response);
         throw new Error(response?.message || 'Verification failed');
       }
 
-      setSetupData(prev => ({
-        ...prev,
-        backupCodes: response.setup.backup_codes || [],
-      }));
-      setStage('backup');
+      if (response.verification.success) {
+        setSetupData(prev => ({
+          ...prev,
+          backupCodes: response.verification.backup_codes || [],
+        }));
+        setStage('backup');
 
-      // Log security event
-      await logSecurityEvent('2fa_setup_verified', {
-        timestamp: new Date().toISOString(),
-      });
-      return true;
+        // Log security event
+        await logSecurityEvent('2fa_setup_verified', {
+          timestamp: new Date().toISOString(),
+        });
+        return true;
+      } else {
+        throw new Error('Verification failed');
+      }
     } catch (error) {
       console.error('Error in handleVerification:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';

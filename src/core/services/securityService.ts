@@ -43,9 +43,17 @@ export interface TwoFactorSetupResponse {
   };
 }
 
+export interface TwoFactorVerifyResponse {
+  message: string;
+  verification: {
+    success: boolean;
+    backup_codes: string[];
+  };
+}
+
 export interface TwoFactorVerificationRequest {
-  verification_code: string;
-  backup_code?: string;
+  token: string; // 6-digit TOTP code
+  backup_code?: string; // Optional backup code
 }
 
 export interface TwoFactorStatusResponse {
@@ -300,7 +308,7 @@ export const setup2FA = async (
 // Verify and enable 2FA with rate limiting
 export const verify2FA = async (
   request: TwoFactorVerificationRequest
-): Promise<TwoFactorSetupResponse | null> => {
+): Promise<TwoFactorVerifyResponse | null> => {
   try {
     // Check rate limiting
     if (!(await twoFactorLimiter.checkLimit())) {
@@ -313,18 +321,18 @@ export const verify2FA = async (
     }
 
     // Validate code format before making API call
-    if (!isValidTOTPCode(request.verification_code)) {
+    if (!isValidTOTPCode(request.token)) {
       throw new Error('Invalid verification code format');
     }
 
-    const response = await apiRequest<TwoFactorSetupResponse>(
+    const response = await apiRequest<TwoFactorVerifyResponse>(
       `${API_URL}/security/2fa`,
       'PUT',
       request as unknown as Record<string, unknown>
     );
 
     // Reset rate limiter on successful verification
-    if (response?.setup) {
+    if (response?.verification?.success) {
       twoFactorLimiter.reset();
     }
 
@@ -441,7 +449,7 @@ export const confirmPhoneVerification = async (
 export const enable2FAWithPhoneBackup = async (
   phoneNumber: string,
   verificationCode: string
-): Promise<TwoFactorSetupResponse | null> => {
+): Promise<TwoFactorVerifyResponse | null> => {
   try {
     // First setup 2FA with phone number
     const setupResponse = await setup2FA({ phone_number: phoneNumber });
@@ -450,7 +458,7 @@ export const enable2FAWithPhoneBackup = async (
     }
 
     // Then verify and enable it
-    return await verify2FA({ verification_code: verificationCode });
+    return await verify2FA({ token: verificationCode });
   } catch (error) {
     console.error('Error enabling 2FA with phone backup:', error);
     return null;
@@ -630,6 +638,7 @@ export type SecurityEventType =
 export type InternalEventType =
   | SecurityEventType
   | '2fa_setup_started'
+  | '2fa_setup_verified'
   | '2fa_setup_completed'
   | '2fa_disabled'
   | '2fa_setup_cancelled';
@@ -652,6 +661,7 @@ export interface SecurityEventResponse {
 const mapToApiEventType = (eventType: InternalEventType): SecurityEventType => {
   switch (eventType) {
     case '2fa_setup_started':
+    case '2fa_setup_verified':
     case '2fa_setup_completed':
     case '2fa_disabled':
     case '2fa_setup_cancelled':
