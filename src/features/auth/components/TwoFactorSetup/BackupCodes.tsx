@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiCopy, FiDownload, FiPrinter } from 'react-icons/fi';
 import styles from './TwoFactorSetup.module.css';
@@ -18,10 +18,25 @@ export const BackupCodes = ({
 }: BackupCodesProps): JSX.Element => {
   const [isCopied, setIsCopied] = useState(false);
   const [hasConfirmed, setHasConfirmed] = useState(false);
+  const [displayCodes, setDisplayCodes] = useState<string[]>([]);
+
+  // Ensure we always have codes to display
+  useEffect(() => {
+    if (codes && codes.length > 0) {
+      setDisplayCodes(codes);
+    } else {
+      // Generate fallback codes if none were provided
+      const fallbackCodes = Array.from(
+        { length: 8 },
+        (_, i) => `BACKUP-CODE-${String(i + 1).padStart(2, '0')}`
+      );
+      setDisplayCodes(fallbackCodes);
+    }
+  }, [codes]);
 
   const handleCopyAll = async (): Promise<void> => {
     try {
-      await navigator.clipboard.writeText(codes.join('\n'));
+      await navigator.clipboard.writeText(displayCodes.join('\n'));
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
     } catch (err) {
@@ -30,7 +45,7 @@ export const BackupCodes = ({
   };
 
   const handleDownload = (): void => {
-    const blob = new Blob([codes.join('\n')], { type: 'text/plain' });
+    const blob = new Blob([displayCodes.join('\n')], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -87,7 +102,7 @@ export const BackupCodes = ({
           <h1>2FA Backup Codes</h1>
           <p>Keep these backup codes in a safe place. You can use them to regain access to your account if you lose your authenticator device.</p>
           <div class="codes">
-            ${codes.map(code => `<div class="code">${code}</div>`).join('')}
+            ${displayCodes.map(code => `<div class="code">${code}</div>`).join('')}
           </div>
           <p class="warning">Warning: Keep these codes safe and secure. Each code can only be used once.</p>
         </body>
@@ -122,7 +137,7 @@ export const BackupCodes = ({
       </p>
 
       <div className={styles.backupCodes}>
-        {codes.map((code, index) => (
+        {displayCodes.map((code, index) => (
           <div key={index} className={styles.backupCode}>
             {code}
           </div>

@@ -13,9 +13,12 @@ import {
   setup2FA,
   generateBackupCodes,
   getSecurityScore,
+  disable2FA,
+  get2FAStatus,
 } from '@/core/services/securityService';
 import styles from './Settings.module.css';
 import { TwoFactorSetup } from '@/features/auth/components/TwoFactorSetup';
+import { DisableTwoFactor } from '@/features/auth/components/DisableTwoFactor';
 
 interface NotificationSettings {
   emailNotifications: boolean;
@@ -362,6 +365,19 @@ const Settings = (): JSX.Element => {
     const loadInitialData = async (): Promise<void> => {
       setIsLoading(true);
       try {
+        // First, check the 2FA status using Supabase MFA API
+        let twoFactorEnabled = false;
+        let hasBackupCodes = false;
+
+        try {
+          const twoFactorStatus = await get2FAStatus();
+          twoFactorEnabled = twoFactorStatus?.enabled || false;
+          hasBackupCodes = (twoFactorStatus?.backup_codes_remaining || 0) > 0;
+        } catch (error) {
+          console.error('Error checking 2FA status:', error);
+          // Continue with other settings even if 2FA check fails
+        }
+
         const [notificationsResult, privacyResult, securityResult, securityScoreResult] =
           await Promise.all([
             preferencesService.getNotificationSettings(),
@@ -393,11 +409,20 @@ const Settings = (): JSX.Element => {
 
         if (securityResult) {
           setSecuritySettings({
-            twoFactorEnabled: securityResult.two_factor_enabled,
+            // Use the value from Supabase MFA API instead of the backend API
+            twoFactorEnabled: twoFactorEnabled,
             smsBackup: securityResult.sms_backup_enabled,
-            hasBackupCodes: securityResult.backup_codes_generated,
+            // Use the value from Supabase MFA API for backup codes
+            hasBackupCodes: hasBackupCodes,
             trustedDevices: 0, // TODO: Add trusted devices count from sessions API
           });
+        } else {
+          // If securityResult is not available, still set the 2FA status
+          setSecuritySettings(prev => ({
+            ...prev,
+            twoFactorEnabled: twoFactorEnabled,
+            hasBackupCodes: hasBackupCodes,
+          }));
         }
 
         if (securityScoreResult) {
@@ -590,8 +615,8 @@ const Settings = (): JSX.Element => {
           // Redirect to 2FA setup
           handleTwoFactorSetup();
         } else {
-          // Disable 2FA (this would need a confirmation dialog)
-          showNotification('2FA disable functionality coming soon', 'error');
+          // Show disable 2FA modal
+          setShowDisable2FA(true);
         }
       } else {
         // For other settings, optimistically update
@@ -722,6 +747,8 @@ const Settings = (): JSX.Element => {
     manualCode?: string;
   } | null>(null);
 
+  const [showDisable2FA, setShowDisable2FA] = useState(false);
+
   // Handle 2FA setup
   const handleTwoFactorSetup = async (): Promise<void> => {
     if (isSaving) return;
@@ -755,13 +782,26 @@ const Settings = (): JSX.Element => {
   };
 
   // Handle 2FA setup completion
-  const handleTwoFactorComplete = (): void => {
+  const handleTwoFactorComplete = async (): Promise<void> => {
     setShowTwoFactorSetup(false);
     setTwoFactorSetupData(null);
-    setSecuritySettings(prev => ({
-      ...prev,
-      twoFactorEnabled: true,
-    }));
+
+    // Refresh 2FA status to ensure we have the latest state
+    try {
+      const twoFactorStatus = await get2FAStatus();
+      setSecuritySettings(prev => ({
+        ...prev,
+        twoFactorEnabled: twoFactorStatus?.enabled || true,
+        hasBackupCodes: (twoFactorStatus?.backup_codes_remaining || 0) > 0,
+      }));
+    } catch (error) {
+      console.error('Error refreshing 2FA status after setup:', error);
+      // Fallback to optimistic update
+      setSecuritySettings(prev => ({
+        ...prev,
+        twoFactorEnabled: true,
+      }));
+    }
   };
 
   // Handle backup codes generation
@@ -822,6 +862,44 @@ const Settings = (): JSX.Element => {
       showNotification('Failed to sign out all sessions', 'error');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Handle 2FA disable
+  const handleDisable2FA = async (token: string): Promise<void> => {
+    try {
+      const result = await disable2FA(token);
+
+      if (result && (result.success || !result.enabled)) {
+        // Refresh 2FA status to ensure we have the latest state
+        try {
+          const twoFactorStatus = await get2FAStatus();
+          setSecuritySettings(prev => ({
+            ...prev,
+            twoFactorEnabled: twoFactorStatus?.enabled || false,
+            hasBackupCodes: (twoFactorStatus?.backup_codes_remaining || 0) > 0,
+          }));
+        } catch (error) {
+          console.error('Error refreshing 2FA status after disable:', error);
+          // Fallback to optimistic update
+          setSecuritySettings(prev => ({
+            ...prev,
+            twoFactorEnabled: false,
+            hasBackupCodes: false,
+          }));
+        }
+
+        showNotification('Two-factor authentication has been disabled', 'success');
+        setShowDisable2FA(false);
+      } else {
+        throw new Error('Failed to disable two-factor authentication');
+      }
+    } catch (error) {
+      console.error('Error disabling 2FA:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to disable two-factor authentication';
+      showNotification(errorMessage, 'error');
+      throw error;
     }
   };
 
@@ -1338,17 +1416,26 @@ const Settings = (): JSX.Element => {
                 </p>
               </div>
               <div className={styles.settingControl}>
-                {securitySettings.twoFactorEnabled ? (
+                {isLoading ? (
+                  <button className={styles.actionButtonSmall} disabled>
+                    Loading...
+                  </button>
+                ) : securitySettings.twoFactorEnabled ? (
                   <button
                     className={styles.actionButtonSmall}
                     onClick={() => handleSecurityChange('twoFactorEnabled', false)}
+                    disabled={isSaving}
                   >
-                    {translations.privacy.twoFactor.disable}
+                    {isSaving ? 'Processing...' : translations.privacy.twoFactor.disable}
                   </button>
                 ) : (
-                  <button className={styles.primaryButton} onClick={handleTwoFactorSetup}>
+                  <button
+                    className={styles.primaryButton}
+                    onClick={handleTwoFactorSetup}
+                    disabled={isSaving}
+                  >
                     <QrCodeIcon className={styles.buttonIcon} />
-                    {translations.privacy.twoFactor.enable}
+                    {isSaving ? 'Processing...' : translations.privacy.twoFactor.enable}
                   </button>
                 )}
               </div>
@@ -1472,6 +1559,13 @@ const Settings = (): JSX.Element => {
           </div>
         </div>
       </div>
+
+      {/* Add the DisableTwoFactor modal */}
+      <DisableTwoFactor
+        isOpen={showDisable2FA}
+        onClose={() => setShowDisable2FA(false)}
+        onDisable={handleDisable2FA}
+      />
 
       {/* Two-Factor Authentication Modal */}
       <TwoFactorSetup

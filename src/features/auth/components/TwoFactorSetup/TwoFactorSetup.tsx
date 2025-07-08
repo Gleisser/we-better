@@ -35,6 +35,8 @@ export const TwoFactorSetup: React.FC<Props> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [_verificationAttempts, setVerificationAttempts] = useState(0);
+  // Store backup codes in a separate state to prevent them from being lost
+  const [backupCodes, setBackupCodes] = useState<string[]>([]);
 
   // Initialize setup data when initialSetupData changes
   useEffect(() => {
@@ -59,6 +61,7 @@ export const TwoFactorSetup: React.FC<Props> = ({
       setSetupData({});
       setError(null);
       setVerificationAttempts(0);
+      // Don't reset backup codes when modal closes to prevent them from being lost
     }
   }, [isOpen]);
 
@@ -129,10 +132,16 @@ export const TwoFactorSetup: React.FC<Props> = ({
       }
 
       if (response.verification.success) {
+        // Store backup codes in the separate state
+        const codes = response.verification.backup_codes || [];
+        setBackupCodes(codes);
+
+        // Also update setupData
         setSetupData(prev => ({
           ...prev,
-          backupCodes: response.verification.backup_codes || [],
+          backupCodes: codes,
         }));
+
         setStage('backup');
 
         // Log security event
@@ -236,9 +245,10 @@ export const TwoFactorSetup: React.FC<Props> = ({
         );
 
       case 'backup':
+        // Use the separate backupCodes state here to ensure we always have the codes
         return (
           <BackupCodes
-            codes={setupData.backupCodes || []}
+            codes={backupCodes.length > 0 ? backupCodes : setupData.backupCodes || []}
             onFinish={handleBackupConfirm}
             isLoading={false}
             error={error || undefined}
