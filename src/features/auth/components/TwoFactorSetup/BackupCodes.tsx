@@ -67,7 +67,7 @@ export const BackupCodes = ({
           <title>2FA Backup Codes</title>
           <style>
             body {
-              font-family: system-ui, -apple-system, sans-serif;
+              font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
               padding: 2rem;
               max-width: 600px;
               margin: 0 auto;

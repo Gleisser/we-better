@@ -84,8 +84,12 @@ export const QRCodeDisplay = ({
         Can't scan the QR code? You can manually enter the code above in your authenticator app.
       </p>
 
-      <button onClick={onNext} className={styles.nextButton}>
+      <button onClick={onNext} className={styles.primaryButton}>
         Next
+      </button>
+
+      <button className={styles.actionButton} style={{ marginTop: '12px' }}>
+        Back
       </button>
     </motion.div>
   );

@@ -211,10 +211,10 @@ export const TwoFactorSetup: React.FC<Props> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className={styles.welcomeStage}
+            className={styles.stage}
           >
-            <h2>Enable Two-Factor Authentication</h2>
-            <p>
+            <h2 className={styles.title}>Enable Two-Factor Authentication</h2>
+            <p className={styles.description}>
               Enhance your account security by adding an extra layer of protection. You'll need an
               authenticator app like Google Authenticator or Authy.
             </p>

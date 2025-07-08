@@ -76,8 +76,10 @@ export const CodeVerification = ({
       exit={{ opacity: 0, y: -20 }}
       className={styles.stage}
     >
-      <h2 className={styles.title}>Enter Verification Code</h2>
-      <p className={styles.description}>Enter the 6-digit code from your authenticator app.</p>
+      <h2 className={styles.title}>Enable Authenticator</h2>
+      <p className={styles.description}>
+        Enter the 6-digit code from Google Authenticator App to enable authenticator
+      </p>
 
       <div className={styles.codeInput}>
         {code.map((digit, index) => (
@@ -106,6 +108,18 @@ export const CodeVerification = ({
           <p>Verifying code...</p>
         </div>
       )}
+
+      <button
+        onClick={() => handleVerify(code.join(''))}
+        className={styles.primaryButton}
+        disabled={code.join('').length !== 6 || isLoading}
+      >
+        Enable Authenticator
+      </button>
+
+      <button className={styles.actionButton} style={{ marginTop: '12px' }}>
+        Back
+      </button>
     </motion.div>
   );
 };
