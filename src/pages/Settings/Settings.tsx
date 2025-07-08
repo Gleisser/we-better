@@ -19,6 +19,7 @@ import {
 import styles from './Settings.module.css';
 import { TwoFactorSetup } from '@/features/auth/components/TwoFactorSetup';
 import { DisableTwoFactor } from '@/features/auth/components/DisableTwoFactor';
+import { BackupCodesModal } from '@/features/auth/components/BackupCodesModal';
 
 interface NotificationSettings {
   emailNotifications: boolean;
@@ -346,6 +347,9 @@ const Settings = (): JSX.Element => {
 
   // Security score state
   const [securityScoreData, setSecurityScoreData] = useState<number>(0);
+
+  // Backup codes state
+  const [backupCodes, setBackupCodes] = useState<string[]>([]);
 
   // Show notification helper
   const showNotification = useCallback((message: string, type: 'success' | 'error') => {
@@ -748,6 +752,7 @@ const Settings = (): JSX.Element => {
   } | null>(null);
 
   const [showDisable2FA, setShowDisable2FA] = useState(false);
+  const [showBackupCodesModal, setShowBackupCodesModal] = useState(false);
 
   // Handle 2FA setup
   const handleTwoFactorSetup = async (): Promise<void> => {
@@ -814,8 +819,10 @@ const Settings = (): JSX.Element => {
       if (result) {
         setSecuritySettings(prev => ({ ...prev, hasBackupCodes: true }));
         showNotification('Backup codes generated successfully', 'success');
-        // TODO: Show backup codes in modal
-        console.info('Backup Codes:', result.backup_codes);
+        // Store the backup codes
+        setBackupCodes(result.backup_codes || []);
+        // Show the modal
+        setShowBackupCodesModal(true);
       } else {
         showNotification('Failed to generate backup codes', 'error');
       }
@@ -1577,6 +1584,13 @@ const Settings = (): JSX.Element => {
         }}
         onComplete={handleTwoFactorComplete}
         initialSetupData={twoFactorSetupData || undefined}
+      />
+
+      {/* Backup Codes Modal */}
+      <BackupCodesModal
+        isOpen={showBackupCodesModal}
+        onClose={() => setShowBackupCodesModal(false)}
+        codes={backupCodes}
       />
     </div>
   );
