@@ -9,3 +9,7 @@
          pb-32;
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
 }
+
+.error {
+  @apply bg-red-500/20 text-red-500 border border-red-500/30 rounded-lg p-4 m-4 text-center;
+}

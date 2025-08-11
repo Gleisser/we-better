@@ -8,6 +8,7 @@ import styles from './Dashboard.module.css';
 const Dashboard = (): JSX.Element => {
   const [featuredArticle, setFeaturedArticle] = useState<Article | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchFeaturedArticle = async (): Promise<void> => {
@@ -25,6 +26,9 @@ const Dashboard = (): JSX.Element => {
         }
       } catch (error) {
         console.error('Error fetching featured article:', error);
+        setError(
+          'Could not load featured content. The Content API may be temporarily unavailable.'
+        );
       } finally {
         setIsLoading(false);
       }
@@ -35,6 +39,7 @@ const Dashboard = (): JSX.Element => {
 
   return (
     <div className={styles.container}>
+      {error && <div className={styles.error}>{error}</div>}
       <DashboardGrid featuredArticle={featuredArticle} isLoading={isLoading} />
       <StoriesBar />
       <AIAssistantButton />
