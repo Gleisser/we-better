@@ -276,7 +276,7 @@ const DreamBoardPage: React.FC = () => {
     return {
       title: t('dreamBoard.board.defaultTitle') as string,
       description: t('dreamBoard.board.defaultDescription') as string,
-      categories,
+      categories: categories.length > 0 ? categories : ['Uncategorized'],
       content,
     };
   };
