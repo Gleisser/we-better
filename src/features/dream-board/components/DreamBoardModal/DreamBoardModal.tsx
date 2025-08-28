@@ -90,7 +90,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
           // Fetch existing dream board data from API
           const existingData = await getLatestDreamBoardData();
 
-          if (existingData) {
+          if (existingData?.id) {
             // Use existing data if available
             // @ts-expect-error - Type compatibility issue between duplicate type definitions
             setVisionBoardData(existingData);
