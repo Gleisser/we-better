@@ -334,6 +334,7 @@ const DreamBoardPage: React.FC = () => {
 
     try {
       const dreamBoardData = convertDreamsToDreamBoardData(newDreams);
+      console.info('dreamBoardData', dreamBoardData);
       const result = await saveDreamBoardData(dreamBoardData);
 
       if (result) {

@@ -135,7 +135,7 @@ export const saveDreamBoardData = async (data: DreamBoardData): Promise<DreamBoa
     if (data.title === '' || data.title === null || data.title === undefined) {
       data.title = 'My Vision Board';
     }
-
+    console.info('data', data);
     const result = await apiRequest<DreamBoardData>(endpoint, method, data);
     return result;
   } catch (error) {
