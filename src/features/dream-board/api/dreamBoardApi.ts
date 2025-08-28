@@ -132,6 +132,9 @@ export const saveDreamBoardData = async (data: DreamBoardData): Promise<DreamBoa
   try {
     const endpoint = data.id ? `${API_URL}/${data.id}` : API_URL;
     const method = data.id ? 'PUT' : 'POST';
+    if (data.title === '' || data.title === null || data.title === undefined) {
+      data.title = 'My Vision Board';
+    }
 
     const result = await apiRequest<DreamBoardData>(endpoint, method, data);
     return result;
