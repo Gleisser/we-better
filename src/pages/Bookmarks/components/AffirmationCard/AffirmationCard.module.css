@@ -1,0 +1,346 @@
+.affirmationCard {
+  position: relative;
+  background: var(--theme-bg-elevated);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 20px;
+  padding: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.affirmationCard:hover {
+  border-color: var(--theme-border-secondary);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.affirmationCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Fallback for browsers without color-mix support */
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+  /* Modern browsers with color-mix support */
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--category-color, #3b82f6) 20%, transparent),
+    color-mix(in srgb, var(--category-color, #3b82f6) 10%, transparent)
+  );
+  border-radius: 20px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.affirmationCard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--category-color, #3b82f6);
+  border-radius: 20px 0 0 20px;
+  pointer-events: none;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.categoryTag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: var(--theme-bg-secondary);
+  border: 1px solid var(--theme-border-primary);
+}
+
+.categoryIcon {
+  font-size: 16px;
+}
+
+.categoryText {
+  line-height: 1;
+}
+
+.actions {
+  position: relative;
+}
+
+.actionButton {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--theme-text-secondary);
+}
+
+.actionButton:hover {
+  background: var(--theme-bg-secondary);
+  color: var(--theme-text-primary);
+  transform: scale(1.05);
+}
+
+.actionIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: var(--theme-bg-elevated);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.24);
+  padding: 8px;
+  min-width: 160px;
+  z-index: 1000;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-align: left;
+}
+
+.menuItem:hover {
+  background: var(--theme-bg-secondary);
+}
+
+.menuIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--theme-text-secondary);
+}
+
+/* Content */
+.content {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.affirmationIcon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.iconCircle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 600;
+  border: 2px solid currentColor;
+}
+
+.affirmationText {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--theme-text-primary);
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid var(--theme-border-primary);
+}
+
+.type {
+  flex: 1;
+}
+
+.typeLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--theme-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: var(--theme-bg-secondary);
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--theme-border-primary);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bookmarkDate {
+  font-size: 12px;
+  color: var(--theme-text-tertiary);
+  font-weight: 500;
+}
+
+/* Light theme overrides */
+[data-theme='light'] .affirmationCard {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='light'] .affirmationCard:hover {
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='light'] .categoryTag {
+  background: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .actionButton {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #6b7280;
+}
+
+[data-theme='light'] .actionButton:hover {
+  background: #ffffff;
+  color: #374151;
+}
+
+[data-theme='light'] .menu {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme='light'] .menuItem {
+  color: #1f2937;
+}
+
+[data-theme='light'] .menuItem:hover {
+  background: #f3f4f6;
+}
+
+[data-theme='light'] .menuIcon {
+  color: #6b7280;
+}
+
+[data-theme='light'] .typeLabel {
+  background: #f1f5f9;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #475569;
+}
+
+[data-theme='light'] .footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .affirmationCard {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .affirmationCard::before {
+    border-radius: 16px;
+  }
+
+  .affirmationCard::after {
+    border-radius: 16px 0 0 16px;
+  }
+
+  .affirmationText {
+    font-size: 16px;
+  }
+
+  .iconCircle {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .menu {
+    right: -8px;
+    min-width: 160px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .affirmationCard {
+    padding: 16px;
+  }
+
+  .header {
+    margin-bottom: 16px;
+  }
+
+  .content {
+    margin-bottom: 20px;
+  }
+
+  .categoryTag {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .affirmationText {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .iconCircle {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .actionButton {
+    width: 32px;
+    height: 32px;
+  }
+
+  .actionIcon {
+    width: 16px;
+    height: 16px;
+  }
+}

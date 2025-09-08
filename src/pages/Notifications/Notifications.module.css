@@ -1,0 +1,336 @@
+/* Notifications Page */
+.notificationsPage {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: 100vh;
+  background: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
+}
+
+/* Header */
+.header {
+  margin-bottom: 32px;
+}
+
+.titleSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--theme-text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.markAllButton {
+  background: none;
+  border: none;
+  color: var(--theme-interactive-primary);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-family: var(--font-plus-jakarta);
+}
+
+.markAllButton:hover {
+  background: var(--theme-bg-secondary);
+  color: var(--theme-interactive-primary-hover);
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--theme-text-secondary);
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Content */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Time Groups */
+.timeGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.timeGroupLabel {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--theme-border-primary);
+}
+
+.notificationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Notification Items */
+.notificationItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: var(--theme-bg-elevated);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.notificationItem:hover {
+  border-color: var(--theme-border-secondary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.notificationItem.read {
+  opacity: 0.7;
+  background: var(--theme-bg-secondary);
+}
+
+.notificationIcon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  background: var(--theme-bg-tertiary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--theme-border-primary);
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  color: var(--theme-interactive-primary);
+}
+
+.notificationContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.notificationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 16px;
+}
+
+.notificationTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.timestamp {
+  font-size: 14px;
+  color: var(--theme-text-tertiary);
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.notificationDescription {
+  font-size: 14px;
+  color: var(--theme-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.viewButton {
+  flex-shrink: 0;
+  background: var(--theme-interactive-primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-plus-jakarta);
+}
+
+.viewButton:hover {
+  background: var(--theme-interactive-primary-hover);
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .notificationsPage {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .titleSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .markAllButton {
+    align-self: flex-end;
+  }
+
+  .notificationItem {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .notificationIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .notificationHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .timestamp {
+    order: -1;
+    margin-bottom: 4px;
+  }
+
+  .viewButton {
+    margin-top: 12px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .notificationsPage {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .content {
+    gap: 24px;
+  }
+
+  .notificationItem {
+    flex-direction: column;
+    text-align: left;
+  }
+
+  .notificationIcon {
+    align-self: flex-start;
+  }
+
+  .notificationContent {
+    width: 100%;
+  }
+}
+
+/* Light Theme Overrides */
+[data-theme='light'] .notificationsPage {
+  background: #f8f9fa;
+  color: #1a1a1a;
+}
+
+[data-theme='light'] .notificationItem {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #1a1a1a;
+}
+
+[data-theme='light'] .notificationItem:hover {
+  background: #f8f9fa;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .notificationItem.read {
+  background: #f8f9fa;
+  opacity: 0.8;
+}
+
+[data-theme='light'] .notificationIcon {
+  background: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='light'] .notificationTitle {
+  color: #1a1a1a;
+}
+
+[data-theme='light'] .notificationDescription {
+  color: #6b7280;
+}
+
+[data-theme='light'] .timestamp {
+  color: #9ca3af;
+}
+
+[data-theme='light'] .timeGroupLabel {
+  color: #1a1a1a;
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .markAllButton:hover {
+  background: #f0f0f0;
+}
+
+[data-theme='light'] .viewButton:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+/* Dark Theme Enhancement */
+[data-theme='dark'] .notificationItem {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='dark'] .notificationItem:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .notificationIcon {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='dark'] .markAllButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='dark'] .timeGroupLabel {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
