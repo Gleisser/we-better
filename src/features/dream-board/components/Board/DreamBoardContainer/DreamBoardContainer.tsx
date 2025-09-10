@@ -81,6 +81,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   onShare,
   onComplete: _onComplete,
   onDelete,
+  className = '',
   readOnly = false,
 }) => {
   const { t } = useCommonTranslation();
@@ -482,10 +483,10 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   }
 
   return (
-    <div>
+    <div className={className}>
       {/* Main content container */}
       <div>
-        <div className={styles.glassCard}>
+        <div className={`${styles.glassCard} boardGlassCard`}>
           {/* Vision Board Title */}
           <h1 className={styles.dreamBoardTitle}>
             {boardData.title === 'My Dream Board'
@@ -501,7 +502,11 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
           )}
 
           {/* Canvas container */}
-          <div ref={canvasRef} className={styles.canvasContainer} onClick={handleCanvasClick}>
+          <div
+            ref={canvasRef}
+            className={`${styles.canvasContainer} boardCanvasContainer`}
+            onClick={handleCanvasClick}
+          >
             {/* Content items */}
             {filteredContent.map(item => (
               <ContentItem
@@ -517,7 +522,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
           </div>
 
           {/* Toolbar container - at the bottom */}
-          <div className={styles.actionButtons}>
+          <div className={`${styles.actionButtons} boardActionButtons`}>
             {!readOnly && (
               <Toolbar
                 mode={toolbarMode}

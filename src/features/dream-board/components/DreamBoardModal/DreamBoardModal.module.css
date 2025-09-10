@@ -10,6 +10,7 @@
   justify-content: center;
   z-index: 1000;
   backdrop-filter: blur(5px);
+  overscroll-behavior: contain; /* Prevent scroll chaining to background */
 }
 
 .modalContainer {
@@ -21,6 +22,7 @@
   background: var(--theme-modal-bg, rgba(30, 30, 40, 0.8));
   border-radius: 16px;
   box-shadow: var(--theme-shadow-xl);
+  /* Keep rounded corners clipping, but scrolling will happen in child */
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -54,16 +56,42 @@
 
 .modalContent {
   flex: 1;
-  overflow: hidden;
   position: relative;
   height: 100%;
+  /* Enable scrolling of modal content on small windows */
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 0; /* Prevent flex item from enforcing a minimum height */
+  /* Firefox scrollbar colors */
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #000000;
+}
+
+/* WebKit scrollbars for the modal scroll area */
+.modalContent::-webkit-scrollbar {
+  width: 12px;
+}
+
+.modalContent::-webkit-scrollbar-track {
+  background: #000000;
+  border-radius: 8px;
+}
+
+.modalContent::-webkit-scrollbar-thumb {
+  background-color: #4b5563; /* dark gray */
+  border-radius: 8px;
+  border: 2px solid #000000; /* gives spacing and contrast */
+}
+
+.modalContent::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280; /* slightly lighter on hover */
 }
 
 .dreamBoardWrapper {
   width: 100%;
-  height: 100%;
-  position: absolute;
-  inset: 0;
+  /* Let content define the height so parent can scroll */
+  min-height: 100%;
+  position: relative;
 }
 
 /* Light theme specific overrides */
@@ -131,15 +159,13 @@
   padding-top: 20px;
 }
 
-.dreamBoardWrapper :global(.glassCard) {
-  background: none;
-  border: none;
-  box-shadow: none;
-  border-radius: 0;
-  padding: 0;
-  height: 100% !important;
-  max-height: 100% !important;
-  overflow: auto;
+.dreamBoardWrapper :global(.glassCard),
+.dreamBoardWrapper :global(.boardGlassCard) {
+  /* Keep original layout sizing so canvas isn't shrunk */
+  height: auto !important;
+  max-height: none !important;
+  min-height: 85vh !important; /* Restore original min-height */
+  overflow: visible;
 }
 
 /* Make the background image lighter and more subtle */
@@ -158,10 +184,65 @@
 }
 
 /* Target the internal elements of VisionBoard to ensure proper sizing */
-.dreamBoardWrapper :global(.canvasContainer) {
+.dreamBoardWrapper :global(.canvasContainer),
+.dreamBoardWrapper :global(.boardCanvasContainer) {
   position: relative !important;
-  height: calc(100% - 80px) !important;
+  height: auto !important;
+  flex: 1 1 auto !important;
   overflow: auto !important;
+  min-height: 450px !important; /* Keep canvas usable height */
+  /* Firefox scrollbar colors for inner canvas area */
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #000000;
+}
+
+/* WebKit scrollbars for inner canvas area */
+.dreamBoardWrapper :global(.canvasContainer)::-webkit-scrollbar,
+.dreamBoardWrapper :global(.boardCanvasContainer)::-webkit-scrollbar {
+  width: 12px;
+}
+
+.dreamBoardWrapper :global(.canvasContainer)::-webkit-scrollbar-track,
+.dreamBoardWrapper :global(.boardCanvasContainer)::-webkit-scrollbar-track {
+  background: #000000;
+  border-radius: 8px;
+}
+
+.dreamBoardWrapper :global(.canvasContainer)::-webkit-scrollbar-thumb,
+.dreamBoardWrapper :global(.boardCanvasContainer)::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+  border-radius: 8px;
+  border: 2px solid #000000;
+}
+
+.dreamBoardWrapper :global(.canvasContainer)::-webkit-scrollbar-thumb:hover,
+.dreamBoardWrapper :global(.boardCanvasContainer)::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
+}
+
+/* If the content wrapper scrolls, style its scrollbar too */
+.dreamBoardWrapper :global(.contentWrapper) {
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #000000;
+}
+
+.dreamBoardWrapper :global(.contentWrapper)::-webkit-scrollbar {
+  width: 12px;
+}
+
+.dreamBoardWrapper :global(.contentWrapper)::-webkit-scrollbar-track {
+  background: #000000;
+  border-radius: 8px;
+}
+
+.dreamBoardWrapper :global(.contentWrapper)::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+  border-radius: 8px;
+  border: 2px solid #000000;
+}
+
+.dreamBoardWrapper :global(.contentWrapper)::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
 }
 
 /* Fix intro screen overlay */
@@ -190,8 +271,12 @@
   right: 10px !important;
 }
 
-/* Override Toolbar */
-.dreamBoardWrapper :global(.actionButtons) {
-  position: relative !important;
-  z-index: 999 !important;
+/* Keep the Toolbar visible on small screens */
+.dreamBoardWrapper :global(.actionButtons),
+.dreamBoardWrapper :global(.boardActionButtons) {
+  /* Restore previous (non-sticky) toolbar positioning */
+  position: static !important;
+  bottom: auto !important;
+  background: none;
+  backdrop-filter: none;
 }
