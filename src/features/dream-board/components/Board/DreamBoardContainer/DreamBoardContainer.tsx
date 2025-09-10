@@ -519,6 +519,16 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
                 categoryColors={categoryColors}
               />
             ))}
+
+            {/* Empty canvas call-to-action when there are no images */}
+            {!readOnly && imageCount === 0 && (
+              <div className={styles.emptyCanvasOverlay} onClick={e => e.stopPropagation()}>
+                <button className={styles.addImageButtonLarge} onClick={handleImageUpload}>
+                  <span className={styles.addImageIcon}>➕</span>
+                  <span>{t('dreamBoard.board.toolbar.buttons.uploadPhoto')}</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Toolbar container - at the bottom */}
