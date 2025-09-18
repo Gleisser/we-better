@@ -67,16 +67,28 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const visionBoardContainerRef = useRef<HTMLDivElement>(null);
 
-  // Prevent scrolling of body when modal is open
+  // Prevent background scrolling when modal is open (html + body)
+  const prevBodyOverflow = useRef<string | null>(null);
+  const prevHtmlOverflow = useRef<string | null>(null);
   useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      // Store previous values to restore correctly
+      prevBodyOverflow.current = body.style.overflow;
+      prevHtmlOverflow.current = html.style.overflow;
+      body.style.overflow = 'hidden';
+      html.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'auto';
+      if (prevBodyOverflow.current !== null) body.style.overflow = prevBodyOverflow.current;
+      if (prevHtmlOverflow.current !== null) html.style.overflow = prevHtmlOverflow.current;
     }
 
     return () => {
-      document.body.style.overflow = 'auto';
+      if (prevBodyOverflow.current !== null)
+        document.body.style.overflow = prevBodyOverflow.current;
+      if (prevHtmlOverflow.current !== null)
+        document.documentElement.style.overflow = prevHtmlOverflow.current;
     };
   }, [isOpen]);
 

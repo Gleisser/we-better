@@ -49,6 +49,45 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* Centered CTA when the canvas has no images */
+.emptyCanvasOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* don't block canvas; button re-enables */
+  z-index: 4;
+}
+
+.addImageButtonLarge {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.35);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.addImageButtonLarge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(139, 92, 246, 0.45);
+}
+
+.addImageIcon {
+  font-size: 1.2rem;
+}
+
 .dreamBoardTitle {
   font-family: 'Playfair Display', serif;
   font-size: min(3.5rem, 10vw);

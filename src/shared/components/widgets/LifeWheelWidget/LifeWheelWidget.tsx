@@ -6,6 +6,7 @@ import { createLogger } from '@/shared/utils/debugUtils';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './LifeWheelWidget.module.css';
 import { Tooltip } from '@/shared/components/common/Tooltip';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 // Create a logger
 const logger = createLogger('LifeWheelWidget');
@@ -106,24 +107,6 @@ const LifeWheelWidget = (): JSX.Element => {
     navigate('/app/life-wheel');
   };
 
-  // Track render cycles (removed to prevent infinite loops)
-  // useEffect(() => {
-  //   renderCountRef.current += 1;
-  //   logger.log(`Widget render #${renderCountRef.current}`);
-  // });
-
-  // Track component mount/unmount and performance
-  useEffect(() => {
-    const startTime = performance.now();
-    logger.log('Widget mounted');
-
-    return () => {
-      logger.log('Widget unmounted', {
-        lifetime: performance.now() - startTime,
-      });
-    };
-  }, []);
-
   // Store raw categories from backend
   const [rawCategories, setRawCategories] = useState<
     Array<{
@@ -135,6 +118,15 @@ const LifeWheelWidget = (): JSX.Element => {
     }>
   >([]);
 
+  // Fetch username on mount
+  const { user } = useAuth();
+
+  const username = useMemo(() => {
+    if (user?.display_name?.trim()) {
+      return user.display_name.trim();
+    }
+  }, [user]);
+
   // Fetch initial data (only once)
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
@@ -144,7 +136,6 @@ const LifeWheelWidget = (): JSX.Element => {
         if (response.entry) {
           // Store raw categories without translation
           setRawCategories(response.entry.categories);
-          logger.log('Categories loaded', { count: response.entry.categories.length });
         }
       } catch (error) {
         console.error('Error loading life wheel data:', error);
@@ -216,11 +207,6 @@ const LifeWheelWidget = (): JSX.Element => {
     };
   }, []);
 
-  // Track tooltip state changes for debugging
-  useEffect(() => {
-    logger.log('Tooltip content changed', { content: tooltipContent });
-  }, [tooltipContent]);
-
   if (isLoading) {
     return (
       <div className={styles.lifeWheelWidget}>
@@ -257,7 +243,11 @@ const LifeWheelWidget = (): JSX.Element => {
         </div>
       </div>
       <div className={styles.wheelViewContainer}>
-        <LifeWheel categories={categories} onCategorySelect={handleCategorySelect} />
+        <LifeWheel
+          categories={categories}
+          onCategorySelect={handleCategorySelect}
+          userName={username}
+        />
 
         {/* Fixed positioned tooltip to minimize layout changes */}
         <FixedTooltip content={tooltipContent} />
