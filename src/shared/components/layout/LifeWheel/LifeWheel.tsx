@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './LifeWheel.module.css';
 
 interface LifeCategory {
@@ -83,17 +84,25 @@ const LifeWheel = ({
     setActiveCategory(null);
   };
 
-  // Calculate tooltip position based on category index
-  const getTooltipStyle = (categoryIndex: number): React.CSSProperties => {
+  // Calculate tooltip position in viewport coords for portal
+  const getTooltipViewportStyle = (categoryIndex: number): React.CSSProperties => {
     const angle = (2 * Math.PI * categoryIndex) / categories.length - Math.PI / 2;
-    const radius = 160; // Slightly reduced radius to ensure tooltips stay within container
+    const radius = 160;
+
+    const rect = containerRef.current?.getBoundingClientRect();
+    const cx = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+    const cy = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
+
+    const x = cx + Math.cos(angle) * radius;
+    const y = cy + Math.sin(angle) * radius;
 
     return {
-      position: 'absolute',
-      left: `calc(50% + ${Math.cos(angle) * radius}px)`,
-      top: `calc(50% + ${Math.sin(angle) * radius}px)`,
+      position: 'fixed',
+      left: x,
+      top: y,
       transform: 'translate(-50%, -50%)',
-      zIndex: 100, // Ensure tooltips are always visible
+      zIndex: 1000,
+      pointerEvents: 'none',
     };
   };
 
@@ -138,21 +147,24 @@ const LifeWheel = ({
           </div>
         </button>
 
-        {/* Place tooltips at the top level with calculated position for each category */}
+        {/* Render tooltip via portal to avoid clipping by widget bounds */}
         {isOpen &&
           activeCategory &&
           categories.map(
             (category, index) =>
-              category.id === activeCategory && (
+              category.id === activeCategory &&
+              typeof document !== 'undefined' &&
+              createPortal(
                 <div
                   key={`tooltip-${category.id}`}
                   className={styles.tooltip}
-                  style={getTooltipStyle(index)}
+                  style={getTooltipViewportStyle(index)}
                 >
                   <span className={styles.categoryName}>{category.name}</span>
                   <span className={styles.categoryScore}>{category.score}</span>
                   {category.hasUpdate && <span className={styles.updateDot} />}
-                </div>
+                </div>,
+                document.getElementById('portal-root') || document.body
               )
           )}
       </div>
