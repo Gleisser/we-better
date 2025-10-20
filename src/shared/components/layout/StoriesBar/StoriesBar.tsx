@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LifeStories from '../Stories/LifeStories';
-import { XIcon, PlayIcon } from '@/shared/components/common/icons';
+import { XIcon, PlayIcon, ChevronDownIcon } from '@/shared/components/common/icons';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './StoriesBar.module.css';
 import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
@@ -147,6 +147,10 @@ const StoriesBar = (): JSX.Element => {
     }
   };
 
+  const handleMinimize = (): void => {
+    setSelectedCategory(null);
+  };
+
   return (
     <>
       {isMobile && isExpanded && activeSheet === 'stories' && (
@@ -176,6 +180,15 @@ const StoriesBar = (): JSX.Element => {
               >
                 <XIcon className={styles.collapseIcon} />
               </button>
+              {isFullScreen && (
+                <button
+                  className={styles.minimizeButton}
+                  onClick={handleMinimize}
+                  aria-label="Minimize stories view"
+                >
+                  <ChevronDownIcon className={styles.minimizeIcon} />
+                </button>
+              )}
               <div
                 className={`${styles.categoriesSection} ${
                   isFullScreen ? styles.categoriesSectionExpanded : ''
