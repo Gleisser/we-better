@@ -5,6 +5,7 @@ import { XIcon, PlayIcon, ChevronDownIcon } from '@/shared/components/common/ico
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './StoriesBar.module.css';
 import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
+import WeeklyMissions from './WeeklyMissions';
 
 interface LifeCategory {
   id: string;
@@ -197,14 +198,15 @@ const StoriesBar = (): JSX.Element => {
                 <LifeStories categories={MOCK_CATEGORIES} onCategorySelect={handleCategorySelect} />
               </div>
               {selectedCategory && (
-                <div className={styles.categoryContent}>
-                  <div className={styles.categoryHeader}>
-                    <span className={styles.categoryEmoji}>{selectedCategory.icon}</span>
-                    <h3 className={styles.categoryTitle}>{selectedCategory.name}</h3>
-                  </div>
-                  <p className={styles.categoryDescription}>
-                    Fresh stories for this life area will appear here soon.
-                  </p>
+                <div className={styles.missionsArea}>
+                  <WeeklyMissions
+                    category={{
+                      id: selectedCategory.id,
+                      name: selectedCategory.name,
+                      color: selectedCategory.color,
+                      icon: selectedCategory.icon,
+                    }}
+                  />
                 </div>
               )}
             </motion.div>

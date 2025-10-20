@@ -109,26 +109,8 @@
          px-8 py-4;
 }
 
-.categoryContent {
-  @apply flex-1 overflow-y-auto
-         px-8 py-6
-         text-white/80;
-}
-
-.categoryHeader {
-  @apply flex items-center gap-4 mb-4;
-}
-
-.categoryEmoji {
-  @apply text-3xl;
-}
-
-.categoryTitle {
-  @apply text-2xl font-semibold text-white;
-}
-
-.categoryDescription {
-  @apply text-sm leading-relaxed text-white/60;
+.missionsArea {
+  @apply flex-1 overflow-hidden;
 }
 
 /* Add mobile-specific styles */
@@ -210,10 +192,6 @@
 
   .playIcon {
     @apply w-5 h-5;
-  }
-
-  .categoryContent {
-    @apply px-4 py-6;
   }
 
   .categoriesSectionExpanded {
