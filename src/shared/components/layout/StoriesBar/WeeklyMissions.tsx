@@ -220,8 +220,6 @@ const WeeklyMissions = ({ category }: WeeklyMissionsProps): JSX.Element => {
       current.removeEventListener('scroll', handleScroll);
     };
   }, [containerRef]);
-
-  const [holdMission, setHoldMission] = useState<string | null>(null);
   const timers = useRef<Record<string, number>>({});
 
   useEffect(() => {
@@ -258,27 +256,6 @@ const WeeklyMissions = ({ category }: WeeklyMissionsProps): JSX.Element => {
       ...mission,
       status: 'completed',
     }));
-  };
-
-  const handleHoldStart = (id: string): void => {
-    if (prefersReducedMotion) {
-      triggerCompletion(id);
-      return;
-    }
-
-    setHoldMission(id);
-    timers.current[id] = window.setTimeout(() => {
-      triggerCompletion(id);
-      setHoldMission(null);
-    }, 1200);
-  };
-
-  const handleHoldEnd = (id: string): void => {
-    if (timers.current[id]) {
-      window.clearTimeout(timers.current[id]);
-      delete timers.current[id];
-    }
-    setHoldMission(current => (current === id ? null : current));
   };
 
   const completedCount = missions.filter(mission => mission.status === 'completed').length;
@@ -472,68 +449,13 @@ const WeeklyMissions = ({ category }: WeeklyMissionsProps): JSX.Element => {
                   <GamifiedCTAButton
                     primaryLabel="Start Mission"
                     secondaryLabel="In Progress"
+                    holdLabel="Mission Complete"
+                    holdDuration={1000}
+                    onHoldComplete={() => {
+                      triggerCompletion(mission.id);
+                    }}
                     onClick={() => handleStartMission(mission.id)}
                   />
-
-                  <div className={styles.cardActions}>
-                    <AnimatePresence mode="wait">
-                      {mission.status === 'pending' && (
-                        <motion.button
-                          key="start"
-                          className={styles.primaryAction}
-                          onClick={() => handleStartMission(mission.id)}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.6 }}
-                          whileHover={prefersReducedMotion ? undefined : { scale: 1.06 }}
-                          whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
-                          type="button"
-                        >
-                          <span className={styles.primaryGlow} />
-                          <span>Start Mission</span>
-                        </motion.button>
-                      )}
-
-                      {mission.status === 'active' && (
-                        <motion.button
-                          key="orb"
-                          className={`${styles.progressOrb} ${
-                            holdMission === mission.id ? styles.progressHolding : ''
-                          }`}
-                          onPointerDown={() => handleHoldStart(mission.id)}
-                          onPointerUp={() => handleHoldEnd(mission.id)}
-                          onPointerLeave={() => handleHoldEnd(mission.id)}
-                          onKeyDown={event => {
-                            if (event.key === 'Enter' || event.key === ' ') {
-                              event.preventDefault();
-                              triggerCompletion(mission.id);
-                            }
-                          }}
-                          initial={{ opacity: 0, scale: 0.6 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 1.15 }}
-                          type="button"
-                          aria-label="Hold to complete mission"
-                        >
-                          <span className={styles.progressCore} />
-                          <span className={styles.progressAura} />
-                        </motion.button>
-                      )}
-
-                      {mission.status === 'completed' && (
-                        <motion.div
-                          key="complete"
-                          className={styles.completedBadge}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.9 }}
-                        >
-                          <span className={styles.completedIcon}>✔</span>
-                          <span>Mission complete</span>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
 
                   <div className={styles.cardFooter}>
                     <div className={styles.coachStrip}>

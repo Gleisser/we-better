@@ -1,10 +1,14 @@
-import { useMemo } from 'react';
-import type { ButtonHTMLAttributes, CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { ButtonHTMLAttributes, CSSProperties, KeyboardEvent, PointerEvent } from 'react';
 import styles from './GamifiedCTAButton.module.css';
 
 export type GamifiedCTAButtonProps = {
   primaryLabel: string;
   secondaryLabel?: string;
+  holdLabel?: string;
+  holdDuration?: number;
+  onHoldComplete?: () => void;
+  state?: 'idle' | 'active' | 'completed';
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 type CTAStyle = CSSProperties & { '--cta-width'?: string };
@@ -32,23 +36,93 @@ const measureLabelWidth = (label: string): number => {
 const GamifiedCTAButton = ({
   primaryLabel,
   secondaryLabel,
+  holdLabel,
+  holdDuration = 1000,
+  onHoldComplete,
+  state,
   className,
   type = 'button',
   ...buttonProps
 }: GamifiedCTAButtonProps): JSX.Element => {
-  const { style: inlineStyleProp, ['aria-label']: ariaLabelProp, ...restButtonProps } = buttonProps;
+  const {
+    style: inlineStyleProp,
+    ['aria-label']: ariaLabelProp,
+    onPointerDown,
+    onPointerUp,
+    onPointerLeave,
+    onPointerCancel,
+    onBlur: onBlurProp,
+    onKeyDown,
+    onKeyUp,
+    ...restButtonProps
+  } = buttonProps;
   const ariaLabel = ariaLabelProp ?? primaryLabel;
 
-  const baseClassName = [styles.button, className].filter(Boolean).join(' ');
+  const [internalState, setInternalState] = useState<'idle' | 'active' | 'completed'>('idle');
+  const holdTimeoutRef = useRef<number | null>(null);
+  const activeKeyRef = useRef<string | null>(null);
+
+  const isControlled = state !== undefined;
+  const derivedState = state ?? internalState;
+
+  const stateClass = styles[`state${derivedState[0].toUpperCase()}${derivedState.slice(1)}`];
+  const baseClassName = [styles.button, className, stateClass].filter(Boolean).join(' ');
 
   const secondaryText = secondaryLabel ?? primaryLabel;
+  const tertiaryText = holdLabel ?? secondaryText;
+  const shouldHandleHold = Boolean(onHoldComplete) || holdLabel !== undefined;
+
+  const setState = (nextState: 'idle' | 'active' | 'completed'): void => {
+    if (!isControlled) {
+      setInternalState(nextState);
+    }
+  };
+
+  const clearHoldTimeout = (): void => {
+    if (holdTimeoutRef.current !== null) {
+      window.clearTimeout(holdTimeoutRef.current);
+      holdTimeoutRef.current = null;
+    }
+  };
+
+  const completeHold = (): void => {
+    clearHoldTimeout();
+    setState('completed');
+    onHoldComplete?.();
+  };
+
+  const startHold = (): void => {
+    if (derivedState === 'completed') {
+      return;
+    }
+    setState('active');
+
+    if (shouldHandleHold) {
+      clearHoldTimeout();
+      holdTimeoutRef.current = window.setTimeout(() => {
+        completeHold();
+      }, holdDuration);
+    }
+  };
+
+  const cancelHold = (resetToIdle: boolean): void => {
+    clearHoldTimeout();
+    activeKeyRef.current = null;
+    if (resetToIdle && derivedState !== 'completed') {
+      setState('idle');
+    }
+  };
 
   const computedWidth = useMemo(() => {
     const primaryWidth = measureLabelWidth(primaryLabel);
     const secondaryWidth = measureLabelWidth(secondaryText);
+    const tertiaryWidth = shouldHandleHold ? measureLabelWidth(tertiaryText) : 0;
     const arrowAndGapPadding = 96; // arrow width + spacing + inner padding
-    return Math.max(220, Math.ceil(Math.max(primaryWidth, secondaryWidth) + arrowAndGapPadding));
-  }, [primaryLabel, secondaryText]);
+    return Math.max(
+      220,
+      Math.ceil(Math.max(primaryWidth, secondaryWidth, tertiaryWidth) + arrowAndGapPadding)
+    );
+  }, [primaryLabel, secondaryText, tertiaryText, shouldHandleHold]);
 
   const computedStyle = useMemo<CTAStyle>(
     () => ({
@@ -58,16 +132,20 @@ const GamifiedCTAButton = ({
     [inlineStyleProp, computedWidth]
   );
 
-  const renderCharacters = (label: string, variant: 'primary' | 'secondary'): JSX.Element => {
+  const renderCharacters = (
+    label: string,
+    variant: 'primary' | 'secondary' | 'tertiary'
+  ): JSX.Element => {
     const characters = Array.from(label);
+    const variantClass =
+      variant === 'primary'
+        ? styles.charPrimary
+        : variant === 'secondary'
+          ? styles.charSecondary
+          : styles.charTertiary;
 
     return (
-      <span
-        className={`${styles.charGroup} ${
-          variant === 'primary' ? styles.charPrimary : styles.charSecondary
-        }`}
-        aria-hidden="true"
-      >
+      <span className={`${styles.charGroup} ${variantClass}`} aria-hidden="true">
         {characters.map((char, index) => {
           const displayChar = char === ' ' ? '\u00A0' : char;
 
@@ -85,6 +163,12 @@ const GamifiedCTAButton = ({
     );
   };
 
+  useEffect(() => {
+    return () => {
+      clearHoldTimeout();
+    };
+  }, []);
+
   return (
     <button
       type={type}
@@ -92,6 +176,49 @@ const GamifiedCTAButton = ({
       aria-label={ariaLabel}
       style={computedStyle}
       {...restButtonProps}
+      onPointerDown={(event: PointerEvent<HTMLButtonElement>) => {
+        onPointerDown?.(event);
+        if (event.defaultPrevented) return;
+        if (event.button !== 0) return;
+        startHold();
+      }}
+      onPointerUp={(event: PointerEvent<HTMLButtonElement>) => {
+        onPointerUp?.(event);
+        if (event.defaultPrevented) return;
+        cancelHold(false);
+      }}
+      onPointerLeave={(event: PointerEvent<HTMLButtonElement>) => {
+        onPointerLeave?.(event);
+        if (event.defaultPrevented) return;
+        cancelHold(true);
+      }}
+      onPointerCancel={(event: PointerEvent<HTMLButtonElement>) => {
+        onPointerCancel?.(event);
+        if (event.defaultPrevented) return;
+        cancelHold(true);
+      }}
+      onBlur={event => {
+        onBlurProp?.(event);
+        if (event.defaultPrevented) return;
+        cancelHold(true);
+      }}
+      onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => {
+        onKeyDown?.(event);
+        if (event.defaultPrevented) return;
+        if (derivedState === 'completed') return;
+
+        if ((event.key === ' ' || event.key === 'Enter') && activeKeyRef.current === null) {
+          activeKeyRef.current = event.key;
+          startHold();
+        }
+      }}
+      onKeyUp={(event: KeyboardEvent<HTMLButtonElement>) => {
+        onKeyUp?.(event);
+        if (event.defaultPrevented) return;
+        if (activeKeyRef.current === event.key) {
+          cancelHold(false);
+        }
+      }}
     >
       <div className={styles.background} />
 
@@ -194,13 +321,15 @@ const GamifiedCTAButton = ({
         <div className={styles.outline} />
 
         <div className={styles.content}>
-          {renderCharacters(primaryLabel, 'primary')}
+          <div className={styles.words}>
+            {renderCharacters(primaryLabel, 'primary')}
+            {renderCharacters(secondaryText, 'secondary')}
+            {shouldHandleHold && renderCharacters(tertiaryText, 'tertiary')}
+          </div>
 
           <div className={styles.icon} aria-hidden="true">
             <div />
           </div>
-
-          {renderCharacters(secondaryText, 'secondary')}
         </div>
       </div>
     </button>
