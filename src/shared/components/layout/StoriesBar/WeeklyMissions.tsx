@@ -144,9 +144,9 @@ const effortLabels: Record<MissionState['effort'], string> = {
 };
 
 const difficultyBadges: Record<MissionDifficulty, string> = {
-  bronze: 'Bronze Path',
-  silver: 'Silver Path',
-  gold: 'Gold Path',
+  bronze: 'Bronze',
+  silver: 'Silver',
+  gold: 'Gold',
 };
 
 const difficultyPalettes: Record<
@@ -338,10 +338,7 @@ const WeeklyMissions = ({ category }: WeeklyMissionsProps): JSX.Element => {
             return (
               <motion.div
                 key={mission.id}
-                className={`${styles.missionCard} ${
-                  mission.status === 'completed' ? styles.missionCompleted : ''
-                }`}
-                style={cardStyle}
+                className={styles.missionCardWrapper}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={
@@ -362,131 +359,137 @@ const WeeklyMissions = ({ category }: WeeklyMissionsProps): JSX.Element => {
                   damping: 26,
                 }}
               >
-                <div className={styles.cardAtmosphere}>
-                  <span className={styles.cardAurora} />
-                  <span className={styles.cardShard} />
-                </div>
-                <div className={`${styles.difficultyBadge} ${styles[mission.difficulty]}`}>
-                  <span className={styles.difficultyGlow} />
-                  <span className={styles.difficultyText}>
-                    {difficultyBadges[mission.difficulty]}
-                  </span>
-                </div>
-
-                <motion.div
-                  className={styles.cardSigil}
-                  animate={
-                    prefersReducedMotion
-                      ? {}
-                      : {
-                          rotate: [0, 6, -4, 0],
-                          scale: mission.status === 'completed' ? [1, 1.15, 1] : 1,
-                        }
-                  }
-                  transition={
-                    prefersReducedMotion
-                      ? undefined
-                      : {
-                          duration: mission.status === 'completed' ? 1.4 : 7,
-                          repeat: Infinity,
-                          ease: 'easeInOut',
-                        }
-                  }
+                <div
+                  className={`${styles.missionCard} ${
+                    mission.status === 'completed' ? styles.missionCompleted : ''
+                  }`}
+                  style={cardStyle}
                 >
-                  {sigil}
-                </motion.div>
-
-                <motion.button
-                  className={`${styles.stretchBadge} ${mission.isStretch ? styles.stretchActive : ''}`}
-                  onClick={() => handleToggleStretch(mission.id)}
-                  whileHover={prefersReducedMotion ? undefined : { y: -4 }}
-                  transition={{ duration: 0.2 }}
-                  type="button"
-                >
-                  {mission.isStretch ? 'Stretch On' : 'Add Stretch'}
-                </motion.button>
-
-                <div className={styles.cardBody}>
-                  <div className={styles.cardHeader}>
-                    <h4 className={styles.cardTitle}>{mission.title}</h4>
-                    <span className={styles.cardEffort}>{effortLabels[mission.effort]}</span>
+                  <div className={styles.cardAtmosphere}>
+                    <span className={styles.cardAurora} />
+                    <span className={styles.cardShard} />
                   </div>
-                  <p className={styles.cardDescription}>
-                    {mission.isStretch ? mission.stretchGoal : mission.description}
-                  </p>
-                  <div className={styles.cardMeta}>
-                    <div className={styles.metaItem}>
-                      <span className={styles.metaIcon}>⏱️</span>
-                      <span className={styles.metaText}>{mission.estimatedMinutes} min</span>
+
+                  <motion.div
+                    className={styles.cardSigil}
+                    animate={
+                      prefersReducedMotion
+                        ? {}
+                        : {
+                            rotate: [0, 6, -4, 0],
+                            scale: mission.status === 'completed' ? [1, 1.15, 1] : 1,
+                          }
+                    }
+                    transition={
+                      prefersReducedMotion
+                        ? undefined
+                        : {
+                            duration: mission.status === 'completed' ? 1.4 : 7,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                          }
+                    }
+                  >
+                    {sigil}
+                  </motion.div>
+
+                  <motion.button
+                    className={`${styles.stretchBadge} ${
+                      mission.isStretch ? styles.stretchActive : ''
+                    }`}
+                    onClick={() => handleToggleStretch(mission.id)}
+                    whileHover={prefersReducedMotion ? undefined : { y: -4 }}
+                    transition={{ duration: 0.2 }}
+                    type="button"
+                  >
+                    {mission.isStretch ? 'Stretch On' : 'Add Stretch'}
+                  </motion.button>
+
+                  <div className={styles.cardBody}>
+                    <div className={styles.cardHeader}>
+                      <h4 className={styles.cardTitle}>{mission.title}</h4>
+                      <span className={styles.cardEffort}>{effortLabels[mission.effort]}</span>
                     </div>
-                    <div className={styles.moodBand}>
-                      <span />
-                      <span />
-                      <span />
-                      <span />
+                    <p className={styles.cardDescription}>
+                      {mission.isStretch ? mission.stretchGoal : mission.description}
+                    </p>
+                    <div className={styles.cardMeta}>
+                      <div className={styles.metaItem}>
+                        <span className={styles.metaIcon}>⏱️</span>
+                        <span className={styles.metaText}>{mission.estimatedMinutes} min</span>
+                      </div>
+                      <div className={styles.moodBand}>
+                        <span />
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+                      <motion.div
+                        className={styles.energyPulse}
+                        animate={
+                          prefersReducedMotion
+                            ? {}
+                            : {
+                                backgroundPosition: ['0% 50%', '200% 50%'],
+                              }
+                        }
+                        transition={
+                          prefersReducedMotion
+                            ? undefined
+                            : {
+                                repeat: Infinity,
+                                duration: 2.5,
+                                ease: 'linear',
+                              }
+                        }
+                      />
                     </div>
-                    <motion.div
-                      className={styles.energyPulse}
-                      animate={
-                        prefersReducedMotion
-                          ? {}
-                          : {
-                              backgroundPosition: ['0% 50%', '200% 50%'],
-                            }
-                      }
-                      transition={
-                        prefersReducedMotion
-                          ? undefined
-                          : {
-                              repeat: Infinity,
-                              duration: 2.5,
-                              ease: 'linear',
-                            }
-                      }
+
+                    <GamifiedCTAButton
+                      primaryLabel="Start Mission"
+                      secondaryLabel="In Progress"
+                      holdLabel="Mission Complete"
+                      holdDuration={1000}
+                      onHoldComplete={() => {
+                        triggerCompletion(mission.id);
+                      }}
+                      onClick={() => handleStartMission(mission.id)}
                     />
-                  </div>
 
-                  <GamifiedCTAButton
-                    primaryLabel="Start Mission"
-                    secondaryLabel="In Progress"
-                    holdLabel="Mission Complete"
-                    holdDuration={1000}
-                    onHoldComplete={() => {
-                      triggerCompletion(mission.id);
-                    }}
-                    onClick={() => handleStartMission(mission.id)}
-                  />
-
-                  <div className={styles.cardFooter}>
-                    <div className={styles.coachStrip}>
-                      <span className={styles.coachAvatar}>✨</span>
-                      {mission.status === 'pending' && (
-                        <p className={styles.cardHint}>
-                          Tap <span className={styles.inlineHighlight}>Start Mission</span>, then
-                          hold the orb when you finish the action.
-                        </p>
-                      )}
-                      {mission.status === 'active' && (
-                        <p className={styles.cardHint}>
-                          Keep momentum—press and hold the orb until it blooms to log your win.
-                        </p>
-                      )}
-                      {mission.status === 'completed' && (
-                        <p className={styles.cardHint}>
-                          Beautiful! Banked into your vault. Stretch missions await if you want
-                          extra shine.
-                        </p>
-                      )}
+                    <div className={styles.cardFooter}>
+                      <div className={styles.coachStrip}>
+                        <span className={styles.coachAvatar}>✨</span>
+                        {mission.status === 'pending' && (
+                          <p className={styles.cardHint}>
+                            Tap <span className={styles.inlineHighlight}>Start Mission</span>, then
+                            hold the orb when you finish the action.
+                          </p>
+                        )}
+                        {mission.status === 'active' && (
+                          <p className={styles.cardHint}>
+                            Keep momentum—press and hold the orb until it blooms to log your win.
+                          </p>
+                        )}
+                        {mission.status === 'completed' && (
+                          <p className={styles.cardHint}>
+                            Beautiful! Banked into your vault. Stretch missions await if you want
+                            extra shine.
+                          </p>
+                        )}
+                      </div>
+                      <motion.p
+                        className={styles.cardTip}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: prefersReducedMotion ? 0 : 0.1 }}
+                      >
+                        {mission.tip}
+                      </motion.p>
                     </div>
-                    <motion.p
-                      className={styles.cardTip}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: prefersReducedMotion ? 0 : 0.1 }}
-                    >
-                      {mission.tip}
-                    </motion.p>
                   </div>
+                </div>
+                <div className={`${styles.difficultyRibbon} ${styles[mission.difficulty]}`}>
+                  <span className={styles.ribbonLabel}>{difficultyBadges[mission.difficulty]}</span>
                 </div>
               </motion.div>
             );

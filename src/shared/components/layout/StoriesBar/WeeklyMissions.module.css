@@ -86,6 +86,11 @@
   }
 }
 
+.missionCardWrapper {
+  @apply relative;
+  perspective: 1200px;
+}
+
 .missionCard {
   @apply relative overflow-hidden rounded-3xl border border-white/10
          bg-white/5 backdrop-blur-2xl text-white
@@ -137,42 +142,73 @@
   @apply opacity-100;
 }
 
-.difficultyBadge {
-  @apply absolute left-6 top-6 flex items-center gap-2 px-4 py-2
-         rounded-full border border-white/20 text-xs uppercase tracking-wide;
-  letter-spacing: 0.1em;
+.difficultyRibbon {
+  @apply absolute pointer-events-none select-none;
+  top: 5px;
+  left: 50px;
+  width: 10rem;
+  height: 10rem;
+  z-index: 5;
+  --ribbon-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
+  --ribbon-fold: rgba(15, 23, 42, 0.4);
+  --ribbon-text: #f8fafc;
+  --ribbon-edge: rgba(255, 255, 255, 0.25);
 }
 
-.difficultyGlow {
-  @apply absolute inset-0 rounded-full opacity-40;
+.ribbonLabel {
+  @apply absolute block uppercase font-semibold tracking-[0.2em] text-[0.55rem];
+  width: 140px;
+  text-align: center;
+  padding: 0.45rem 0;
+  top: 24px;
+  left: -78px;
+  transform: rotate(-45deg);
+  background: var(--ribbon-bg);
+  color: var(--ribbon-text);
+  border: 1px solid var(--ribbon-edge);
+  box-shadow:
+    0 20px 32px -26px rgba(15, 23, 42, 0.85),
+    inset 0 0 5px rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
-.difficultyText {
-  @apply relative font-semibold;
+.ribbonLabel::before,
+.ribbonLabel::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  border-top: 12px solid var(--ribbon-fold);
+  width: 0;
+  height: 0;
+}
+
+.ribbonLabel::before {
+  left: 0;
+  border-left: 12px solid transparent;
+}
+
+.ribbonLabel::after {
+  right: 0;
+  border-right: 12px solid transparent;
 }
 
 .bronze {
-  background: linear-gradient(135deg, rgba(161, 98, 7, 0.3), rgba(217, 119, 6, 0.2));
-}
-
-.bronze .difficultyGlow {
-  background: rgba(217, 119, 6, 0.4);
+  --ribbon-bg: linear-gradient(140deg, #8a4603, #f59e0b);
+  --ribbon-fold: rgba(120, 53, 15, 0.65);
+  --ribbon-edge: rgba(253, 230, 138, 0.5);
 }
 
 .silver {
-  background: linear-gradient(135deg, rgba(148, 163, 184, 0.3), rgba(96, 165, 250, 0.25));
-}
-
-.silver .difficultyGlow {
-  background: rgba(148, 163, 184, 0.45);
+  --ribbon-bg: linear-gradient(140deg, #d9d9d9, #94a3b8);
+  --ribbon-fold: rgba(71, 85, 105, 0.55);
+  --ribbon-text: #0f172a;
+  --ribbon-edge: rgba(148, 163, 184, 0.55);
 }
 
 .gold {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.35), rgba(245, 158, 11, 0.25));
-}
-
-.gold .difficultyGlow {
-  background: rgba(251, 191, 36, 0.45);
+  --ribbon-bg: linear-gradient(140deg, #d97706, #fbbf24);
+  --ribbon-fold: rgba(146, 64, 14, 0.6);
+  --ribbon-edge: rgba(254, 249, 195, 0.5);
 }
 
 .cardSigil {
