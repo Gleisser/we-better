@@ -75,14 +75,6 @@ const BACKGROUND_IMAGES: Record<QuoteTheme, string> = {
     'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1600&q=80',
 };
 
-const THEME_HASHTAGS: Record<QuoteTheme, string> = {
-  success: '#PeakPerformance',
-  motivation: '#DailyFuel',
-  leadership: '#LeadTheWay',
-  growth: '#KeepGrowing',
-  wisdom: '#DeepThoughts',
-};
-
 const QuoteIcon = ({ className }: { className?: string }): JSX.Element => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
     <path d="M9.583 17.321C8.553 16.227 8 15.1 8 13.725c0-1.426.397-2.772 1.191-3.693.794-.92 1.859-1.381 3.191-1.381v2.014c-1.326 0-1.989.724-1.989 2.172 0 .397.079.794.238 1.191l2.014-.477v5.707H8.867l.716-1.937zm7.42 0C16.973 16.227 16.42 15.1 16.42 13.725c0-1.426.397-2.772 1.191-3.693.794-.92 1.859-1.381 3.191-1.381v2.014c-1.326 0-1.989.724-1.989 2.172 0 .397.079.794.238 1.191l2.014-.477v5.707h-3.778l.716-1.937z" />
@@ -207,7 +199,9 @@ const QuoteWidget = (): JSX.Element => {
   const resolvedTheme = quote ? quoteService.determineQuoteTheme(quote.categories) : QUOTE.theme;
   const themeConfig = THEME_CONFIG[resolvedTheme];
   const backgroundImage = BACKGROUND_IMAGES[resolvedTheme] ?? BACKGROUND_IMAGES.success;
-  const themeHashtag = THEME_HASHTAGS[resolvedTheme];
+  const rawCategoryLabel =
+    quote?.categories?.[0]?.name ?? resolvedTheme.charAt(0).toUpperCase() + resolvedTheme.slice(1);
+  const categoryLabel = rawCategoryLabel.toUpperCase();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent): void => {
@@ -574,18 +568,6 @@ const QuoteWidget = (): JSX.Element => {
                 transition={{ delay: 0.2 }}
               >
                 <motion.div
-                  className={styles.themeTag}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <span className={styles.themeIcon}>{themeConfig.icon}</span>
-                  <span className={styles.themeText}>
-                    {resolvedTheme.charAt(0).toUpperCase() + resolvedTheme.slice(1)}
-                  </span>
-                </motion.div>
-
-                <motion.div
                   className={styles.quoteText}
                   initial="hidden"
                   animate="visible"
@@ -688,7 +670,8 @@ const QuoteWidget = (): JSX.Element => {
         </div>
 
         <div className={styles.tagBadge}>
-          <span>{themeHashtag}</span>
+          <span className={styles.tagIcon}>{themeConfig.icon}</span>
+          <span className={styles.tagText}>{categoryLabel}</span>
         </div>
       </div>
     </div>

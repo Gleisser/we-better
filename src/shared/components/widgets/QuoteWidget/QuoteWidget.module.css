@@ -373,29 +373,6 @@
   align-items: stretch;
 }
 
-.themeTag {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
-  border-radius: 9999px;
-  background: rgba(15, 23, 42, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.82);
-  box-shadow: 0 12px 22px rgba(8, 16, 32, 0.32);
-}
-
-.themeIcon {
-  font-size: 0.95rem;
-}
-
-.themeText {
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
 .quoteText {
   display: flex;
   flex-wrap: wrap;
@@ -549,15 +526,28 @@
   position: absolute;
   left: 36px;
   bottom: 30px;
-  padding: 10px 20px;
+  padding: 10px 22px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #10131f;
-  font-size: 0.85rem;
+  background: rgba(15, 23, 42, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.16em;
   box-shadow: 0 18px 30px rgba(8, 16, 32, 0.3);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tagIcon {
+  font-size: 1.05rem;
+}
+
+.tagText {
+  display: inline-block;
+  text-transform: uppercase;
 }
 
 /* Light theme overrides */
@@ -676,9 +666,9 @@
 }
 
 [data-theme='light'] .tagBadge {
-  background: white;
+  background: rgba(15, 23, 42, 0.08);
   color: #0f172a;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid rgba(148, 163, 184, 0.28);
 }
 
 /* Responsive tweaks */
