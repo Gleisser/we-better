@@ -171,9 +171,6 @@
 
 .shareMenu,
 .moreOptionsMenu {
-  position: absolute;
-  top: calc(100% + 12px);
-  left: 0;
   width: 180px;
   padding: 8px;
   border-radius: 18px;
@@ -183,7 +180,28 @@
   box-shadow:
     0 30px 60px rgba(8, 16, 32, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.shareMenu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
   z-index: 20;
+}
+
+.moreOptionsMenu {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.moreOptionsBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: transparent;
 }
 
 .shareOption,

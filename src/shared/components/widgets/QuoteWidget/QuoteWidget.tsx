@@ -6,6 +6,7 @@ import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/shared/hooks/useTiltEffect';
 import { quoteService, type Quote } from '@/core/services/quoteService';
+import { QuoteMoreOptionsMenu } from './QuoteMoreOptionsMenu';
 
 type QuoteTheme = 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom';
 
@@ -190,10 +191,10 @@ const QuoteWidget = (): JSX.Element => {
   });
   const [userReaction, setUserReaction] = useState<Reaction | null>(null);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [moreMenuPosition, setMoreMenuPosition] = useState({ x: 0, y: 0 });
 
   const shareMenuRef = useRef<HTMLDivElement>(null);
   const shareButtonRef = useRef<HTMLButtonElement>(null);
-  const moreOptionsRef = useRef<HTMLDivElement>(null);
   const moreButtonRef = useRef<HTMLButtonElement>(null);
 
   const resolvedTheme = quote ? quoteService.determineQuoteTheme(quote.categories) : QUOTE.theme;
@@ -219,19 +220,30 @@ const QuoteWidget = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent): void => {
-      if (
-        moreOptionsRef.current &&
-        !moreOptionsRef.current.contains(event.target as Node) &&
-        !moreButtonRef.current?.contains(event.target as Node)
-      ) {
+    if (!showMoreOptions) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
         setShowMoreOptions(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    const handleDismiss = (): void => {
+      setShowMoreOptions(false);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('scroll', handleDismiss, true);
+    window.addEventListener('resize', handleDismiss);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('scroll', handleDismiss, true);
+      window.removeEventListener('resize', handleDismiss);
+    };
+  }, [showMoreOptions]);
 
   const fetchQuotes = useCallback(async () => {
     try {
@@ -349,6 +361,32 @@ const QuoteWidget = (): JSX.Element => {
 
   const handleSubmitQuote = (): void => {
     setShowMoreOptions(false);
+  };
+
+  const toggleMoreOptions = (): void => {
+    if (showMoreOptions) {
+      setShowMoreOptions(false);
+      return;
+    }
+
+    if (moreButtonRef.current) {
+      const rect = moreButtonRef.current.getBoundingClientRect();
+      const menuWidth = 180;
+      const horizontalPadding = 16;
+      const verticalOffset = 12;
+
+      const calculatedX = Math.max(
+        horizontalPadding,
+        Math.min(rect.left, window.innerWidth - menuWidth - horizontalPadding)
+      );
+
+      setMoreMenuPosition({
+        x: calculatedX,
+        y: rect.bottom + verticalOffset,
+      });
+    }
+
+    setShowMoreOptions(true);
   };
 
   const handleNewQuote = (): void => {
@@ -496,45 +534,11 @@ const QuoteWidget = (): JSX.Element => {
                 ref={moreButtonRef}
                 type="button"
                 className={styles.actionButton}
-                onClick={() => setShowMoreOptions(!showMoreOptions)}
+                onClick={toggleMoreOptions}
                 aria-label={t('widgets.quote.moreOptions')}
               >
                 <MoreVerticalIcon className={styles.actionIcon} />
               </button>
-
-              <AnimatePresence>
-                {showMoreOptions && (
-                  <motion.div
-                    ref={moreOptionsRef}
-                    className={styles.moreOptionsMenu}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                  >
-                    <button onClick={handleLearnMore} className={styles.moreOption}>
-                      <span className={styles.moreOptionIcon}>✨</span>
-                      <span>{t('widgets.quote.learnMore')}</span>
-                    </button>
-
-                    <button onClick={handleBookRecommendations} className={styles.moreOption}>
-                      <span className={styles.moreOptionIcon}>📚</span>
-                      <span>{t('widgets.quote.bookRecommendations')}</span>
-                    </button>
-
-                    <button onClick={handleTakeaways} className={styles.moreOption}>
-                      <span className={styles.moreOptionIcon}>💡</span>
-                      <span>{t('widgets.quote.quickTakeaways')}</span>
-                    </button>
-
-                    <div className={styles.menuDivider} />
-
-                    <button onClick={handleSubmitQuote} className={styles.moreOption}>
-                      <span className={styles.moreOptionIcon}>✍️</span>
-                      <span>{t('widgets.quote.submitQuote')}</span>
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -674,6 +678,15 @@ const QuoteWidget = (): JSX.Element => {
           <span className={styles.tagText}>{categoryLabel}</span>
         </div>
       </div>
+      <QuoteMoreOptionsMenu
+        isOpen={showMoreOptions}
+        position={moreMenuPosition}
+        onClose={() => setShowMoreOptions(false)}
+        onLearnMore={handleLearnMore}
+        onBookRecommendations={handleBookRecommendations}
+        onTakeaways={handleTakeaways}
+        onSubmitQuote={handleSubmitQuote}
+      />
     </div>
   );
 };
