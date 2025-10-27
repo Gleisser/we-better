@@ -1,18 +1,32 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LifeStories from '../Stories/LifeStories';
-import { XIcon, PlayIcon } from '@/shared/components/common/icons';
+import { XIcon, PlayIcon, ChevronDownIcon } from '@/shared/components/common/icons';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './StoriesBar.module.css';
 import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
+import WeeklyMissions from './WeeklyMissions';
+
+interface LifeCategory {
+  id: string;
+  name: string;
+  color: {
+    from: string;
+    to: string;
+  };
+  icon: string;
+  score: number;
+  hasUpdate: boolean;
+}
 
 const StoriesBar = (): JSX.Element => {
   const { t } = useCommonTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<LifeCategory | null>(null);
   const isMobile = window.innerWidth <= 768;
   const { activeSheet, setActiveSheet, closeSheet } = useBottomSheet();
 
-  const MOCK_CATEGORIES = [
+  const MOCK_CATEGORIES: LifeCategory[] = [
     {
       id: 'social',
       name: t('floating.lifeCategories.social'),
@@ -103,24 +117,39 @@ const StoriesBar = (): JSX.Element => {
     },
   ];
 
+  const isFullScreen = isExpanded && selectedCategory !== null;
+
   const handleOpen = (): void => {
     setActiveSheet('stories');
+    setSelectedCategory(null);
     setIsExpanded(true);
   };
 
   const handleClose = (): void => {
     closeSheet();
     setIsExpanded(false);
+    setSelectedCategory(null);
   };
 
   useEffect(() => {
     if (activeSheet && activeSheet !== 'stories') {
       setIsExpanded(false);
+      setSelectedCategory(null);
     }
   }, [activeSheet]);
 
-  const handleCategorySelect = (): void => {
-    // TODO: Implement category selection
+  const handleCategorySelect = (category: LifeCategory): void => {
+    setSelectedCategory(category);
+    if (!isExpanded) {
+      setIsExpanded(true);
+    }
+    if (activeSheet !== 'stories') {
+      setActiveSheet('stories');
+    }
+  };
+
+  const handleMinimize = (): void => {
+    setSelectedCategory(null);
   };
 
   return (
@@ -135,11 +164,11 @@ const StoriesBar = (): JSX.Element => {
         />
       )}
 
-      <div className={styles.container}>
+      <div className={`${styles.container} ${isFullScreen ? styles.fullscreenContainer : ''}`}>
         <AnimatePresence mode="wait">
           {isExpanded ? (
             <motion.div
-              className={`${styles.storiesContainer} ${styles.open}`}
+              className={`${styles.storiesContainer} ${isFullScreen ? styles.fullscreenStories : ''}`}
               initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.8 }}
               animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }}
               exit={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.8 }}
@@ -152,7 +181,34 @@ const StoriesBar = (): JSX.Element => {
               >
                 <XIcon className={styles.collapseIcon} />
               </button>
-              <LifeStories categories={MOCK_CATEGORIES} onCategorySelect={handleCategorySelect} />
+              {isFullScreen && (
+                <button
+                  className={styles.minimizeButton}
+                  onClick={handleMinimize}
+                  aria-label="Minimize stories view"
+                >
+                  <ChevronDownIcon className={styles.minimizeIcon} />
+                </button>
+              )}
+              <div
+                className={`${styles.categoriesSection} ${
+                  isFullScreen ? styles.categoriesSectionExpanded : ''
+                }`}
+              >
+                <LifeStories categories={MOCK_CATEGORIES} onCategorySelect={handleCategorySelect} />
+              </div>
+              {selectedCategory && (
+                <div className={styles.missionsArea}>
+                  <WeeklyMissions
+                    category={{
+                      id: selectedCategory.id,
+                      name: selectedCategory.name,
+                      color: selectedCategory.color,
+                      icon: selectedCategory.icon,
+                    }}
+                  />
+                </div>
+              )}
             </motion.div>
           ) : (
             <motion.button
