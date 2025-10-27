@@ -213,6 +213,7 @@
 
 .notificationButton:hover .notificationIcon {
   @apply scale-110;
+  animation: bellRing 0.9s both;
 }
 
 .notificationBadge {
@@ -269,6 +270,29 @@
 
 .profileButton:hover::before {
   @apply opacity-100;
+}
+
+@keyframes bellRing {
+  0%,
+  100% {
+    transform-origin: top;
+    transform: rotate(0deg);
+  }
+  15% {
+    transform: rotate(10deg);
+  }
+  30% {
+    transform: rotate(-10deg);
+  }
+  45% {
+    transform: rotate(5deg);
+  }
+  60% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(2deg);
+  }
 }
 
 /* Mobile styles */
