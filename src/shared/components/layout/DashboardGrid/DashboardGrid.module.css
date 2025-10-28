@@ -9,7 +9,7 @@
     'quote affirmation lifeWheel'
     'habits habits habits'
     'goals goals goals'
-    'videos videos videos'
+    'cutout videos videos'
     'podcast course book'
     'article article article';
 }
@@ -48,6 +48,15 @@
   grid-area: goals;
 }
 
+.cutout {
+  grid-area: cutout;
+  background: transparent;
+  border: none;
+  overflow: visible;
+  box-shadow: none;
+  padding: 0;
+}
+
 .videos {
   grid-area: videos;
 }
@@ -73,7 +82,7 @@
       'lifeWheel lifeWheel'
       'habits habits'
       'goals goals'
-      'videos videos'
+      'cutout videos'
       'podcast course'
       'book book'
       'article article';
@@ -89,6 +98,7 @@
       'lifeWheel'
       'habits'
       'goals'
+      'cutout'
       'videos'
       'podcast'
       'course'
@@ -113,4 +123,8 @@
 .widget > * {
   position: relative;
   z-index: 2;
+}
+
+.cutout::after {
+  display: none;
 }
