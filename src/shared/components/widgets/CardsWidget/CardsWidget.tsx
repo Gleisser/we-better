@@ -2,10 +2,12 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type CSSProperties,
   type KeyboardEvent,
 } from 'react';
+import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
 import styles from './CardsWidget.module.css';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { affirmationService } from '@/core/services/affirmationService';
@@ -13,6 +15,18 @@ import {
   checkTodayStatus,
   logAffirmation as logAffirmationEntry,
 } from '@/core/services/affirmationsService';
+import { Tooltip } from '@/shared/components/common/Tooltip';
+import { ReminderSettings } from '@/shared/components/widgets/AffirmationWidget/ReminderSettings';
+import { CreateAffirmationModal } from '@/shared/components/widgets/AffirmationWidget/CreateAffirmationModal';
+import { useVoiceRecorder } from '@/shared/hooks/useVoiceRecorder';
+import { useAffirmations } from '@/shared/hooks/useAffirmations';
+import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
+import { XIcon } from '@/shared/components/common/icons';
+import recordAnimation from './icons/record.json';
+import reminderAnimation from './icons/reminder.json';
+import favoriteAnimation from './icons/favorite.json';
+import streakAnimation from './icons/streak.json';
+import sparklesAnimation from './icons/sparkles.json';
 
 type AffirmationCategory =
   | 'personal'
@@ -42,6 +56,97 @@ interface AffirmationCard {
   icon: string;
   accent: string;
 }
+
+interface ActionButtonProps {
+  animationData: Record<string, unknown>;
+  label: string;
+  tooltip: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  active?: boolean;
+  metric?: string;
+  accentColor?: string;
+  loop?: boolean;
+}
+
+const ActionButton = ({
+  animationData,
+  label,
+  tooltip,
+  onClick,
+  disabled = false,
+  active = false,
+  metric,
+  accentColor,
+  loop = false,
+}: ActionButtonProps): JSX.Element => {
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
+  const previousActive = useRef(active);
+
+  const playAnimation = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+
+    if (lottieRef.current?.goToAndPlay) {
+      lottieRef.current.goToAndPlay(0, true);
+    }
+  }, [disabled]);
+
+  useEffect(() => {
+    if (lottieRef.current?.goToAndStop) {
+      lottieRef.current.goToAndStop(0, true);
+    }
+  }, [animationData]);
+
+  useEffect(() => {
+    if (active && !previousActive.current) {
+      playAnimation();
+    }
+    previousActive.current = active;
+  }, [active, playAnimation]);
+
+  const handleClick = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+
+    playAnimation();
+    onClick?.();
+  }, [disabled, onClick, playAnimation]);
+
+  const handleHover = useCallback(() => {
+    playAnimation();
+  }, [playAnimation]);
+
+  return (
+    <Tooltip content={tooltip}>
+      <button
+        type="button"
+        className={`${styles.microButton} ${active ? styles.microButtonActive : ''}`}
+        onClick={handleClick}
+        onMouseEnter={handleHover}
+        onFocus={handleHover}
+        disabled={disabled}
+        style={accentColor ? { ['--action-accent' as const]: accentColor } : undefined}
+      >
+        <span className={styles.microIcon}>
+          <Lottie
+            lottieRef={lottieRef}
+            animationData={animationData}
+            autoplay={false}
+            loop={loop}
+            onDOMLoaded={() => lottieRef.current?.goToAndStop?.(0, true)}
+          />
+        </span>
+        <span className={styles.microContent}>
+          <span className={styles.microLabel}>{label}</span>
+          {metric ? <span className={styles.microMetric}>{metric}</span> : null}
+        </span>
+      </button>
+    </Tooltip>
+  );
+};
 
 const buildCategoryTheme = (t: (key: string) => string | string[]): CategoryThemeMap => ({
   personal: {
@@ -142,6 +247,36 @@ const CardsWidget = (): JSX.Element => {
   const [isAffirming, setIsAffirming] = useState(false);
   const [hasAffirmedToday, setHasAffirmedToday] = useState(false);
   const [isCelebrating, setIsCelebrating] = useState(false);
+  const {
+    isRecording,
+    audioUrl,
+    error: recordingError,
+    startRecording,
+    stopRecording,
+    clearRecording,
+  } = useVoiceRecorder();
+  const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations();
+  const {
+    reminderSettings: backendReminderSettings,
+    updateReminderSettings,
+    streak,
+    personalAffirmation,
+    createPersonalAffirmation,
+    updatePersonalAffirmation,
+  } = useAffirmations();
+  const [showReminderSettings, setShowReminderSettings] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [permission, setPermission] = useState<NotificationPermission>('default');
+  const createSparkRef = useRef<LottieRefCurrentProps>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof Notification === 'undefined') {
+      setPermission('denied');
+      return;
+    }
+
+    setPermission(Notification.permission);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -206,7 +341,27 @@ const CardsWidget = (): JSX.Element => {
           return;
         }
 
-        setCards(validCards);
+        const cardsWithPersonal = [...validCards];
+
+        if (personalAffirmation) {
+          const personalTheme = categoryTheme.personal;
+          const personalCard: AffirmationCard = {
+            id: personalAffirmation.id,
+            text: personalAffirmation.text,
+            category: 'personal',
+            label: personalTheme.label,
+            icon: personalTheme.icon,
+            accent: personalTheme.accent,
+          };
+
+          const existingIndex = cardsWithPersonal.findIndex(card => card.id === personalCard.id);
+          if (existingIndex !== -1) {
+            cardsWithPersonal.splice(existingIndex, 1);
+          }
+          cardsWithPersonal.unshift(personalCard);
+        }
+
+        setCards(cardsWithPersonal);
         setCurrentIndex(0);
         setOutIndex(null);
       } catch (err) {
@@ -228,7 +383,7 @@ const CardsWidget = (): JSX.Element => {
     return () => {
       isMounted = false;
     };
-  }, [categoryTheme]);
+  }, [categoryTheme, personalAffirmation]);
 
   useEffect(() => {
     let isMounted = true;
@@ -249,6 +404,74 @@ const CardsWidget = (): JSX.Element => {
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  const reminderSettings = useMemo(
+    () =>
+      backendReminderSettings
+        ? {
+            enabled: backendReminderSettings.is_enabled,
+            time: backendReminderSettings.reminder_time ?? '09:00',
+            days: backendReminderSettings.days_of_week ?? [1, 2, 3, 4, 5, 6, 0],
+          }
+        : {
+            enabled: false,
+            time: '09:00',
+            days: [1, 2, 3, 4, 5, 6, 0],
+          },
+    [backendReminderSettings]
+  );
+
+  const requestPermission = useCallback(async (): Promise<boolean> => {
+    if (typeof window === 'undefined' || typeof Notification === 'undefined') {
+      return false;
+    }
+
+    try {
+      const result = await Notification.requestPermission();
+      setPermission(result);
+      return result === 'granted';
+    } catch (error) {
+      console.error('Error requesting notification permission:', error);
+      return false;
+    }
+  }, []);
+
+  const updateSettings = useCallback(
+    async (newSettings: { enabled: boolean; time: string; days: number[] }) => {
+      try {
+        await updateReminderSettings({
+          is_enabled: newSettings.enabled,
+          reminder_time: newSettings.time,
+          frequency: 'custom',
+          days_of_week: newSettings.days,
+        });
+      } catch (updateError) {
+        console.error('Failed to update reminder settings:', updateError);
+      }
+    },
+    [updateReminderSettings]
+  );
+
+  const handleToggleRecording = useCallback(async () => {
+    try {
+      if (isRecording) {
+        await stopRecording();
+      } else {
+        await startRecording();
+      }
+    } catch (recordError) {
+      console.error('Voice recording error in CardsWidget:', recordError);
+    }
+  }, [isRecording, startRecording, stopRecording]);
+
+  const handleReminderClick = useCallback(() => {
+    setShowReminderSettings(true);
+  }, []);
+
+  const handleCreateAffirmation = useCallback(() => {
+    setShowCreateModal(true);
+    setIsCelebrating(true);
   }, []);
 
   useEffect(() => {
@@ -348,16 +571,93 @@ const CardsWidget = (): JSX.Element => {
     [cards.length, currentIndex, goToIndex, handleCardClick]
   );
 
+  const activeCard = cards.length > 0 ? cards[currentIndex] : undefined;
   const celebrationParticles = useMemo(
     () => Array.from({ length: CELEBRATION_PARTICLES }, (_, index) => index),
     []
   );
 
   const nextIndex = cards.length > 0 ? (currentIndex + 1) % cards.length : -1;
-  const activeCard = cards.length > 0 ? cards[currentIndex] : undefined;
   const activeCardId = cards.length > 0 ? cards[currentIndex]?.id : undefined;
   const isRotateDisabled = loading || cards.length <= 1;
   const isAffirmDisabled = loading || !activeCard || isAffirming || hasAffirmedToday;
+  const accentColor = activeCard?.accent;
+  const isCardBookmarked = activeCard?.id ? isBookmarked(activeCard.id) : false;
+  const streakCount = streak?.current_streak ?? 0;
+
+  const handleToggleBookmark = useCallback(() => {
+    if (!activeCard) {
+      return;
+    }
+
+    if (isBookmarked(activeCard.id)) {
+      removeBookmark(activeCard.id);
+    } else {
+      addBookmark({
+        id: activeCard.id,
+        text: activeCard.text,
+        category: activeCard.category,
+        timestamp: Date.now(),
+      });
+    }
+  }, [activeCard, addBookmark, isBookmarked, removeBookmark]);
+
+  const recordTooltip = (
+    isRecording
+      ? t('widgets.affirmation.stopRecording')
+      : t('widgets.affirmation.recordAffirmation')
+  ) as string;
+  const reminderTooltip =
+    permission === 'denied'
+      ? 'Enable notifications to use reminders'
+      : (t('widgets.affirmation.setReminder') as string);
+  const favoriteTooltip = (
+    isCardBookmarked ? t('widgets.affirmation.removeBookmark') : t('widgets.affirmation.bookmark')
+  ) as string;
+  const streakTooltip = t('widgets.affirmation.daysStreaking') as string;
+
+  const recordMetric = isRecording ? 'REC' : audioUrl ? 'Clip' : '';
+  const reminderMetric = reminderSettings.enabled ? reminderSettings.time : 'Off';
+  const favoriteMetric = isCardBookmarked ? 'Saved' : '';
+  const streakMetric = `${streakCount}d`;
+  const recordLabel = isRecording ? 'Recording' : 'Record';
+  const reminderLabel = 'Reminder';
+  const favoriteLabel = isCardBookmarked ? 'Saved' : 'Favorite';
+  const streakLabel = 'Streak';
+  const recordAccent = accentColor ?? '#38bdf8';
+  const reminderAccent = '#f59e0b';
+  const favoriteAccent = '#f472b6';
+  const streakAccent = '#facc15';
+
+  const handleStreakClick = useCallback(() => {
+    if (streakCount > 0) {
+      setIsCelebrating(true);
+    }
+  }, [streakCount]);
+
+  const handleCreateHover = useCallback(() => {
+    createSparkRef.current?.goToAndPlay?.(0, true);
+  }, []);
+
+  const handleCreateLeave = useCallback(() => {
+    createSparkRef.current?.goToAndStop?.(0, true);
+  }, []);
+
+  const handleSavePersonalAffirmation = useCallback(
+    async (text: string) => {
+      try {
+        if (personalAffirmation) {
+          await updatePersonalAffirmation(personalAffirmation.id, { text });
+        } else {
+          await createPersonalAffirmation(text, 'personal', 2);
+        }
+        setShowCreateModal(false);
+      } catch (err) {
+        console.error('Failed to save personal affirmation from CardsWidget:', err);
+      }
+    },
+    [createPersonalAffirmation, personalAffirmation, updatePersonalAffirmation]
+  );
 
   const handleAffirm = useCallback(async () => {
     if (isAffirming || hasAffirmedToday || !activeCard) {
@@ -537,6 +837,113 @@ const CardsWidget = (): JSX.Element => {
           </span>
         </button>
       </div>
+
+      <div className={styles.actionBar}>
+        <ActionButton
+          animationData={recordAnimation}
+          label={recordLabel}
+          tooltip={recordTooltip}
+          onClick={handleToggleRecording}
+          disabled={loading || !activeCard}
+          active={isRecording}
+          metric={recordMetric}
+          accentColor={recordAccent}
+        />
+        <ActionButton
+          animationData={reminderAnimation}
+          label={reminderLabel}
+          tooltip={reminderTooltip}
+          onClick={handleReminderClick}
+          active={reminderSettings.enabled}
+          metric={reminderMetric}
+          accentColor={reminderAccent}
+        />
+        <ActionButton
+          animationData={favoriteAnimation}
+          label={favoriteLabel}
+          tooltip={favoriteTooltip}
+          onClick={handleToggleBookmark}
+          disabled={!activeCard}
+          active={isCardBookmarked}
+          metric={favoriteMetric}
+          accentColor={favoriteAccent}
+        />
+        <ActionButton
+          animationData={streakAnimation}
+          label={streakLabel}
+          tooltip={streakTooltip}
+          onClick={handleStreakClick}
+          active={streakCount > 0}
+          metric={streakMetric}
+          accentColor={streakAccent}
+        />
+      </div>
+
+      <button
+        type="button"
+        className={styles.createButton}
+        onClick={handleCreateAffirmation}
+        aria-label="Create a personal affirmation"
+        onMouseEnter={handleCreateHover}
+        onFocus={handleCreateHover}
+        onMouseLeave={handleCreateLeave}
+        onBlur={handleCreateLeave}
+      >
+        <span className={styles.createGlow} aria-hidden="true" />
+        <span className={styles.createSparkIcon}>
+          <Lottie
+            lottieRef={createSparkRef}
+            animationData={sparklesAnimation}
+            autoplay={false}
+            loop
+            className={styles.createSparkLottie}
+          />
+        </span>
+        <span className={styles.createText}>
+          <span className={styles.createLabel}>Craft Affirmation</span>
+          <span className={styles.createSublabel}>Design a card that is uniquely yours</span>
+        </span>
+      </button>
+
+      {audioUrl ? (
+        <div className={styles.recordingOutput}>
+          <audio
+            key={audioUrl}
+            src={audioUrl}
+            controls
+            className={styles.audioPlayer}
+            controlsList="nodownload noplaybackrate"
+            preload="metadata"
+          />
+          <button
+            type="button"
+            className={styles.clearRecordingButton}
+            onClick={clearRecording}
+            aria-label={t('widgets.affirmation.clearRecording') as string}
+          >
+            <XIcon className={styles.clearRecordingIcon} />
+          </button>
+        </div>
+      ) : null}
+
+      {recordingError ? <p className={styles.recordingError}>{recordingError}</p> : null}
+
+      <ReminderSettings
+        key={`${reminderSettings.enabled}-${reminderSettings.time}-${reminderSettings.days.join('-')}`}
+        isOpen={showReminderSettings}
+        onClose={() => setShowReminderSettings(false)}
+        settings={reminderSettings}
+        onUpdate={updateSettings}
+        onRequestPermission={requestPermission}
+        permission={permission}
+      />
+
+      <CreateAffirmationModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSave={handleSavePersonalAffirmation}
+        existingAffirmation={personalAffirmation?.text}
+      />
     </section>
   );
 };
