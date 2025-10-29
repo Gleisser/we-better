@@ -8,7 +8,7 @@
   grid-template-areas:
     'quote affirmation lifeWheel'
     'habits habits habits'
-    'goals goals goals'
+    'goals goals cards'
     'cutout videos videos'
     'podcast course book'
     'article article article';
@@ -48,6 +48,10 @@
   grid-area: goals;
 }
 
+.cards {
+  grid-area: cards;
+}
+
 .cutout {
   grid-area: cutout;
   background: transparent;
@@ -81,7 +85,7 @@
       'quote affirmation'
       'lifeWheel lifeWheel'
       'habits habits'
-      'goals goals'
+      'goals cards'
       'cutout videos'
       'podcast course'
       'book book'
@@ -98,6 +102,7 @@
       'lifeWheel'
       'habits'
       'goals'
+      'cards'
       'cutout'
       'videos'
       'podcast'

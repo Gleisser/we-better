@@ -3,6 +3,7 @@ import { AffirmationWidget } from '@/shared/components/widgets/AffirmationWidget
 import HabitsWidget from '@/shared/components/widgets/HabitsWidget/HabitsWidget';
 import GoalsWidget from '@/shared/components/widgets/GoalsWidget/GoalsWidget';
 //import CutoutWidget from '@/shared/components/widgets/CutoutWidget/CutoutWidget';
+import CardsWidget from '@/shared/components/widgets/CardsWidget/CardsWidget';
 import { Article } from '@/core/services/articleService';
 import styles from './DashboardGrid.module.css';
 import LifeWheelWidget from '../../widgets/LifeWheelWidget/LifeWheelWidget';
@@ -39,6 +40,11 @@ const DashboardGrid: React.FC<DashboardGridProps> = () => {
         {/* Goals Widget */}
         <div className={`${styles.widget} ${styles.goals}`}>
           <GoalsWidget />
+        </div>
+
+        {/* Cards Widget */}
+        <div className={`${styles.widget} ${styles.cards}`}>
+          <CardsWidget />
         </div>
 
         {/* Cutout Widget */}

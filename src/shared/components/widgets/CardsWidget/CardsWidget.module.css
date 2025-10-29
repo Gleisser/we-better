@@ -1,0 +1,369 @@
+.container {
+  @apply relative flex flex-col gap-6 h-full
+         p-6 text-white/90;
+}
+
+.header {
+  @apply flex items-start justify-between gap-4;
+}
+
+.headingGroup {
+  @apply flex flex-col gap-1;
+}
+
+.title {
+  @apply text-base font-semibold text-white;
+}
+
+.subtitle {
+  @apply text-xs text-white/60;
+}
+
+.refreshButton {
+  @apply px-3 py-1.5 text-xs font-medium
+         rounded-full border border-white/10
+         bg-white/5 text-white/70
+         transition-colors duration-200;
+}
+
+.refreshButton:hover,
+.refreshButton:focus-visible {
+  @apply text-white border-white/20 bg-white/10 outline-none;
+}
+
+.refreshButton:disabled {
+  @apply opacity-60 cursor-not-allowed;
+}
+
+.cardsWrapper {
+  @apply relative flex-1 min-h-[260px];
+}
+
+.cards {
+  @apply relative list-none p-0 m-0 w-full h-full;
+}
+
+.card {
+  @apply absolute inset-0 flex flex-col
+         p-6 rounded-[28px]
+         border border-white/5
+         backdrop-blur-md
+         cursor-pointer select-none;
+  transform-origin: 0 0;
+  transition:
+    transform 0.6s cubic-bezier(0.8, 0.2, 0.1, 0.8),
+    background 0.3s linear,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+  box-shadow: 0 20px 35px rgba(15, 23, 42, 0.35);
+  z-index: 2;
+}
+
+.card::before {
+  content: '';
+  @apply absolute inset-0 rounded-[28px] opacity-0 transition-opacity duration-300;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.25) 0%, transparent 65%);
+  z-index: -1;
+}
+
+.card:hover::before {
+  @apply opacity-100;
+}
+
+.cardCurrent {
+  @apply relative z-20 cursor-default;
+  transform: rotate(-1deg) translateX(0) translateY(0) scale(1);
+  box-shadow: 0 25px 40px rgba(8, 47, 73, 0.45);
+}
+
+.cardNext {
+  @apply z-10;
+  transform: translateY(-24px) rotate(3deg) translateX(30px) scale(0.97);
+}
+
+.cardOut {
+  animation: card-out 0.6s cubic-bezier(0.8, 0.2, 0.1, 0.8);
+  transform: translateY(-52px) rotate(7deg) translateX(60px) scale(0.94);
+  z-index: 1;
+  filter: brightness(0.85);
+}
+
+@keyframes card-out {
+  0% {
+    z-index: 18;
+    transform: translateY(0px) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-120%) rotate(-5deg) translateX(-45px);
+  }
+  80% {
+    z-index: 1;
+  }
+  100% {
+    transform: translateY(-52px) rotate(7deg) translateX(60px) scale(0.94);
+  }
+}
+
+.cardContent {
+  @apply relative flex flex-col gap-8 h-full;
+}
+
+.cardHeader {
+  @apply flex flex-col gap-4;
+}
+
+.tag {
+  @apply inline-flex items-center gap-2
+         px-3 py-1 rounded-full border
+         text-[11px] font-semibold uppercase tracking-[0.28em]
+         bg-white/10 text-white/80;
+}
+
+.tagIcon {
+  @apply text-base leading-none;
+}
+
+.affirmationText {
+  @apply text-lg md:text-xl leading-relaxed text-white font-semibold;
+}
+
+.cardFooter {
+  @apply mt-auto;
+}
+
+.hint {
+  @apply text-[11px] uppercase tracking-[0.35em] text-white/40;
+}
+
+.status {
+  @apply flex items-center justify-center h-full min-h-[220px]
+         text-sm text-white/60 text-center px-6;
+}
+
+.srOnly {
+  @apply absolute w-px h-px p-0 m-[-1px] overflow-hidden whitespace-nowrap border-0;
+}
+
+.actions {
+  @apply relative flex justify-center;
+}
+
+.affirmButton {
+  @apply relative inline-flex items-center gap-3
+         px-7 py-3
+         rounded-2xl font-semibold text-sm tracking-wide
+         border transition-all duration-300 ease-out
+         active:scale-95;
+  color: var(--theme-text-inverse);
+  background: linear-gradient(
+    120deg,
+    rgba(236, 72, 153, 0.82) 0%,
+    rgba(59, 130, 246, 0.85) 45%,
+    rgba(16, 185, 129, 0.85) 100%
+  );
+  background-size: 220% 220%;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 18px 38px rgba(8, 23, 42, 0.45);
+  overflow: hidden;
+  z-index: 3;
+}
+
+.affirmButton::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.affirmButton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.28) 0%, transparent 55%),
+    radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.18) 0%, transparent 50%),
+    radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.12) 0%, transparent 60%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.affirmButton:hover,
+.affirmButton:focus-visible {
+  @apply outline-none;
+  transform: translateY(-1px);
+  box-shadow: 0 24px 46px rgba(8, 23, 42, 0.55);
+  animation: auroraFlow 8s linear infinite;
+}
+
+.affirmButton:hover::before,
+.affirmButton:focus-visible::before,
+.affirmButton:hover::after,
+.affirmButton:focus-visible::after {
+  opacity: 1;
+}
+
+.affirmButton:disabled {
+  @apply opacity-60 cursor-not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.affirmBackdrop {
+  @apply absolute inset-0 rounded-2xl opacity-0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.42) 0%, transparent 65%);
+  transition: opacity 0.4s ease;
+  z-index: 1;
+}
+
+.affirmButton:hover .affirmBackdrop,
+.affirmButton:focus-visible .affirmBackdrop {
+  opacity: 0.8;
+}
+
+.affirmIcon {
+  @apply text-xl leading-none;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.45));
+  position: relative;
+  z-index: 3;
+}
+
+.affirmCopy {
+  @apply flex flex-col items-start text-left;
+  position: relative;
+  z-index: 3;
+}
+
+.affirmLabel {
+  @apply uppercase text-[11px] tracking-[0.28em];
+  letter-spacing: 0.28em;
+}
+
+.affirmSubLabel {
+  @apply text-[11px] text-white/70 tracking-[0.08em];
+}
+
+.affirming {
+  animation: pulseAffirm 1.2s ease-out;
+}
+
+.affirming .affirmBackdrop {
+  opacity: 1;
+}
+
+.affirmed {
+  background: linear-gradient(
+    120deg,
+    rgba(34, 197, 94, 0.85) 0%,
+    rgba(59, 130, 246, 0.78) 65%,
+    rgba(129, 140, 248, 0.75) 100%
+  );
+}
+
+.affirmed .affirmIcon {
+  filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.65));
+}
+
+.affirmed::before {
+  opacity: 1;
+}
+
+.affirmed::after {
+  opacity: 0.8;
+}
+
+.celebrationOverlay {
+  @apply absolute pointer-events-none flex items-center justify-center;
+  top: 50%;
+  left: 50%;
+  width: min(280px, 65vw);
+  height: min(280px, 65vw);
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 4;
+  overflow: visible;
+}
+
+.celebrationActive {
+  opacity: 1;
+}
+
+.sparkle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.92) 0%, transparent 70%),
+    linear-gradient(
+      135deg,
+      var(--sparkle-color, rgba(255, 255, 255, 0.9)) 0%,
+      var(--sparkle-secondary, rgba(255, 255, 255, 0.45)) 100%
+    );
+  box-shadow: 0 0 26px rgba(255, 255, 255, 0.6);
+  transform: translate(-50%, -50%) scale(0.2);
+  animation: sparkleBurst 1200ms ease-out forwards;
+  animation-delay: var(--sparkle-delay, 0ms);
+}
+
+@keyframes auroraFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulseAffirm {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 18px 38px rgba(8, 23, 42, 0.45);
+  }
+  40% {
+    transform: scale(1.04);
+    box-shadow: 0 26px 48px rgba(8, 23, 42, 0.55);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 18px 38px rgba(8, 23, 42, 0.45);
+  }
+}
+
+@keyframes sparkleBurst {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.25) rotate(0deg);
+  }
+  48% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--sparkle-x, 0px)), calc(-50% + var(--sparkle-y, 0px)))
+      scale(1.05) rotate(25deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--sparkle-x, 0px)), calc(-50% + var(--sparkle-y, 0px)))
+      scale(0.2) rotate(55deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celebrationOverlay {
+    transition: none;
+  }
+
+  .sparkle {
+    animation: none;
+    opacity: 0;
+  }
+}

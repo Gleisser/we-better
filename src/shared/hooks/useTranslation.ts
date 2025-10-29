@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useTranslation as useI18nTranslation } from 'react-i18next';
 import type { SupportedLanguage } from '@/core/i18n';
 import { i18n } from 'i18next';
@@ -30,15 +31,18 @@ export const useTranslation = (
   const isLoading = !ready;
 
   // Helper function for translations with fallback
-  const translate = (key: string, options?: Record<string, unknown>): string | string[] => {
-    try {
-      const result = t(key, options);
-      return typeof result === 'string' ? result : key;
-    } catch (error) {
-      console.warn(`Translation failed for key: ${key}`, error);
-      return key; // Return the key as fallback
-    }
-  };
+  const translate = useCallback(
+    (key: string, options?: Record<string, unknown>): string | string[] => {
+      try {
+        const result = t(key, options);
+        return typeof result === 'string' ? result : key;
+      } catch (error) {
+        console.warn(`Translation failed for key: ${key}`, error);
+        return key; // Return the key as fallback
+      }
+    },
+    [t]
+  );
 
   return {
     t: translate,
