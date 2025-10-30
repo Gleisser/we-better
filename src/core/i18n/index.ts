@@ -163,6 +163,15 @@ const resources = {
           craftAffirmation: 'Craft affirmation',
           craftAffirmationSubtitle: 'Design a card that is uniquely yours',
         },
+        radialLifeChart: {
+          title: 'Radial Life Chart',
+          subtitle: 'A snapshot of where you are investing your energy.',
+          chartTitle: 'Radial chart showing wellbeing focus areas',
+          accessibleLabel: 'Radial life balance overview',
+          centerLabel: 'Your balance',
+          averageLabel: 'Average completion: {{value}} percent',
+          tooltipValue: '{{category}} · {{value}}/10',
+        },
         quote: {
           title: 'Quote of the day',
           shareQuote: 'Share quote',
@@ -1376,6 +1385,15 @@ const resources = {
           streak: 'Sequência',
           craftAffirmation: 'Criar afirmação',
           craftAffirmationSubtitle: 'Crie uma carta que seja unicamente sua',
+        },
+        radialLifeChart: {
+          title: 'Gráfico Radial da Vida',
+          subtitle: 'Uma visão de onde você está investindo sua energia.',
+          chartTitle: 'Gráfico radial mostrando áreas de foco do bem-estar',
+          accessibleLabel: 'Visão geral radial do equilíbrio de vida',
+          centerLabel: 'Seu equilíbrio',
+          averageLabel: 'Média de conclusão: {{value}} por cento',
+          tooltipValue: '{{category}} · {{value}}/10',
         },
         quote: {
           title: 'Frase do dia',

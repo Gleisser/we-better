@@ -7,6 +7,7 @@ import CardsWidget from '@/shared/components/widgets/CardsWidget/CardsWidget';
 import { Article } from '@/core/services/articleService';
 import styles from './DashboardGrid.module.css';
 import LifeWheelWidget from '../../widgets/LifeWheelWidget/LifeWheelWidget';
+import RadialLifeChartWidget from '../../widgets/RadialLifeChartWidget/RadialLifeChartWidget';
 
 interface DashboardGridProps {
   featuredArticle: Article | null;
@@ -46,6 +47,11 @@ const DashboardGrid: React.FC<DashboardGridProps> = () => {
         {/* Goals Widget */}
         <div className={`${styles.widget} ${styles.goals}`}>
           <GoalsWidget />
+        </div>
+
+        {/* Radial Life Chart Widget */}
+        <div className={`${styles.widget} ${styles.radial}`}>
+          <RadialLifeChartWidget />
         </div>
 
         {/* Cutout Widget */}
