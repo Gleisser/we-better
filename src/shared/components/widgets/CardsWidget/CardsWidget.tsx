@@ -625,12 +625,16 @@ const CardsWidget = (): JSX.Element => {
 
   const recordMetric = isRecording ? 'REC' : audioUrl ? 'Clip' : '';
   const reminderMetric = reminderSettings.enabled ? reminderSettings.time : 'Off';
-  const favoriteMetric = isCardBookmarked ? 'Saved' : '';
+  const favoriteMetric = isCardBookmarked ? (t('widgets.cardsWidget.saved') as string) : '';
   const streakMetric = `${streakCount}d`;
-  const recordLabel = isRecording ? 'Recording' : 'Record';
-  const reminderLabel = 'Reminder';
-  const favoriteLabel = isCardBookmarked ? 'Saved' : 'Favorite';
-  const streakLabel = 'Streak';
+  const recordLabel = isRecording
+    ? (t('widgets.cardsWidget.recording') as string)
+    : (t('widgets.cardsWidget.record') as string);
+  const reminderLabel = t('widgets.cardsWidget.reminder') as string;
+  const favoriteLabel = isCardBookmarked
+    ? (t('widgets.cardsWidget.saved') as string)
+    : (t('widgets.cardsWidget.favorite') as string);
+  const streakLabel = t('widgets.cardsWidget.streak') as string;
   const recordAccent = accentColor ?? '#38bdf8';
   const reminderAccent = '#f59e0b';
   const favoriteAccent = '#f472b6';
@@ -696,18 +700,18 @@ const CardsWidget = (): JSX.Element => {
 
   const affirmIcon = hasAffirmedToday ? '✔️' : '✨';
   const affirmLabel = hasAffirmedToday
-    ? 'Affirmed Today'
+    ? (t('widgets.affirmation.affirmedToday') as string)
     : (t('widgets.affirmation.iAffirm') as string);
   const affirmSubLabel = hasAffirmedToday
-    ? 'Daily intention locked in'
-    : "Celebrate today's affirmation";
+    ? (t('widgets.affirmation.dailyIntentionLocked') as string)
+    : (t('widgets.cardsWidget.celebratorySubtext') as string);
 
   return (
     <section className={styles.container} aria-label="Affirmation cards widget">
       <header className={styles.header}>
         <div className={styles.headingGroup}>
-          <h2 className={styles.title}>Affirmation Cards</h2>
-          <p className={styles.subtitle}>Tap a card to surface the next uplifting statement.</p>
+          <h2 className={styles.title}>{t('widgets.cardsWidget.title') as string}</h2>
+          <p className={styles.subtitle}>{t('widgets.cardsWidget.subtitle') as string}</p>
         </div>
         <button
           type="button"
@@ -715,7 +719,7 @@ const CardsWidget = (): JSX.Element => {
           onClick={handleRefresh}
           disabled={isRotateDisabled}
         >
-          Next affirmation
+          {t('widgets.cardsWidget.nextAffirmation') as string}
         </button>
       </header>
 
@@ -789,7 +793,7 @@ const CardsWidget = (): JSX.Element => {
                     <p className={styles.affirmationText}>&ldquo;{card.text}&rdquo;</p>
 
                     <div className={styles.cardFooter}>
-                      <span className={styles.hint}>Tap or use arrow keys to rotate</span>
+                      <span className={styles.hint}>{t('widgets.cardsWidget.hint') as string}</span>
                     </div>
                   </div>
                 </li>
@@ -890,7 +894,7 @@ const CardsWidget = (): JSX.Element => {
         type="button"
         className={styles.createButton}
         onClick={handleCreateAffirmation}
-        aria-label="Create a personal affirmation"
+        aria-label={t('widgets.cardsWidget.craftAffirmation') as string}
         onMouseEnter={handleCreateHover}
         onFocus={handleCreateHover}
         onMouseLeave={handleCreateLeave}
@@ -907,8 +911,12 @@ const CardsWidget = (): JSX.Element => {
           />
         </span>
         <span className={styles.createText}>
-          <span className={styles.createLabel}>Craft Affirmation</span>
-          <span className={styles.createSublabel}>Design a card that is uniquely yours</span>
+          <span className={styles.createLabel}>
+            {t('widgets.cardsWidget.craftAffirmation') as string}
+          </span>
+          <span className={styles.createSublabel}>
+            {t('widgets.cardsWidget.craftAffirmationSubtitle') as string}
+          </span>
         </span>
       </button>
 

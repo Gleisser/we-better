@@ -12,7 +12,7 @@
 }
 
 .title {
-  @apply text-base font-semibold text-white;
+  @apply text-sm font-medium text-white/90 font-plus-jakarta;
 }
 
 .subtitle {
