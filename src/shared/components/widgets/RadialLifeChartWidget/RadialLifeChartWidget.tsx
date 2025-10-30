@@ -21,11 +21,11 @@ type ArcPresentation = {
 
 const TAU = Math.PI * 2;
 const START_ANGLE = -Math.PI / 2;
-const BASE_RADIUS = 220;
+const BASE_RADIUS = 280;
 const BAND_THICKNESS = 20;
 const BAND_GAP = 8;
-const CENTER = 240;
-const VIEWBOX_SIZE = 480;
+const CENTER = 320;
+const VIEWBOX_SIZE = 640;
 
 const clampPercentage = (value: number): number => Math.max(0, Math.min(100, value));
 const normalizeScore = (score: number): number => clampPercentage((score / 10) * 100);
@@ -238,6 +238,12 @@ const RadialLifeChartWidget = (): JSX.Element => {
             </g>
           ))}
         </svg>
+
+        <div className={styles.avatarSlot}>
+          <div className={styles.avatarShell}>
+            <span className={styles.avatarInitials}>MD</span>
+          </div>
+        </div>
 
         {hoveredArc && tooltipContent ? (
           <div

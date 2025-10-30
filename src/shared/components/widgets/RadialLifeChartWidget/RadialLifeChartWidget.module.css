@@ -22,7 +22,30 @@
 
 .chart {
   width: 100%;
-  max-width: 420px;
+  max-width: 520px;
+}
+
+.avatarSlot {
+  @apply absolute inset-0 flex items-center justify-center pointer-events-none;
+}
+
+.avatarShell {
+  @apply flex items-center justify-center rounded-full border border-white/10;
+  width: clamp(110px, 20vw, 170px);
+  height: clamp(110px, 20vw, 170px);
+  background: rgba(15, 23, 42, 0.04);
+  box-shadow:
+    0 22px 44px rgba(2, 6, 23, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 0.18);
+}
+
+.avatarInitials {
+  @apply inline-flex h-[80%] w-[80%] items-center justify-center rounded-full text-3xl font-bold text-white uppercase tracking-[0.2em];
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 6px 10px rgba(255, 255, 255, 0.08),
+    0 10px 22px rgba(0, 0, 0, 0.2);
 }
 
 .arcGroup {
@@ -42,10 +65,8 @@
 .progressArc {
   stroke-dasharray: var(--circumference);
   stroke-dashoffset: var(--circumference);
-  animation:
-    smoothFlow 2s cubic-bezier(0.32, 0.7, 0.24, 1) forwards,
-    settleBounce 1.6s cubic-bezier(0.25, 1.35, 0.5, 1) forwards;
-  animation-delay: var(--animation-delay, 0s), calc(var(--animation-delay, 0s) + 2s);
+  animation: smoothFlow 2s cubic-bezier(0.32, 0.7, 0.24, 1) forwards;
+  animation-delay: var(--animation-delay, 0s);
   filter: none;
 }
 
@@ -85,21 +106,6 @@
 @keyframes smoothFlow {
   0% {
     stroke-dashoffset: var(--circumference);
-  }
-  100% {
-    stroke-dashoffset: var(--target-offset);
-  }
-}
-
-@keyframes settleBounce {
-  0% {
-    stroke-dashoffset: var(--target-offset);
-  }
-  55% {
-    stroke-dashoffset: calc(var(--target-offset) - (var(--circumference) * 0.025));
-  }
-  82% {
-    stroke-dashoffset: calc(var(--target-offset) + (var(--circumference) * 0.006));
   }
   100% {
     stroke-dashoffset: var(--target-offset);
