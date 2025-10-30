@@ -50,7 +50,16 @@ class ApiClient {
     this.client.interceptors.response.use(
       response => response,
       async error => {
-        const originalRequest = error.config;
+        type RetryableRequest = InternalAxiosRequestConfig & {
+          _retry?: boolean;
+          _retryCount?: number;
+        };
+
+        const originalRequest = error.config as RetryableRequest | undefined;
+
+        if (!originalRequest) {
+          throw error;
+        }
 
         if (originalRequest._retry || !shouldRetry(error)) {
           throw error;
@@ -58,8 +67,9 @@ class ApiClient {
 
         originalRequest._retry = true;
 
-        const retryDelay = getRetryDelay(error, originalRequest._retryCount || 0);
-        originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
+        const retryCount = originalRequest._retryCount ?? 0;
+        const retryDelay = getRetryDelay(error, retryCount);
+        originalRequest._retryCount = retryCount + 1;
 
         await new Promise(resolve => setTimeout(resolve, retryDelay));
 

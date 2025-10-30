@@ -10,7 +10,7 @@ import {
 import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
 import styles from './CardsWidget.module.css';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
-import { affirmationService } from '@/core/services/affirmationService';
+import { affirmationService, type Affirmation } from '@/core/services/affirmationService';
 import {
   checkTodayStatus,
   logAffirmation as logAffirmationEntry,
@@ -288,50 +288,57 @@ const CardsWidget = (): JSX.Element => {
 
         const categories = Object.keys(categoryTheme) as AffirmationCategory[];
 
-        const cardsByCategory = await Promise.all(
-          categories.map(async category => {
-            try {
-              const response = await affirmationService.getAffirmationsByCategory(category, {
-                sort: 'publishedAt:desc',
-                pagination: {
-                  page: 1,
-                  pageSize: 5,
-                },
-                populate: ['categories'],
-              });
-
-              const mappedAffirmations = affirmationService.mapAffirmationResponse(response);
-
-              if (mappedAffirmations.length === 0) {
-                return null;
-              }
-
-              const selectedAffirmation =
-                mappedAffirmations[Math.floor(Math.random() * mappedAffirmations.length)];
-              const theme = categoryTheme[category];
-
-              if (!theme) {
-                return null;
-              }
-
-              return {
-                id: selectedAffirmation.documentId ?? `affirmation-${selectedAffirmation.id}`,
-                text: selectedAffirmation.text,
-                category,
-                label: theme.label,
-                icon: theme.icon,
-                accent: theme.accent,
-              } satisfies AffirmationCard;
-            } catch (categoryError) {
-              console.error(`Failed to load affirmations for category ${category}:`, categoryError);
-              return null;
-            }
-          })
-        );
+        const response = await affirmationService.getAffirmationsForCategories(categories, {
+          sort: 'publishedAt:desc',
+          pagination: {
+            page: 1,
+            pageSize: 5,
+          },
+          populate: ['categories'],
+        });
 
         if (!isMounted) {
           return;
         }
+
+        const mappedAffirmations = affirmationService.mapAffirmationResponse(response);
+
+        const affirmationsByCategory = mappedAffirmations.reduce<
+          Partial<Record<AffirmationCategory, Affirmation[]>>
+        >((accumulator, affirmation) => {
+          const category = affirmationService.determineAffirmationType(affirmation.categories);
+
+          if (!categoryTheme[category]) {
+            return accumulator;
+          }
+
+          if (!accumulator[category]) {
+            accumulator[category] = [];
+          }
+
+          accumulator[category]?.push(affirmation);
+          return accumulator;
+        }, {});
+
+        const cardsByCategory = categories.map(category => {
+          const theme = categoryTheme[category];
+          const pool = affirmationsByCategory[category];
+
+          if (!theme || !pool?.length) {
+            return null;
+          }
+
+          const selectedAffirmation = pool[Math.floor(Math.random() * pool.length)];
+
+          return {
+            id: selectedAffirmation.documentId ?? `affirmation-${selectedAffirmation.id}`,
+            text: selectedAffirmation.text,
+            category,
+            label: theme.label,
+            icon: theme.icon,
+            accent: theme.accent,
+          } satisfies AffirmationCard;
+        });
 
         const validCards = cardsByCategory.filter((card): card is AffirmationCard => card !== null);
 

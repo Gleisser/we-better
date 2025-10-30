@@ -3,7 +3,7 @@ export const ENV_CONFIG = {
     URL:
       import.meta.env.VITE_API_BASE_URL || 'https://original-melody-94a4138af3.strapiapp.com/api',
     TOKEN: import.meta.env.VITE_API_TOKEN,
-    TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || 30000,
+    TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || 45000,
   },
   RATE_LIMIT: {
     MAX_REQUESTS: Number(import.meta.env.VITE_RATE_LIMIT_MAX_REQUESTS) || 50,

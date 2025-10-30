@@ -1,5 +1,5 @@
 import QuoteWidget from '@/shared/components/widgets/QuoteWidget/QuoteWidget';
-import { AffirmationWidget } from '@/shared/components/widgets/AffirmationWidget';
+//import { AffirmationWidget } from '@/shared/components/widgets/AffirmationWidget';
 import HabitsWidget from '@/shared/components/widgets/HabitsWidget/HabitsWidget';
 import GoalsWidget from '@/shared/components/widgets/GoalsWidget/GoalsWidget';
 //import CutoutWidget from '@/shared/components/widgets/CutoutWidget/CutoutWidget';
@@ -22,9 +22,15 @@ const DashboardGrid: React.FC<DashboardGridProps> = () => {
           <QuoteWidget />
         </div>
 
-        {/* Affirmation Widget */}
+        {/* Affirmation Widget 
         <div className={`${styles.widget} ${styles.affirmation}`}>
           <AffirmationWidget />
+        </div>
+        */}
+
+        {/* Cards Widget */}
+        <div className={`${styles.widget} ${styles.cards}`}>
+          <CardsWidget />
         </div>
 
         {/* Life Wheel Widget - Now in the position previously occupied by the article */}
@@ -40,11 +46,6 @@ const DashboardGrid: React.FC<DashboardGridProps> = () => {
         {/* Goals Widget */}
         <div className={`${styles.widget} ${styles.goals}`}>
           <GoalsWidget />
-        </div>
-
-        {/* Cards Widget */}
-        <div className={`${styles.widget} ${styles.cards}`}>
-          <CardsWidget />
         </div>
 
         {/* Cutout Widget */}

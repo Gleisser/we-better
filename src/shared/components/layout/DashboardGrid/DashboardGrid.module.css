@@ -6,9 +6,9 @@
   @apply grid gap-4 w-full;
   grid-template-columns: repeat(3, 1fr);
   grid-template-areas:
-    'quote affirmation lifeWheel'
+    'quote cards lifeWheel'
     'habits habits habits'
-    'goals goals cards'
+    'goals goals goals'
     'cutout videos videos'
     'podcast course book'
     'article article article';
