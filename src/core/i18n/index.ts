@@ -144,6 +144,25 @@ const resources = {
         closeChat: 'Close chat',
       },
       widgets: {
+        common: {
+          readMore: 'Read more',
+          showLess: 'Show less',
+        },
+        cardsWidget: {
+          title: 'Affirmation Cards',
+          subtitle: 'Tap a card to surface the next uplifting statement.',
+          hint: 'Tap or use arrow keys to rotate',
+          celebratorySubtext: "Celebrate today's affirmation",
+          nextAffirmation: 'Next affirmation',
+          record: 'Record',
+          recording: 'Recording',
+          reminder: 'Reminder',
+          favorite: 'Favorite',
+          saved: 'Saved',
+          streak: 'Streak',
+          craftAffirmation: 'Craft affirmation',
+          craftAffirmationSubtitle: 'Design a card that is uniquely yours',
+        },
         quote: {
           title: 'Quote of the day',
           shareQuote: 'Share quote',
@@ -165,6 +184,8 @@ const resources = {
         affirmation: {
           title: 'Daily Affirmation',
           iAffirm: 'I Affirm',
+          affirmedToday: 'Affirmed Today',
+          dailyIntentionLocked: 'Daily intention locked in',
           loadingAffirmations: 'Loading affirmations...',
           failedToLoad: 'Failed to load affirmations for this category',
           tryAgain: 'Try Again',
@@ -1337,6 +1358,25 @@ const resources = {
         closeChat: 'Fechar chat',
       },
       widgets: {
+        common: {
+          readMore: 'Ler mais',
+          showLess: 'Mostrar menos',
+        },
+        cardsWidget: {
+          title: 'Cartas de Afirmação',
+          subtitle: 'Toque em uma carta para revelar a próxima mensagem inspiradora.',
+          hint: 'Toque ou use as setas para girar',
+          celebratorySubtext: 'Celebre a afirmação de hoje',
+          nextAffirmation: 'Próxima afirmação',
+          record: 'Gravar',
+          recording: 'Gravando',
+          reminder: 'Lembrete',
+          favorite: 'Favorito',
+          saved: 'Salvo',
+          streak: 'Sequência',
+          craftAffirmation: 'Criar afirmação',
+          craftAffirmationSubtitle: 'Crie uma carta que seja unicamente sua',
+        },
         quote: {
           title: 'Frase do dia',
           shareQuote: 'Compartilhar frase',
@@ -1358,6 +1398,8 @@ const resources = {
         affirmation: {
           title: 'Afirmação Diária',
           iAffirm: 'Eu Afirmo',
+          affirmedToday: 'Afirmação concluída hoje',
+          dailyIntentionLocked: 'Intenção diária registrada',
           loadingAffirmations: 'Carregando afirmações...',
           failedToLoad: 'Falha ao carregar afirmações para esta categoria',
           tryAgain: 'Tentar Novamente',

@@ -63,17 +63,32 @@ const THEME_CONFIG: Record<
   },
 };
 
-const BACKGROUND_IMAGES: Record<QuoteTheme, string> = {
-  success:
+const BACKGROUND_IMAGES: Record<QuoteTheme, string[]> = {
+  success: [
     'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80',
-  motivation:
+    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80',
+    'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1600&q=80',
+  ],
+  motivation: [
     'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1600&q=80',
-  leadership:
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80',
+    'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1600&q=80',
+  ],
+  leadership: [
     'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80',
-  growth:
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=1600&q=80',
+    'https://images.unsplash.com/photo-1485217988980-11786ced9454?auto=format&fit=crop&w=1600&q=80',
+  ],
+  growth: [
     'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1600&q=80',
-  wisdom:
+    'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1600&q=80',
+    'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80',
+  ],
+  wisdom: [
     'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1600&q=80',
+    'https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?auto=format&fit=crop&w=1600&q=80',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1600&q=80',
+  ],
 };
 
 const QuoteIcon = ({ className }: { className?: string }): JSX.Element => (
@@ -168,6 +183,16 @@ const QuoteWidget = (): JSX.Element => {
   const [quotePool, setQuotePool] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [backgroundIndices, setBackgroundIndices] = useState<Record<QuoteTheme, number>>({
+    success: 0,
+    motivation: 0,
+    leadership: 0,
+    growth: 0,
+    wisdom: 0,
+  });
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const [collapsedHeight, setCollapsedHeight] = useState<number | null>(null);
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -196,13 +221,19 @@ const QuoteWidget = (): JSX.Element => {
   const shareMenuRef = useRef<HTMLDivElement>(null);
   const shareButtonRef = useRef<HTMLButtonElement>(null);
   const moreButtonRef = useRef<HTMLButtonElement>(null);
+  const quoteTextRef = useRef<HTMLDivElement>(null);
 
   const resolvedTheme = quote ? quoteService.determineQuoteTheme(quote.categories) : QUOTE.theme;
   const themeConfig = THEME_CONFIG[resolvedTheme];
-  const backgroundImage = BACKGROUND_IMAGES[resolvedTheme] ?? BACKGROUND_IMAGES.success;
+  const themeBackgrounds = BACKGROUND_IMAGES[resolvedTheme] ?? BACKGROUND_IMAGES.success;
+  const backgroundIndex = backgroundIndices[resolvedTheme] ?? 0;
+  const backgroundImage =
+    themeBackgrounds[backgroundIndex % themeBackgrounds.length] ?? BACKGROUND_IMAGES.success[0];
   const rawCategoryLabel =
     quote?.categories?.[0]?.name ?? resolvedTheme.charAt(0).toUpperCase() + resolvedTheme.slice(1);
   const categoryLabel = rawCategoryLabel.toUpperCase();
+  const readMoreLabel = (t('widgets.common.readMore') as string) || 'Read more';
+  const showLessLabel = (t('widgets.common.showLess') as string) || 'Show less';
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent): void => {
@@ -272,6 +303,51 @@ const QuoteWidget = (): JSX.Element => {
   useEffect(() => {
     fetchQuotes();
   }, [fetchQuotes]);
+
+  useEffect(() => {
+    setIsExpanded(false);
+  }, [quote?.id]);
+
+  useEffect(() => {
+    const element = quoteTextRef.current;
+    if (!element) {
+      setIsOverflowing(false);
+      return;
+    }
+
+    const computeOverflow = (): void => {
+      if (!quoteTextRef.current) {
+        return;
+      }
+
+      const style = window.getComputedStyle(quoteTextRef.current);
+      const lineHeight = Number.parseFloat(style.lineHeight);
+      const fontSize = Number.parseFloat(style.fontSize);
+      const rowGap = Number.parseFloat(style.rowGap ?? '0');
+      const fallbackLineHeight = Number.isFinite(fontSize) && fontSize > 0 ? fontSize * 1.5 : 0;
+      const normalizedLineHeight =
+        Number.isFinite(lineHeight) && lineHeight > 0
+          ? lineHeight
+          : fallbackLineHeight > 0
+            ? fallbackLineHeight
+            : quoteTextRef.current.clientHeight || 0;
+      const gapAllowance = Number.isFinite(rowGap) && rowGap > 0 ? rowGap * 4 : 0;
+      const maxAllowedHeight = Math.max(normalizedLineHeight * 5 + gapAllowance, 0);
+
+      setCollapsedHeight(maxAllowedHeight);
+
+      const shouldClamp = quoteTextRef.current.scrollHeight - 1 > maxAllowedHeight;
+      setIsOverflowing(shouldClamp);
+    };
+
+    const rafId = window.requestAnimationFrame(computeOverflow);
+    window.addEventListener('resize', computeOverflow);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', computeOverflow);
+    };
+  }, [quote?.text, resolvedTheme]);
 
   const handleBookmark = (e: React.MouseEvent): void => {
     e.preventDefault();
@@ -401,6 +477,12 @@ const QuoteWidget = (): JSX.Element => {
 
     // Get next quote (randomly from the pool, excluding current quote)
     const availableQuotes = quotePool.filter((_, index) => index !== currentIndex);
+
+    if (availableQuotes.length === 0) {
+      fetchQuotes();
+      return;
+    }
+
     const randomIndex = Math.floor(Math.random() * availableQuotes.length);
     const nextQuote = availableQuotes[randomIndex];
 
@@ -409,7 +491,20 @@ const QuoteWidget = (): JSX.Element => {
       fetchQuotes();
     }
 
+    const nextTheme = quoteService.determineQuoteTheme(nextQuote.categories);
+    setBackgroundIndices(prev => {
+      const previousIndex = prev[nextTheme] ?? 0;
+      const themeBackgrounds = BACKGROUND_IMAGES[nextTheme] ?? BACKGROUND_IMAGES.success;
+      const updatedIndex = (previousIndex + 1) % themeBackgrounds.length;
+
+      return {
+        ...prev,
+        [nextTheme]: updatedIndex,
+      };
+    });
+
     setQuote(nextQuote);
+    setIsExpanded(false);
   };
 
   return (
@@ -571,32 +666,54 @@ const QuoteWidget = (): JSX.Element => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <motion.div
-                  className={styles.quoteText}
-                  initial="hidden"
-                  animate="visible"
-                  variants={{
-                    hidden: {},
-                    visible: {
-                      transition: {
-                        staggerChildren: 0.03,
-                      },
-                    },
-                  }}
+                <div
+                  className={`${styles.quoteTextWrapper} ${
+                    isExpanded ? styles.expandedText : styles.collapsedText
+                  }`}
+                  style={
+                    !isExpanded && collapsedHeight
+                      ? { maxHeight: `${collapsedHeight}px` }
+                      : undefined
+                  }
                 >
-                  {quote.text.split(' ').map((word, i) => (
-                    <motion.span
-                      key={i}
-                      className={styles.word}
-                      variants={{
-                        hidden: { opacity: 0, y: 20 },
-                        visible: { opacity: 1, y: 0 },
-                      }}
-                    >
-                      {word}
-                    </motion.span>
-                  ))}
-                </motion.div>
+                  <motion.div
+                    ref={quoteTextRef}
+                    className={styles.quoteText}
+                    initial="hidden"
+                    animate="visible"
+                    variants={{
+                      hidden: {},
+                      visible: {
+                        transition: {
+                          staggerChildren: 0.03,
+                        },
+                      },
+                    }}
+                  >
+                    {quote.text.split(' ').map((word, i) => (
+                      <motion.span
+                        key={i}
+                        className={styles.word}
+                        variants={{
+                          hidden: { opacity: 0, y: 20 },
+                          visible: { opacity: 1, y: 0 },
+                        }}
+                      >
+                        {word}
+                      </motion.span>
+                    ))}
+                  </motion.div>
+                </div>
+
+                {isOverflowing ? (
+                  <button
+                    type="button"
+                    className={styles.toggleTextButton}
+                    onClick={() => setIsExpanded(prev => !prev)}
+                  >
+                    {isExpanded ? showLessLabel : readMoreLabel}
+                  </button>
+                ) : null}
 
                 <div className={styles.quoteFooter}>
                   <motion.div

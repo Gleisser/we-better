@@ -183,4 +183,73 @@ export const affirmationService = {
       return handleServiceError(error, 'Affirmations');
     }
   },
+
+  async getAffirmationsForCategories(
+    categories: string[],
+    params?: Omit<AffirmationParams, 'filters'>
+  ): Promise<AffirmationResponse> {
+    const sanitizedCategories = Array.from(
+      new Set(
+        categories
+          .map(category => category?.trim())
+          .filter((category): category is string => Boolean(category))
+      )
+    );
+
+    if (sanitizedCategories.length === 0) {
+      return {
+        data: [],
+        meta: {
+          pagination: {
+            page: params?.pagination?.page ?? 1,
+            pageSize: 0,
+            pageCount: 0,
+            total: 0,
+          },
+        },
+      };
+    }
+
+    try {
+      const queryParams = new URLSearchParams();
+
+      sanitizedCategories.forEach(category => {
+        queryParams.append('filters[categories][slug][$in]', `affirmation-${category}`);
+      });
+
+      const defaultPopulate = ['*'];
+      const populateParams = params?.populate || defaultPopulate;
+
+      if (Array.isArray(populateParams)) {
+        populateParams.forEach(item => {
+          queryParams.append('populate', item);
+        });
+      } else {
+        queryParams.append('populate', populateParams);
+      }
+
+      if (params?.sort) {
+        queryParams.append('sort', params.sort);
+      }
+
+      if (params?.pagination) {
+        queryParams.append('pagination[page]', params.pagination.page.toString());
+
+        const perCategoryPageSize = params.pagination.pageSize;
+        const aggregatedPageSize =
+          sanitizedCategories.length * (perCategoryPageSize ? Number(perCategoryPageSize) : 5);
+
+        queryParams.append('pagination[pageSize]', aggregatedPageSize.toString());
+      } else {
+        const aggregatedPageSize = sanitizedCategories.length * 5;
+        queryParams.append('pagination[page]', '1');
+        queryParams.append('pagination[pageSize]', aggregatedPageSize.toString());
+      }
+
+      const { data } = await apiClient.get<AffirmationResponse>(`/affirmations?${queryParams}`);
+      return data;
+    } catch (error) {
+      return handleServiceError(error, 'Affirmations');
+    }
+  },
 };

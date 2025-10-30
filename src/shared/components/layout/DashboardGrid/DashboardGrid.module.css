@@ -6,7 +6,7 @@
   @apply grid gap-4 w-full;
   grid-template-columns: repeat(3, 1fr);
   grid-template-areas:
-    'quote affirmation lifeWheel'
+    'quote cards lifeWheel'
     'habits habits habits'
     'goals goals goals'
     'cutout videos videos'
@@ -48,6 +48,10 @@
   grid-area: goals;
 }
 
+.cards {
+  grid-area: cards;
+}
+
 .cutout {
   grid-area: cutout;
   background: transparent;
@@ -81,7 +85,7 @@
       'quote affirmation'
       'lifeWheel lifeWheel'
       'habits habits'
-      'goals goals'
+      'goals cards'
       'cutout videos'
       'podcast course'
       'book book'
@@ -98,6 +102,7 @@
       'lifeWheel'
       'habits'
       'goals'
+      'cards'
       'cutout'
       'videos'
       'podcast'
