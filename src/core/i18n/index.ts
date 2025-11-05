@@ -174,6 +174,44 @@ const resources = {
           collapse: 'Hide chart rings',
           expand: 'Show chart rings',
         },
+        mood: {
+          title: 'How are you feeling today?',
+          subtitle: 'Embark on a profound journey, exploring the intricate emotional landscape.',
+          view: {
+            week: 'Week',
+            month: 'Month',
+          },
+          trend: {
+            weekly: 'Weekly mood pulse',
+            monthly: 'Monthly mood pulse',
+            average: 'Average mood: {{value}}',
+          },
+          weeks: {
+            short: 'W{{index}}',
+          },
+          moods: {
+            elated: {
+              label: 'Radiant',
+              description: 'Joyful momentum flows through everything you touch today.',
+            },
+            bright: {
+              label: 'Upbeat',
+              description: 'You feel light and optimistic, with a gentle forward motion.',
+            },
+            balanced: {
+              label: 'Balanced',
+              description: 'Steady and composed, you are taking in the moment as it is.',
+            },
+            low: {
+              label: 'Low Tide',
+              description: 'Energy dips and emotions ask for a slower, softer pace.',
+            },
+            drained: {
+              label: 'Drained',
+              description: 'Your reserves feel low—rest, support, and softness are welcome.',
+            },
+          },
+        },
         quote: {
           title: 'Quote of the day',
           shareQuote: 'Share quote',
@@ -1398,6 +1436,44 @@ const resources = {
           tooltipValue: '{{category}} · {{value}}/10',
           collapse: 'Ocultar anéis do gráfico',
           expand: 'Mostrar anéis do gráfico',
+        },
+        mood: {
+          title: 'Como você está se sentindo hoje?',
+          subtitle: 'Embarque em uma jornada profunda, explorando o intricado universo emocional.',
+          view: {
+            week: 'Semana',
+            month: 'Mês',
+          },
+          trend: {
+            weekly: 'Pulso de humor da semana',
+            monthly: 'Pulso de humor do mês',
+            average: 'Média: {{value}}',
+          },
+          weeks: {
+            short: 'S{{index}}',
+          },
+          moods: {
+            elated: {
+              label: 'Radiante',
+              description: 'Alegria e otimismo impulsionam tudo o que você toca hoje.',
+            },
+            bright: {
+              label: 'Animado',
+              description: 'Você se sente leve e confiante, com uma energia gentil.',
+            },
+            balanced: {
+              label: 'Equilibrado',
+              description: 'Estável e centrado, você acolhe o momento como ele é.',
+            },
+            low: {
+              label: 'Em baixa',
+              description: 'O ritmo desacelera e as emoções pedem mais suavidade.',
+            },
+            drained: {
+              label: 'Esgotado',
+              description: 'As reservas estão baixas — descanso e acolhimento são bem-vindos.',
+            },
+          },
         },
         quote: {
           title: 'Frase do dia',

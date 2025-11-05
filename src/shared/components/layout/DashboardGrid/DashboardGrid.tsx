@@ -8,6 +8,7 @@ import { Article } from '@/core/services/articleService';
 import styles from './DashboardGrid.module.css';
 import LifeWheelWidget from '../../widgets/LifeWheelWidget/LifeWheelWidget';
 import RadialLifeChartWidget from '../../widgets/RadialLifeChartWidget/RadialLifeChartWidget';
+import MoodWidget from '../../widgets/MoodWidget/MoodWidget';
 
 interface DashboardGridProps {
   featuredArticle: Article | null;
@@ -37,6 +38,11 @@ const DashboardGrid: React.FC<DashboardGridProps> = () => {
         {/* Life Wheel Widget - Now in the position previously occupied by the article */}
         <div className={`${styles.widget} ${styles.lifeWheel}`}>
           <LifeWheelWidget />
+        </div>
+
+        {/* Mood Widget */}
+        <div className={`${styles.widget} ${styles.mood}`}>
+          <MoodWidget />
         </div>
 
         {/* Habits Widget */}
