@@ -171,6 +171,8 @@ const resources = {
           centerLabel: 'Your balance',
           averageLabel: 'Average completion: {{value}} percent',
           tooltipValue: '{{category}} · {{value}}/10',
+          collapse: 'Hide chart rings',
+          expand: 'Show chart rings',
         },
         quote: {
           title: 'Quote of the day',
@@ -1394,6 +1396,8 @@ const resources = {
           centerLabel: 'Seu equilíbrio',
           averageLabel: 'Média de conclusão: {{value}} por cento',
           tooltipValue: '{{category}} · {{value}}/10',
+          collapse: 'Ocultar anéis do gráfico',
+          expand: 'Mostrar anéis do gráfico',
         },
         quote: {
           title: 'Frase do dia',
