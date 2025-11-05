@@ -1,0 +1,144 @@
+.container {
+  @apply relative flex h-full w-full flex-col gap-5 rounded-[36px] border border-white/10 p-6 text-white/80 shadow-[0_40px_80px_rgba(2,0,24,0.65)];
+  background: radial-gradient(circle at top, rgba(27, 33, 87, 0.95), rgba(6, 8, 26, 0.96));
+  font-family: var(--font-plus-jakarta);
+}
+
+.header {
+  @apply flex items-start justify-between;
+}
+
+.headerActions {
+  @apply flex items-center;
+}
+
+.headerButton {
+  @apply rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80 transition-colors duration-200;
+  letter-spacing: 0.18em;
+}
+
+.headerButton:hover,
+.headerButton:focus-visible {
+  @apply border-white/25 bg-white/20 text-white;
+}
+
+.headerButton:focus-visible {
+  @apply outline-none ring-2 ring-white/30 ring-offset-2 ring-offset-transparent;
+}
+
+.title {
+  @apply text-sm font-medium tracking-wide text-white;
+}
+
+.subtitle {
+  @apply text-xs text-white/60;
+}
+
+.chartWrapper {
+  @apply relative flex flex-1 items-center justify-center;
+}
+
+.chart {
+  width: 100%;
+  max-width: 520px;
+}
+
+.stateWrapper {
+  @apply flex flex-1 items-center justify-center;
+  min-height: 260px;
+}
+
+.stateText {
+  @apply max-w-sm text-center text-sm text-white/70;
+  line-height: 1.6;
+}
+
+.errorState {
+  @apply mb-4 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-200;
+}
+
+.avatarSlot {
+  @apply absolute inset-0 flex items-center justify-center pointer-events-none;
+}
+
+.avatarShell {
+  @apply flex items-center justify-center rounded-full border border-white/10;
+  width: clamp(110px, 20vw, 170px);
+  height: clamp(110px, 20vw, 170px);
+  background: rgba(15, 23, 42, 0.04);
+  box-shadow:
+    0 22px 44px rgba(2, 6, 23, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+}
+
+.avatarImage {
+  @apply h-[82%] w-[82%] rounded-full object-cover border border-white/15;
+  box-shadow:
+    inset 0 4px 9px rgba(255, 255, 255, 0.08),
+    0 12px 20px rgba(0, 0, 0, 0.2);
+}
+
+.arcGroup {
+  @apply transition-transform duration-500;
+}
+
+.arcGroup:hover {
+  transform: scale(1.01);
+}
+
+.ringBackground {
+  @apply transition-opacity duration-500 ease-out;
+  opacity: 0.55;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.6));
+}
+
+.progressArc {
+  stroke-dasharray: var(--circumference);
+  stroke-dashoffset: var(--circumference);
+  animation: smoothFlow 2s cubic-bezier(0.32, 0.7, 0.24, 1) forwards;
+  animation-delay: var(--animation-delay, 0s);
+  filter: none;
+}
+
+.tooltip {
+  @apply absolute rounded-xl border border-white/20 bg-black/70 px-3 py-1 text-xs font-semibold text-white/90;
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  transform: translate(-50%, -130%);
+}
+
+.legend {
+  @apply grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4;
+}
+
+.legendItem {
+  @apply flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3;
+}
+
+.legendSwatch {
+  @apply h-2 w-5 rounded-full shadow-[0_0_12px_rgba(255,255,255,0.35)];
+}
+
+.legendContent {
+  @apply flex flex-col;
+}
+
+.legendLabel {
+  @apply text-xs font-medium text-white/80;
+}
+
+.legendValue {
+  @apply text-xs text-white/50;
+}
+
+@keyframes smoothFlow {
+  0% {
+    stroke-dashoffset: var(--circumference);
+  }
+  100% {
+    stroke-dashoffset: var(--target-offset);
+  }
+}

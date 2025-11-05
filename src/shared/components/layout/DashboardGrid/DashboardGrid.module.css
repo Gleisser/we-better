@@ -9,6 +9,7 @@
     'quote cards lifeWheel'
     'habits habits habits'
     'goals goals goals'
+    'radial radial radial'
     'cutout videos videos'
     'podcast course book'
     'article article article';
@@ -46,6 +47,10 @@
 
 .goals {
   grid-area: goals;
+}
+
+.radial {
+  grid-area: radial;
 }
 
 .cards {
@@ -86,6 +91,7 @@
       'lifeWheel lifeWheel'
       'habits habits'
       'goals cards'
+      'radial radial'
       'cutout videos'
       'podcast course'
       'book book'
@@ -102,6 +108,7 @@
       'lifeWheel'
       'habits'
       'goals'
+      'radial'
       'cards'
       'cutout'
       'videos'
