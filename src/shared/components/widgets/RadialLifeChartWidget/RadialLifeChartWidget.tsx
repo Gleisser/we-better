@@ -2,6 +2,7 @@ import { type CSSProperties, useCallback, useEffect, useMemo, useState } from 'r
 import styles from './RadialLifeChartWidget.module.css';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { getLatestLifeWheelData } from '@/features/life-wheel/api/lifeWheelApi';
+import { useNavigate } from 'react-router-dom';
 
 type LifeArea = {
   id: string;
@@ -181,6 +182,7 @@ const extractString = (value: string | string[]): string =>
 
 const RadialLifeChartWidget = (): JSX.Element => {
   const { t } = useCommonTranslation();
+  const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -310,6 +312,9 @@ const RadialLifeChartWidget = (): JSX.Element => {
         });
 
   const hasData = areas.length > 0;
+  const handleNavigate = useCallback(() => {
+    navigate('/app/life-wheel');
+  }, [navigate]);
 
   return (
     <section
@@ -320,6 +325,11 @@ const RadialLifeChartWidget = (): JSX.Element => {
         <div>
           <h2 className={styles.title}>{translateString('widgets.radialLifeChart.title')}</h2>
           <p className={styles.subtitle}>{translateString('widgets.radialLifeChart.subtitle')}</p>
+        </div>
+        <div className={styles.headerActions}>
+          <button className={styles.headerButton} onClick={handleNavigate}>
+            {translateString('widgets.lifeWheel.goToDetails')}
+          </button>
         </div>
       </header>
 
