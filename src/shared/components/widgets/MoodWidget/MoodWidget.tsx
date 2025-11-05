@@ -8,7 +8,7 @@ type ViewMode = 'week' | 'month';
 
 interface MoodDefinition {
   id: MoodId;
-  emojiVariant: 'love' | 'yay' | 'wow' | 'sad' | 'angry';
+  emojiVariant: 'haha' | 'yay' | 'wow' | 'sad' | 'angry';
   accent: string;
 }
 
@@ -28,7 +28,7 @@ const POINTER_OFFSET = 26;
 const MOODS: MoodDefinition[] = [
   {
     id: 'elated',
-    emojiVariant: 'love',
+    emojiVariant: 'haha',
     accent: '#22d3ee',
   },
   {
@@ -61,10 +61,15 @@ const PREVIOUS_WEEKS: number[][] = [
 
 const renderEmoji = (variant: MoodDefinition['emojiVariant']): JSX.Element => {
   switch (variant) {
-    case 'love':
+    case 'haha':
       return (
-        <span className={`${styles.emoji} ${styles.emojiLove}`} aria-hidden="true">
-          <span className={styles.emojiHeart} />
+        <span className={`${styles.emoji} ${styles.emojiHaha}`} aria-hidden="true">
+          <span className={styles.emojiFace}>
+            <span className={styles.emojiEyes} />
+            <span className={styles.emojiMouth}>
+              <span className={styles.emojiTongue} />
+            </span>
+          </span>
         </span>
       );
     case 'yay':
