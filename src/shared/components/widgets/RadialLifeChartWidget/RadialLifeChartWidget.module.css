@@ -128,6 +128,7 @@
 
 .legendLabel {
   @apply text-xs font-medium text-white/80;
+  overflow-wrap: anywhere;
 }
 
 .legendValue {

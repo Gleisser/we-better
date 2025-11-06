@@ -164,11 +164,6 @@ const describeArc = (
   return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} ${sweepFlag} ${end.x} ${end.y}`;
 };
 
-const computeAverage = (values: number[]): number => {
-  if (values.length === 0) return 0;
-  return values.reduce((total, current) => total + current, 0) / values.length;
-};
-
 const createInitialHistory = (): MoodHistoryPoint[] => {
   const today = new Date();
   const indices = [2, 2, 3, 1, 2, 1, 2];
@@ -255,16 +250,6 @@ const MoodWidget = (): JSX.Element => {
       moods: values,
     }));
   }, [history, translate]);
-
-  const weeklyAverage = useMemo(
-    () => computeAverage(weeklyTrend.map(item => item.moodIndex)),
-    [weeklyTrend]
-  );
-
-  const monthlyAverage = useMemo(
-    () => computeAverage(monthlyTrend.flatMap(item => item.moods)),
-    [monthlyTrend]
-  );
 
   const ticks = useMemo(() => {
     return Array.from({ length: TICK_COUNT }, (_, index) => {
@@ -452,11 +437,6 @@ const MoodWidget = (): JSX.Element => {
             {viewMode === 'week'
               ? translate('widgets.mood.trend.weekly')
               : translate('widgets.mood.trend.monthly')}
-          </span>
-          <span className={styles.trendMeta}>
-            {translate('widgets.mood.trend.average', {
-              value: (viewMode === 'week' ? weeklyAverage : monthlyAverage).toFixed(1),
-            })}
           </span>
         </div>
 
