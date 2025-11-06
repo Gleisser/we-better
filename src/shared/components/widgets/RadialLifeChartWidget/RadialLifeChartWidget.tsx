@@ -1,7 +1,7 @@
 import { type CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './RadialLifeChartWidget.module.css';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
-import { getLatestLifeWheelData } from '@/features/life-wheel/api/lifeWheelApi';
+import { useLatestLifeWheel } from '@/features/life-wheel/hooks/useLatestLifeWheel';
 import { useNavigate } from 'react-router-dom';
 
 type LifeArea = {
@@ -19,15 +19,6 @@ type ArcPresentation = {
   targetOffset: number;
   tooltipPoint: { x: number; y: number };
   delay: number;
-};
-
-type ApiLifeCategory = {
-  id: string;
-  name: string;
-  value: number;
-  color?: string | { from: string; to: string };
-  gradient?: string | { from: string; to: string };
-  icon?: string;
 };
 
 const TAU = Math.PI * 2;
@@ -184,9 +175,21 @@ const RadialLifeChartWidget = (): JSX.Element => {
   const { t } = useCommonTranslation();
   const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [rawCategories, setRawCategories] = useState<ApiLifeCategory[]>([]);
+  const {
+    data: latestLifeWheel,
+    isLoading,
+    isError,
+    error: latestLifeWheelError,
+  } = useLatestLifeWheel();
+
+  const fetchError =
+    isError && latestLifeWheelError
+      ? latestLifeWheelError instanceof Error
+        ? latestLifeWheelError.message
+        : String(latestLifeWheelError)
+      : null;
+
+  const rawCategories = useMemo(() => latestLifeWheel?.entry?.categories ?? [], [latestLifeWheel]);
 
   const translateCategory = useCallback(
     (categoryName: string): { key: string; label: string } => {
@@ -208,45 +211,6 @@ const RadialLifeChartWidget = (): JSX.Element => {
     },
     [t]
   );
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchLifeWheelData = async (): Promise<void> => {
-      if (isMounted) {
-        setIsLoading(true);
-        setError(null);
-      }
-
-      try {
-        const response = await getLatestLifeWheelData();
-        if (!isMounted) return;
-
-        if (response.success) {
-          const categories = (response.entry?.categories ?? []) as unknown as ApiLifeCategory[];
-          setRawCategories(categories);
-          setError(null);
-        } else {
-          setRawCategories([]);
-          setError(response.error ?? 'unknown_error');
-        }
-      } catch (err) {
-        if (!isMounted) return;
-        setRawCategories([]);
-        setError(err instanceof Error ? err.message : 'unknown_error');
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchLifeWheelData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const areas = useMemo<LifeArea[]>(() => {
     if (!rawCategories.length) {
@@ -311,6 +275,7 @@ const RadialLifeChartWidget = (): JSX.Element => {
           value: hoveredArc.item.score.toFixed(1),
         });
 
+  const hasFetchError = Boolean(fetchError);
   const hasData = areas.length > 0;
   const handleNavigate = useCallback(() => {
     navigate('/app/life-wheel');
@@ -337,22 +302,20 @@ const RadialLifeChartWidget = (): JSX.Element => {
         <div className={styles.stateWrapper}>
           <p className={styles.stateText}>{translateString('widgets.lifeWheel.loading')}</p>
         </div>
+      ) : hasFetchError ? (
+        <div className={styles.stateWrapper}>
+          <p className={styles.stateText}>
+            {translateString('widgets.lifeWheel.errors.failedToLoad')}
+          </p>
+        </div>
       ) : !hasData ? (
         <div className={styles.stateWrapper}>
           <p className={styles.stateText}>
-            {error
-              ? translateString('widgets.lifeWheel.errors.failedToLoad')
-              : translateString('widgets.lifeWheel.history.noHistoryYet')}
+            {translateString('widgets.lifeWheel.history.noHistoryYet')}
           </p>
         </div>
       ) : (
         <>
-          {error ? (
-            <div className={styles.errorState}>
-              {translateString('widgets.lifeWheel.errors.failedToLoad')}
-            </div>
-          ) : null}
-
           <div className={styles.chartWrapper}>
             <svg
               className={styles.chart}

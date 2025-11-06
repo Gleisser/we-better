@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import styles from './AffirmationWidget.module.css';
 import {
   ChevronLeftIcon,
@@ -26,6 +26,10 @@ import { Toast } from '@/shared/components/common/Toast/Toast';
 import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
 import { affirmationService } from '@/core/services/affirmationService';
 import { useAffirmations } from '@/shared/hooks/useAffirmations';
+import {
+  useCategoryAffirmationPool,
+  type NonPersonalAffirmationCategory,
+} from '@/features/affirmations/hooks/useCategoryAffirmationPool';
 
 type AffirmationCategory =
   | 'personal'
@@ -144,6 +148,8 @@ const AffirmationWidget = (): JSX.Element => {
     deletePersonalAffirmation,
     logAffirmation,
     updateReminderSettings,
+    fetchPersonalAffirmation,
+    isLoading: affirmationsLoading,
   } = useAffirmations();
 
   // Notification permission state
@@ -199,87 +205,105 @@ const AffirmationWidget = (): JSX.Element => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations();
-  const [affirmations, setAffirmations] = useState<UserAffirmation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [checkedPersonal, setCheckedPersonal] = useState(false);
 
-  const fetchAffirmationsByCategory = useCallback(
-    async (category: AffirmationCategory) => {
-      try {
-        setLoading(true);
+  const nonPersonalCategory: NonPersonalAffirmationCategory | null =
+    selectedCategory === 'personal' ? null : (selectedCategory as NonPersonalAffirmationCategory);
 
-        if (category === 'personal') {
-          if (personalAffirmation) {
-            // Convert backend personal affirmation to widget format
-            setCurrentAffirmation({
-              id: personalAffirmation.id,
-              text: personalAffirmation.text,
-              category: 'personal',
-              intensity: personalAffirmation.intensity,
-            });
-            setCheckedPersonal(true);
-          } else if (!checkedPersonal) {
-            // No personal affirmation, switch to beauty category
-            setSelectedCategory('beauty');
-            setCheckedPersonal(true);
-            setLoading(false);
-            return;
-          }
-        } else {
-          // Use external service for non-personal affirmations
-          const response = await affirmationService.getAffirmationsByCategory(category, {
-            sort: 'publishedAt:desc',
-            pagination: {
-              page: 1,
-              pageSize: 15,
-            },
-          });
+  const {
+    data: affirmationPoolData,
+    isLoading: isCategoryLoading,
+    isError: isCategoryError,
+    error: categoryError,
+    refetch: refetchCategoryAffirmations,
+  } = useCategoryAffirmationPool(nonPersonalCategory);
 
-          const mappedServiceAffirmations = affirmationService.mapAffirmationResponse(response);
-          // Convert service affirmations to user affirmations
-          const userAffirmations = mappedServiceAffirmations.map(item => ({
-            id: item.documentId,
-            text: item.text,
-            category: affirmationService.determineAffirmationType(item.categories),
-            intensity: affirmationService.determineIntensity(item.categories),
-          }));
+  const normalizedAffirmations = useMemo<UserAffirmation[]>(() => {
+    if (!affirmationPoolData) {
+      return [];
+    }
 
-          setAffirmations(userAffirmations);
-
-          if (userAffirmations.length > 0) {
-            const randomIndex = Math.floor(Math.random() * userAffirmations.length);
-            setCurrentAffirmation(userAffirmations[randomIndex]);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching affirmations:', error);
-        // Use a static error message to avoid dependency on t function
-        setError('Failed to load affirmations for this category');
-
-        if (category === 'personal' && !checkedPersonal) {
-          setSelectedCategory('beauty');
-          setCheckedPersonal(true);
-        }
-      } finally {
-        setLoading(false);
-      }
-    },
-    [personalAffirmation, checkedPersonal]
-  );
+    return affirmationPoolData
+      .map(item => ({
+        id: item.documentId,
+        text: item.text,
+        category: affirmationService.determineAffirmationType(item.categories),
+        intensity: affirmationService.determineIntensity(item.categories),
+      }))
+      .filter(item => (nonPersonalCategory ? item.category === nonPersonalCategory : true));
+  }, [affirmationPoolData, nonPersonalCategory]);
 
   useEffect(() => {
-    fetchAffirmationsByCategory(selectedCategory);
-  }, [fetchAffirmationsByCategory, selectedCategory]);
+    if (!nonPersonalCategory) {
+      return;
+    }
+
+    if (categoryError) {
+      console.error('Error fetching affirmations:', categoryError);
+    }
+  }, [categoryError, nonPersonalCategory]);
+
+  useEffect(() => {
+    if (selectedCategory !== 'personal') {
+      return;
+    }
+
+    if (personalAffirmation) {
+      setCurrentAffirmation({
+        id: personalAffirmation.id,
+        text: personalAffirmation.text,
+        category: 'personal',
+        intensity: personalAffirmation.intensity,
+      });
+      setCheckedPersonal(true);
+      return;
+    }
+
+    if (!affirmationsLoading && !checkedPersonal) {
+      setCheckedPersonal(true);
+      setSelectedCategory('beauty');
+    }
+  }, [selectedCategory, personalAffirmation, affirmationsLoading, checkedPersonal]);
+
+  useEffect(() => {
+    if (!nonPersonalCategory) {
+      return;
+    }
+
+    if (!normalizedAffirmations.length) {
+      if (!isCategoryLoading) {
+        setCurrentAffirmation(null);
+      }
+      return;
+    }
+
+    setCurrentAffirmation(previous => {
+      if (!previous || previous.category !== nonPersonalCategory) {
+        const randomIndex = Math.floor(Math.random() * normalizedAffirmations.length);
+        return normalizedAffirmations[randomIndex];
+      }
+
+      const stillExists = normalizedAffirmations.some(item => item.id === previous.id);
+      if (!stillExists) {
+        const randomIndex = Math.floor(Math.random() * normalizedAffirmations.length);
+        return normalizedAffirmations[randomIndex];
+      }
+
+      return previous;
+    });
+  }, [nonPersonalCategory, normalizedAffirmations, isCategoryLoading]);
 
   const handleCategoryChange = (category: AffirmationCategory): void => {
+    if (category === selectedCategory) {
+      return;
+    }
+
+    setCurrentAffirmation(null);
     setSelectedCategory(category);
-    fetchAffirmationsByCategory(category);
   };
 
   const getRandomAffirmation = (): UserAffirmation | null => {
     if (selectedCategory === 'personal' && personalAffirmation) {
-      // Convert backend personal affirmation to widget format
       return {
         id: personalAffirmation.id,
         text: personalAffirmation.text,
@@ -288,12 +312,27 @@ const AffirmationWidget = (): JSX.Element => {
       };
     }
 
-    if (affirmations.length === 0) {
+    if (!normalizedAffirmations.length) {
       return null;
     }
 
-    const randomIndex = Math.floor(Math.random() * affirmations.length);
-    return affirmations[randomIndex];
+    const randomIndex = Math.floor(Math.random() * normalizedAffirmations.length);
+    return normalizedAffirmations[randomIndex];
+  };
+
+  const isLoadingAffirmations =
+    selectedCategory === 'personal'
+      ? affirmationsLoading && !personalAffirmation && !checkedPersonal
+      : isCategoryLoading && !normalizedAffirmations.length;
+
+  const hasFetchError = Boolean(nonPersonalCategory && isCategoryError);
+
+  const handleRetryFetch = (): void => {
+    if (nonPersonalCategory) {
+      void refetchCategoryAffirmations();
+    } else {
+      void fetchPersonalAffirmation();
+    }
   };
 
   const checkScroll = (): void => {
@@ -497,16 +536,13 @@ const AffirmationWidget = (): JSX.Element => {
       <div className={styles.content}>
         <ParticleEffect isTriggered={showParticles} onComplete={handleParticlesComplete} />
 
-        {loading ? (
+        {isLoadingAffirmations ? (
           <div className={styles.loading}>{t('widgets.affirmation.loadingAffirmations')}</div>
-        ) : error ? (
+        ) : hasFetchError ? (
           <div className={styles.error}>
             <span className={styles.errorIcon}>⚠️</span>
             <span className={styles.errorMessage}>{t('widgets.affirmation.failedToLoad')}</span>
-            <button
-              onClick={() => fetchAffirmationsByCategory(selectedCategory)}
-              className={styles.retryButton}
-            >
+            <button onClick={handleRetryFetch} className={styles.retryButton}>
               {t('widgets.affirmation.tryAgain')}
             </button>
           </div>

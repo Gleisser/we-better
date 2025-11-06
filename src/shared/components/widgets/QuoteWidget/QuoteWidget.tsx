@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './QuoteWidget.module.css';
 import { MoreVerticalIcon, RefreshIcon } from '../../common/icons';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
@@ -7,6 +7,7 @@ import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/shared/hooks/useTiltEffect';
 import { quoteService, type Quote } from '@/core/services/quoteService';
 import { QuoteMoreOptionsMenu } from './QuoteMoreOptionsMenu';
+import { useQuotePool } from '@/features/quotes/hooks/useQuotePool';
 
 type QuoteTheme = 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom';
 
@@ -181,8 +182,7 @@ const QuoteWidget = (): JSX.Element => {
 
   const [quote, setQuote] = useState<Quote | null>(null);
   const [quotePool, setQuotePool] = useState<Quote[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isFetchingNextQuote, setIsFetchingNextQuote] = useState(false);
   const [backgroundIndices, setBackgroundIndices] = useState<Record<QuoteTheme, number>>({
     success: 0,
     motivation: 0,
@@ -222,6 +222,37 @@ const QuoteWidget = (): JSX.Element => {
   const shareButtonRef = useRef<HTMLButtonElement>(null);
   const moreButtonRef = useRef<HTMLButtonElement>(null);
   const quoteTextRef = useRef<HTMLDivElement>(null);
+
+  const {
+    data: fetchedQuotes,
+    isLoading: isQuotePoolLoading,
+    isError: isQuotePoolError,
+    error: quotePoolError,
+    refetch: refetchQuotePool,
+  } = useQuotePool();
+
+  useEffect(() => {
+    if (Array.isArray(fetchedQuotes) && fetchedQuotes.length > 0) {
+      setQuotePool(fetchedQuotes);
+    }
+  }, [fetchedQuotes]);
+
+  useEffect(() => {
+    if (!quote && quotePool.length > 0) {
+      setQuote(quotePool[0]);
+    }
+  }, [quote, quotePool]);
+
+  const fetchError =
+    isQuotePoolError && quotePoolError
+      ? quotePoolError instanceof Error
+        ? quotePoolError.message
+        : 'Failed to load quotes'
+      : null;
+
+  const isInitialLoading = isQuotePoolLoading && !quote;
+  const showLoadingSkeleton = isInitialLoading && !fetchError;
+  const isNextQuoteBusy = isFetchingNextQuote || isInitialLoading;
 
   const resolvedTheme = quote ? quoteService.determineQuoteTheme(quote.categories) : QUOTE.theme;
   const themeConfig = THEME_CONFIG[resolvedTheme];
@@ -275,34 +306,6 @@ const QuoteWidget = (): JSX.Element => {
       window.removeEventListener('resize', handleDismiss);
     };
   }, [showMoreOptions]);
-
-  const fetchQuotes = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await quoteService.getQuotes({
-        sort: 'publishedAt:desc',
-        pagination: {
-          page: 1,
-          pageSize: 15, // Fetch 15 quotes at once
-        },
-      });
-
-      const mappedQuotes = quoteService.mapQuoteResponse(response);
-      setQuotePool(mappedQuotes);
-      // Set the first quote as current
-      setQuote(mappedQuotes[0]);
-    } catch (error) {
-      console.error('Error fetching quotes:', error);
-      // Use a static error message to avoid dependency on t function
-      setError('Failed to load quotes');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchQuotes();
-  }, [fetchQuotes]);
 
   useEffect(() => {
     setIsExpanded(false);
@@ -465,46 +468,54 @@ const QuoteWidget = (): JSX.Element => {
     setShowMoreOptions(true);
   };
 
-  const handleNewQuote = (): void => {
-    if (quotePool.length === 0) {
-      // If we've used all quotes, fetch new ones
-      fetchQuotes();
+  const handleNewQuote = async (): Promise<void> => {
+    if (isFetchingNextQuote) {
       return;
     }
 
-    // Get current quote index
-    const currentIndex = quote ? quotePool.findIndex(q => q.id === quote.id) : -1;
+    setIsFetchingNextQuote(true);
 
-    // Get next quote (randomly from the pool, excluding current quote)
-    const availableQuotes = quotePool.filter((_, index) => index !== currentIndex);
+    try {
+      const result = await refetchQuotePool({
+        throwOnError: false,
+      });
 
-    if (availableQuotes.length === 0) {
-      fetchQuotes();
-      return;
+      const updatedQuotes = result.data && result.data.length ? result.data : quotePool;
+
+      if (!updatedQuotes.length) {
+        return;
+      }
+
+      setQuotePool(updatedQuotes);
+
+      const currentIndex = quote ? updatedQuotes.findIndex(q => q.id === quote.id) : -1;
+      const availableQuotes =
+        currentIndex >= 0
+          ? updatedQuotes.filter((_, index) => index !== currentIndex)
+          : updatedQuotes;
+
+      const nextQuote =
+        availableQuotes.length > 0
+          ? availableQuotes[Math.floor(Math.random() * availableQuotes.length)]
+          : updatedQuotes[0];
+
+      const nextTheme = quoteService.determineQuoteTheme(nextQuote.categories);
+      setBackgroundIndices(prev => {
+        const previousIndex = prev[nextTheme] ?? 0;
+        const themeBackgrounds = BACKGROUND_IMAGES[nextTheme] ?? BACKGROUND_IMAGES.success;
+        const updatedIndex = (previousIndex + 1) % themeBackgrounds.length;
+
+        return {
+          ...prev,
+          [nextTheme]: updatedIndex,
+        };
+      });
+
+      setQuote(nextQuote);
+      setIsExpanded(false);
+    } finally {
+      setIsFetchingNextQuote(false);
     }
-
-    const randomIndex = Math.floor(Math.random() * availableQuotes.length);
-    const nextQuote = availableQuotes[randomIndex];
-
-    // If we're running low on quotes (e.g., only 5 left), fetch more
-    if (availableQuotes.length <= 5) {
-      fetchQuotes();
-    }
-
-    const nextTheme = quoteService.determineQuoteTheme(nextQuote.categories);
-    setBackgroundIndices(prev => {
-      const previousIndex = prev[nextTheme] ?? 0;
-      const themeBackgrounds = BACKGROUND_IMAGES[nextTheme] ?? BACKGROUND_IMAGES.success;
-      const updatedIndex = (previousIndex + 1) % themeBackgrounds.length;
-
-      return {
-        ...prev,
-        [nextTheme]: updatedIndex,
-      };
-    });
-
-    setQuote(nextQuote);
-    setIsExpanded(false);
   };
 
   return (
@@ -649,15 +660,20 @@ const QuoteWidget = (): JSX.Element => {
           </div>
 
           <div className={styles.contentArea}>
-            {error ? (
+            {fetchError ? (
               <div className={styles.error}>
                 <div className={styles.errorIcon}>⚠️</div>
-                <div className={styles.errorMessage}>{error}</div>
-                <button className={styles.retryButton} onClick={fetchQuotes}>
+                <div className={styles.errorMessage}>{fetchError}</div>
+                <button
+                  className={styles.retryButton}
+                  onClick={() => {
+                    void refetchQuotePool({ throwOnError: false });
+                  }}
+                >
                   {t('widgets.common.retry')}
                 </button>
               </div>
-            ) : loading ? (
+            ) : showLoadingSkeleton ? (
               <LoadingSkeleton />
             ) : quote ? (
               <motion.div
@@ -766,12 +782,14 @@ const QuoteWidget = (): JSX.Element => {
                     <button
                       type="button"
                       className={`${styles.actionButton} ${styles.newQuoteButton}`}
-                      onClick={handleNewQuote}
+                      onClick={() => {
+                        void handleNewQuote();
+                      }}
                       aria-label="Get new quote"
-                      disabled={loading}
+                      disabled={isNextQuoteBusy}
                     >
                       <RefreshIcon
-                        className={`${styles.actionIcon} ${loading ? styles.spinning : ''}`}
+                        className={`${styles.actionIcon} ${isNextQuoteBusy ? styles.spinning : ''}`}
                       />
                     </button>
 
