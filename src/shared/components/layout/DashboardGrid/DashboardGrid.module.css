@@ -6,8 +6,8 @@
   @apply grid gap-4 w-full;
   grid-template-columns: repeat(3, 1fr);
   grid-template-areas:
-    'quote cards lifeWheel'
-    'mood mood radial'
+    'quote cards radial'
+    'mood mood mood'
     'habits habits habits'
     'goals goals goals'
     'cutout videos videos'

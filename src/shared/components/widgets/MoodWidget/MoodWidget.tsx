@@ -59,6 +59,20 @@ const PREVIOUS_WEEKS: number[][] = [
   [1, 2, 1, 1, 2, 3, 2],
 ];
 
+const STATIC_EMOJI_MAP: Record<MoodId, string> = {
+  elated: '😍',
+  bright: '😊',
+  balanced: '😮',
+  low: '😢',
+  drained: '😡',
+};
+
+const getStaticEmoji = (moodIndex: number): string => {
+  const mood = MOODS[moodIndex];
+  if (!mood) return '🙂';
+  return STATIC_EMOJI_MAP[mood.id] ?? '🙂';
+};
+
 const renderEmoji = (variant: MoodDefinition['emojiVariant']): JSX.Element => {
   switch (variant) {
     case 'haha':
@@ -238,9 +252,19 @@ const MoodWidget = (): JSX.Element => {
     return allWeeks.map((values, index) => ({
       key: `week-${index}`,
       label: translate('widgets.mood.weeks.short', { index: index + 1 }),
-      average: computeAverage(values),
+      moods: values,
     }));
   }, [history, translate]);
+
+  const weeklyAverage = useMemo(
+    () => computeAverage(weeklyTrend.map(item => item.moodIndex)),
+    [weeklyTrend]
+  );
+
+  const monthlyAverage = useMemo(
+    () => computeAverage(monthlyTrend.flatMap(item => item.moods)),
+    [monthlyTrend]
+  );
 
   const ticks = useMemo(() => {
     return Array.from({ length: TICK_COUNT }, (_, index) => {
@@ -408,13 +432,6 @@ const MoodWidget = (): JSX.Element => {
               className={styles.pointer}
               transition={{ duration: 0.45, ease: 'easeOut' }}
             />
-            <motion.circle
-              cx={pointerKnob.x}
-              cy={pointerKnob.y}
-              r={10}
-              className={styles.pointerKnob}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
-            />
             {showPointerKnob ? (
               <motion.circle
                 key="pointer-knob"
@@ -438,40 +455,43 @@ const MoodWidget = (): JSX.Element => {
           </span>
           <span className={styles.trendMeta}>
             {translate('widgets.mood.trend.average', {
-              value:
-                viewMode === 'week'
-                  ? computeAverage(weeklyTrend.map(item => item.moodIndex)).toFixed(1)
-                  : computeAverage(monthlyTrend.map(item => item.average)).toFixed(1),
+              value: (viewMode === 'week' ? weeklyAverage : monthlyAverage).toFixed(1),
             })}
           </span>
         </div>
 
-        <div className={styles.trendChart} data-view={viewMode}>
-          {viewMode === 'week'
-            ? weeklyTrend.map(point => (
-                <div key={point.key} className={styles.barGroup}>
-                  <div className={styles.barTrack}>
-                    <motion.div
-                      className={styles.barFill}
-                      animate={{ height: `${((point.moodIndex + 1) / MOODS.length) * 100}%` }}
-                      transition={{ duration: 0.4, delay: 0.05 }}
-                    />
+        <div className={styles.trendDisplay} data-view={viewMode}>
+          {viewMode === 'week' ? (
+            <div className={styles.trendRow}>
+              {weeklyTrend.map(point => {
+                const emoji = getStaticEmoji(point.moodIndex);
+                return (
+                  <div key={point.key} className={styles.trendItem}>
+                    <div className={styles.trendEmojiLarge}>{emoji}</div>
+                    <span className={styles.trendLabel}>{point.label}</span>
                   </div>
-                  <span className={styles.barLabel}>{point.label}</span>
-                </div>
-              ))
-            : monthlyTrend.map(point => (
-                <div key={point.key} className={styles.barGroup}>
-                  <div className={styles.barTrack}>
-                    <motion.div
-                      className={styles.barFill}
-                      animate={{ height: `${(point.average / (MOODS.length - 1)) * 100}%` }}
-                      transition={{ duration: 0.4 }}
-                    />
+                );
+              })}
+            </div>
+          ) : (
+            <div className={styles.monthGrid}>
+              {monthlyTrend.map(week => (
+                <div key={week.key} className={styles.monthRow}>
+                  <span className={styles.monthLabel}>{week.label}</span>
+                  <div className={styles.monthEmojis}>
+                    {week.moods.map((moodIndex, day) => {
+                      const emoji = getStaticEmoji(moodIndex);
+                      return (
+                        <div key={`${week.key}-${day}`} className={styles.trendEmojiSmall}>
+                          {emoji}
+                        </div>
+                      );
+                    })}
                   </div>
-                  <span className={styles.barLabel}>{point.label}</span>
                 </div>
               ))}
+            </div>
+          )}
         </div>
       </footer>
     </section>

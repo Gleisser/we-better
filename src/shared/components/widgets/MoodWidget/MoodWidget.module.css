@@ -503,28 +503,53 @@
   @apply text-sm text-white/50;
 }
 
-.trendChart {
-  @apply flex items-end justify-between gap-3;
-  min-height: 120px;
+.trendDisplay {
+  @apply flex flex-col gap-4;
 }
 
-.barGroup {
-  @apply flex flex-col items-center gap-3;
-  flex: 1;
+.trendRow {
+  @apply flex items-end justify-between gap-4;
 }
 
-.barTrack {
-  @apply relative h-24 w-2 overflow-hidden rounded-full bg-white/10;
+.trendItem {
+  @apply flex flex-col items-center gap-2;
 }
 
-.barFill {
-  @apply absolute bottom-0 left-0 w-full rounded-full bg-[color:var(--accent-color)];
-  height: 0%;
+.trendEmojiLarge {
+  @apply flex items-center justify-center rounded-full bg-white/10;
+  width: 64px;
+  height: 64px;
+  font-size: 32px;
+  line-height: 1;
 }
 
-.barLabel {
-  @apply text-[10px] font-semibold uppercase tracking-[0.28em] text-white/40;
-  letter-spacing: 0.28em;
+.trendLabel {
+  @apply text-[10px] font-semibold uppercase tracking-[0.28em] text-white/50;
+}
+
+.monthGrid {
+  @apply flex flex-col gap-3;
+}
+
+.monthRow {
+  @apply flex items-center gap-3;
+}
+
+.monthLabel {
+  @apply text-[10px] font-semibold uppercase tracking-[0.28em] text-white/50;
+  width: 3.5rem;
+}
+
+.monthEmojis {
+  @apply flex gap-2 flex-wrap;
+}
+
+.trendEmojiSmall {
+  @apply flex items-center justify-center rounded-full bg-white/10;
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  line-height: 1;
 }
 
 @keyframes haha-face {
@@ -778,9 +803,5 @@
 
   .confirmButton {
     @apply h-14 w-14 bottom-4;
-  }
-
-  .barTrack {
-    @apply h-20;
   }
 }
