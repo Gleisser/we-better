@@ -115,7 +115,10 @@ const WeBetterApp = (): JSX.Element => {
 
           {/* Content Area */}
           <div className={styles.contentArea}>
-            <Outlet />
+            <div className={styles.contentBackground} aria-hidden="true" />
+            <div className={styles.contentInner}>
+              <Outlet />
+            </div>
           </div>
         </main>
 
