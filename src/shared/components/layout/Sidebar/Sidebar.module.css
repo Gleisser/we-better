@@ -72,6 +72,15 @@
   color: var(--theme-text-muted);
 }
 
+.lottieIcon {
+  width: 22px;
+  height: 22px;
+}
+
+.lottieWrapper {
+  @apply inline-flex;
+}
+
 .navItem:hover .icon {
   color: var(--theme-interactive-primary);
 }
@@ -116,6 +125,10 @@
   color: var(--theme-interactive-primary);
   filter: drop-shadow(0 0 8px var(--theme-interactive-primary));
   animation: iconGlow 2s infinite;
+}
+
+.navItem[data-active='true'] .lottieIcon {
+  filter: drop-shadow(0 0 8px var(--theme-interactive-primary));
 }
 
 @keyframes glowPulse {
