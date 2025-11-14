@@ -528,7 +528,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+  row-gap: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
   padding-top: 20px;
 }
@@ -538,12 +540,17 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   color: rgba(255, 255, 255, 0.9);
+  flex: 1 1 160px;
+  min-width: 0;
 }
 
 .bottomActions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 12px;
+  flex: 1 1 220px;
+  flex-wrap: wrap;
 }
 
 .reactionsWrapper {

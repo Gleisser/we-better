@@ -31,7 +31,9 @@
 }
 
 .emojiRow {
-  @apply flex items-center justify-center gap-5;
+  @apply flex flex-wrap items-center justify-center gap-5;
+  row-gap: 1.25rem;
+  width: 100%;
 }
 
 .emojiButton {
@@ -787,6 +789,11 @@
     @apply gap-5 p-5;
   }
 
+  .emojiRow {
+    gap: 16px;
+    row-gap: 14px;
+  }
+
   .emojiButton {
     height: 96px;
     width: 96px;
@@ -803,5 +810,30 @@
 
   .confirmButton {
     @apply h-14 w-14 bottom-4;
+  }
+}
+
+@media (max-width: 560px) {
+  .emojiRow {
+    justify-content: space-between;
+    gap: 14px;
+    row-gap: 16px;
+  }
+
+  .emojiButton {
+    height: 88px;
+    width: 88px;
+  }
+}
+
+@media (max-width: 420px) {
+  .emojiRow {
+    gap: 12px;
+    row-gap: 14px;
+  }
+
+  .emojiButton {
+    height: 80px;
+    width: 80px;
   }
 }
