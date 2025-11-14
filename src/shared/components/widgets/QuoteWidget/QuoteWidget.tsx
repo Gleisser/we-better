@@ -1,12 +1,19 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, type MutableRefObject } from 'react';
 import styles from './QuoteWidget.module.css';
-import { MoreVerticalIcon, RefreshIcon } from '../../common/icons';
+import { MoreVerticalIcon } from '../../common/icons';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/shared/hooks/useTiltEffect';
 import { quoteService, type Quote } from '@/core/services/quoteService';
 import { QuoteMoreOptionsMenu } from './QuoteMoreOptionsMenu';
+import { useQuotePool } from '@/features/quotes/hooks/useQuotePool';
+import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
+import shareAnimation from './icons/share.json';
+import bookmarkAnimation from './icons/bookmark.json';
+import refreshAnimation from './icons/refresh.json';
+import clipboardAnimation from './icons/clipboard.json';
+import likeAnimation from './icons/like.json';
 
 type QuoteTheme = 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom';
 
@@ -97,35 +104,6 @@ const QuoteIcon = ({ className }: { className?: string }): JSX.Element => (
   </svg>
 );
 
-const BookmarkIcon = ({
-  className,
-  filled,
-}: {
-  className?: string;
-  filled?: boolean;
-}): JSX.Element => (
-  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-      fill={filled ? 'currentColor' : 'none'}
-    />
-  </svg>
-);
-
-const ShareIcon = ({ className }: { className?: string }): JSX.Element => (
-  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-    />
-  </svg>
-);
-
 const FacebookIcon = ({ className }: { className?: string }): JSX.Element => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
     <path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 011-1h3v-4h-3a5 5 0 00-5 5v2.01h-2l-.396 3.98h2.396v8.01z" />
@@ -144,20 +122,31 @@ const InstagramIcon = ({ className }: { className?: string }): JSX.Element => (
   </svg>
 );
 
-const CopyIcon = ({ className }: { className?: string }): JSX.Element => (
-  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor">
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
-    />
-  </svg>
-);
-
 type Reaction = '❤️' | '👏' | '💡' | '💪' | '🙏';
 
 const REACTIONS: Reaction[] = ['❤️', '👏', '💡', '💪', '🙏'];
+
+const useMicroAnimation = (): {
+  lottieRef: MutableRefObject<LottieRefCurrentProps | null>;
+  play: () => void;
+  stop: () => void;
+} => {
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
+
+  const play = useCallback(() => {
+    lottieRef.current?.goToAndPlay?.(0, true);
+  }, []);
+
+  const stop = useCallback(() => {
+    lottieRef.current?.goToAndStop?.(0, true);
+  }, []);
+
+  useEffect(() => {
+    stop();
+  }, [stop]);
+
+  return { lottieRef, play, stop };
+};
 
 const LoadingSkeleton = (): JSX.Element => (
   <div className={styles.skeletonContent}>
@@ -181,8 +170,7 @@ const QuoteWidget = (): JSX.Element => {
 
   const [quote, setQuote] = useState<Quote | null>(null);
   const [quotePool, setQuotePool] = useState<Quote[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isFetchingNextQuote, setIsFetchingNextQuote] = useState(false);
   const [backgroundIndices, setBackgroundIndices] = useState<Record<QuoteTheme, number>>({
     success: 0,
     motivation: 0,
@@ -223,6 +211,59 @@ const QuoteWidget = (): JSX.Element => {
   const moreButtonRef = useRef<HTMLButtonElement>(null);
   const quoteTextRef = useRef<HTMLDivElement>(null);
 
+  const { lottieRef: shareLottieRef, play: playShareAnimation } = useMicroAnimation();
+  const { lottieRef: bookmarkLottieRef, play: playBookmarkAnimation } = useMicroAnimation();
+  const {
+    lottieRef: refreshLottieRef,
+    play: playRefreshAnimation,
+    stop: stopRefreshAnimation,
+  } = useMicroAnimation();
+  const { lottieRef: clipboardLottieRef, play: playClipboardAnimation } = useMicroAnimation();
+  const {
+    lottieRef: reactionLottieRef,
+    play: playReactionAnimation,
+    stop: stopReactionAnimation,
+  } = useMicroAnimation();
+
+  const {
+    data: fetchedQuotes,
+    isLoading: isQuotePoolLoading,
+    isError: isQuotePoolError,
+    error: quotePoolError,
+    refetch: refetchQuotePool,
+  } = useQuotePool();
+
+  useEffect(() => {
+    if (Array.isArray(fetchedQuotes) && fetchedQuotes.length > 0) {
+      setQuotePool(fetchedQuotes);
+    }
+  }, [fetchedQuotes]);
+
+  useEffect(() => {
+    if (!quote && quotePool.length > 0) {
+      setQuote(quotePool[0]);
+    }
+  }, [quote, quotePool]);
+
+  const fetchError =
+    isQuotePoolError && quotePoolError
+      ? quotePoolError instanceof Error
+        ? quotePoolError.message
+        : 'Failed to load quotes'
+      : null;
+
+  const isInitialLoading = isQuotePoolLoading && !quote;
+  const showLoadingSkeleton = isInitialLoading && !fetchError;
+  const isNextQuoteBusy = isFetchingNextQuote || isInitialLoading;
+
+  useEffect(() => {
+    if (isNextQuoteBusy) {
+      playRefreshAnimation();
+    } else {
+      stopRefreshAnimation();
+    }
+  }, [isNextQuoteBusy, playRefreshAnimation, stopRefreshAnimation]);
+
   const resolvedTheme = quote ? quoteService.determineQuoteTheme(quote.categories) : QUOTE.theme;
   const themeConfig = THEME_CONFIG[resolvedTheme];
   const themeBackgrounds = BACKGROUND_IMAGES[resolvedTheme] ?? BACKGROUND_IMAGES.success;
@@ -250,6 +291,19 @@ const QuoteWidget = (): JSX.Element => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const triggerShareAnimation = useCallback(() => {
+    playShareAnimation();
+  }, [playShareAnimation]);
+
+  const handleShareButtonClick = (): void => {
+    triggerShareAnimation();
+    setShowShareMenu(prev => !prev);
+  };
+
+  const triggerReactionAnimation = useCallback(() => {
+    playReactionAnimation();
+  }, [playReactionAnimation]);
+
   useEffect(() => {
     if (!showMoreOptions) {
       return;
@@ -275,34 +329,6 @@ const QuoteWidget = (): JSX.Element => {
       window.removeEventListener('resize', handleDismiss);
     };
   }, [showMoreOptions]);
-
-  const fetchQuotes = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await quoteService.getQuotes({
-        sort: 'publishedAt:desc',
-        pagination: {
-          page: 1,
-          pageSize: 15, // Fetch 15 quotes at once
-        },
-      });
-
-      const mappedQuotes = quoteService.mapQuoteResponse(response);
-      setQuotePool(mappedQuotes);
-      // Set the first quote as current
-      setQuote(mappedQuotes[0]);
-    } catch (error) {
-      console.error('Error fetching quotes:', error);
-      // Use a static error message to avoid dependency on t function
-      setError('Failed to load quotes');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchQuotes();
-  }, [fetchQuotes]);
 
   useEffect(() => {
     setIsExpanded(false);
@@ -352,6 +378,7 @@ const QuoteWidget = (): JSX.Element => {
   const handleBookmark = (e: React.MouseEvent): void => {
     e.preventDefault();
     e.stopPropagation();
+    playBookmarkAnimation();
     setIsBookmarked(prev => !prev);
 
     if (!isBookmarked) {
@@ -390,6 +417,7 @@ const QuoteWidget = (): JSX.Element => {
   };
 
   const handleCopyQuote = (): void => {
+    playClipboardAnimation();
     const quote = `"${QUOTE.text}" - ${QUOTE.author}`;
     navigator.clipboard.writeText(quote);
     setShowSuccess({
@@ -407,6 +435,7 @@ const QuoteWidget = (): JSX.Element => {
         [reaction]: prev[reaction] - 1,
       }));
       setUserReaction(null);
+      stopReactionAnimation();
     } else {
       if (userReaction) {
         setReactions(prev => ({
@@ -419,6 +448,7 @@ const QuoteWidget = (): JSX.Element => {
         [reaction]: prev[reaction] + 1,
       }));
       setUserReaction(reaction);
+      playReactionAnimation();
     }
     setShowReactions(false);
   };
@@ -465,46 +495,56 @@ const QuoteWidget = (): JSX.Element => {
     setShowMoreOptions(true);
   };
 
-  const handleNewQuote = (): void => {
-    if (quotePool.length === 0) {
-      // If we've used all quotes, fetch new ones
-      fetchQuotes();
+  const handleNewQuote = async (): Promise<void> => {
+    if (isFetchingNextQuote) {
       return;
     }
 
-    // Get current quote index
-    const currentIndex = quote ? quotePool.findIndex(q => q.id === quote.id) : -1;
+    playRefreshAnimation();
 
-    // Get next quote (randomly from the pool, excluding current quote)
-    const availableQuotes = quotePool.filter((_, index) => index !== currentIndex);
+    setIsFetchingNextQuote(true);
 
-    if (availableQuotes.length === 0) {
-      fetchQuotes();
-      return;
+    try {
+      const result = await refetchQuotePool({
+        throwOnError: false,
+      });
+
+      const updatedQuotes = result.data && result.data.length ? result.data : quotePool;
+
+      if (!updatedQuotes.length) {
+        return;
+      }
+
+      setQuotePool(updatedQuotes);
+
+      const currentIndex = quote ? updatedQuotes.findIndex(q => q.id === quote.id) : -1;
+      const availableQuotes =
+        currentIndex >= 0
+          ? updatedQuotes.filter((_, index) => index !== currentIndex)
+          : updatedQuotes;
+
+      const nextQuote =
+        availableQuotes.length > 0
+          ? availableQuotes[Math.floor(Math.random() * availableQuotes.length)]
+          : updatedQuotes[0];
+
+      const nextTheme = quoteService.determineQuoteTheme(nextQuote.categories);
+      setBackgroundIndices(prev => {
+        const previousIndex = prev[nextTheme] ?? 0;
+        const themeBackgrounds = BACKGROUND_IMAGES[nextTheme] ?? BACKGROUND_IMAGES.success;
+        const updatedIndex = (previousIndex + 1) % themeBackgrounds.length;
+
+        return {
+          ...prev,
+          [nextTheme]: updatedIndex,
+        };
+      });
+
+      setQuote(nextQuote);
+      setIsExpanded(false);
+    } finally {
+      setIsFetchingNextQuote(false);
     }
-
-    const randomIndex = Math.floor(Math.random() * availableQuotes.length);
-    const nextQuote = availableQuotes[randomIndex];
-
-    // If we're running low on quotes (e.g., only 5 left), fetch more
-    if (availableQuotes.length <= 5) {
-      fetchQuotes();
-    }
-
-    const nextTheme = quoteService.determineQuoteTheme(nextQuote.categories);
-    setBackgroundIndices(prev => {
-      const previousIndex = prev[nextTheme] ?? 0;
-      const themeBackgrounds = BACKGROUND_IMAGES[nextTheme] ?? BACKGROUND_IMAGES.success;
-      const updatedIndex = (previousIndex + 1) % themeBackgrounds.length;
-
-      return {
-        ...prev,
-        [nextTheme]: updatedIndex,
-      };
-    });
-
-    setQuote(nextQuote);
-    setIsExpanded(false);
   };
 
   return (
@@ -539,10 +579,18 @@ const QuoteWidget = (): JSX.Element => {
                 ref={shareButtonRef}
                 type="button"
                 className={styles.actionButton}
-                onClick={() => setShowShareMenu(!showShareMenu)}
+                onClick={handleShareButtonClick}
+                onMouseEnter={triggerShareAnimation}
+                onFocus={triggerShareAnimation}
                 aria-label={t('widgets.quote.shareQuote')}
               >
-                <ShareIcon className={styles.actionIcon} />
+                <Lottie
+                  lottieRef={shareLottieRef}
+                  animationData={shareAnimation}
+                  autoplay={false}
+                  loop={false}
+                  className={styles.actionIcon}
+                />
               </button>
 
               <AnimatePresence>
@@ -579,6 +627,12 @@ const QuoteWidget = (): JSX.Element => {
                 onMouseEnter={e => {
                   e.stopPropagation();
                   setShowTooltip(true);
+                  playBookmarkAnimation();
+                }}
+                onFocus={e => {
+                  e.stopPropagation();
+                  setShowTooltip(true);
+                  playBookmarkAnimation();
                 }}
                 onMouseLeave={e => {
                   e.stopPropagation();
@@ -591,7 +645,13 @@ const QuoteWidget = (): JSX.Element => {
                 }
                 style={{ position: 'relative', zIndex: 2 }}
               >
-                <BookmarkIcon className={styles.bookmarkIcon} filled={isBookmarked} />
+                <Lottie
+                  lottieRef={bookmarkLottieRef}
+                  animationData={bookmarkAnimation}
+                  autoplay={false}
+                  loop={false}
+                  className={`${styles.actionIcon} ${styles.bookmarkIcon}`}
+                />
               </button>
 
               <AnimatePresence>
@@ -649,15 +709,20 @@ const QuoteWidget = (): JSX.Element => {
           </div>
 
           <div className={styles.contentArea}>
-            {error ? (
+            {fetchError ? (
               <div className={styles.error}>
                 <div className={styles.errorIcon}>⚠️</div>
-                <div className={styles.errorMessage}>{error}</div>
-                <button className={styles.retryButton} onClick={fetchQuotes}>
+                <div className={styles.errorMessage}>{fetchError}</div>
+                <button
+                  className={styles.retryButton}
+                  onClick={() => {
+                    void refetchQuotePool({ throwOnError: false });
+                  }}
+                >
                   {t('widgets.common.retry')}
                 </button>
               </div>
-            ) : loading ? (
+            ) : showLoadingSkeleton ? (
               <LoadingSkeleton />
             ) : quote ? (
               <motion.div
@@ -729,13 +794,21 @@ const QuoteWidget = (): JSX.Element => {
                     <div className={styles.reactionsWrapper}>
                       <button
                         type="button"
-                        className={`${styles.actionButton} ${
+                        className={`${styles.actionButton} ${styles.gradientButton} ${
                           userReaction ? styles.hasReaction : ''
                         }`}
                         onClick={() => setShowReactions(!showReactions)}
+                        onMouseEnter={triggerReactionAnimation}
+                        onFocus={triggerReactionAnimation}
                         aria-label="React to quote"
                       >
-                        <span className={styles.reactionIcon}>{userReaction || '🤍'}</span>
+                        <Lottie
+                          lottieRef={reactionLottieRef}
+                          animationData={likeAnimation}
+                          autoplay={false}
+                          loop={false}
+                          className={`${styles.actionIcon} ${styles.reactionIcon}`}
+                        />
                       </button>
 
                       <AnimatePresence>
@@ -765,23 +838,39 @@ const QuoteWidget = (): JSX.Element => {
 
                     <button
                       type="button"
-                      className={`${styles.actionButton} ${styles.newQuoteButton}`}
-                      onClick={handleNewQuote}
+                      className={`${styles.actionButton} ${styles.gradientButton} ${styles.newQuoteButton}`}
+                      onClick={() => {
+                        void handleNewQuote();
+                      }}
+                      onMouseEnter={playRefreshAnimation}
+                      onFocus={playRefreshAnimation}
                       aria-label="Get new quote"
-                      disabled={loading}
+                      disabled={isNextQuoteBusy}
                     >
-                      <RefreshIcon
-                        className={`${styles.actionIcon} ${loading ? styles.spinning : ''}`}
+                      <Lottie
+                        lottieRef={refreshLottieRef}
+                        animationData={refreshAnimation}
+                        autoplay={false}
+                        loop={isNextQuoteBusy}
+                        className={`${styles.actionIcon} ${styles.refreshIcon}`}
                       />
                     </button>
 
                     <button
                       type="button"
-                      className={styles.actionButton}
+                      className={`${styles.actionButton} ${styles.gradientButton}`}
                       onClick={handleCopyQuote}
+                      onMouseEnter={playClipboardAnimation}
+                      onFocus={playClipboardAnimation}
                       aria-label="Copy quote"
                     >
-                      <CopyIcon className={styles.actionIcon} />
+                      <Lottie
+                        lottieRef={clipboardLottieRef}
+                        animationData={clipboardAnimation}
+                        autoplay={false}
+                        loop={false}
+                        className={styles.actionIcon}
+                      />
                     </button>
                   </div>
                 </div>

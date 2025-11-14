@@ -45,9 +45,35 @@
 }
 
 .contentArea {
-  @apply p-8;
-  background-color: var(--theme-bg-primary);
+  @apply relative p-8 overflow-hidden;
+  background: transparent;
   transition: var(--theme-transition);
+}
+
+.contentBackground {
+  position: absolute;
+  inset: 0;
+  background-color: #020617;
+  background-image:
+    linear-gradient(to right, rgba(71, 85, 105, 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(71, 85, 105, 0.18) 1px, transparent 1px),
+    radial-gradient(
+      circle at 50% 60%,
+      rgba(236, 72, 153, 0.15) 0%,
+      rgba(168, 85, 247, 0.08) 40%,
+      transparent 70%
+    );
+  background-size:
+    40px 40px,
+    40px 40px,
+    100% 100%;
+  border-radius: 32px;
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+.contentInner {
+  @apply relative z-10;
 }
 
 /* When sidebar is collapsed */
@@ -124,22 +150,29 @@
   background: linear-gradient(135deg, rgba(248, 249, 250, 0.6), rgba(241, 243, 244, 0.8));
 }
 
+[data-theme='light'] .contentBackground {
+  background-color: white;
+  background-image:
+    linear-gradient(to right, rgba(71, 85, 105, 0.3) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(71, 85, 105, 0.3) 1px, transparent 1px),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(139, 92, 246, 0.25) 0%,
+      rgba(139, 92, 246, 0.1) 40%,
+      transparent 80%
+    );
+  background-size:
+    32px 32px,
+    32px 32px,
+    100% 100%;
+  opacity: 1;
+}
+
 [data-theme='light'] .appContainer {
   background: linear-gradient(to bottom right, #f8f9fa, #f1f3f4, #e9ecef);
 }
 
 /* Enhanced theming for better visual hierarchy */
-.appContainer::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--theme-gradient-background);
-  z-index: -1;
-  transition: var(--theme-transition);
-}
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {

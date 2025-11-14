@@ -1,15 +1,15 @@
 .container {
-  @apply w-full max-w-[1400px] mx-auto p-8;
+  @apply relative w-full max-w-[1400px] mx-auto p-8;
 }
 
 .bentoGrid {
   @apply grid gap-4 w-full;
   grid-template-columns: repeat(3, 1fr);
   grid-template-areas:
-    'quote cards lifeWheel'
+    'quote cards radial'
+    'mood mood mood'
     'habits habits habits'
     'goals goals goals'
-    'radial radial radial'
     'cutout videos videos'
     'podcast course book'
     'article article article';
@@ -35,6 +35,10 @@
 
 .lifeWheel {
   grid-area: lifeWheel;
+}
+
+.mood {
+  grid-area: mood;
 }
 
 .article {
@@ -89,6 +93,7 @@
     grid-template-areas:
       'quote affirmation'
       'lifeWheel lifeWheel'
+      'mood mood'
       'habits habits'
       'goals cards'
       'radial radial'
@@ -106,6 +111,7 @@
       'quote'
       'affirmation'
       'lifeWheel'
+      'mood'
       'habits'
       'goals'
       'radial'
