@@ -44,6 +44,33 @@
   -webkit-text-fill-color: transparent;
 }
 
+.waveEmoji {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 1.5rem;
+  animation: wave 1.6s ease-in-out infinite;
+  transform-origin: 70% 70%; /* pivot around wrist */
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(15deg);
+  }
+  40% {
+    transform: rotate(-10deg);
+  }
+  60% {
+    transform: rotate(12deg);
+  }
+  80% {
+    transform: rotate(-6deg);
+  }
+}
+
 .contentArea {
   @apply relative p-8 overflow-hidden;
   background: transparent;
@@ -196,6 +223,10 @@
   .greeting,
   .contentArea {
     transition: none;
+  }
+
+  .waveEmoji {
+    animation: none;
   }
 
   /* Disable header hover effects for reduced motion */

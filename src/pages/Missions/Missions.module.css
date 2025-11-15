@@ -1,0 +1,95 @@
+.page {
+  @apply flex flex-col gap-10 text-white;
+}
+
+.hero {
+  @apply relative overflow-hidden rounded-3xl border border-white/10
+         bg-gradient-to-br from-[#111827]/80 via-[#0f172a]/80 to-[#030712]/80
+         px-10 py-12;
+}
+
+.heroGlow {
+  @apply absolute inset-0 opacity-70;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.35), transparent 55%),
+    radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.25), transparent 60%),
+    radial-gradient(circle at 50% 80%, rgba(96, 165, 250, 0.3), transparent 60%);
+  filter: blur(20px);
+}
+
+.heroContent {
+  @apply relative flex flex-col gap-4;
+}
+
+.heroKicker {
+  @apply text-xs uppercase tracking-[0.4em] text-white/60 font-semibold;
+}
+
+.title {
+  @apply text-4xl font-semibold tracking-tight;
+}
+
+.subtitle {
+  @apply text-base text-white/70 max-w-2xl;
+}
+
+.categoriesSection {
+  @apply relative overflow-hidden rounded-3xl border border-white/10
+         bg-white/5 backdrop-blur-xl px-10 py-8 flex flex-col gap-6;
+  box-shadow: 0 30px 60px -40px rgba(15, 23, 42, 0.75);
+}
+
+.panelHeader {
+  @apply flex flex-col gap-2;
+}
+
+.panelTitle {
+  @apply text-sm font-semibold tracking-wide uppercase text-white/70;
+}
+
+.panelDescription {
+  @apply text-sm text-white/60;
+}
+
+.storiesWrapper {
+  @apply -mx-2 mt-2;
+  position: relative;
+}
+
+.storiesWrapper::before,
+.storiesWrapper::after {
+  content: '';
+  @apply absolute top-0 bottom-0 w-16 pointer-events-none;
+}
+
+.storiesWrapper::before {
+  left: -2px;
+  background: linear-gradient(90deg, rgba(3, 7, 18, 0.75), transparent);
+}
+
+.storiesWrapper::after {
+  right: -2px;
+  background: linear-gradient(270deg, rgba(3, 7, 18, 0.75), transparent);
+}
+
+.missionsPanel {
+  @apply relative rounded-3xl border border-white/10 bg-black/60
+         backdrop-blur-2xl overflow-hidden min-h-[640px];
+}
+
+.missionsContent {
+  @apply relative w-full h-full;
+}
+
+.emptyState {
+  @apply flex flex-col items-center justify-center text-center gap-3
+         px-8 py-24 text-white/70;
+}
+
+.emptyTitle {
+  @apply text-2xl font-semibold text-white;
+}
+
+.emptySubtitle {
+  @apply text-base text-white/60 max-w-md;
+}

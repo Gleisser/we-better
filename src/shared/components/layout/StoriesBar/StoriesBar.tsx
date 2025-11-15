@@ -6,18 +6,7 @@ import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './StoriesBar.module.css';
 import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
 import WeeklyMissions from './WeeklyMissions';
-
-interface LifeCategory {
-  id: string;
-  name: string;
-  color: {
-    from: string;
-    to: string;
-  };
-  icon: string;
-  score: number;
-  hasUpdate: boolean;
-}
+import { useLifeCategories, type LifeCategory } from '@/shared/hooks/useLifeCategories';
 
 const StoriesBar = (): JSX.Element => {
   const { t } = useCommonTranslation();
@@ -25,97 +14,7 @@ const StoriesBar = (): JSX.Element => {
   const [selectedCategory, setSelectedCategory] = useState<LifeCategory | null>(null);
   const isMobile = window.innerWidth <= 768;
   const { activeSheet, setActiveSheet, closeSheet } = useBottomSheet();
-
-  const MOCK_CATEGORIES: LifeCategory[] = [
-    {
-      id: 'social',
-      name: t('floating.lifeCategories.social'),
-      color: {
-        from: '#8B5CF6',
-        to: '#D946EF',
-      },
-      icon: '👥',
-      score: 85,
-      hasUpdate: true,
-    },
-    {
-      id: 'health',
-      name: t('floating.lifeCategories.health'),
-      color: {
-        from: '#10B981',
-        to: '#34D399',
-      },
-      icon: '💪',
-      score: 70,
-      hasUpdate: true,
-    },
-    {
-      id: 'selfCare',
-      name: t('floating.lifeCategories.selfCare'),
-      color: {
-        from: '#F59E0B',
-        to: '#FBBF24',
-      },
-      icon: '🧘‍♂️',
-      score: 65,
-      hasUpdate: false,
-    },
-    {
-      id: 'money',
-      name: t('floating.lifeCategories.money'),
-      color: {
-        from: '#3B82F6',
-        to: '#60A5FA',
-      },
-      icon: '💰',
-      score: 75,
-      hasUpdate: true,
-    },
-    {
-      id: 'family',
-      name: t('floating.lifeCategories.family'),
-      color: {
-        from: '#EC4899',
-        to: '#F472B6',
-      },
-      icon: '👨‍👩‍👧‍👦',
-      score: 90,
-      hasUpdate: true,
-    },
-    {
-      id: 'spirituality',
-      name: t('floating.lifeCategories.spirituality'),
-      color: {
-        from: '#8B5CF6',
-        to: '#A78BFA',
-      },
-      icon: '🧘‍♀️',
-      score: 60,
-      hasUpdate: false,
-    },
-    {
-      id: 'relationship',
-      name: t('floating.lifeCategories.relationship'),
-      color: {
-        from: '#EF4444',
-        to: '#F87171',
-      },
-      icon: '❤️',
-      score: 80,
-      hasUpdate: true,
-    },
-    {
-      id: 'career',
-      name: t('floating.lifeCategories.career'),
-      color: {
-        from: '#6366F1',
-        to: '#818CF8',
-      },
-      icon: '💼',
-      score: 85,
-      hasUpdate: true,
-    },
-  ];
+  const lifeCategories = useLifeCategories();
 
   const isFullScreen = isExpanded && selectedCategory !== null;
 
@@ -195,7 +94,7 @@ const StoriesBar = (): JSX.Element => {
                   isFullScreen ? styles.categoriesSectionExpanded : ''
                 }`}
               >
-                <LifeStories categories={MOCK_CATEGORIES} onCategorySelect={handleCategorySelect} />
+                <LifeStories categories={lifeCategories} onCategorySelect={handleCategorySelect} />
               </div>
               {selectedCategory && (
                 <div className={styles.missionsArea}>

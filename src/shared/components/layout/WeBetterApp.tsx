@@ -88,6 +88,8 @@ const WeBetterApp = (): JSX.Element => {
     );
   }
 
+  const greetingParts = getGreetingParts();
+
   return (
     <HeaderProvider>
       {/* Only include debug tools in development */}
@@ -103,8 +105,11 @@ const WeBetterApp = (): JSX.Element => {
           <header className={styles.header}>
             <div className={styles.headerContent}>
               <h1 className={styles.greeting}>
-                {getGreetingParts().greeting},{' '}
-                <span className={styles.userName}>{getGreetingParts().userPart}</span>
+                {greetingParts.greeting},{' '}
+                <span className={styles.userName}>{greetingParts.userPart}</span>
+                <span className={styles.waveEmoji} role="img" aria-label="hello">
+                  👋
+                </span>
               </h1>
 
               <div className={styles.headerRight}>

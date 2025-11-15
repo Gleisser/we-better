@@ -1,17 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import styles from './WeeklyMissions.module.css';
+import type { LifeCategory as BaseLifeCategory } from '@/shared/hooks/useLifeCategories';
 import { GamifiedCTAButton } from '../../common';
-
-interface LifeCategory {
-  id: string;
-  name: string;
-  color: {
-    from: string;
-    to: string;
-  };
-  icon: string;
-}
+import styles from './WeeklyMissions.module.css';
 
 type MissionDifficulty = 'bronze' | 'silver' | 'gold';
 
@@ -33,8 +24,10 @@ interface MissionState extends Mission {
   isStretch: boolean;
 }
 
+type WeeklyMissionsCategory = Pick<BaseLifeCategory, 'id' | 'name' | 'color' | 'icon'>;
+
 interface WeeklyMissionsProps {
-  category: LifeCategory;
+  category: WeeklyMissionsCategory;
 }
 
 const missionLibrary: Record<string, Mission[]> = {

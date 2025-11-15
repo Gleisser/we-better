@@ -17,6 +17,7 @@ import { DreamBoardPage } from '@/features/dream-board';
 import Settings from '@/pages/Settings';
 import Bookmarks from '@/pages/Bookmarks';
 import Notifications from '@/pages/Notifications';
+import Missions from '@/pages/Missions';
 
 export const router = createBrowserRouter([
   {
@@ -75,6 +76,10 @@ export const router = createBrowserRouter([
       {
         path: 'dream-board',
         element: <DreamBoardPage />,
+      },
+      {
+        path: 'missions',
+        element: <Missions />,
       },
       {
         path: 'settings',

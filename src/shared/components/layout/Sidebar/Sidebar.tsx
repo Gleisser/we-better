@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
-import { CollapseIcon, LifeWheelIcon } from '@/shared/components/common/icons';
+import { CollapseIcon, LifeWheelIcon, MissionIcon } from '@/shared/components/common/icons';
 import styles from './Sidebar.module.css';
 import homeAnimation from './icons/home.json';
 import dreamboardAnimation from './icons/dreamboard.json';
@@ -72,6 +72,11 @@ const Sidebar = (): JSX.Element => {
       path: '/app/dream-board',
       label: t('navigation.dreamBoard'),
       animation: dreamboardAnimation,
+    },
+    {
+      path: '/app/missions',
+      label: t('navigation.missions'),
+      icon: <MissionIcon className={styles.icon} />,
     },
   ];
 

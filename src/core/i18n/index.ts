@@ -89,6 +89,7 @@ const resources = {
         dashboard: 'Dashboard',
         dreamBoard: 'Dream Board',
         lifeWheel: 'Life Wheel',
+        missions: 'Missions',
         affirmations: 'Affirmations',
         settings: 'Settings',
         profile: 'Profile',
@@ -135,6 +136,16 @@ const resources = {
           relationship: 'Relationship',
           career: 'Career',
         },
+      },
+      missions: {
+        title: 'Missions',
+        subtitle: 'Pick a life category to open a curated stack of quick inspiration ideas.',
+        categoriesLabel: 'Life categories',
+        categoriesDescription:
+          "Tap an orb to focus the board and refresh this week's mission lineup.",
+        emptyTitle: 'Select a category',
+        emptySubtitle:
+          'Choose any life area on the left to reveal tailored missions and stretch goals.',
       },
       aiChat: {
         title: 'AI Assistant',
@@ -1352,6 +1363,7 @@ const resources = {
         dashboard: 'Painel',
         dreamBoard: 'Quadro dos Sonhos',
         lifeWheel: 'Roda da Vida',
+        missions: 'Missões',
         affirmations: 'Afirmações',
         settings: 'Configurações',
         profile: 'Perfil',
@@ -1398,6 +1410,17 @@ const resources = {
           relationship: 'Relacionamento',
           career: 'Carreira',
         },
+      },
+      missions: {
+        title: 'Missões',
+        subtitle:
+          'Escolha uma área da vida para abrir uma pilha curada de missões de inspiração rápida.',
+        categoriesLabel: 'Categorias da vida',
+        categoriesDescription:
+          'Toque em um círculo para focar o painel e atualizar a lista semanal de missões.',
+        emptyTitle: 'Selecione uma categoria',
+        emptySubtitle:
+          'Escolha qualquer área da vida ao lado para revelar missões e metas estendidas.',
       },
       aiChat: {
         title: 'Assistente IA',

@@ -528,6 +528,22 @@ export const LifeWheelIcon = ({
   </svg>
 );
 
+export const MissionIcon = ({
+  className,
+  width = 24,
+  height = 24,
+  color = 'currentColor',
+}: IconProps): JSX.Element => (
+  <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="9" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <circle cx="12" cy="12" r="4" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <path d="M12 3V5" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <path d="M12 19V21" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <path d="M21 12H19" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <path d="M5 12H3" stroke={color} strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
 export const VideoIcon = ({
   className,
   width = 24,
