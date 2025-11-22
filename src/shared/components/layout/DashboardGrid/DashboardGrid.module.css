@@ -1,5 +1,8 @@
 .container {
-  @apply relative w-full max-w-[1400px] mx-auto p-8;
+  @apply relative w-full max-w-[1400px] mx-auto;
+  padding: 3rem 2rem 2rem;
+  margin-top: -32px;
+  z-index: 1;
 }
 
 .bentoGrid {
@@ -88,6 +91,11 @@
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
+  .container {
+    margin-top: -20px;
+    padding: 2.5rem 1.5rem 1.5rem;
+  }
+
   .bentoGrid {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
@@ -105,6 +113,11 @@
 }
 
 @media (max-width: 768px) {
+  .container {
+    margin-top: 0;
+    padding: 1.5rem 1rem;
+  }
+
   .bentoGrid {
     grid-template-columns: 1fr;
     grid-template-areas:

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { DreamBoardContainer } from '@/features/dream-board/components/Board/DreamBoardContainer';
 import styles from './DreamBoardModal.module.css';
 import { DreamBoardData, DreamBoardProps } from '@/features/dream-board/components/Board/types';
@@ -230,7 +231,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className={styles.modalOverlay} onClick={onClose}>
       <div
         className={styles.modalContainer}
@@ -255,7 +256,8 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
