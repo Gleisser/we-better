@@ -251,6 +251,11 @@ const MoodWidget = (): JSX.Element => {
     }));
   }, [history, translate]);
 
+  const trendHintKey = 'widgets.mood.trend.hint';
+  const trendHint = translate(trendHintKey);
+  const resolvedTrendHint =
+    trendHint === trendHintKey ? 'Mood trend over time' : trendHint || 'Mood trend over time';
+
   const ticks = useMemo(() => {
     return Array.from({ length: TICK_COUNT }, (_, index) => {
       const angle = 270 + (index / (TICK_COUNT - 1)) * 180;
@@ -320,21 +325,26 @@ const MoodWidget = (): JSX.Element => {
           if (isActive) buttonClassNames.push(styles.emojiButtonActive);
 
           return (
-            <button
-              key={mood.id}
-              type="button"
-              className={buttonClassNames.join(' ')}
-              onClick={() => handleSelectMood(index)}
-              aria-pressed={isActive}
-              aria-label={translate(`widgets.mood.moods.${mood.id}.label`)}
-            >
-              {renderEmoji(mood.emojiVariant)}
-            </button>
+            <div key={mood.id} className={styles.emojiItem}>
+              <button
+                type="button"
+                className={buttonClassNames.join(' ')}
+                onClick={() => handleSelectMood(index)}
+                aria-pressed={isActive}
+                aria-label={translate(`widgets.mood.moods.${mood.id}.label`)}
+                title={translate(`widgets.mood.moods.${mood.id}.label`)}
+              >
+                {renderEmoji(mood.emojiVariant)}
+              </button>
+              <span className={styles.emojiLabel}>
+                {translate(`widgets.mood.moods.${mood.id}.label`)}
+              </span>
+            </div>
           );
         })}
       </div>
 
-      <div className={styles.moodSummary}>
+      <div className={styles.moodSummary} aria-live="polite">
         <AnimatePresence mode="popLayout">
           <motion.span
             key={selectedMood.id}
@@ -438,6 +448,7 @@ const MoodWidget = (): JSX.Element => {
               ? translate('widgets.mood.trend.weekly')
               : translate('widgets.mood.trend.monthly')}
           </span>
+          <span className={styles.trendHint}>{resolvedTrendHint}</span>
         </div>
 
         <div className={styles.trendDisplay} data-view={viewMode}>

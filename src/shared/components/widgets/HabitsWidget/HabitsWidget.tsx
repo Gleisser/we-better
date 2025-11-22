@@ -463,6 +463,7 @@ const HabitsWidget = (): JSX.Element => {
                 <div className={styles.habitActions}>
                   <button
                     className={styles.actionButton}
+                    title={t('widgets.habits.actions.menu') as string}
                     onClick={e => {
                       const rect = e.currentTarget.getBoundingClientRect();
                       setActionMenuPosition({
@@ -477,6 +478,7 @@ const HabitsWidget = (): JSX.Element => {
                   </button>
                   <button
                     className={styles.monthlyViewButton}
+                    title={t('widgets.habits.actions.monthly') as string}
                     onClick={() => {
                       setSelectedHabit(habit);
                       setShowMonthlyView(true);

@@ -73,6 +73,20 @@
   @apply flex items-center;
 }
 
+.languageGroup {
+  @apply flex items-center;
+}
+
+.utilityGroup {
+  @apply flex items-center gap-3;
+}
+
+@media (max-width: 768px) {
+  .utilityGroup {
+    @apply gap-2;
+  }
+}
+
 /* Theme Toggle Button */
 .themeToggle {
   @apply relative flex items-center justify-center rounded-full transition-transform duration-300 focus:outline-none;
