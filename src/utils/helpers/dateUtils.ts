@@ -3,7 +3,7 @@ export function formatRelativeDate(date: string | Date): string {
   const postDate = new Date(date);
   const diffTime = Math.abs(now.getTime() - postDate.getTime());
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays === 0) {
     return 'Today';
   } else if (diffDays === 1) {
@@ -19,4 +19,11 @@ export function formatRelativeDate(date: string | Date): string {
   } else {
     return `${Math.floor(diffDays / 30)} Months ago`;
   }
-} 
+}
+
+export function getLocalDateString(date: Date = new Date()): string {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}

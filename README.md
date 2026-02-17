@@ -89,12 +89,11 @@ src/
 ├── features/           # Feature modules
 │   ├── auth/          # Authentication feature
 │   ├── dashboard/     # Dashboard feature
-│   ├── dream-board/  # Dream board feature
+│   ├── dream-board/   # Dream board feature
 │   ├── life-wheel/    # Life wheel feature
-│   ├── courses/       # Courses feature
-│   ├── podcasts/      # Podcasts feature
-│   ├── videos/        # Videos feature
-│   └── articles/      # Articles feature
+│   ├── affirmations/  # Affirmations feature
+│   └── quotes/        # Quotes feature
+├── pages/             # Standalone pages (e.g., Bookmarks, Settings)
 ├── shared/            # Shared components and hooks
 │   ├── components/    # Reusable UI components
 │   │   ├── common/    # Common UI elements
@@ -110,11 +109,13 @@ src/
 │   ├── config/        # App configuration
 │   │   ├── api-config.ts
 │   │   └── react-query.ts
+│   ├── database/      # Local database (Dexie) and migrations
 │   └── middleware/    # Middleware
 ├── utils/             # Utility functions
 │   ├── helpers/       # Helper functions
 │   ├── constants/     # Constants and enums
 │   └── types/         # TypeScript types
+├── types/             # App-level types
 ├── assets/            # Static assets
 ├── styles/            # Global styles
 │   ├── globals.css
@@ -146,11 +147,11 @@ src/
 
 ### External Dependencies
 
-This frontend application depends on two backend services:
+This frontend application depends on external services for user auth and content.
 
-#### 1. User Service (@webetter-user-service v1.0.0)
+#### 1. User/Auth (Supabase)
 
-A Next.js-based microservice handling user management and authentication.
+Authentication and user data are managed through Supabase.
 
 **Key Features**:
 
@@ -171,11 +172,11 @@ A Next.js-based microservice handling user management and authentication.
 **Required Environment Variables**:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_key
 ```
 
-#### 2. Content Management (@webetter-backend v0.1.0)
+#### 2. Content Management (Strapi)
 
 A Strapi-based CMS handling all content-related operations.
 
@@ -203,27 +204,21 @@ A Strapi-based CMS handling all content-related operations.
 **Required Environment Variables**:
 
 ```env
-STRAPI_API_URL=your_strapi_url
-STRAPI_API_TOKEN=your_api_token
+VITE_API_BASE_URL=your_strapi_url
+VITE_API_TOKEN=your_api_token
+VITE_API_TIMEOUT=45000
+VITE_RATE_LIMIT_MAX_REQUESTS=50
+VITE_RATE_LIMIT_WINDOW=60000
 ```
 
 **Integration Points**:
 
 ```typescript
-// Example API client configuration
+// Example API client usage
 import { apiClient } from '@/core/services/api-client';
 
-// User service endpoints
-const USER_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL;
-const userApi = apiClient.create({
-  baseURL: USER_SERVICE_URL,
-});
-
-// Content service endpoints
-const CONTENT_SERVICE_URL = process.env.NEXT_PUBLIC_CONTENT_SERVICE_URL;
-const contentApi = apiClient.create({
-  baseURL: CONTENT_SERVICE_URL,
-});
+const response = await apiClient.get('/endpoint');
+const data = response.data;
 ```
 
 ### Key Features
@@ -435,7 +430,7 @@ const [state, setState] = useState<StateType>(initialState);
 ### Toast Notifications
 
 ```typescript
-import showToast from '@/utils/toast';
+import showToast from '@/utils/helpers/toast';
 
 // Success notification
 showToast.success('Operation completed!');
@@ -505,8 +500,13 @@ const createData = async (data: DataType) => {
 Required environment variables:
 
 ```env
-VITE_API_URL=your_api_url
-VITE_AUTH_DOMAIN=your_auth_domain
+VITE_API_BASE_URL=your_api_url
+VITE_API_TOKEN=your_api_token
+VITE_API_TIMEOUT=45000
+VITE_RATE_LIMIT_MAX_REQUESTS=50
+VITE_RATE_LIMIT_WINDOW=60000
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_key
 ```
 
 ### Deployment Checklist

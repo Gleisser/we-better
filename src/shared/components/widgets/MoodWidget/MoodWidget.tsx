@@ -2,8 +2,10 @@ import { type CSSProperties, useCallback, useEffect, useMemo, useState } from 'r
 import { AnimatePresence, motion } from 'framer-motion';
 import styles from './MoodWidget.module.css';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useMood } from '@/shared/hooks/useMood';
+import type { MoodId } from '@/core/services/moodService';
+import { getLocalDateString } from '@/utils/helpers/dateUtils';
 
-type MoodId = 'elated' | 'bright' | 'balanced' | 'low' | 'drained';
 type ViewMode = 'week' | 'month';
 
 interface MoodDefinition {
@@ -14,8 +16,14 @@ interface MoodDefinition {
 
 interface MoodHistoryPoint {
   date: Date;
+  dateKey: string;
   moodIndex: number;
 }
+
+const FALLBACK_MOOD_ID: MoodId = 'balanced';
+const HISTORY_DAYS = 28;
+const WEEK_DAYS = 7;
+const MONTH_WEEKS = 4;
 
 const GAUGE_RADIUS = 150;
 const GAUGE_STROKE = 16;
@@ -53,11 +61,13 @@ const MOODS: MoodDefinition[] = [
   },
 ];
 
-const PREVIOUS_WEEKS: number[][] = [
-  [3, 3, 2, 3, 2, 2, 1],
-  [2, 2, 2, 1, 2, 2, 2],
-  [1, 2, 1, 1, 2, 3, 2],
-];
+const MOOD_INDEX_BY_ID: Record<MoodId, number> = MOODS.reduce(
+  (acc, mood, index) => ({
+    ...acc,
+    [mood.id]: index,
+  }),
+  {} as Record<MoodId, number>
+);
 
 const STATIC_EMOJI_MAP: Record<MoodId, string> = {
   elated: '😍',
@@ -67,10 +77,21 @@ const STATIC_EMOJI_MAP: Record<MoodId, string> = {
   drained: '😡',
 };
 
+const getMoodIndexFromId = (moodId: MoodId): number => MOOD_INDEX_BY_ID[moodId] ?? 2;
+
 const getStaticEmoji = (moodIndex: number): string => {
   const mood = MOODS[moodIndex];
   if (!mood) return '🙂';
   return STATIC_EMOJI_MAP[mood.id] ?? '🙂';
+};
+
+const getRecentDates = (days: number): Date[] => {
+  const today = new Date();
+  return Array.from({ length: days }, (_, idx) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (days - 1 - idx));
+    return date;
+  });
 };
 
 const renderEmoji = (variant: MoodDefinition['emojiVariant']): JSX.Element => {
@@ -164,21 +185,20 @@ const describeArc = (
   return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} ${sweepFlag} ${end.x} ${end.y}`;
 };
 
-const createInitialHistory = (): MoodHistoryPoint[] => {
-  const today = new Date();
-  const indices = [2, 2, 3, 1, 2, 1, 2];
-  return indices.map((value, idx) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() - (indices.length - 1 - idx));
-    return {
-      date,
-      moodIndex: clamp(value, 0, MOODS.length - 1),
-    };
-  });
-};
-
 const MoodWidget = (): JSX.Element => {
   const { t, currentLanguage } = useCommonTranslation();
+  const {
+    fetchMoodEntries,
+    fetchWeeklyPulse,
+    saveMoodEntry,
+    getMoodForDate,
+    todayMood,
+    weeklyPulse,
+    isLoading,
+    isWeeklyPulseLoading,
+    error,
+  } = useMood();
+
   const translate = useCallback(
     (key: string, options?: Record<string, unknown>): string => {
       const value = t(key, options);
@@ -186,28 +206,56 @@ const MoodWidget = (): JSX.Element => {
     },
     [t]
   );
-  const [selectedMoodIndex, setSelectedMoodIndex] = useState<number>(2);
+
+  const [selectedMoodIndex, setSelectedMoodIndex] = useState<number>(
+    getMoodIndexFromId(FALLBACK_MOOD_ID)
+  );
   const [viewMode, setViewMode] = useState<ViewMode>('week');
-  const [history, setHistory] = useState<MoodHistoryPoint[]>(() => createInitialHistory());
+
+  useEffect(() => {
+    const today = getLocalDateString();
+    const startDate = getLocalDateString(
+      new Date(Date.now() - (HISTORY_DAYS - 1) * 24 * 60 * 60 * 1000)
+    );
+    void fetchMoodEntries(startDate, today, HISTORY_DAYS + 7, 0);
+    void fetchWeeklyPulse(today);
+  }, [fetchMoodEntries, fetchWeeklyPulse]);
+
+  useEffect(() => {
+    if (todayMood) {
+      setSelectedMoodIndex(getMoodIndexFromId(todayMood.mood_id));
+      return;
+    }
+    setSelectedMoodIndex(getMoodIndexFromId(FALLBACK_MOOD_ID));
+  }, [todayMood]);
+
+  useEffect(() => {
+    if (error) {
+      console.error('Mood widget failed to sync data:', error);
+    }
+  }, [error]);
+
+  const history = useMemo<MoodHistoryPoint[]>(() => {
+    return getRecentDates(HISTORY_DAYS).map(date => {
+      const dateKey = getLocalDateString(date);
+      const entry = getMoodForDate(dateKey);
+      const moodId = entry?.mood_id ?? FALLBACK_MOOD_ID;
+
+      return {
+        date,
+        dateKey,
+        moodIndex: getMoodIndexFromId(moodId),
+      };
+    });
+  }, [getMoodForDate]);
 
   const selectedMood = MOODS[selectedMoodIndex];
   const progress = (MOODS.length - selectedMoodIndex - 1) / (MOODS.length - 1);
+
   const trackPath = useMemo(
     () => describeArc(GAUGE_CENTER, GAUGE_CENTER, GAUGE_RADIUS, 270, 90),
     []
   );
-
-  useEffect(() => {
-    setHistory(prev => {
-      if (prev.length === 0) return prev;
-      const updated = [...prev];
-      updated[updated.length - 1] = {
-        ...updated[updated.length - 1],
-        moodIndex: selectedMoodIndex,
-      };
-      return updated;
-    });
-  }, [selectedMoodIndex]);
 
   const pointerAngle = 270 + progress * 180;
   const pointerEnd = useMemo(
@@ -215,14 +263,11 @@ const MoodWidget = (): JSX.Element => {
     [pointerAngle]
   );
 
-  const pointerKnob = useMemo(() => {
-    return polarToCartesian(
-      GAUGE_CENTER,
-      GAUGE_CENTER,
-      GAUGE_RADIUS - POINTER_OFFSET - 8,
-      pointerAngle
-    );
-  }, [pointerAngle]);
+  const pointerKnob = useMemo(
+    () =>
+      polarToCartesian(GAUGE_CENTER, GAUGE_CENTER, GAUGE_RADIUS - POINTER_OFFSET - 8, pointerAngle),
+    [pointerAngle]
+  );
   const showPointerKnob = progress > 0;
 
   const locale = currentLanguage === 'pt' ? 'pt-BR' : 'en-US';
@@ -233,21 +278,59 @@ const MoodWidget = (): JSX.Element => {
 
   const weeklyTrend = useMemo(
     () =>
-      history.map(point => ({
-        key: point.date.toISOString(),
+      history.slice(-WEEK_DAYS).map(point => ({
+        key: point.dateKey,
         label: dayFormatter.format(point.date),
         moodIndex: point.moodIndex,
       })),
     [history, dayFormatter]
   );
 
-  const monthlyTrend = useMemo(() => {
-    const allWeeks = [...PREVIOUS_WEEKS, history.map(point => point.moodIndex)];
+  const pulseWeeklyTrend = useMemo(() => {
+    if (!weeklyPulse) return [];
+    return weeklyPulse.current_week.days.map(point => {
+      const date = new Date(`${point.date}T00:00:00`);
+      return {
+        key: point.date,
+        label: dayFormatter.format(date),
+        moodIndex: getMoodIndexFromId(point.mood_id),
+      };
+    });
+  }, [weeklyPulse, dayFormatter]);
 
-    return allWeeks.map((values, index) => ({
+  const usingPulseData = Boolean(weeklyPulse);
+  const hasWeeklyPulseDays = Boolean(weeklyPulse && weeklyPulse.coverage.logged_days > 0);
+  const displayedWeeklyTrend = usingPulseData ? pulseWeeklyTrend : weeklyTrend;
+
+  const weeklyAverageLabel = useMemo(() => {
+    if (!weeklyPulse?.current_week.average_mood_id) return null;
+    return translate(`widgets.mood.moods.${weeklyPulse.current_week.average_mood_id}.label`);
+  }, [translate, weeklyPulse]);
+
+  const weeklyAverageText = useMemo(() => {
+    if (!weeklyAverageLabel) return null;
+    return translate('widgets.mood.trend.average', { value: weeklyAverageLabel });
+  }, [translate, weeklyAverageLabel]);
+
+  const pulseDirection = weeklyPulse?.comparison.direction || 'insufficient_data';
+  const pulseDirectionSymbol =
+    pulseDirection === 'up'
+      ? '↑'
+      : pulseDirection === 'down'
+        ? '↓'
+        : pulseDirection === 'stable'
+          ? '→'
+          : '•';
+
+  const monthlyTrend = useMemo(() => {
+    const weeks = Array.from({ length: MONTH_WEEKS }, (_, index) =>
+      history.slice(index * WEEK_DAYS, (index + 1) * WEEK_DAYS)
+    );
+
+    return weeks.map((weekPoints, index) => ({
       key: `week-${index}`,
       label: translate('widgets.mood.weeks.short', { index: index + 1 }),
-      moods: values,
+      moods: weekPoints.map(point => point.moodIndex),
     }));
   }, [history, translate]);
 
@@ -273,9 +356,16 @@ const MoodWidget = (): JSX.Element => {
     });
   }, []);
 
-  const handleSelectMood = useCallback((index: number) => {
-    setSelectedMoodIndex(clamp(index, 0, MOODS.length - 1));
-  }, []);
+  const handleSelectMood = useCallback(
+    (index: number) => {
+      const nextMoodIndex = clamp(index, 0, MOODS.length - 1);
+      const nextMood = MOODS[nextMoodIndex] || MOODS[getMoodIndexFromId(FALLBACK_MOOD_ID)];
+
+      setSelectedMoodIndex(nextMoodIndex);
+      void saveMoodEntry(nextMood.id, getLocalDateString());
+    },
+    [saveMoodEntry]
+  );
 
   const handleToggleView = useCallback((mode: ViewMode) => {
     setViewMode(mode);
@@ -287,7 +377,12 @@ const MoodWidget = (): JSX.Element => {
   );
 
   return (
-    <section className={styles.container} style={accentStyle} aria-live="polite">
+    <section
+      className={styles.container}
+      style={accentStyle}
+      aria-live="polite"
+      aria-busy={isLoading || isWeeklyPulseLoading}
+    >
       <header className={styles.header}>
         <div>
           <h2 className={styles.title}>{translate('widgets.mood.title')}</h2>
@@ -433,26 +528,47 @@ const MoodWidget = (): JSX.Element => {
 
       <footer className={styles.trendSection}>
         <div className={styles.trendHeader}>
-          <span className={styles.trendTitle}>
-            {viewMode === 'week'
-              ? translate('widgets.mood.trend.weekly')
-              : translate('widgets.mood.trend.monthly')}
-          </span>
+          <div className={styles.trendHeaderMain}>
+            <span className={styles.trendTitle}>
+              {viewMode === 'week'
+                ? translate('widgets.mood.trend.weekly')
+                : translate('widgets.mood.trend.monthly')}
+            </span>
+            {viewMode === 'week' && weeklyAverageText ? (
+              <span className={styles.trendSubtext}>{weeklyAverageText}</span>
+            ) : null}
+          </div>
+          {viewMode === 'week' && usingPulseData ? (
+            <div className={styles.trendMetaGroup}>
+              <span className={styles.trendMeta}>
+                {weeklyPulse.coverage.logged_days}/{WEEK_DAYS}
+              </span>
+              <span
+                className={`${styles.trendDirection} ${styles[`trendDirection_${pulseDirection}`]}`}
+              >
+                {pulseDirectionSymbol}
+              </span>
+            </div>
+          ) : null}
         </div>
 
         <div className={styles.trendDisplay} data-view={viewMode}>
           {viewMode === 'week' ? (
-            <div className={styles.trendRow}>
-              {weeklyTrend.map(point => {
-                const emoji = getStaticEmoji(point.moodIndex);
-                return (
-                  <div key={point.key} className={styles.trendItem}>
-                    <div className={styles.trendEmojiLarge}>{emoji}</div>
-                    <span className={styles.trendLabel}>{point.label}</span>
-                  </div>
-                );
-              })}
-            </div>
+            usingPulseData && !hasWeeklyPulseDays ? (
+              <div className={styles.weeklyEmptyState}>No mood logs in the last 7 days yet.</div>
+            ) : (
+              <div className={styles.trendRow}>
+                {displayedWeeklyTrend.map(point => {
+                  const emoji = getStaticEmoji(point.moodIndex);
+                  return (
+                    <div key={point.key} className={styles.trendItem}>
+                      <div className={styles.trendEmojiLarge}>{emoji}</div>
+                      <span className={styles.trendLabel}>{point.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )
           ) : (
             <div className={styles.monthGrid}>
               {monthlyTrend.map(week => (

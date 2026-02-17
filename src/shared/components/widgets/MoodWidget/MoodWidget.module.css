@@ -495,16 +495,55 @@
   @apply flex items-center justify-between;
 }
 
+.trendHeaderMain {
+  @apply flex flex-col gap-1;
+}
+
 .trendTitle {
   @apply text-sm font-semibold uppercase tracking-[0.28em] text-white/70;
+}
+
+.trendSubtext {
+  @apply text-xs text-white/50;
 }
 
 .trendMeta {
   @apply text-sm text-white/50;
 }
 
+.trendMetaGroup {
+  @apply flex items-center gap-2;
+}
+
+.trendDirection {
+  @apply inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.trendDirection_up {
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.4);
+  background: rgba(52, 211, 153, 0.12);
+}
+
+.trendDirection_down {
+  color: #fb7185;
+  border-color: rgba(251, 113, 133, 0.4);
+  background: rgba(251, 113, 133, 0.12);
+}
+
+.trendDirection_stable,
+.trendDirection_insufficient_data {
+  color: rgba(226, 232, 240, 0.75);
+  background: rgba(148, 163, 184, 0.12);
+}
+
 .trendDisplay {
   @apply flex flex-col gap-4;
+}
+
+.weeklyEmptyState {
+  @apply rounded-2xl border border-white/10 bg-white/5 px-4 py-5 text-center text-sm text-white/60;
 }
 
 .trendRow {

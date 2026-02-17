@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import styles from './HabitsWidget.module.css';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
-import { format, startOfWeek, addDays } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { enUS, ptBR } from 'date-fns/locale';
 import { MonthlyView } from './MonthlyView';
 import {
@@ -24,8 +24,6 @@ import {
 } from '@/core/services/habitsService';
 import { HabitForm } from './HabitForm';
 import { HabitActionsMenu } from './HabitActionsMenu';
-
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 // Helper function to transform API Habit to local Habit format
 const transformApiHabit = (apiHabit: ApiHabit, logs: HabitLog[] = []): LocalHabit => {
@@ -141,8 +139,8 @@ const HabitsWidget = (): JSX.Element => {
       : habits.filter(habit => habit.category === selectedCategory);
 
   const getCurrentWeekDates = (): Date[] => {
-    const start = startOfWeek(new Date(), { weekStartsOn: 1 }); // Start on Monday
-    return WEEKDAYS.map((_, index) => addDays(start, index));
+    const today = new Date();
+    return Array.from({ length: 7 }, (_, index) => addDays(today, index - 6));
   };
 
   const weekDates = getCurrentWeekDates();
