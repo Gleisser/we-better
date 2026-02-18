@@ -144,3 +144,19 @@ export const fetchWeeklyMoodPulse = async (
     return null;
   }
 };
+
+export const fetchMonthlyMoodPulse = async (
+  endDate?: string
+): Promise<WeeklyMoodPulseResponse | null> => {
+  try {
+    let url = `${API_URL}/pulse?window_days=28`;
+    if (endDate) {
+      url += `&end_date=${endDate}`;
+    }
+
+    return await apiRequest<WeeklyMoodPulseResponse>(url);
+  } catch (error) {
+    console.error('Error fetching monthly mood pulse:', error);
+    return null;
+  }
+};

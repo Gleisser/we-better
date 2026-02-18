@@ -185,6 +185,9 @@ const resources = {
             weekly: 'Weekly mood pulse',
             monthly: 'Monthly mood pulse',
             average: 'Average mood: {{value}}',
+            coverage: 'Mood logs: {{count}}/{{total}}',
+            weeklyEmpty: 'No mood logs in the last 7 days yet.',
+            monthlyEmpty: 'No mood logs in the last 28 days yet.',
           },
           weeks: {
             short: 'W{{index}}',
@@ -1448,6 +1451,9 @@ const resources = {
             weekly: 'Pulso de humor da semana',
             monthly: 'Pulso de humor do mês',
             average: 'Média: {{value}}',
+            coverage: 'Registros de humor: {{count}}/{{total}}',
+            weeklyEmpty: 'Sem registros de humor nos últimos 7 dias.',
+            monthlyEmpty: 'Sem registros de humor nos últimos 28 dias.',
           },
           weeks: {
             short: 'S{{index}}',

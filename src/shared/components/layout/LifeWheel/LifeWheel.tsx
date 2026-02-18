@@ -84,10 +84,22 @@ const LifeWheel = ({
     setActiveCategory(null);
   };
 
+  const getResponsiveOrbitRadius = (): number => {
+    const containerWidth = containerRef.current?.clientWidth;
+    const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    const width = containerWidth ?? viewportWidth;
+
+    if (width <= 360) return 72;
+    if (width <= 420) return 78;
+    if (width <= 540) return 86;
+    if (width <= 768) return 96;
+    return 120;
+  };
+
   // Calculate tooltip position in viewport coords for portal
   const getTooltipViewportStyle = (categoryIndex: number): React.CSSProperties => {
     const angle = (2 * Math.PI * categoryIndex) / categories.length - Math.PI / 2;
-    const radius = 160;
+    const radius = getResponsiveOrbitRadius() + 34;
 
     const rect = containerRef.current?.getBoundingClientRect();
     const cx = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
@@ -114,7 +126,7 @@ const LifeWheel = ({
           {categories.map((category, index) => {
             // Calculate position on a circle
             const angle = (2 * Math.PI * index) / categories.length - Math.PI / 2;
-            const radius = 120; // Increased distance from center
+            const radius = getResponsiveOrbitRadius();
 
             const style = {
               // Use CSS custom properties for positioning

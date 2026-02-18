@@ -546,6 +546,10 @@
   @apply rounded-2xl border border-white/10 bg-white/5 px-4 py-5 text-center text-sm text-white/60;
 }
 
+.monthlyEmptyState {
+  @apply rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-center text-sm text-white/60;
+}
+
 .trendRow {
   @apply flex items-end justify-between gap-4;
 }
@@ -575,8 +579,9 @@
 }
 
 .monthLabel {
-  @apply text-[10px] font-semibold uppercase tracking-[0.28em] text-white/50;
-  width: 3.5rem;
+  @apply text-[11px] font-medium text-white/60;
+  width: 8rem;
+  line-height: 1.2;
 }
 
 .monthEmojis {
@@ -589,6 +594,10 @@
   height: 40px;
   font-size: 24px;
   line-height: 1;
+}
+
+.trendEmojiSmallEmpty {
+  @apply border border-dashed border-white/20 bg-transparent;
 }
 
 @keyframes haha-face {
@@ -842,5 +851,10 @@
 
   .confirmButton {
     @apply h-14 w-14 bottom-4;
+  }
+
+  .monthLabel {
+    width: 6.5rem;
+    font-size: 10px;
   }
 }

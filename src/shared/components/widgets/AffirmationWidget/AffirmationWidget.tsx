@@ -434,6 +434,16 @@ const AffirmationWidget = (): JSX.Element => {
     }
   };
 
+  const getText = (value: string | string[]): string =>
+    Array.isArray(value) ? value[0] || '' : value;
+
+  const recordLabel = getText(t('widgets.affirmation.recordAffirmation'));
+  const reminderLabel = getText(t('widgets.affirmation.setReminder'));
+  const favoriteLabel = getText(t('widgets.affirmation.bookmark'));
+  const streakLabel = getText(t('widgets.affirmation.daysStreaking'));
+  const reminderMeta = reminderSettings.enabled ? reminderSettings.time : '--:--';
+  const streakMeta = `${streak?.current_streak || 0}d`;
+
   return (
     <div
       ref={elementRef}
@@ -580,101 +590,128 @@ const AffirmationWidget = (): JSX.Element => {
 
         <div className={styles.voiceControls}>
           {!audioUrl ? (
-            <div className={styles.controlButtons}>
+            <>
               {selectedCategory === 'personal' && (
-                <Tooltip content={t('widgets.affirmation.deleteAffirmation')}>
+                <div className={styles.deleteControlRow}>
+                  <Tooltip content={t('widgets.affirmation.deleteAffirmation')}>
+                    <button
+                      className={styles.deleteControlButton}
+                      onClick={() => setShowDeleteConfirm(true)}
+                      aria-label={t('widgets.affirmation.deleteAffirmation') as string}
+                    >
+                      <TrashIcon className={styles.deleteControlIcon} />
+                    </button>
+                  </Tooltip>
+                </div>
+              )}
+              <div className={styles.controlButtons}>
+                <Tooltip content={t('widgets.affirmation.recordAffirmation')}>
                   <button
-                    className={styles.voiceButton}
-                    onClick={() => setShowDeleteConfirm(true)}
-                    aria-label={t('widgets.affirmation.deleteAffirmation') as string}
+                    className={`${styles.voiceButton} ${isRecording ? styles.recording : ''}`}
+                    onClick={isRecording ? stopRecording : startRecording}
+                    aria-label={
+                      isRecording
+                        ? (t('widgets.affirmation.stopRecording') as string)
+                        : (t('widgets.affirmation.recordAffirmation') as string)
+                    }
                   >
-                    <TrashIcon className={styles.voiceIcon} />
+                    <span className={styles.controlIconWrap}>
+                      {isRecording ? (
+                        <StopIcon className={styles.voiceIcon} />
+                      ) : (
+                        <MicrophoneIcon className={styles.voiceIcon} />
+                      )}
+                    </span>
+                    <span className={styles.controlText}>
+                      <span className={styles.controlLabel}>{recordLabel}</span>
+                    </span>
                   </button>
                 </Tooltip>
-              )}
-              <Tooltip content={t('widgets.affirmation.recordAffirmation')}>
-                <button
-                  className={`${styles.voiceButton} ${isRecording ? styles.recording : ''}`}
-                  onClick={isRecording ? stopRecording : startRecording}
-                  aria-label={
-                    isRecording
-                      ? (t('widgets.affirmation.stopRecording') as string)
-                      : (t('widgets.affirmation.recordAffirmation') as string)
-                  }
-                >
-                  {isRecording ? (
-                    <StopIcon className={styles.voiceIcon} />
-                  ) : (
-                    <MicrophoneIcon className={styles.voiceIcon} />
-                  )}
-                </button>
-              </Tooltip>
 
-              <Tooltip content={t('widgets.affirmation.setReminder')}>
-                <button
-                  className={styles.voiceButton}
-                  onClick={() => setShowReminderSettings(true)}
-                  aria-label={t('widgets.affirmation.setReminder') as string}
-                >
-                  <BellIcon className={styles.voiceIcon} />
-                </button>
-              </Tooltip>
+                <Tooltip content={t('widgets.affirmation.setReminder')}>
+                  <button
+                    className={styles.voiceButton}
+                    onClick={() => setShowReminderSettings(true)}
+                    aria-label={t('widgets.affirmation.setReminder') as string}
+                  >
+                    <span className={styles.controlIconWrap}>
+                      <BellIcon className={styles.voiceIcon} />
+                    </span>
+                    <span className={styles.controlText}>
+                      <span className={styles.controlLabel}>{reminderLabel}</span>
+                      <span className={styles.controlMeta}>{reminderMeta}</span>
+                    </span>
+                  </button>
+                </Tooltip>
 
-              <Tooltip content={t('widgets.affirmation.daysStreaking')}>
-                <motion.div
-                  className={styles.streakBadge}
-                  animate={
-                    isNewMilestone
-                      ? {
-                          scale: [1, 1.2, 1],
-                          rotate: [0, 10, -10, 0],
-                        }
-                      : {}
-                  }
-                  onAnimationComplete={() => setIsNewMilestone(false)}
-                >
-                  <span className={styles.streakIcon}>🔥</span>
-                  <span className={styles.streakCount}>{streak?.current_streak || 0}</span>
-                </motion.div>
-              </Tooltip>
-
-              <Tooltip
-                content={
-                  currentAffirmation?.id && isBookmarked(currentAffirmation.id)
-                    ? t('widgets.affirmation.removeBookmark')
-                    : t('widgets.affirmation.bookmark')
-                }
-              >
-                <button
-                  className={`${styles.voiceButton} ${currentAffirmation?.id && isBookmarked(currentAffirmation.id) ? styles.bookmarked : ''}`}
-                  onClick={() => {
-                    if (currentAffirmation?.id) {
-                      if (isBookmarked(currentAffirmation.id)) {
-                        removeBookmark(currentAffirmation.id);
-                      } else {
-                        addBookmark({
-                          id: currentAffirmation.id,
-                          text: currentAffirmation.text,
-                          category: currentAffirmation.category,
-                          timestamp: Date.now(),
-                        });
-                      }
-                    }
-                  }}
-                  aria-label={
+                <Tooltip
+                  content={
                     currentAffirmation?.id && isBookmarked(currentAffirmation.id)
-                      ? (t('widgets.affirmation.removeBookmark') as string)
-                      : (t('widgets.affirmation.bookmarkAffirmation') as string)
+                      ? t('widgets.affirmation.removeBookmark')
+                      : t('widgets.affirmation.bookmark')
                   }
-                  disabled={!currentAffirmation?.id}
                 >
-                  <BookmarkIcon
-                    className={styles.voiceIcon}
-                    filled={currentAffirmation?.id ? isBookmarked(currentAffirmation.id) : false}
-                  />
-                </button>
-              </Tooltip>
-            </div>
+                  <button
+                    className={`${styles.voiceButton} ${currentAffirmation?.id && isBookmarked(currentAffirmation.id) ? styles.bookmarked : ''}`}
+                    onClick={() => {
+                      if (currentAffirmation?.id) {
+                        if (isBookmarked(currentAffirmation.id)) {
+                          removeBookmark(currentAffirmation.id);
+                        } else {
+                          addBookmark({
+                            id: currentAffirmation.id,
+                            text: currentAffirmation.text,
+                            category: currentAffirmation.category,
+                            timestamp: Date.now(),
+                          });
+                        }
+                      }
+                    }}
+                    aria-label={
+                      currentAffirmation?.id && isBookmarked(currentAffirmation.id)
+                        ? (t('widgets.affirmation.removeBookmark') as string)
+                        : (t('widgets.affirmation.bookmarkAffirmation') as string)
+                    }
+                    disabled={!currentAffirmation?.id}
+                  >
+                    <span className={styles.controlIconWrap}>
+                      <BookmarkIcon
+                        className={styles.voiceIcon}
+                        filled={
+                          currentAffirmation?.id ? isBookmarked(currentAffirmation.id) : false
+                        }
+                      />
+                    </span>
+                    <span className={styles.controlText}>
+                      <span className={styles.controlLabel}>{favoriteLabel}</span>
+                    </span>
+                  </button>
+                </Tooltip>
+
+                <Tooltip content={t('widgets.affirmation.daysStreaking')}>
+                  <motion.div
+                    className={styles.streakBadge}
+                    animate={
+                      isNewMilestone
+                        ? {
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 10, -10, 0],
+                          }
+                        : {}
+                    }
+                    onAnimationComplete={() => setIsNewMilestone(false)}
+                  >
+                    <span className={styles.controlIconWrap}>
+                      <span className={styles.streakIcon}>🔥</span>
+                    </span>
+                    <span className={styles.controlText}>
+                      <span className={styles.controlLabel}>{streakLabel}</span>
+                      <span className={styles.controlMeta}>{streakMeta}</span>
+                    </span>
+                  </motion.div>
+                </Tooltip>
+              </div>
+            </>
           ) : (
             <div className={styles.recordingPlayback}>
               {audioUrl && (

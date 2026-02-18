@@ -1,40 +1,52 @@
 .wrapper {
   @apply w-full h-full flex items-center justify-center;
+  --wheel-center-size: 96px;
+  --wheel-ring-size: 88px;
+  --wheel-bubble-size: 64px;
   position: relative;
+  font-family: var(--font-plus-jakarta, 'Plus Jakarta Sans', sans-serif);
   /* Testing containment */
   isolation: isolate;
   padding-top: 0;
-  margin-top: -10px; /* Pull up the wheel slightly to center it */
+  margin-top: -6px;
 }
 
 .container {
   @apply relative w-full h-full
          flex items-center justify-center;
   position: relative;
-  min-height: 240px;
+  min-height: clamp(170px, 28vw, 240px);
 }
 
 .centerPiece {
-  @apply absolute w-24 h-24
+  @apply absolute
          rounded-full bg-black/40 backdrop-blur-xl
          border border-white/10
          flex items-center justify-center
          cursor-pointer
          transition-all duration-300
          z-50;
+  width: var(--wheel-center-size);
+  height: var(--wheel-center-size);
   position: absolute;
-  left: calc(50% - 48px);
-  top: calc(50% - 48px);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .scoreRing {
-  @apply w-[88px] h-[88px] rounded-full
+  @apply rounded-full
          bg-gradient-to-br from-[#8B5CF6] to-[#D946EF]
          flex items-center justify-center;
+  width: var(--wheel-ring-size);
+  height: var(--wheel-ring-size);
 }
 
 .initials {
-  @apply text-3xl font-bold text-white;
+  font-size: clamp(1rem, 1.5vw + 0.6rem, 1.75rem);
+  font-weight: 700;
+  color: white;
+  line-height: 1;
 }
 
 .scoreValue {
@@ -54,16 +66,17 @@
 
 /* Individual category bubble - CSS Transitions */
 .categoryBubble {
-  @apply w-16 h-16
-         rounded-full bg-black/40 backdrop-blur-xl
+  @apply rounded-full bg-black/40 backdrop-blur-xl
          border border-white/10
          flex items-center justify-center
          cursor-pointer;
+  width: var(--wheel-bubble-size);
+  height: var(--wheel-bubble-size);
   position: absolute;
   left: 50%;
   top: 50%;
-  margin-left: -32px; /* half width */
-  margin-top: -32px; /* half height */
+  margin-left: calc(var(--wheel-bubble-size) / -2);
+  margin-top: calc(var(--wheel-bubble-size) / -2);
   transition:
     transform 0.3s ease,
     opacity 0.2s ease,
@@ -84,7 +97,7 @@
 }
 
 .categoryIcon {
-  @apply text-xl;
+  font-size: clamp(1rem, 1vw + 0.7rem, 1.25rem);
 }
 
 /* Tooltip style - shown with calculated positioning */
@@ -97,6 +110,7 @@
          z-50;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   pointer-events: none;
+  font-family: var(--font-plus-jakarta, 'Plus Jakarta Sans', sans-serif);
 }
 
 .categoryName {
@@ -121,4 +135,29 @@
 .centerPiece:hover {
   @apply border-white/20;
   box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    --wheel-center-size: 78px;
+    --wheel-ring-size: 70px;
+    --wheel-bubble-size: 52px;
+    margin-top: 0;
+  }
+
+  .container {
+    min-height: 154px;
+  }
+}
+
+@media (max-width: 540px) {
+  .wrapper {
+    --wheel-center-size: 70px;
+    --wheel-ring-size: 62px;
+    --wheel-bubble-size: 44px;
+  }
+
+  .container {
+    min-height: 136px;
+  }
 }
