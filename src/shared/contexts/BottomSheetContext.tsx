@@ -2,12 +2,11 @@ import { createContext, useState, ReactNode } from 'react';
 
 /**
  * Defines the available types of bottom sheets in the application.
- * @typedef {('stories' | 'aiChat' | null)} BottomSheetType
- * - 'stories' - Sheet for displaying user stories
+ * @typedef {('aiChat' | null)} BottomSheetType
  * - 'aiChat' - Sheet for AI chat interface
  * - null - No sheet is currently active
  */
-export type BottomSheetType = 'stories' | 'aiChat' | null;
+export type BottomSheetType = 'aiChat' | null;
 
 /**
  * Context interface for managing bottom sheet state and actions.

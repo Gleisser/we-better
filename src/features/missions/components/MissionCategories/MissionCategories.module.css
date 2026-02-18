@@ -2,7 +2,7 @@
   @apply w-full overflow-hidden;
 }
 
-.storiesWrapper {
+.categoriesWrapper {
   @apply flex items-center justify-center
          gap-4 px-8 py-4
          overflow-x-auto;
@@ -11,12 +11,12 @@
   -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
 }
 
-.storyItem {
+.categoryItem {
   @apply flex flex-col items-center gap-2
          cursor-pointer;
 }
 
-.storyRing {
+.categoryRing {
   @apply w-16 h-16 rounded-full p-[3px]
          bg-gradient-to-br from-gray-500 to-gray-700;
 }
@@ -25,28 +25,32 @@
   @apply animate-pulse;
 }
 
-.storyContent {
+.selected {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.categoryContent {
   @apply w-full h-full rounded-full
          bg-black/40 backdrop-blur-xl
          flex items-center justify-center
          border border-white/10;
 }
 
-.storyIcon {
+.categoryIcon {
   @apply text-2xl;
 }
 
-.storyLabel {
+.categoryLabel {
   @apply text-xs text-white/70 font-medium;
 }
 
 /* Hide scrollbar but keep functionality */
-.storiesWrapper::-webkit-scrollbar {
+.categoriesWrapper::-webkit-scrollbar {
   display: none;
 }
 
 @media (max-width: 768px) {
-  .storiesWrapper {
+  .categoriesWrapper {
     @apply px-4 py-6
            grid grid-cols-4 gap-4
            w-full
@@ -57,11 +61,11 @@
     @apply overflow-x-auto;
   }
 
-  .storyItem {
+  .categoryItem {
     @apply w-full;
   }
 
-  .storyRing {
+  .categoryRing {
     @apply w-14 h-14;
   }
 }

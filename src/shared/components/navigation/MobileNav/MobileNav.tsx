@@ -47,6 +47,7 @@ import {
   CourseIcon,
   PodcastIcon,
   DreamBoardIcon,
+  SparkleIcon,
 } from '@/shared/components/common/icons';
 import styles from './MobileNav.module.css';
 
@@ -60,6 +61,11 @@ const NAV_ITEMS = [
     label: 'Dream Board',
     icon: DreamBoardIcon,
     path: '/app/dream-board',
+  },
+  {
+    label: 'Missions',
+    icon: SparkleIcon,
+    path: '/app/missions',
   },
   {
     label: 'Videos',

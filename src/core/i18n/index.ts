@@ -88,6 +88,7 @@ const resources = {
       navigation: {
         dashboard: 'Dashboard',
         dreamBoard: 'Dream Board',
+        missions: 'Missions',
         lifeWheel: 'Life Wheel',
         affirmations: 'Affirmations',
         settings: 'Settings',
@@ -122,10 +123,12 @@ const resources = {
         },
       },
       floating: {
-        quickInspiration: 'Quick Inspiration',
         aiAssistant: 'AI Assistant',
-        collapseStories: 'Collapse stories',
-        lifeCategories: {
+      },
+      missions: {
+        title: 'Missions',
+        subtitle: 'Choose a life category and complete focused weekly missions.',
+        categories: {
           social: 'Social',
           health: 'Health',
           selfCare: 'Self Care',
@@ -134,6 +137,30 @@ const resources = {
           spirituality: 'Spirituality',
           relationship: 'Relationship',
           career: 'Career',
+        },
+        empty: {
+          title: 'Select a category to start',
+          description: 'Pick one category above to load your mission cards.',
+        },
+        content: {
+          week: 'Week',
+          quest: 'Quest',
+          guidePrefix: 'Tap',
+          guideAction: 'Start Mission',
+          guideSuffix: 'when you are ready, then press and hold the glowing orb to log your win.',
+          cta: {
+            start: 'Start Mission',
+            inProgress: 'In Progress',
+            complete: 'Mission Complete',
+          },
+          hints: {
+            pendingPrefix: 'Tap',
+            pendingAction: 'Start Mission',
+            pendingSuffix: 'then hold the orb when you finish the action.',
+            active: 'Keep momentum, press and hold the orb until it blooms to log your win.',
+            completed:
+              'Beautiful! Banked into your vault. Stretch missions await if you want extra shine.',
+          },
         },
       },
       aiChat: {
@@ -1354,6 +1381,7 @@ const resources = {
       navigation: {
         dashboard: 'Painel',
         dreamBoard: 'Quadro dos Sonhos',
+        missions: 'Missões',
         lifeWheel: 'Roda da Vida',
         affirmations: 'Afirmações',
         settings: 'Configurações',
@@ -1388,10 +1416,12 @@ const resources = {
         },
       },
       floating: {
-        quickInspiration: 'Inspiração Rápida',
         aiAssistant: 'Assistente IA',
-        collapseStories: 'Recolher histórias',
-        lifeCategories: {
+      },
+      missions: {
+        title: 'Missões',
+        subtitle: 'Escolha uma categoria de vida e conclua missões semanais focadas.',
+        categories: {
           social: 'Social',
           health: 'Saúde',
           selfCare: 'Autocuidado',
@@ -1400,6 +1430,32 @@ const resources = {
           spirituality: 'Espiritualidade',
           relationship: 'Relacionamento',
           career: 'Carreira',
+        },
+        empty: {
+          title: 'Selecione uma categoria para começar',
+          description: 'Escolha uma categoria acima para carregar seus cartões de missão.',
+        },
+        content: {
+          week: 'Semana',
+          quest: 'Missão',
+          guidePrefix: 'Toque em',
+          guideAction: 'Iniciar Missão',
+          guideSuffix:
+            'quando estiver pronto e mantenha pressionado o orbe brilhante para registrar sua vitória.',
+          cta: {
+            start: 'Iniciar Missão',
+            inProgress: 'Em Progresso',
+            complete: 'Missão Concluída',
+          },
+          hints: {
+            pendingPrefix: 'Toque em',
+            pendingAction: 'Iniciar Missão',
+            pendingSuffix: 'depois mantenha o orbe pressionado quando terminar a ação.',
+            active:
+              'Mantenha o ritmo, pressione e segure o orbe até ele florescer para registrar sua vitória.',
+            completed:
+              'Perfeito! Guardado no seu histórico. Missões de superação esperam por você.',
+          },
         },
       },
       aiChat: {

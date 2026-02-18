@@ -1,17 +1,9 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import styles from './WeeklyMissions.module.css';
-import { GamifiedCTAButton } from '../../common';
-
-interface LifeCategory {
-  id: string;
-  name: string;
-  color: {
-    from: string;
-    to: string;
-  };
-  icon: string;
-}
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { GamifiedCTAButton } from '@/shared/components/common';
+import styles from './CategoryMissions.module.css';
+import type { MissionCategory } from '../MissionCategories/MissionCategories';
 
 type MissionDifficulty = 'bronze' | 'silver' | 'gold';
 
@@ -33,8 +25,8 @@ interface MissionState extends Mission {
   isStretch: boolean;
 }
 
-interface WeeklyMissionsProps {
-  category: LifeCategory;
+interface CategoryMissionsProps {
+  category: MissionCategory;
 }
 
 const missionLibrary: Record<string, Mission[]> = {
@@ -238,11 +230,34 @@ const useWeekNumber = (): number => {
   }, []);
 };
 
-const WeeklyMissions = ({ category }: WeeklyMissionsProps): JSX.Element => {
+const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
+  const { t } = useCommonTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const [isRibbonCollapsed, setRibbonCollapsed] = useState(false);
   const weekNumber = useWeekNumber();
+  const translations = useMemo(
+    () => ({
+      weekLabel: t('missions.content.week') as string,
+      questLabel: t('missions.content.quest') as string,
+      guidePrefix: t('missions.content.guidePrefix') as string,
+      guideAction: t('missions.content.guideAction') as string,
+      guideSuffix: t('missions.content.guideSuffix') as string,
+      cta: {
+        start: t('missions.content.cta.start') as string,
+        inProgress: t('missions.content.cta.inProgress') as string,
+        complete: t('missions.content.cta.complete') as string,
+      },
+      hints: {
+        pendingPrefix: t('missions.content.hints.pendingPrefix') as string,
+        pendingAction: t('missions.content.hints.pendingAction') as string,
+        pendingSuffix: t('missions.content.hints.pendingSuffix') as string,
+        active: t('missions.content.hints.active') as string,
+        completed: t('missions.content.hints.completed') as string,
+      },
+    }),
+    [t]
+  );
   const baseMissions = useMemo(() => missionLibrary[category.id] ?? defaultMissions, [category.id]);
 
   const [missions, setMissions] = useState<MissionState[]>(
@@ -353,7 +368,7 @@ const WeeklyMissions = ({ category }: WeeklyMissionsProps): JSX.Element => {
               <div>
                 <p className={styles.ribbonTitle}>{category.name}</p>
                 <p className={styles.ribbonSubtitle}>
-                  Week {weekNumber} • {category.name} Quest
+                  {translations.weekLabel} {weekNumber} • {category.name} {translations.questLabel}
                 </p>
               </div>
             </div>
@@ -369,8 +384,8 @@ const WeeklyMissions = ({ category }: WeeklyMissionsProps): JSX.Element => {
 
         <div className={styles.panelGuide}>
           <p className={styles.panelGuideText}>
-            Tap <strong>Start Mission</strong> when you are ready, then press and hold the glowing
-            orb to log your win.
+            {translations.guidePrefix} <strong>{translations.guideAction}</strong>{' '}
+            {translations.guideSuffix}
           </p>
         </div>
 
@@ -453,9 +468,9 @@ const WeeklyMissions = ({ category }: WeeklyMissionsProps): JSX.Element => {
                     </p>
 
                     <GamifiedCTAButton
-                      primaryLabel="Start Mission"
-                      secondaryLabel="In Progress"
-                      holdLabel="Mission Complete"
+                      primaryLabel={translations.cta.start}
+                      secondaryLabel={translations.cta.inProgress}
+                      holdLabel={translations.cta.complete}
                       holdDuration={1000}
                       onHoldComplete={() => {
                         triggerCompletion(mission.id);
@@ -468,20 +483,18 @@ const WeeklyMissions = ({ category }: WeeklyMissionsProps): JSX.Element => {
                         <span className={styles.coachAvatar}>✨</span>
                         {mission.status === 'pending' && (
                           <p className={styles.cardHint}>
-                            Tap <span className={styles.inlineHighlight}>Start Mission</span>, then
-                            hold the orb when you finish the action.
+                            {translations.hints.pendingPrefix}{' '}
+                            <span className={styles.inlineHighlight}>
+                              {translations.hints.pendingAction}
+                            </span>
+                            , {translations.hints.pendingSuffix}
                           </p>
                         )}
                         {mission.status === 'active' && (
-                          <p className={styles.cardHint}>
-                            Keep momentum—press and hold the orb until it blooms to log your win.
-                          </p>
+                          <p className={styles.cardHint}>{translations.hints.active}</p>
                         )}
                         {mission.status === 'completed' && (
-                          <p className={styles.cardHint}>
-                            Beautiful! Banked into your vault. Stretch missions await if you want
-                            extra shine.
-                          </p>
+                          <p className={styles.cardHint}>{translations.hints.completed}</p>
                         )}
                       </div>
                       <motion.p
@@ -507,4 +520,4 @@ const WeeklyMissions = ({ category }: WeeklyMissionsProps): JSX.Element => {
   );
 };
 
-export default WeeklyMissions;
+export default CategoryMissions;
