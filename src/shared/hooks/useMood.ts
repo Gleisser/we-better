@@ -4,6 +4,7 @@ import {
   MoodId,
   WeeklyMoodPulseResponse,
   fetchMoodEntries as fetchMoodEntriesFromApi,
+  fetchMonthlyMoodPulse as fetchMonthlyMoodPulseFromApi,
   fetchWeeklyMoodPulse as fetchWeeklyMoodPulseFromApi,
   saveMoodEntry as saveMoodEntryToApi,
 } from '@/core/services/moodService';
@@ -12,8 +13,10 @@ import { getLocalDateString } from '@/utils/helpers/dateUtils';
 interface UseMoodReturn {
   entries: MoodEntry[];
   weeklyPulse: WeeklyMoodPulseResponse | null;
+  monthlyPulse: WeeklyMoodPulseResponse | null;
   isLoading: boolean;
   isWeeklyPulseLoading: boolean;
+  isMonthlyPulseLoading: boolean;
   error: Error | null;
   fetchMoodEntries: (
     startDate?: string,
@@ -23,6 +26,7 @@ interface UseMoodReturn {
   ) => Promise<void>;
   saveMoodEntry: (moodId: MoodId, date?: string) => Promise<MoodEntry | null>;
   fetchWeeklyPulse: (endDate?: string) => Promise<void>;
+  fetchMonthlyPulse: (endDate?: string) => Promise<void>;
   refreshMoodAndPulse: (endDate?: string) => Promise<void>;
   getMoodForDate: (date: string) => MoodEntry | null;
   todayMood: MoodEntry | null;
@@ -31,8 +35,10 @@ interface UseMoodReturn {
 export const useMood = (): UseMoodReturn => {
   const [entries, setEntries] = useState<MoodEntry[]>([]);
   const [weeklyPulse, setWeeklyPulse] = useState<WeeklyMoodPulseResponse | null>(null);
+  const [monthlyPulse, setMonthlyPulse] = useState<WeeklyMoodPulseResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isWeeklyPulseLoading, setIsWeeklyPulseLoading] = useState<boolean>(false);
+  const [isMonthlyPulseLoading, setIsMonthlyPulseLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchMoodEntries = useCallback(
@@ -85,11 +91,16 @@ export const useMood = (): UseMoodReturn => {
           return [saved, ...next];
         });
 
-        await fetchWeeklyPulseFromApi(date).then(pulse => {
-          if (pulse) {
-            setWeeklyPulse(pulse);
-          }
-        });
+        const [nextWeeklyPulse, nextMonthlyPulse] = await Promise.all([
+          fetchWeeklyMoodPulseFromApi(date),
+          fetchMonthlyMoodPulseFromApi(date),
+        ]);
+        if (nextWeeklyPulse) {
+          setWeeklyPulse(nextWeeklyPulse);
+        }
+        if (nextMonthlyPulse) {
+          setMonthlyPulse(nextMonthlyPulse);
+        }
 
         return saved;
       } catch (err) {
@@ -124,14 +135,35 @@ export const useMood = (): UseMoodReturn => {
     }
   }, []);
 
+  const fetchMonthlyPulse = useCallback(async (endDate?: string): Promise<void> => {
+    try {
+      setIsMonthlyPulseLoading(true);
+      setError(null);
+
+      const response = await fetchMonthlyMoodPulseFromApi(endDate);
+      if (response) {
+        setMonthlyPulse(response);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Failed to fetch monthly mood pulse'));
+      console.error('Error fetching monthly mood pulse:', err);
+    } finally {
+      setIsMonthlyPulseLoading(false);
+    }
+  }, []);
+
   const refreshMoodAndPulse = useCallback(
     async (endDate = getLocalDateString()): Promise<void> => {
       const startDate = getLocalDateString(
         new Date(new Date(`${endDate}T00:00:00`).getTime() - 27 * 24 * 60 * 60 * 1000)
       );
-      await Promise.all([fetchMoodEntries(startDate, endDate, 35, 0), fetchWeeklyPulse(endDate)]);
+      await Promise.all([
+        fetchMoodEntries(startDate, endDate, 35, 0),
+        fetchWeeklyPulse(endDate),
+        fetchMonthlyPulse(endDate),
+      ]);
     },
-    [fetchMoodEntries, fetchWeeklyPulse]
+    [fetchMoodEntries, fetchWeeklyPulse, fetchMonthlyPulse]
   );
 
   const todayMood = useMemo(() => getMoodForDate(getLocalDateString()), [getMoodForDate]);
@@ -139,12 +171,15 @@ export const useMood = (): UseMoodReturn => {
   return {
     entries,
     weeklyPulse,
+    monthlyPulse,
     isLoading,
     isWeeklyPulseLoading,
+    isMonthlyPulseLoading,
     error,
     fetchMoodEntries,
     saveMoodEntry,
     fetchWeeklyPulse,
+    fetchMonthlyPulse,
     refreshMoodAndPulse,
     getMoodForDate,
     todayMood,

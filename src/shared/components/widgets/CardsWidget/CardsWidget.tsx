@@ -120,7 +120,7 @@ const ActionButton = ({
   }, [playAnimation]);
 
   return (
-    <Tooltip content={tooltip}>
+    <Tooltip content={tooltip} className={styles.actionItem}>
       <button
         type="button"
         className={`${styles.microButton} ${active ? styles.microButtonActive : ''}`}
@@ -792,9 +792,13 @@ const CardsWidget = (): JSX.Element => {
 
                     <p className={styles.affirmationText}>&ldquo;{card.text}&rdquo;</p>
 
-                    <div className={styles.cardFooter}>
-                      <span className={styles.hint}>{t('widgets.cardsWidget.hint') as string}</span>
-                    </div>
+                    {index === currentIndex ? (
+                      <div className={styles.cardFooter}>
+                        <span className={styles.hint}>
+                          {t('widgets.cardsWidget.hint') as string}
+                        </span>
+                      </div>
+                    ) : null}
                   </div>
                 </li>
               );

@@ -1,11 +1,12 @@
 .container {
   position: relative;
   width: 100%;
-  min-height: 420px;
+  min-height: clamp(320px, 52vw, 420px);
   height: 100%;
   border-radius: 36px;
   overflow: hidden;
   transform-style: preserve-3d;
+  font-family: var(--font-plus-jakarta, 'Plus Jakarta Sans', sans-serif);
   background: #10131f;
   box-shadow:
     0 40px 80px rgba(12, 20, 33, 0.45),
@@ -42,10 +43,10 @@
   position: relative;
   z-index: 2;
   height: 100%;
-  padding: 32px 36px 42px;
+  padding: 28px 30px 36px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 20px;
 }
 
 .topBar {
@@ -58,8 +59,8 @@
 .actionsCluster {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 6px 10px;
+  gap: 10px;
+  padding: 5px 8px;
   border-radius: 9999px;
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -76,9 +77,9 @@
 
 .actionButton,
 .bookmarkButton {
-  width: 48px;
-  height: 48px;
-  border-radius: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -134,8 +135,8 @@
 
 .actionIcon,
 .bookmarkIcon {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   transition: color 0.2s ease;
   display: inline-flex;
 }
@@ -163,14 +164,14 @@
 }
 
 .refreshIcon {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
 }
 
 .bookmarkIcon {
   color: inherit;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
 .bookmarked {
@@ -296,8 +297,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 32px 34px;
+  gap: 20px;
+  padding: 24px 26px;
   border-radius: 32px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
   border: 1px solid rgba(255, 255, 255, 0.22);
@@ -317,13 +318,13 @@
 .headerLeft {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .iconWrapper {
-  width: 46px;
-  height: 46px;
-  border-radius: 20px;
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -333,13 +334,13 @@
 }
 
 .headerIcon {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   color: var(--accent-color);
 }
 
 .headerText {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.75);
@@ -437,19 +438,18 @@
 .quoteContent {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
   align-items: stretch;
 }
 
 .quoteText {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 10px;
+  gap: 6px 8px;
   justify-content: center;
   text-align: center;
-  font-size: clamp(1.15rem, 1.05rem + 0.6vw, 1.6rem);
-  line-height: 1.55;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(1rem, 0.96rem + 0.55vw, 1.35rem);
+  line-height: 1.45;
   color: white;
 }
 
@@ -470,13 +470,13 @@
 
 .toggleTextButton {
   align-self: center;
-  margin-top: -8px;
-  padding: 6px 12px;
+  margin-top: -6px;
+  padding: 5px 10px;
   border-radius: 9999px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(15, 23, 42, 0.68);
   color: rgba(255, 255, 255, 0.85);
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   cursor: pointer;
@@ -494,7 +494,7 @@
 
 .word {
   position: relative;
-  padding: 2px 0;
+  padding: 1px 0;
   transition: color 0.25s ease;
 }
 
@@ -528,13 +528,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
-  padding-top: 20px;
+  padding-top: 16px;
 }
 
 .author {
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   color: rgba(255, 255, 255, 0.9);
@@ -543,7 +543,7 @@
 .bottomActions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .reactionsWrapper {
@@ -551,8 +551,8 @@
 }
 
 .reactionIcon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 
 .hasReaction {
@@ -567,7 +567,7 @@
   position: absolute;
   bottom: calc(100% + 12px);
   left: 0;
-  width: 220px;
+  width: 204px;
   padding: 8px;
   border-radius: 16px;
   display: grid;
@@ -581,7 +581,7 @@
 }
 
 .reactionOption {
-  padding: 10px 6px;
+  padding: 8px 5px;
   border-radius: 14px;
   display: flex;
   flex-direction: column;
@@ -599,7 +599,7 @@
 }
 
 .reactionEmoji {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
 }
 
 .reactionCount {
@@ -623,14 +623,14 @@
   position: absolute;
   left: 36px;
   bottom: 30px;
-  padding: 10px 22px;
+  padding: 8px 16px;
   border-radius: 9999px;
   background: rgba(15, 23, 42, 0.86);
   border: 1px solid rgba(255, 255, 255, 0.22);
   color: rgba(255, 255, 255, 0.88);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
   box-shadow: 0 18px 30px rgba(8, 16, 32, 0.3);
   backdrop-filter: blur(12px);
   display: inline-flex;
@@ -639,7 +639,7 @@
 }
 
 .tagIcon {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
 }
 
 .tagText {
@@ -799,49 +799,18 @@
 /* Responsive tweaks */
 @media (max-width: 1024px) {
   .container {
-    min-height: 380px;
+    min-height: 350px;
+    border-radius: 32px;
   }
 
   .inner {
-    padding: 28px;
+    padding: 24px 24px 30px;
+    gap: 16px;
   }
 
   .glassCard {
-    padding: 28px;
-  }
-}
-
-@media (max-width: 768px) {
-  .inner {
-    padding: 24px;
-  }
-
-  .topBar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
-  }
-
-  .galleryStack {
-    order: -1;
-    justify-content: flex-start;
-  }
-
-  .galleryItem + .galleryItem {
-    margin-left: -12px;
-  }
-
-  .glassCard {
-    padding: 24px;
-  }
-
-  .quoteFooter {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .bottomActions {
-    align-self: stretch;
+    padding: 22px;
+    gap: 16px;
   }
 
   .tagBadge {
@@ -850,34 +819,154 @@
   }
 }
 
-@media (max-width: 540px) {
+@media (max-width: 768px) {
   .container {
-    min-height: 360px;
-    border-radius: 28px;
+    min-height: 312px;
+    border-radius: 26px;
   }
 
   .inner {
-    padding: 20px;
+    padding: 18px 18px 24px;
+    gap: 14px;
   }
 
-  .glassCard {
-    padding: 22px 20px;
-  }
-
-  .galleryItem {
-    width: 38px;
-    height: 38px;
-  }
-
-  .themeTag {
-    padding: 8px 14px;
-  }
-
-  .quoteText {
-    font-size: 1.25rem;
+  .topBar {
+    justify-content: flex-end;
   }
 
   .actionsCluster {
+    gap: 8px;
+    padding: 4px 6px;
+  }
+
+  .actionButton,
+  .bookmarkButton {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+  }
+
+  .actionIcon,
+  .bookmarkIcon,
+  .reactionIcon,
+  .refreshIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .glassCard {
+    padding: 16px;
+    border-radius: 22px;
+    gap: 14px;
+  }
+
+  .headerLeft {
     gap: 10px;
+  }
+
+  .iconWrapper {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+  }
+
+  .headerIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .headerText {
+    font-size: 0.74rem;
+    letter-spacing: 0.07em;
+  }
+
+  .quoteText {
+    font-size: clamp(0.92rem, 0.88rem + 1vw, 1.06rem);
+    gap: 4px 6px;
+    line-height: 1.4;
+  }
+
+  .toggleTextButton {
+    font-size: 0.68rem;
+    padding: 4px 8px;
+  }
+
+  .quoteFooter {
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: 12px;
+    gap: 10px;
+  }
+
+  .author {
+    font-size: 0.82rem;
+    text-align: center;
+  }
+
+  .bottomActions {
+    align-self: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .reactionsMenu {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 184px;
+    padding: 6px;
+  }
+
+  .tagBadge {
+    left: 16px;
+    bottom: 14px;
+    padding: 6px 10px;
+    font-size: 0.62rem;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 540px) {
+  .container {
+    min-height: 290px;
+    border-radius: 22px;
+  }
+
+  .inner {
+    padding: 14px 14px 18px;
+  }
+
+  .glassCard {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .actionButton,
+  .bookmarkButton {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+  }
+
+  .actionIcon,
+  .bookmarkIcon,
+  .reactionIcon,
+  .refreshIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .quoteText {
+    font-size: 0.92rem;
+  }
+
+  .quoteContent {
+    gap: 12px;
+  }
+
+  .tagBadge {
+    position: static;
+    align-self: flex-start;
+    margin-top: auto;
   }
 }

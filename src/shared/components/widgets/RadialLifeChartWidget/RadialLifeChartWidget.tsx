@@ -449,7 +449,9 @@ const RadialLifeChartWidget = (): JSX.Element => {
                   }}
                 />
                 <div className={styles.legendContent}>
-                  <span className={styles.legendLabel}>{area.label}</span>
+                  <span className={styles.legendLabel} title={area.label}>
+                    {area.label}
+                  </span>
                   <span className={styles.legendValue}>{area.score.toFixed(1)}/10</span>
                 </div>
               </li>

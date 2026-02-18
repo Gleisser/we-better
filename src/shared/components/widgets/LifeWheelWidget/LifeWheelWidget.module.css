@@ -1,5 +1,9 @@
 .lifeWheelWidget {
   @apply h-full w-full rounded-xl shadow-lg p-2 pb-4;
+  display: flex;
+  flex-direction: column;
+  min-height: clamp(260px, 42vw, 360px);
+  font-family: var(--font-plus-jakarta, 'Plus Jakarta Sans', sans-serif);
   background: var(--theme-gradient-widget);
   border: 1px solid var(--theme-border-primary);
   box-shadow: var(--theme-shadow-large);
@@ -11,7 +15,7 @@
 
 /* Enhanced Life Wheel Widget Styles */
 .widgetHeader {
-  @apply flex flex-col gap-2 px-4 pt-3 mb-0;
+  @apply flex flex-col gap-1.5 px-3 pt-2.5 mb-0;
 }
 
 .headerTop {
@@ -19,13 +23,13 @@
 }
 
 .headerLeft {
-  @apply flex items-center gap-3;
+  @apply flex items-center gap-2.5;
 }
 
 .headerIcon {
-  @apply w-10 h-10 rounded-xl
+  @apply w-9 h-9 rounded-lg
          flex items-center justify-center
-         text-xl
+         text-lg
          border;
   background-color: var(--theme-bg-tertiary);
   border-color: var(--theme-border-secondary);
@@ -34,7 +38,8 @@
 }
 
 .headerText {
-  @apply text-sm font-medium;
+  font-size: 0.82rem;
+  font-weight: 600;
   color: var(--theme-text-primary);
 }
 
@@ -43,7 +48,7 @@
 }
 
 .actionButton {
-  @apply w-8 h-8 rounded-full
+  @apply w-7 h-7 rounded-full
          flex items-center justify-center
          border
          transition-all duration-300;
@@ -58,7 +63,7 @@
 }
 
 .actionIcon {
-  @apply w-4 h-4;
+  @apply w-3.5 h-3.5;
 }
 
 .viewToggleButton {
@@ -76,7 +81,8 @@
 }
 
 .wheelViewContainer {
-  @apply relative flex items-center justify-center flex-1 h-full pt-0 pb-6;
+  @apply relative flex items-center justify-center flex-1 h-full pt-0 pb-4;
+  min-height: 200px;
   /* Test containment */
   position: relative;
   isolation: isolate;
@@ -101,7 +107,7 @@
 
 .wheelTooltip {
   @apply absolute bottom-3 left-1/2 transform -translate-x-1/2
-         px-4 py-2 rounded-lg text-sm
+         px-3 py-1.5 rounded-lg text-xs
          font-medium z-50;
   background-color: var(--theme-bg-elevated);
   color: var(--theme-text-primary);
@@ -116,11 +122,12 @@
 }
 
 .widgetFooter {
-  @apply mt-0 mb-3 text-center;
+  @apply mt-0 mb-2 text-center;
 }
 
 .seeMoreButton {
-  @apply px-4 py-2 rounded-lg text-sm transition-colors;
+  @apply px-3 py-1.5 rounded-lg text-xs transition-colors;
+  font-weight: 600;
   background-color: var(--theme-interactive-primary);
   color: var(--theme-text-inverse);
 }
@@ -236,6 +243,54 @@
 
 /* Mobile responsiveness for light theme */
 @media (max-width: 768px) {
+  .lifeWheelWidget {
+    min-height: 232px;
+    padding: 0.5rem 0.5rem 0.75rem;
+    border-radius: 20px;
+  }
+
+  .widgetHeader {
+    @apply px-2 pt-1.5;
+  }
+
+  .headerIcon {
+    @apply w-8 h-8 text-base;
+  }
+
+  .headerText {
+    font-size: 0.75rem;
+  }
+
+  .actionButton {
+    @apply w-6 h-6;
+  }
+
+  .actionIcon {
+    @apply w-3 h-3;
+  }
+
+  .wheelViewContainer {
+    min-height: 164px;
+    @apply pb-2;
+  }
+
+  .wheelTooltip {
+    bottom: 6px;
+    max-width: calc(100% - 12px);
+    min-width: 0;
+    font-size: 0.68rem;
+    padding: 5px 8px;
+  }
+
+  .seeMoreButton {
+    padding: 5px 10px;
+    font-size: 0.68rem;
+  }
+
+  .widgetFooter {
+    @apply mb-1;
+  }
+
   [data-theme='light'] .lifeWheelWidget {
     box-shadow:
       0 4px 16px rgba(0, 0, 0, 0.06),
@@ -258,6 +313,20 @@
   [data-theme='light'] .actionButton:hover,
   [data-theme='light'] .seeMoreButton:hover {
     transform: none;
+  }
+}
+
+@media (max-width: 540px) {
+  .lifeWheelWidget {
+    min-height: 214px;
+  }
+
+  .wheelViewContainer {
+    min-height: 148px;
+  }
+
+  .seeMoreButton {
+    width: calc(100% - 20px);
   }
 }
 
