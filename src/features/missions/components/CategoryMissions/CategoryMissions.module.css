@@ -40,6 +40,44 @@
   @apply text-white font-semibold;
 }
 
+.tabBar {
+  @apply px-8 flex flex-wrap gap-2;
+}
+
+.tabButton {
+  @apply text-xs font-semibold uppercase tracking-wide px-4 py-2 rounded-full border border-white/20 text-white/80 transition-all duration-200;
+  background: rgba(2, 6, 23, 0.24);
+}
+
+.tabButton:hover {
+  background: rgba(15, 23, 42, 0.35);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.tabButton:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.95);
+  outline-offset: 2px;
+}
+
+.tabActive {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.45);
+  background: linear-gradient(120deg, rgba(59, 130, 246, 0.45), rgba(14, 116, 144, 0.45));
+}
+
+.categoryEmptyState {
+  @apply rounded-2xl border border-white/15 px-8 py-8 mx-8 text-center;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.categoryEmptyTitle {
+  @apply text-lg font-semibold text-white;
+}
+
+.categoryEmptyDescription {
+  @apply mt-2 text-sm text-white/75 leading-relaxed;
+}
+
 .heroRibbon {
   @apply relative rounded-3xl shadow-[0_12px_45px_-12px_rgba(17,24,39,0.6)]
          overflow-hidden text-white px-10 py-8 min-h-[180px];
@@ -522,6 +560,14 @@
 
   .panelGuide {
     @apply px-6;
+  }
+
+  .tabBar {
+    @apply px-6;
+  }
+
+  .categoryEmptyState {
+    @apply mx-6 px-6;
   }
 
   .cardHeader {

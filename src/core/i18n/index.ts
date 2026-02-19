@@ -161,6 +161,21 @@ const resources = {
             completed:
               'Beautiful! Banked into your vault. Stretch missions await if you want extra shine.',
           },
+          tabs: {
+            pending: 'Pending',
+            completed: 'Completed',
+          },
+          emptyState: {
+            noDataTitle: 'No missions available yet',
+            noDataDescription:
+              'This category does not have missions from the backend yet. Please check back shortly.',
+            noPendingTitle: 'Everything in this tab is done',
+            noPendingDescription:
+              'You have no pending missions right now. Switch to Completed to review your wins.',
+            noCompletedTitle: 'No completed missions yet',
+            noCompletedDescription:
+              'Complete one mission first, then it will appear in the Completed tab.',
+          },
           header: {
             progress: 'Progress',
             completed: 'Completed',
@@ -1534,6 +1549,21 @@ const resources = {
               'Mantenha o ritmo, pressione e segure o orbe até ele florescer para registrar sua vitória.',
             completed:
               'Perfeito! Guardado no seu histórico. Missões de superação esperam por você.',
+          },
+          tabs: {
+            pending: 'Pendentes',
+            completed: 'Concluidas',
+          },
+          emptyState: {
+            noDataTitle: 'Ainda nao ha missoes disponiveis',
+            noDataDescription:
+              'Esta categoria ainda nao possui missoes vindas do backend. Tente novamente em breve.',
+            noPendingTitle: 'Tudo concluido nesta aba',
+            noPendingDescription:
+              'Voce nao tem missoes pendentes agora. Acesse Concluidas para revisar suas vitorias.',
+            noCompletedTitle: 'Nenhuma missao concluida ainda',
+            noCompletedDescription:
+              'Conclua uma missao primeiro e ela aparecera na aba Concluidas.',
           },
           header: {
             progress: 'Progresso',

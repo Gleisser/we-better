@@ -21,8 +21,10 @@ interface Mission {
   effort: 'light' | 'moderate' | 'intense';
   estimatedMinutes: number;
   difficulty: MissionDifficulty;
+  badge?: MissionBadgeId;
   stretchGoal: string;
   tip: string;
+  completedAt?: string | null;
 }
 
 interface MissionState extends Mission {
@@ -30,391 +32,22 @@ interface MissionState extends Mission {
   isStretch: boolean;
 }
 
-interface CategoryMissionsProps {
-  category: MissionCategory;
+export interface CategoryMissionData extends Mission {
+  status: MissionStatus;
 }
 
-const missionLibrary: Record<string, Mission[]> = {
-  social: [
-    {
-      id: 'social-connect',
-      title: 'Reconnect with someone',
-      description: 'Send a heartfelt message to a friend you have not spoken with lately.',
-      effort: 'light',
-      estimatedMinutes: 15,
-      difficulty: 'bronze',
-      stretchGoal: 'Schedule a video call instead of messaging.',
-      tip: 'Use a voice note to make it feel more personal.',
-    },
-    {
-      id: 'social-kindness',
-      title: 'Acts of kindness',
-      description: 'Do something thoughtful for someone in your circle this week.',
-      effort: 'moderate',
-      estimatedMinutes: 30,
-      difficulty: 'silver',
-      stretchGoal: 'Surprise them with a small gift or written note.',
-      tip: 'Keep it simple—your presence matters most.',
-    },
-    {
-      id: 'social-host',
-      title: 'Host a mini gathering',
-      description: 'Plan a casual meetup or group activity before the weekend ends.',
-      effort: 'intense',
-      estimatedMinutes: 90,
-      difficulty: 'gold',
-      stretchGoal: 'Invite someone new to expand your circle.',
-      tip: 'Pick a setting that lets everyone participate easily.',
-    },
-    {
-      id: 'social-listen',
-      title: 'Deep-listen conversation',
-      description: 'Give someone your full attention for 20 minutes without multitasking.',
-      effort: 'moderate',
-      estimatedMinutes: 25,
-      difficulty: 'silver',
-      stretchGoal: 'End with one thoughtful follow-up question.',
-      tip: 'Put your phone face down to stay fully present.',
-    },
-  ],
-  health: [
-    {
-      id: 'health-move',
-      title: 'Move with intention',
-      description: 'Complete a focused 20-minute workout tailored to your energy level.',
-      effort: 'moderate',
-      estimatedMinutes: 20,
-      difficulty: 'bronze',
-      stretchGoal: 'Extend the session to 35 minutes with added mobility.',
-      tip: 'Queue your favorite playlist before you start.',
-    },
-    {
-      id: 'health-nourish',
-      title: 'Nourish smartly',
-      description: 'Prepare a nutrient-dense meal from scratch this week.',
-      effort: 'moderate',
-      estimatedMinutes: 45,
-      difficulty: 'silver',
-      stretchGoal: 'Meal-prep two servings to cover another day.',
-      tip: 'Plan ingredients in advance to stay on track.',
-    },
-    {
-      id: 'health-reset',
-      title: 'Sleep reset',
-      description: 'Create a calming pre-sleep ritual and stick with it for three nights.',
-      effort: 'light',
-      estimatedMinutes: 15,
-      difficulty: 'gold',
-      stretchGoal: 'Extend the ritual to a full week for deeper benefits.',
-      tip: 'Dim the lights and avoid screens 30 minutes before bed.',
-    },
-    {
-      id: 'health-hydrate',
-      title: 'Hydration streak',
-      description: 'Hit your hydration target for the next four consecutive days.',
-      effort: 'light',
-      estimatedMinutes: 10,
-      difficulty: 'silver',
-      stretchGoal: 'Pair each glass with a quick posture reset.',
-      tip: 'Fill one bottle in the morning so progress is visible.',
-    },
-  ],
-  selfCare: [
-    {
-      id: 'selfCare-breathe',
-      title: 'Breathing reset',
-      description: 'Run a 5-minute breath cycle to calm your nervous system.',
-      effort: 'light',
-      estimatedMinutes: 10,
-      difficulty: 'bronze',
-      stretchGoal: 'Repeat before lunch and before sleep.',
-      tip: 'Try a 4-4-6 cadence: inhale, hold, exhale.',
-    },
-    {
-      id: 'selfCare-journal',
-      title: 'Micro-journaling',
-      description: 'Write one page on what drained and restored your energy today.',
-      effort: 'light',
-      estimatedMinutes: 15,
-      difficulty: 'bronze',
-      stretchGoal: 'Close with one commitment for tomorrow.',
-      tip: 'Use bullet points if a full page feels heavy.',
-    },
-    {
-      id: 'selfCare-boundary',
-      title: 'Set one boundary',
-      description: 'Protect one focus block by saying no to a non-essential request.',
-      effort: 'moderate',
-      estimatedMinutes: 25,
-      difficulty: 'silver',
-      stretchGoal: 'Communicate your boundary clearly and kindly.',
-      tip: 'Use: “I can’t today, but I can revisit on Friday.”',
-    },
-    {
-      id: 'selfCare-digital-sunset',
-      title: 'Digital sunset',
-      description: 'Create a 45-minute no-screen window before bed this week.',
-      effort: 'moderate',
-      estimatedMinutes: 45,
-      difficulty: 'gold',
-      stretchGoal: 'Replace the window with reading or gentle stretching.',
-      tip: 'Set a nightly alarm labeled “power down.”',
-    },
-  ],
-  money: [
-    {
-      id: 'money-checkin',
-      title: 'Weekly money check-in',
-      description: 'Review last week spending and tag three avoidable purchases.',
-      effort: 'light',
-      estimatedMinutes: 20,
-      difficulty: 'bronze',
-      stretchGoal: 'Create one rule for next week spending.',
-      tip: 'Group spending into needs, wants, and leaks.',
-    },
-    {
-      id: 'money-trim',
-      title: 'Trim one expense',
-      description: 'Cancel, downgrade, or renegotiate one recurring subscription.',
-      effort: 'moderate',
-      estimatedMinutes: 35,
-      difficulty: 'silver',
-      stretchGoal: 'Redirect the savings to a goal account immediately.',
-      tip: 'Start with services you forgot you were paying for.',
-    },
-    {
-      id: 'money-save',
-      title: 'Automatic savings move',
-      description: 'Set up or increase an automatic weekly transfer.',
-      effort: 'moderate',
-      estimatedMinutes: 30,
-      difficulty: 'silver',
-      stretchGoal: 'Raise the transfer by 10 percent next month.',
-      tip: 'Automation beats willpower on busy weeks.',
-    },
-    {
-      id: 'money-income',
-      title: 'Income expansion step',
-      description: 'Take one concrete action that can increase your income.',
-      effort: 'intense',
-      estimatedMinutes: 90,
-      difficulty: 'gold',
-      stretchGoal: 'Schedule the second action before this week ends.',
-      tip: 'Pitch, publish, or apply: pick one and execute today.',
-    },
-  ],
-  family: [
-    {
-      id: 'family-checkin',
-      title: 'Family check-in',
-      description: 'Start a 20-minute check-in with one family member.',
-      effort: 'light',
-      estimatedMinutes: 20,
-      difficulty: 'bronze',
-      stretchGoal: 'Ask one question you usually avoid.',
-      tip: 'Lead with curiosity, not solutions.',
-    },
-    {
-      id: 'family-memory',
-      title: 'Create a memory',
-      description: 'Plan a simple shared activity and capture one photo or note.',
-      effort: 'moderate',
-      estimatedMinutes: 40,
-      difficulty: 'silver',
-      stretchGoal: 'Turn it into a weekly ritual slot.',
-      tip: 'Simple and consistent beats elaborate and rare.',
-    },
-    {
-      id: 'family-support',
-      title: 'Support in action',
-      description: 'Take one task off a family member’s plate this week.',
-      effort: 'moderate',
-      estimatedMinutes: 30,
-      difficulty: 'silver',
-      stretchGoal: 'Do it anonymously and observe the impact.',
-      tip: 'Choose something concrete and time-bound.',
-    },
-    {
-      id: 'family-ritual',
-      title: 'Build a family ritual',
-      description: 'Design and run a weekly ritual everyone can join.',
-      effort: 'intense',
-      estimatedMinutes: 75,
-      difficulty: 'gold',
-      stretchGoal: 'Collect feedback and improve it for next week.',
-      tip: 'Anchor the ritual to a fixed day and time.',
-    },
-  ],
-  spirituality: [
-    {
-      id: 'spirituality-silence',
-      title: 'Silent reset',
-      description: 'Spend 12 minutes in silence and observe your thoughts without judgment.',
-      effort: 'light',
-      estimatedMinutes: 15,
-      difficulty: 'bronze',
-      stretchGoal: 'Repeat daily for three days.',
-      tip: 'A timer removes the urge to check the clock.',
-    },
-    {
-      id: 'spirituality-gratitude',
-      title: 'Gratitude triad',
-      description: 'Write three specific gratitudes and why they matter.',
-      effort: 'light',
-      estimatedMinutes: 10,
-      difficulty: 'bronze',
-      stretchGoal: 'Share one gratitude directly with someone.',
-      tip: 'Specific details create stronger emotional recall.',
-    },
-    {
-      id: 'spirituality-nature',
-      title: 'Nature reconnection',
-      description: 'Take a mindful walk with no audio for at least 30 minutes.',
-      effort: 'moderate',
-      estimatedMinutes: 45,
-      difficulty: 'silver',
-      stretchGoal: 'End with five quiet breaths before leaving.',
-      tip: 'Notice textures, sounds, and temperature shifts.',
-    },
-    {
-      id: 'spirituality-service',
-      title: 'Service act',
-      description: 'Offer one selfless act expecting nothing in return.',
-      effort: 'intense',
-      estimatedMinutes: 60,
-      difficulty: 'gold',
-      stretchGoal: 'Make service a repeating weekly intention.',
-      tip: 'Small acts done sincerely still count.',
-    },
-  ],
-  relationship: [
-    {
-      id: 'relationship-appreciation',
-      title: 'Intentional appreciation',
-      description: 'Express one sincere appreciation to your partner or close person.',
-      effort: 'light',
-      estimatedMinutes: 10,
-      difficulty: 'bronze',
-      stretchGoal: 'Name the behavior and the impact it had on you.',
-      tip: 'Specific appreciation lands deeper than generic praise.',
-    },
-    {
-      id: 'relationship-date',
-      title: 'Presence date',
-      description: 'Plan quality time with full presence and no phone interruptions.',
-      effort: 'moderate',
-      estimatedMinutes: 90,
-      difficulty: 'silver',
-      stretchGoal: 'Include one meaningful prompt to deepen connection.',
-      tip: 'Pick an activity that creates conversation naturally.',
-    },
-    {
-      id: 'relationship-repair',
-      title: 'Repair a tension',
-      description: 'Address one unresolved tension with calm and clarity.',
-      effort: 'moderate',
-      estimatedMinutes: 35,
-      difficulty: 'silver',
-      stretchGoal: 'Summarize each other’s perspective before responding.',
-      tip: 'Lead with “I felt...” instead of blame language.',
-    },
-    {
-      id: 'relationship-boundary',
-      title: 'Relational boundary',
-      description: 'Set one healthy boundary that supports trust and consistency.',
-      effort: 'intense',
-      estimatedMinutes: 45,
-      difficulty: 'gold',
-      stretchGoal: 'Agree on a check-in date to review how it is working.',
-      tip: 'Boundaries are agreements, not punishments.',
-    },
-  ],
-  career: [
-    {
-      id: 'career-priority',
-      title: 'Priority sprint',
-      description: 'Block a 45-minute deep-work sprint on your highest-impact task.',
-      effort: 'light',
-      estimatedMinutes: 45,
-      difficulty: 'bronze',
-      stretchGoal: 'Run two sprints on separate days.',
-      tip: 'Define “done” before the timer starts.',
-    },
-    {
-      id: 'career-learn',
-      title: 'Skill upgrade',
-      description: 'Learn one practical skill and apply it immediately.',
-      effort: 'moderate',
-      estimatedMinutes: 50,
-      difficulty: 'silver',
-      stretchGoal: 'Share the outcome with a teammate or mentor.',
-      tip: 'Application cements learning faster than notes alone.',
-    },
-    {
-      id: 'career-visibility',
-      title: 'Visibility move',
-      description: 'Publish or present one update on meaningful progress.',
-      effort: 'moderate',
-      estimatedMinutes: 30,
-      difficulty: 'silver',
-      stretchGoal: 'Tie the update to measurable business impact.',
-      tip: 'Keep the message short and outcome-first.',
-    },
-    {
-      id: 'career-network',
-      title: 'Network catalyst',
-      description: 'Reach out to two valuable contacts and schedule one conversation.',
-      effort: 'intense',
-      estimatedMinutes: 60,
-      difficulty: 'gold',
-      stretchGoal: 'Prepare one clear ask before each conversation.',
-      tip: 'Warm introductions usually convert better than cold outreach.',
-    },
-  ],
-};
+interface CategoryMissionsProps {
+  category: MissionCategory;
+  missions: CategoryMissionData[];
+  onMissionStatusChange?: (
+    missionId: string,
+    status: Exclude<MissionStatus, 'pending'>
+  ) => Promise<void>;
+}
 
-const defaultMissions: Mission[] = [
-  {
-    id: 'default-reflect',
-    title: 'Plant a new seed',
-    description: 'Choose a meaningful action that nudges this life area forward.',
-    effort: 'light',
-    estimatedMinutes: 20,
-    difficulty: 'bronze',
-    stretchGoal: 'Repeat the action twice this week.',
-    tip: 'Small consistent moves compound faster than you think.',
-  },
-  {
-    id: 'default-expand',
-    title: 'Explore a new angle',
-    description: 'Learn one new insight or technique related to this life area.',
-    effort: 'moderate',
-    estimatedMinutes: 35,
-    difficulty: 'silver',
-    stretchGoal: 'Share the insight with someone for accountability.',
-    tip: 'Audio clips or short articles keep the bar friendly.',
-  },
-  {
-    id: 'default-celebrate',
-    title: 'Celebrate progress',
-    description: 'Document one win and how it made you feel.',
-    effort: 'light',
-    estimatedMinutes: 10,
-    difficulty: 'bronze',
-    stretchGoal: 'Turn the win into a ritual you repeat weekly.',
-    tip: 'Write it down—seeing your words boosts recall.',
-  },
-  {
-    id: 'default-align',
-    title: 'Refocus next move',
-    description: 'Choose one clear next action and schedule it on your calendar.',
-    effort: 'moderate',
-    estimatedMinutes: 20,
-    difficulty: 'silver',
-    stretchGoal: 'Block a backup slot in case your day shifts.',
-    tip: 'Time-boxed commitments reduce decision fatigue.',
-  },
-];
+type MissionFilterTab = 'pending' | 'completed';
+const MAX_VISIBLE_PENDING_MISSIONS = 4;
+const NEXT_MISSION_DELAY_DAYS = 7;
 
 const difficultyBadges: Record<MissionDifficulty, string> = {
   bronze: 'Bronze',
@@ -448,199 +81,278 @@ type BadgeSkin =
   | 'silver'
   | 'gold';
 
+type MissionBadgeId =
+  | 'explorer'
+  | 'connector'
+  | 'kindred'
+  | 'spark'
+  | 'momentum'
+  | 'fuel-up'
+  | 'recharge'
+  | 'listener'
+  | 'hydrated'
+  | 'calm-core'
+  | 'reflector'
+  | 'protector'
+  | 'unplugged'
+  | 'tracker'
+  | 'optimizer'
+  | 'builder'
+  | 'accelerator'
+  | 'heartbeat'
+  | 'memory-maker'
+  | 'supporter'
+  | 'tradition'
+  | 'stillness'
+  | 'grateful'
+  | 'earthbound'
+  | 'giver'
+  | 'heartline'
+  | 'presence'
+  | 'bridge'
+  | 'respect'
+  | 'focus'
+  | 'upskill'
+  | 'spotlight'
+  | 'connector-plus'
+  | 'seed-planter'
+  | 'pathfinder'
+  | 'glow-up'
+  | 'north-star';
+
 interface MissionBadgeMeta {
   title: string;
   icon: string;
   skin: BadgeSkin;
 }
 
-const defaultBadge: MissionBadgeMeta = {
-  title: 'Explorer',
-  icon: '✨',
-  skin: 'purple',
-};
+const DEFAULT_MISSION_BADGE_ID: MissionBadgeId = 'explorer';
 
-const missionBadges: Record<string, MissionBadgeMeta> = {
-  'social-connect': {
+const missionBadgeCatalog: Record<MissionBadgeId, MissionBadgeMeta> = {
+  explorer: {
+    title: 'Explorer',
+    icon: '✨',
+    skin: 'purple',
+  },
+  connector: {
     title: 'Connector',
     icon: '🔗',
     skin: 'yellow',
   },
-  'social-kindness': {
+  kindred: {
     title: 'Kindred',
     icon: '💛',
     skin: 'pink',
   },
-  'social-host': {
+  spark: {
     title: 'Spark',
     icon: '🎉',
     skin: 'orange',
   },
-  'health-move': {
+  momentum: {
     title: 'Momentum',
     icon: '⚡',
     skin: 'teal',
   },
-  'health-nourish': {
+  'fuel-up': {
     title: 'Fuel Up',
     icon: '🥗',
     skin: 'green',
   },
-  'health-reset': {
+  recharge: {
     title: 'Recharge',
     icon: '🌙',
     skin: 'purple',
   },
-  'social-listen': {
+  listener: {
     title: 'Listener',
     icon: '🎧',
     skin: 'blue',
   },
-  'health-hydrate': {
+  hydrated: {
     title: 'Hydrated',
     icon: '💧',
     skin: 'blueDark',
   },
-  'selfCare-breathe': {
+  'calm-core': {
     title: 'Calm Core',
     icon: '🫁',
     skin: 'teal',
   },
-  'selfCare-journal': {
+  reflector: {
     title: 'Reflector',
     icon: '📓',
     skin: 'purple',
   },
-  'selfCare-boundary': {
+  protector: {
     title: 'Protector',
     icon: '🛡️',
     skin: 'greenDark',
   },
-  'selfCare-digital-sunset': {
+  unplugged: {
     title: 'Unplugged',
     icon: '🌆',
     skin: 'orange',
   },
-  'money-checkin': {
+  tracker: {
     title: 'Tracker',
     icon: '🧾',
     skin: 'silver',
   },
-  'money-trim': {
+  optimizer: {
     title: 'Optimizer',
     icon: '✂️',
     skin: 'green',
   },
-  'money-save': {
+  builder: {
     title: 'Builder',
     icon: '🏦',
     skin: 'blue',
   },
-  'money-income': {
+  accelerator: {
     title: 'Accelerator',
     icon: '🚀',
     skin: 'gold',
   },
-  'family-checkin': {
+  heartbeat: {
     title: 'Heartbeat',
     icon: '💬',
     skin: 'pink',
   },
-  'family-memory': {
+  'memory-maker': {
     title: 'Memory Maker',
     icon: '📸',
     skin: 'yellow',
   },
-  'family-support': {
+  supporter: {
     title: 'Supporter',
     icon: '🤝',
     skin: 'teal',
   },
-  'family-ritual': {
+  tradition: {
     title: 'Tradition',
     icon: '🕯️',
     skin: 'orange',
   },
-  'spirituality-silence': {
+  stillness: {
     title: 'Stillness',
     icon: '🫧',
     skin: 'silver',
   },
-  'spirituality-gratitude': {
+  grateful: {
     title: 'Grateful',
     icon: '🙏',
     skin: 'yellow',
   },
-  'spirituality-nature': {
+  earthbound: {
     title: 'Earthbound',
     icon: '🌿',
     skin: 'greenDark',
   },
-  'spirituality-service': {
+  giver: {
     title: 'Giver',
     icon: '🤲',
     skin: 'gold',
   },
-  'relationship-appreciation': {
+  heartline: {
     title: 'Heartline',
     icon: '💗',
     skin: 'pink',
   },
-  'relationship-date': {
+  presence: {
     title: 'Presence',
     icon: '🕯️',
     skin: 'red',
   },
-  'relationship-repair': {
+  bridge: {
     title: 'Bridge',
     icon: '🌉',
     skin: 'blueDark',
   },
-  'relationship-boundary': {
+  respect: {
     title: 'Respect',
     icon: '🧭',
     skin: 'purple',
   },
-  'career-priority': {
+  focus: {
     title: 'Focus',
     icon: '🎯',
     skin: 'blue',
   },
-  'career-learn': {
+  upskill: {
     title: 'Upskill',
     icon: '📘',
     skin: 'teal',
   },
-  'career-visibility': {
+  spotlight: {
     title: 'Spotlight',
     icon: '📣',
     skin: 'orange',
   },
-  'career-network': {
+  'connector-plus': {
     title: 'Connector+',
     icon: '🕸️',
     skin: 'gold',
   },
-  'default-reflect': {
+  'seed-planter': {
     title: 'Seed Planter',
     icon: '🌱',
     skin: 'greenDark',
   },
-  'default-expand': {
+  pathfinder: {
     title: 'Pathfinder',
     icon: '🧭',
     skin: 'blue',
   },
-  'default-celebrate': {
+  'glow-up': {
     title: 'Glow Up',
     icon: '🏵️',
     skin: 'gold',
   },
-  'default-align': {
+  'north-star': {
     title: 'North Star',
     icon: '🧭',
     skin: 'blueDark',
   },
+};
+
+const defaultBadge: MissionBadgeMeta = {
+  ...missionBadgeCatalog[DEFAULT_MISSION_BADGE_ID],
+};
+
+const missionBadgeFallbackByMissionId: Record<string, MissionBadgeId> = {
+  'social-connect': 'connector',
+  'social-kindness': 'kindred',
+  'social-host': 'spark',
+  'health-move': 'momentum',
+  'health-nourish': 'fuel-up',
+  'health-reset': 'recharge',
+  'social-listen': 'listener',
+  'health-hydrate': 'hydrated',
+  'selfCare-breathe': 'calm-core',
+  'selfCare-journal': 'reflector',
+  'selfCare-boundary': 'protector',
+  'selfCare-digital-sunset': 'unplugged',
+  'money-checkin': 'tracker',
+  'money-trim': 'optimizer',
+  'money-save': 'builder',
+  'money-income': 'accelerator',
+  'family-checkin': 'heartbeat',
+  'family-memory': 'memory-maker',
+  'family-support': 'supporter',
+  'family-ritual': 'tradition',
+  'spirituality-silence': 'stillness',
+  'spirituality-gratitude': 'grateful',
+  'spirituality-nature': 'earthbound',
+  'spirituality-service': 'giver',
+  'relationship-appreciation': 'heartline',
+  'relationship-date': 'presence',
+  'relationship-repair': 'bridge',
+  'relationship-boundary': 'respect',
+  'career-priority': 'focus',
+  'career-learn': 'upskill',
+  'career-visibility': 'spotlight',
+  'career-network': 'connector-plus',
 };
 
 const useWeekNumber = (): number => {
@@ -652,7 +364,27 @@ const useWeekNumber = (): number => {
   }, []);
 };
 
-const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
+const mapMissionDataToState = (source: CategoryMissionData[]): MissionState[] =>
+  source.map(mission => ({
+    id: mission.id,
+    title: mission.title,
+    description: mission.description,
+    effort: mission.effort,
+    estimatedMinutes: mission.estimatedMinutes,
+    difficulty: mission.difficulty,
+    badge: mission.badge,
+    stretchGoal: mission.stretchGoal,
+    tip: mission.tip,
+    completedAt: mission.completedAt ?? null,
+    status: mission.status,
+    isStretch: false,
+  }));
+
+const CategoryMissions = ({
+  category,
+  missions: missionsFromApi,
+  onMissionStatusChange,
+}: CategoryMissionsProps): JSX.Element => {
   const { t } = useCommonTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const missionCardRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -660,6 +392,7 @@ const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
   const [isRibbonCollapsed, setRibbonCollapsed] = useState(false);
   const [showWhyPanel, setShowWhyPanel] = useState(false);
   const [highlightedMissionId, setHighlightedMissionId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<MissionFilterTab>('pending');
   const weekNumber = useWeekNumber();
   const translations = useMemo(
     () => ({
@@ -680,6 +413,18 @@ const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
         active: t('missions.content.hints.active') as string,
         completed: t('missions.content.hints.completed') as string,
       },
+      tabs: {
+        pending: t('missions.content.tabs.pending') as string,
+        completed: t('missions.content.tabs.completed') as string,
+      },
+      emptyState: {
+        noDataTitle: t('missions.content.emptyState.noDataTitle') as string,
+        noDataDescription: t('missions.content.emptyState.noDataDescription') as string,
+        noPendingTitle: t('missions.content.emptyState.noPendingTitle') as string,
+        noPendingDescription: t('missions.content.emptyState.noPendingDescription') as string,
+        noCompletedTitle: t('missions.content.emptyState.noCompletedTitle') as string,
+        noCompletedDescription: t('missions.content.emptyState.noCompletedDescription') as string,
+      },
       header: {
         progress: t('missions.content.header.progress') as string,
         completed: t('missions.content.header.completed') as string,
@@ -699,7 +444,6 @@ const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
     }),
     [t]
   );
-  const baseMissions = useMemo(() => missionLibrary[category.id] ?? defaultMissions, [category.id]);
   const guidanceKeys = categoryHeaderGuidance[category.id] ?? headerGuidanceFallback;
   const guidance = useMemo(
     () => ({
@@ -710,25 +454,16 @@ const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
     [guidanceKeys.improvementFocusKey, guidanceKeys.microHabitKey, guidanceKeys.summaryKey, t]
   );
 
-  const [missions, setMissions] = useState<MissionState[]>(
-    baseMissions.map(mission => ({
-      ...mission,
-      status: 'pending',
-      isStretch: false,
-    }))
+  const [missions, setMissions] = useState<MissionState[]>(() =>
+    mapMissionDataToState(missionsFromApi)
   );
 
   useEffect(() => {
-    setMissions(
-      baseMissions.map(mission => ({
-        ...mission,
-        status: 'pending',
-        isStretch: false,
-      }))
-    );
+    setMissions(mapMissionDataToState(missionsFromApi));
     setShowWhyPanel(false);
     setHighlightedMissionId(null);
-  }, [baseMissions]);
+    setActiveTab('pending');
+  }, [category.id, missionsFromApi]);
 
   useEffect(() => {
     const current = containerRef.current;
@@ -763,8 +498,17 @@ const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
     );
   };
 
+  const persistStatus = (id: string, status: Exclude<MissionStatus, 'pending'>): void => {
+    if (!onMissionStatusChange) return;
+
+    void onMissionStatusChange(id, status).catch(error => {
+      console.error(`Failed to persist mission status (${id}, ${status}):`, error);
+    });
+  };
+
   const handleStartMission = (id: string): void => {
     setMissionStatus(id, mission => ({ ...mission, status: 'active' }));
+    persistStatus(id, 'active');
   };
 
   const triggerCompletion = (id: string): void => {
@@ -772,25 +516,80 @@ const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
       ...mission,
       status: 'completed',
     }));
+    persistStatus(id, 'completed');
   };
 
   const totalMissions = missions.length;
-  const completedCount = missions.filter(mission => mission.status === 'completed').length;
-  const activeCount = missions.filter(mission => mission.status === 'active').length;
-  const pendingCount = missions.filter(mission => mission.status === 'pending').length;
-  const allMissionsCompleted = completedCount === totalMissions;
+  const weeklyMissionTarget = Math.min(MAX_VISIBLE_PENDING_MISSIONS, totalMissions);
+  const completedMissions = useMemo(
+    () =>
+      missions
+        .filter(mission => mission.status === 'completed')
+        .sort((a, b) => {
+          const aTime = a.completedAt ? Date.parse(a.completedAt) : 0;
+          const bTime = b.completedAt ? Date.parse(b.completedAt) : 0;
+          if (aTime !== bTime) return bTime - aTime;
+          return a.id.localeCompare(b.id);
+        }),
+    [missions]
+  );
+  const unresolvedMissions = useMemo(() => {
+    const activeMissions = missions.filter(mission => mission.status === 'active');
+    const pendingMissions = missions.filter(mission => mission.status === 'pending');
+    return [...activeMissions, ...pendingMissions];
+  }, [missions]);
+  const cooldownActive = useMemo(() => {
+    if (weeklyMissionTarget === 0 || completedMissions.length < weeklyMissionTarget) return false;
+
+    const latestCompletedAt = completedMissions.reduce<number | null>((latest, mission) => {
+      const timestamp = mission.completedAt ? Date.parse(mission.completedAt) : Number.NaN;
+      if (Number.isNaN(timestamp)) return latest;
+      if (latest === null || timestamp > latest) return timestamp;
+      return latest;
+    }, null);
+
+    if (latestCompletedAt === null) {
+      return true;
+    }
+
+    const cooldownMs = NEXT_MISSION_DELAY_DAYS * 24 * 60 * 60 * 1000;
+    return Date.now() < latestCompletedAt + cooldownMs;
+  }, [completedMissions, weeklyMissionTarget]);
+  const visibleCompletedMissions = useMemo(
+    () =>
+      completedMissions.length >= weeklyMissionTarget && !cooldownActive
+        ? []
+        : completedMissions.slice(0, weeklyMissionTarget),
+    [completedMissions, cooldownActive, weeklyMissionTarget]
+  );
+  const visiblePendingMissions = useMemo(() => {
+    const pendingSlots = Math.max(0, weeklyMissionTarget - visibleCompletedMissions.length);
+    return unresolvedMissions.slice(0, pendingSlots);
+  }, [unresolvedMissions, visibleCompletedMissions.length, weeklyMissionTarget]);
+
+  const completedCount = visibleCompletedMissions.length;
+  const activeCount = visiblePendingMissions.filter(mission => mission.status === 'active').length;
+  const pendingCount = visiblePendingMissions.filter(
+    mission => mission.status === 'pending'
+  ).length;
+  const pendingTabCount = visiblePendingMissions.length;
+  const completedTabCount = visibleCompletedMissions.length;
+  const visibleMissions =
+    activeTab === 'completed' ? visibleCompletedMissions : visiblePendingMissions;
+  const allMissionsCompleted = weeklyMissionTarget > 0 && completedCount === weeklyMissionTarget;
+  const hasCategoryMissions = weeklyMissionTarget > 0;
   const completionPercent =
-    totalMissions > 0 ? Math.round((completedCount / totalMissions) * 100) : 0;
+    weeklyMissionTarget > 0 ? Math.round((completedCount / weeklyMissionTarget) * 100) : 0;
   const nextMission =
-    missions.find(mission => mission.status === 'pending') ??
-    missions.find(mission => mission.status === 'active') ??
+    visiblePendingMissions.find(mission => mission.status === 'active') ??
+    visiblePendingMissions.find(mission => mission.status === 'pending') ??
     null;
 
   const momentumState: MomentumState = useMemo(() => {
-    if (allMissionsCompleted && totalMissions > 0) return 'completed';
+    if (allMissionsCompleted && weeklyMissionTarget > 0) return 'completed';
     if (completedCount === 0 && activeCount === 0) return 'not_started';
     return 'in_progress';
-  }, [activeCount, allMissionsCompleted, completedCount, totalMissions]);
+  }, [activeCount, allMissionsCompleted, completedCount, weeklyMissionTarget]);
 
   const recommendationText = useMemo(() => {
     const missionName = nextMission?.title || category.name;
@@ -810,7 +609,7 @@ const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
         ? translations.header.actions.continue
         : translations.header.actions.reviewWins;
   const actionMission =
-    nextMission ?? (momentumState === 'completed' ? (missions[0] ?? null) : null);
+    nextMission ?? (momentumState === 'completed' ? (visibleCompletedMissions[0] ?? null) : null);
 
   const focusNextMission = (): void => {
     if (!actionMission) return;
@@ -830,6 +629,27 @@ const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
       setHighlightedMissionId(current => (current === actionMission.id ? null : current));
     }, 1600);
   };
+
+  const emptyStateContent = useMemo(() => {
+    if (!hasCategoryMissions) {
+      return {
+        title: translations.emptyState.noDataTitle,
+        description: translations.emptyState.noDataDescription,
+      };
+    }
+
+    if (activeTab === 'completed') {
+      return {
+        title: translations.emptyState.noCompletedTitle,
+        description: translations.emptyState.noCompletedDescription,
+      };
+    }
+
+    return {
+      title: translations.emptyState.noPendingTitle,
+      description: translations.emptyState.noPendingDescription,
+    };
+  }, [activeTab, hasCategoryMissions, translations.emptyState]);
 
   return (
     <div className={styles.wrapper}>
@@ -897,7 +717,7 @@ const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
                   {translations.header.progress}: {completionPercent}%
                 </span>
                 <span className={styles.statPill}>
-                  {translations.header.completed}: {completedCount}/{totalMissions}
+                  {translations.header.completed}: {completedCount}/{weeklyMissionTarget}
                 </span>
                 <span className={styles.statPill}>
                   {translations.header.active}: {activeCount}
@@ -963,139 +783,183 @@ const CategoryMissions = ({ category }: CategoryMissionsProps): JSX.Element => {
           </p>
         </div>
 
-        <div className={styles.missionGrid}>
-          {missions.map(mission => {
-            const palette = difficultyPalettes[mission.difficulty];
-            const badge = missionBadges[mission.id] ?? defaultBadge;
-            const cardStyle = {
-              '--mission-primary': palette.primary,
-              '--mission-secondary': palette.secondary,
-            } as CSSProperties;
-
-            return (
-              <motion.div
-                key={mission.id}
-                className={`${styles.missionCardWrapper} ${
-                  highlightedMissionId === mission.id ? styles.cardHighlighted : ''
-                }`}
-                ref={element => {
-                  missionCardRefs.current[mission.id] = element;
-                }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={
-                  prefersReducedMotion
-                    ? undefined
-                    : {
-                        rotateX: -2,
-                        rotateY: 3,
-                        translateY: -10,
-                        boxShadow: '0 50px 90px -45px rgba(15,23,42,0.95)',
-                      }
-                }
-                whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
-                transition={{
-                  delay: prefersReducedMotion ? 0 : 0.05,
-                  type: 'spring',
-                  stiffness: 220,
-                  damping: 26,
-                }}
-              >
-                <div
-                  className={`${styles.missionCard} ${
-                    mission.status === 'completed' ? styles.missionCompleted : ''
-                  }`}
-                  style={cardStyle}
-                >
-                  <div className={styles.cardAtmosphere}>
-                    <span className={styles.cardAurora} />
-                    <span className={styles.cardShard} />
-                  </div>
-
-                  <motion.div
-                    className={`${styles.missionBadge} ${styles[badge.skin]}`}
-                    animate={
-                      prefersReducedMotion
-                        ? {}
-                        : {
-                            y: [0, -2, 0],
-                            rotate: [0, 2, -1.5, 0],
-                          }
-                    }
-                    transition={
-                      prefersReducedMotion
-                        ? undefined
-                        : {
-                            duration: 6,
-                            repeat: Infinity,
-                            ease: 'easeInOut',
-                          }
-                    }
-                  >
-                    <div className={styles.badgeCircle}>
-                      <span className={styles.badgeIcon}>{badge.icon}</span>
-                    </div>
-                    <span className={styles.badgeRibbon}>{badge.title}</span>
-                  </motion.div>
-
-                  <div className={styles.cardBody}>
-                    <div className={styles.cardHeader}>
-                      <h4 className={styles.cardTitle}>{mission.title}</h4>
-                    </div>
-                    <p className={styles.cardDescription}>
-                      {mission.isStretch ? mission.stretchGoal : mission.description}
-                    </p>
-
-                    <div className={styles.missionCta}>
-                      <GamifiedCTAButton
-                        primaryLabel={translations.cta.start}
-                        secondaryLabel={translations.cta.inProgress}
-                        holdLabel={translations.cta.complete}
-                        holdDuration={1000}
-                        onHoldComplete={() => {
-                          triggerCompletion(mission.id);
-                        }}
-                        onClick={() => handleStartMission(mission.id)}
-                      />
-                    </div>
-
-                    <div className={styles.cardFooter}>
-                      <div className={styles.coachStrip}>
-                        <span className={styles.coachAvatar}>✨</span>
-                        {mission.status === 'pending' && (
-                          <p className={styles.cardHint}>
-                            {translations.hints.pendingPrefix}{' '}
-                            <span className={styles.inlineHighlight}>
-                              {translations.hints.pendingAction}
-                            </span>
-                            , {translations.hints.pendingSuffix}
-                          </p>
-                        )}
-                        {mission.status === 'active' && (
-                          <p className={styles.cardHint}>{translations.hints.active}</p>
-                        )}
-                        {mission.status === 'completed' && (
-                          <p className={styles.cardHint}>{translations.hints.completed}</p>
-                        )}
-                      </div>
-                      <motion.p
-                        className={styles.cardTip}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: prefersReducedMotion ? 0 : 0.1 }}
-                      >
-                        {mission.tip}
-                      </motion.p>
-                    </div>
-                  </div>
-                </div>
-                <div className={`${styles.difficultyRibbon} ${styles[mission.difficulty]}`}>
-                  <span className={styles.ribbonLabel}>{difficultyBadges[mission.difficulty]}</span>
-                </div>
-              </motion.div>
-            );
-          })}
+        <div className={styles.tabBar} role="tablist" aria-label={category.name}>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'pending'}
+            className={`${styles.tabButton} ${activeTab === 'pending' ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab('pending')}
+          >
+            {translations.tabs.pending} ({pendingTabCount})
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'completed'}
+            className={`${styles.tabButton} ${activeTab === 'completed' ? styles.tabActive : ''}`}
+            onClick={() => setActiveTab('completed')}
+          >
+            {translations.tabs.completed} ({completedTabCount})
+          </button>
         </div>
+
+        {visibleMissions.length === 0 ? (
+          <div className={styles.categoryEmptyState}>
+            <p className={styles.categoryEmptyTitle}>{emptyStateContent.title}</p>
+            <p className={styles.categoryEmptyDescription}>{emptyStateContent.description}</p>
+          </div>
+        ) : (
+          <div className={styles.missionGrid}>
+            {visibleMissions.map(mission => {
+              const palette = difficultyPalettes[mission.difficulty];
+              const badgeId =
+                mission.badge ??
+                missionBadgeFallbackByMissionId[mission.id] ??
+                DEFAULT_MISSION_BADGE_ID;
+              const badge = missionBadgeCatalog[badgeId] ?? defaultBadge;
+              const cardStyle = {
+                '--mission-primary': palette.primary,
+                '--mission-secondary': palette.secondary,
+              } as CSSProperties;
+
+              return (
+                <motion.div
+                  key={mission.id}
+                  className={`${styles.missionCardWrapper} ${
+                    highlightedMissionId === mission.id ? styles.cardHighlighted : ''
+                  }`}
+                  ref={element => {
+                    missionCardRefs.current[mission.id] = element;
+                  }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={
+                    prefersReducedMotion
+                      ? undefined
+                      : {
+                          rotateX: -2,
+                          rotateY: 3,
+                          translateY: -10,
+                          boxShadow: '0 50px 90px -45px rgba(15,23,42,0.95)',
+                        }
+                  }
+                  whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
+                  transition={{
+                    delay: prefersReducedMotion ? 0 : 0.05,
+                    type: 'spring',
+                    stiffness: 220,
+                    damping: 26,
+                  }}
+                >
+                  <div
+                    className={`${styles.missionCard} ${
+                      mission.status === 'completed' ? styles.missionCompleted : ''
+                    }`}
+                    style={cardStyle}
+                  >
+                    <div className={styles.cardAtmosphere}>
+                      <span className={styles.cardAurora} />
+                      <span className={styles.cardShard} />
+                    </div>
+
+                    <motion.div
+                      className={`${styles.missionBadge} ${styles[badge.skin]}`}
+                      animate={
+                        prefersReducedMotion
+                          ? {}
+                          : {
+                              y: [0, -2, 0],
+                              rotate: [0, 2, -1.5, 0],
+                            }
+                      }
+                      transition={
+                        prefersReducedMotion
+                          ? undefined
+                          : {
+                              duration: 6,
+                              repeat: Infinity,
+                              ease: 'easeInOut',
+                            }
+                      }
+                    >
+                      <div className={styles.badgeCircle}>
+                        <span className={styles.badgeIcon}>{badge.icon}</span>
+                      </div>
+                      <span className={styles.badgeRibbon}>{badge.title}</span>
+                    </motion.div>
+
+                    <div className={styles.cardBody}>
+                      <div className={styles.cardHeader}>
+                        <h4 className={styles.cardTitle}>{mission.title}</h4>
+                      </div>
+                      <p className={styles.cardDescription}>
+                        {mission.isStretch ? mission.stretchGoal : mission.description}
+                      </p>
+
+                      <div className={styles.missionCta}>
+                        <GamifiedCTAButton
+                          primaryLabel={translations.cta.start}
+                          secondaryLabel={translations.cta.inProgress}
+                          holdLabel={translations.cta.complete}
+                          state={
+                            mission.status === 'completed'
+                              ? 'completed'
+                              : mission.status === 'active'
+                                ? 'active'
+                                : undefined
+                          }
+                          holdDuration={1000}
+                          onHoldComplete={() => {
+                            triggerCompletion(mission.id);
+                          }}
+                          onClick={() => {
+                            if (mission.status !== 'pending') return;
+                            handleStartMission(mission.id);
+                          }}
+                        />
+                      </div>
+
+                      <div className={styles.cardFooter}>
+                        <div className={styles.coachStrip}>
+                          <span className={styles.coachAvatar}>✨</span>
+                          {mission.status === 'pending' && (
+                            <p className={styles.cardHint}>
+                              {translations.hints.pendingPrefix}{' '}
+                              <span className={styles.inlineHighlight}>
+                                {translations.hints.pendingAction}
+                              </span>
+                              , {translations.hints.pendingSuffix}
+                            </p>
+                          )}
+                          {mission.status === 'active' && (
+                            <p className={styles.cardHint}>{translations.hints.active}</p>
+                          )}
+                          {mission.status === 'completed' && (
+                            <p className={styles.cardHint}>{translations.hints.completed}</p>
+                          )}
+                        </div>
+                        <motion.p
+                          className={styles.cardTip}
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: prefersReducedMotion ? 0 : 0.1 }}
+                        >
+                          {mission.tip}
+                        </motion.p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={`${styles.difficultyRibbon} ${styles[mission.difficulty]}`}>
+                    <span className={styles.ribbonLabel}>
+                      {difficultyBadges[mission.difficulty]}
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
