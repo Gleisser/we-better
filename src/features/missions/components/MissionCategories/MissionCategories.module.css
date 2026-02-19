@@ -3,8 +3,8 @@
 }
 
 .categoriesWrapper {
-  @apply flex items-center justify-center
-         gap-4 px-8 py-4
+  @apply flex items-start justify-center
+         gap-5 px-8 py-5
          overflow-x-auto;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
@@ -12,41 +12,105 @@
 }
 
 .categoryItem {
-  @apply flex flex-col items-center gap-2
-         cursor-pointer;
+  @apply flex flex-col items-center gap-2 cursor-pointer;
+  min-width: 88px;
+  transition:
+    transform 0.25s ease,
+    filter 0.25s ease;
+}
+
+.categoryItem:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 4px;
+  border-radius: 999px;
+}
+
+.activeItem {
+  transform: translateY(-1px);
 }
 
 .categoryRing {
-  @apply w-16 h-16 rounded-full p-[3px]
+  @apply rounded-full p-[3px]
          bg-gradient-to-br from-gray-500 to-gray-700;
+  width: 82px;
+  height: 82px;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
 }
 
 .hasUpdate {
-  @apply animate-pulse;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.24);
+  animation: pulseRing 2s infinite;
 }
 
 .selected {
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.35),
+    0 10px 26px rgba(15, 23, 42, 0.55);
+  transform: translateY(-2px);
 }
 
 .categoryContent {
   @apply w-full h-full rounded-full
-         bg-black/40 backdrop-blur-xl
-         flex items-center justify-center
-         border border-white/10;
+         bg-black/35 backdrop-blur-xl
+         border border-white/15
+         overflow-hidden relative;
 }
 
-.categoryIcon {
-  @apply text-2xl;
+.categoryImage {
+  @apply w-full h-full;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.96) contrast(0.97);
+  transform: scale(1.03);
+  transition:
+    transform 0.28s ease,
+    filter 0.28s ease;
+}
+
+.imageOverlay {
+  @apply absolute inset-0;
+  background:
+    linear-gradient(to top, rgba(2, 6, 23, 0.38), rgba(2, 6, 23, 0.08) 42%, rgba(2, 6, 23, 0.02)),
+    radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.16), transparent 62%);
+  pointer-events: none;
 }
 
 .categoryLabel {
-  @apply text-xs text-white/70 font-medium;
+  @apply text-xs font-semibold;
+  color: rgba(255, 255, 255, 0.78);
+  text-shadow: 0 1px 8px rgba(15, 23, 42, 0.58);
+  transition: color 0.25s ease;
+}
+
+.categoryItem:hover .categoryImage {
+  transform: scale(1.08);
+  filter: saturate(1.05) contrast(1.02);
+}
+
+.categoryItem:hover .categoryLabel,
+.activeItem .categoryLabel {
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.selected .categoryImage {
+  filter: saturate(1.08) contrast(1.04);
 }
 
 /* Hide scrollbar but keep functionality */
 .categoriesWrapper::-webkit-scrollbar {
   display: none;
+}
+
+@keyframes pulseRing {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.24);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+  }
 }
 
 @media (max-width: 768px) {
@@ -63,9 +127,15 @@
 
   .categoryItem {
     @apply w-full;
+    min-width: 0;
   }
 
   .categoryRing {
-    @apply w-14 h-14;
+    width: 68px;
+    height: 68px;
+  }
+
+  .categoryLabel {
+    @apply text-[11px];
   }
 }

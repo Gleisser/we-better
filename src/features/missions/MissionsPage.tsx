@@ -1,20 +1,22 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import MissionCategories, {
   type MissionCategory,
 } from './components/MissionCategories/MissionCategories';
 import CategoryMissions from './components/CategoryMissions/CategoryMissions';
+import { missionCategoryImageMap } from './constants/categoryImageMap';
 import styles from './MissionsPage.module.css';
 
 const MissionsPage = (): JSX.Element => {
   const { t } = useCommonTranslation();
-  const [selectedCategory, setSelectedCategory] = useState<MissionCategory | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<MissionCategory['id'] | null>(null);
 
   const categories = useMemo<MissionCategory[]>(
     () => [
       {
         id: 'social',
         name: t('missions.categories.social') as string,
+        image: missionCategoryImageMap.social,
         color: {
           from: '#8B5CF6',
           to: '#D946EF',
@@ -26,6 +28,7 @@ const MissionsPage = (): JSX.Element => {
       {
         id: 'health',
         name: t('missions.categories.health') as string,
+        image: missionCategoryImageMap.health,
         color: {
           from: '#10B981',
           to: '#34D399',
@@ -37,6 +40,7 @@ const MissionsPage = (): JSX.Element => {
       {
         id: 'selfCare',
         name: t('missions.categories.selfCare') as string,
+        image: missionCategoryImageMap.selfCare,
         color: {
           from: '#F59E0B',
           to: '#FBBF24',
@@ -48,6 +52,7 @@ const MissionsPage = (): JSX.Element => {
       {
         id: 'money',
         name: t('missions.categories.money') as string,
+        image: missionCategoryImageMap.money,
         color: {
           from: '#3B82F6',
           to: '#60A5FA',
@@ -59,6 +64,7 @@ const MissionsPage = (): JSX.Element => {
       {
         id: 'family',
         name: t('missions.categories.family') as string,
+        image: missionCategoryImageMap.family,
         color: {
           from: '#EC4899',
           to: '#F472B6',
@@ -70,6 +76,7 @@ const MissionsPage = (): JSX.Element => {
       {
         id: 'spirituality',
         name: t('missions.categories.spirituality') as string,
+        image: missionCategoryImageMap.spirituality,
         color: {
           from: '#8B5CF6',
           to: '#A78BFA',
@@ -81,6 +88,7 @@ const MissionsPage = (): JSX.Element => {
       {
         id: 'relationship',
         name: t('missions.categories.relationship') as string,
+        image: missionCategoryImageMap.relationship,
         color: {
           from: '#EF4444',
           to: '#F87171',
@@ -92,6 +100,7 @@ const MissionsPage = (): JSX.Element => {
       {
         id: 'career',
         name: t('missions.categories.career') as string,
+        image: missionCategoryImageMap.career,
         color: {
           from: '#6366F1',
           to: '#818CF8',
@@ -103,6 +112,16 @@ const MissionsPage = (): JSX.Element => {
     ],
     [t]
   );
+  const selectedCategory = useMemo(
+    () => categories.find(category => category.id === selectedCategoryId) ?? null,
+    [categories, selectedCategoryId]
+  );
+
+  useEffect(() => {
+    if (!selectedCategoryId && categories.length > 0) {
+      setSelectedCategoryId(categories[0].id);
+    }
+  }, [categories, selectedCategoryId]);
 
   return (
     <div className={styles.page}>
@@ -114,8 +133,8 @@ const MissionsPage = (): JSX.Element => {
       <section className={styles.categoriesSection}>
         <MissionCategories
           categories={categories}
-          selectedCategoryId={selectedCategory?.id ?? null}
-          onCategorySelect={setSelectedCategory}
+          selectedCategoryId={selectedCategoryId}
+          onCategorySelect={setSelectedCategoryId}
         />
       </section>
 

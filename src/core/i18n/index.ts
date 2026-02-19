@@ -161,6 +161,85 @@ const resources = {
             completed:
               'Beautiful! Banked into your vault. Stretch missions await if you want extra shine.',
           },
+          header: {
+            progress: 'Progress',
+            completed: 'Completed',
+            pending: 'Pending',
+            active: 'Active',
+            states: {
+              notStarted: 'Start with {{mission}} to build momentum this week.',
+              inProgress: 'Great pace. Next milestone: {{mission}}.',
+              completed:
+                'You completed this week. Review your wins and prepare your next {{category}} quest.',
+            },
+            actions: {
+              startNext: 'Start Next Mission',
+              continue: 'Continue Mission',
+              reviewWins: 'Review Wins',
+              why: 'Why this matters',
+            },
+            panels: {
+              whyTitle: 'How to improve this area',
+              microHabit: 'Micro-habit:',
+            },
+            guidance: {
+              social: {
+                summary: 'Social health grows when you create meaningful, consistent connections.',
+                improvementFocus:
+                  'Focus on one intentional connection this week, depth over quantity.',
+                microHabit: 'Send one sincere check-in message before midday.',
+              },
+              health: {
+                summary: 'Physical health compounds through simple, repeatable habits.',
+                improvementFocus:
+                  'Prioritize one keystone behavior: movement, sleep, or nourishment.',
+                microHabit: 'Stack a 10-minute walk right after one daily routine.',
+              },
+              selfCare: {
+                summary: 'Self-care protects your energy so you can stay steady under pressure.',
+                improvementFocus: 'Create one clear boundary and one recovery ritual you can keep.',
+                microHabit: 'Take a two-minute breathing reset between major tasks.',
+              },
+              money: {
+                summary: 'Financial wellbeing improves when awareness and action happen weekly.',
+                improvementFocus:
+                  'Track one spending pattern and replace one leak with a better choice.',
+                microHabit: 'Log every discretionary expense once per day.',
+              },
+              family: {
+                summary: 'Family strength comes from reliability, presence, and shared rituals.',
+                improvementFocus:
+                  'Invest in one high-quality interaction with full attention this week.',
+                microHabit: 'Do one small supportive act before asking for anything.',
+              },
+              spirituality: {
+                summary:
+                  'Spiritual balance helps you respond with intention instead of reactivity.',
+                improvementFocus:
+                  'Build stillness through short moments of reflection and gratitude.',
+                microHabit: 'Pause for one minute of silence before your first task.',
+              },
+              relationship: {
+                summary:
+                  'Relationship quality improves with appreciation, repair, and clear communication.',
+                improvementFocus:
+                  'Choose one conversation that builds trust through clarity and care.',
+                microHabit: 'Offer one specific appreciation every day.',
+              },
+              career: {
+                summary: 'Career growth accelerates when effort is focused on high-impact work.',
+                improvementFocus:
+                  'Protect deep-work blocks and execute one visible progress move this week.',
+                microHabit: 'Start your day with a 30-minute priority sprint.',
+              },
+              fallback: {
+                summary: 'Progress in this area grows through consistent, focused actions.',
+                improvementFocus:
+                  'Choose one clear behavior to improve and repeat it throughout the week.',
+                microHabit: 'Complete one tiny action before noon each day.',
+              },
+            },
+          },
         },
       },
       aiChat: {
@@ -1455,6 +1534,89 @@ const resources = {
               'Mantenha o ritmo, pressione e segure o orbe até ele florescer para registrar sua vitória.',
             completed:
               'Perfeito! Guardado no seu histórico. Missões de superação esperam por você.',
+          },
+          header: {
+            progress: 'Progresso',
+            completed: 'Concluídas',
+            pending: 'Pendentes',
+            active: 'Ativas',
+            states: {
+              notStarted: 'Comece por {{mission}} para ganhar ritmo nesta semana.',
+              inProgress: 'Ótimo ritmo. Próximo marco: {{mission}}.',
+              completed:
+                'Você concluiu esta semana. Revise suas vitórias e prepare sua próxima missão de {{category}}.',
+            },
+            actions: {
+              startNext: 'Iniciar Próxima Missão',
+              continue: 'Continuar Missão',
+              reviewWins: 'Revisar Vitórias',
+              why: 'Por que isso importa',
+            },
+            panels: {
+              whyTitle: 'Como melhorar esta área',
+              microHabit: 'Micro-hábito:',
+            },
+            guidance: {
+              social: {
+                summary:
+                  'A saúde social cresce quando você constrói conexões significativas e consistentes.',
+                improvementFocus:
+                  'Foque em uma conexão intencional nesta semana, mais profundidade e menos volume.',
+                microHabit: 'Envie uma mensagem sincera de check-in antes do meio-dia.',
+              },
+              health: {
+                summary: 'A saúde física evolui com hábitos simples e repetíveis.',
+                improvementFocus:
+                  'Priorize um comportamento-chave: movimento, sono ou alimentação.',
+                microHabit: 'Inclua uma caminhada de 10 minutos após uma rotina diária.',
+              },
+              selfCare: {
+                summary: 'O autocuidado protege sua energia para manter estabilidade sob pressão.',
+                improvementFocus:
+                  'Crie um limite claro e um ritual de recuperação que você consiga manter.',
+                microHabit:
+                  'Faça uma pausa de respiração de dois minutos entre tarefas importantes.',
+              },
+              money: {
+                summary:
+                  'O bem-estar financeiro melhora quando consciência e ação acontecem semanalmente.',
+                improvementFocus:
+                  'Acompanhe um padrão de gasto e troque um vazamento por uma decisão melhor.',
+                microHabit: 'Registre um gasto discricionário por dia.',
+              },
+              family: {
+                summary:
+                  'A força da família nasce de presença, constância e rituais compartilhados.',
+                improvementFocus:
+                  'Invista em uma interação de alta qualidade com atenção total nesta semana.',
+                microHabit: 'Faça um pequeno gesto de apoio antes de pedir algo.',
+              },
+              spirituality: {
+                summary:
+                  'O equilíbrio espiritual ajuda você a responder com intenção, não por reação.',
+                improvementFocus: 'Construa momentos curtos de silêncio, reflexão e gratidão.',
+                microHabit: 'Faça um minuto de silêncio antes da primeira tarefa do dia.',
+              },
+              relationship: {
+                summary: 'Relacionamentos evoluem com apreciação, reparo e comunicação clara.',
+                improvementFocus:
+                  'Escolha uma conversa que aumente confiança com clareza e cuidado.',
+                microHabit: 'Ofereça uma apreciação específica todos os dias.',
+              },
+              career: {
+                summary:
+                  'O crescimento profissional acelera quando o esforço foca no que gera mais impacto.',
+                improvementFocus:
+                  'Proteja blocos de foco profundo e entregue um avanço visível nesta semana.',
+                microHabit: 'Comece o dia com um sprint de prioridade de 30 minutos.',
+              },
+              fallback: {
+                summary: 'O progresso nesta área cresce com ações consistentes e focadas.',
+                improvementFocus:
+                  'Escolha um comportamento claro para melhorar e repita durante a semana.',
+                microHabit: 'Conclua uma pequena ação antes do meio-dia diariamente.',
+              },
+            },
           },
         },
       },

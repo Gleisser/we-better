@@ -1,9 +1,14 @@
 import { motion } from 'framer-motion';
 import styles from './MissionCategories.module.css';
+import type {
+  MissionCategoryId,
+  MissionCategoryImage,
+} from '@/features/missions/constants/categoryImageMap';
 
 export interface MissionCategory {
-  id: string;
+  id: MissionCategoryId;
   name: string;
+  image: MissionCategoryImage;
   color: {
     from: string;
     to: string;
@@ -15,8 +20,8 @@ export interface MissionCategory {
 
 interface MissionCategoriesProps {
   categories: MissionCategory[];
-  selectedCategoryId: string | null;
-  onCategorySelect: (category: MissionCategory) => void;
+  selectedCategoryId: MissionCategoryId | null;
+  onCategorySelect: (categoryId: MissionCategoryId) => void;
 }
 
 const MissionCategories = ({
@@ -30,10 +35,13 @@ const MissionCategories = ({
         {categories.map((category: MissionCategory) => (
           <motion.button
             key={category.id}
-            className={styles.categoryItem}
-            onClick={() => onCategorySelect(category)}
+            className={`${styles.categoryItem} ${
+              selectedCategoryId === category.id ? styles.activeItem : ''
+            }`}
+            onClick={() => onCategorySelect(category.id)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            aria-pressed={selectedCategoryId === category.id}
           >
             <div
               className={`${styles.categoryRing} ${
@@ -44,7 +52,19 @@ const MissionCategories = ({
               }}
             >
               <div className={styles.categoryContent}>
-                <span className={styles.categoryIcon}>{category.icon}</span>
+                <picture>
+                  <source srcSet={category.image.webp} type="image/webp" />
+                  <img
+                    className={styles.categoryImage}
+                    src={category.image.png}
+                    alt={category.name}
+                    width={96}
+                    height={96}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
+                <span className={styles.imageOverlay} aria-hidden="true" />
               </div>
             </div>
             <span className={styles.categoryLabel}>{category.name}</span>
