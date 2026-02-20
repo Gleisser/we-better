@@ -1,3 +1,21 @@
+const DEFAULT_BACKEND_ORIGIN = 'http://localhost:3000';
+
+function resolveOrigin(rawUrl: string | undefined, fallbackOrigin: string): string {
+  if (!rawUrl) return fallbackOrigin;
+
+  try {
+    return new URL(rawUrl).origin;
+  } catch {
+    return rawUrl;
+  }
+}
+
+const backendOrigin = resolveOrigin(
+  import.meta.env.VITE_API_BACKEND_URL || import.meta.env.VITE_API_BASE_URL,
+  DEFAULT_BACKEND_ORIGIN
+);
+const imageOrigin = resolveOrigin(import.meta.env.VITE_IMAGE_BASE_URL, backendOrigin);
+
 export const CSP_POLICY = {
   'default-src': ["'self'"],
   'script-src': [
@@ -7,7 +25,6 @@ export const CSP_POLICY = {
     'https://sdk.scdn.co',
     'https://www.youtube.com',
     'https://*.youtube.com',
-    'https://*.strapiapp.com/',
   ],
   'script-src-elem': [
     "'self'",
@@ -16,7 +33,6 @@ export const CSP_POLICY = {
     'https://sdk.scdn.co',
     'https://www.youtube.com',
     'https://*.youtube.com',
-    'https://*.strapiapp.com/',
   ],
   'style-src': [
     "'self'",
@@ -37,23 +53,17 @@ export const CSP_POLICY = {
     'https://images.unsplash.com',
     'https://img.youtube.com',
     'https://*.ytimg.com',
-    import.meta.env.VITE_API_URL || 'http://localhost:1337',
-    'https://*.strapiapp.com/',
+    backendOrigin,
+    imageOrigin,
   ],
-  'media-src': [
-    "'self'",
-    'https://*.youtube.com',
-    import.meta.env.VITE_API_URL || 'http://localhost:1337',
-    'https://*.strapiapp.com/',
-  ],
+  'media-src': ["'self'", 'https://*.youtube.com', backendOrigin, imageOrigin],
   'connect-src': [
     "'self'",
-    import.meta.env.VITE_API_URL || 'http://localhost:1337',
+    backendOrigin,
     'https://accounts.spotify.com',
     'https://api.spotify.com',
     'https://www.youtube.com',
     'https://*.youtube.com',
-    'https://*.strapiapp.com/',
   ],
   'font-src': [
     "'self'",
@@ -69,7 +79,6 @@ export const CSP_POLICY = {
     'https://sdk.scdn.co',
     'https://www.youtube.com',
     'https://youtube.com',
-    'https://*.strapiapp.com/',
   ],
   'worker-src': ["'self'", 'blob:'],
 };

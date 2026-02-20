@@ -7,9 +7,10 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), '');
 
-  // Provide fallback values for required env variables
-  const apiUrl = env.VITE_API_URL || 'http://localhost:1337';
-  const userServiceUrl = env.VITE_USER_SERVICE_URL || 'http://localhost:3001';
+  // Route all API traffic through the backend gateway in dev.
+  const backendApiUrl =
+    env.VITE_API_BACKEND_URL || env.VITE_USER_SERVICE_URL || 'http://localhost:3000';
+  const userServiceUrl = env.VITE_USER_SERVICE_URL || backendApiUrl;
 
   return {
     plugins: [react()],
@@ -69,7 +70,7 @@ export default defineConfig(({ mode }) => {
           },
         },
         '/api': {
-          target: apiUrl,
+          target: backendApiUrl,
           changeOrigin: true,
           secure: false,
         },

@@ -1,6 +1,8 @@
 import { apiClient } from '@/core/services/api-client';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 
+const BFF_API_BASE_URL = import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000';
+
 export interface Article {
   id: number;
   documentId: string;
@@ -146,7 +148,9 @@ export const articleService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<ArticleResponse>(`/articles?${queryParams}`);
+      const { data } = await apiClient.get<ArticleResponse>(
+        `${BFF_API_BASE_URL}/api/content/articles?${queryParams.toString()}`
+      );
       return data;
     } catch (error) {
       return handleServiceError(error, 'Articles');
@@ -156,7 +160,7 @@ export const articleService = {
   async getArticle(documentId: string): Promise<{ data: Article }> {
     try {
       const { data } = await apiClient.get<{ data: Article }>(
-        `/api/articles/${documentId}?populate=category&populate=tags`
+        `${BFF_API_BASE_URL}/api/content/articles/${encodeURIComponent(documentId)}?populate=category&populate=tags`
       );
       return data;
     } catch (error) {
@@ -197,7 +201,9 @@ export const articleService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<ArticleResponse>(`/api/articles?${queryParams}`);
+      const { data } = await apiClient.get<ArticleResponse>(
+        `${BFF_API_BASE_URL}/api/content/articles?${queryParams.toString()}`
+      );
       return data;
     } catch (error) {
       return handleServiceError(error, 'Articles');

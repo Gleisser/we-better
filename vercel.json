@@ -13,9 +13,6 @@
       ]
     }
   ],
-  "env": {
-    "VITE_API_URL": "https://original-melody-94a4138af3.strapiapp.com/api"
-  },
   "rewrites": [
     {
       "source": "/(.*)",

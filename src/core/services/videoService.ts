@@ -1,6 +1,8 @@
 import { apiClient } from '@/core/services/api-client';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 
+const BFF_API_BASE_URL = import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000';
+
 export interface Video {
   id: string;
   youtubeId: string;
@@ -111,7 +113,9 @@ export const videoService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<VideoResponse>(`/youtube-videos?${queryParams}`);
+      const { data } = await apiClient.get<VideoResponse>(
+        `${BFF_API_BASE_URL}/api/content/youtubeVideos?${queryParams.toString()}`
+      );
       return data;
     } catch (error) {
       return handleServiceError(error, 'Videos');

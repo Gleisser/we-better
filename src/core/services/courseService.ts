@@ -2,6 +2,8 @@ import { apiClient } from '@/core/services/api-client';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 import { PlatformType } from '@/shared/components/widgets/CourseWidget/config';
 
+const BFF_API_BASE_URL = import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000';
+
 export interface CourseCategory {
   id: number;
   documentId: string;
@@ -96,7 +98,9 @@ export const courseService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<CourseResponse>(`/courses?${queryParams}`);
+      const { data } = await apiClient.get<CourseResponse>(
+        `${BFF_API_BASE_URL}/api/content/courses?${queryParams.toString()}`
+      );
       return data;
     } catch (error) {
       return handleServiceError(error, 'Courses');
