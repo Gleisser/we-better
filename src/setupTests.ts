@@ -6,8 +6,9 @@ expect.extend(matchers);
 beforeAll(() => {
   const viteMock = {
     env: {
-      VITE_API_URL: 'http://localhost:1337/api',
-      VITE_API_TOKEN: 'mock-token',
+      VITE_API_BACKEND_URL: 'http://localhost:3000',
+      VITE_API_BASE_URL: 'http://localhost:3000/api',
+      VITE_IMAGE_BASE_URL: 'http://localhost:1337',
       VITE_API_TIMEOUT: '30000',
       VITE_RATE_LIMIT_MAX_REQUESTS: '50',
       VITE_RATE_LIMIT_WINDOW: '60000',

@@ -11,9 +11,9 @@ import { ProtectedRoute } from '@/features/auth/ProtectedRoute';
 import { PublicRoute } from '@/features/auth/PublicRoute';
 import ForgotPassword from '@/features/auth/pages/ForgotPassword';
 import ResetPassword from '@/features/auth/pages/ResetPassword';
-import { SpotifyCallback } from '@/features/auth/pages/SpotifyCallback';
 import { EnhancedLifeWheelPage } from '@/features/life-wheel';
 import { DreamBoardPage } from '@/features/dream-board';
+import { MissionsPage } from '@/features/missions';
 import Settings from '@/pages/Settings';
 import Bookmarks from '@/pages/Bookmarks';
 import Notifications from '@/pages/Notifications';
@@ -77,6 +77,10 @@ export const router = createBrowserRouter([
         element: <DreamBoardPage />,
       },
       {
+        path: 'missions',
+        element: <MissionsPage />,
+      },
+      {
         path: 'settings',
         element: <Settings />,
       },
@@ -89,10 +93,6 @@ export const router = createBrowserRouter([
         element: <Notifications />,
       },
     ],
-  },
-  {
-    path: '/callback',
-    element: <SpotifyCallback />,
   },
   {
     path: '/auth/confirm',

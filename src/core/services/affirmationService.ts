@@ -1,6 +1,8 @@
 import { apiClient } from '@/core/services/api-client';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 
+const BFF_API_BASE_URL = import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000';
+
 export interface AffirmationCategory {
   id: number;
   documentId: string;
@@ -86,7 +88,9 @@ export const affirmationService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<AffirmationResponse>(`/affirmations?${queryParams}`);
+      const { data } = await apiClient.get<AffirmationResponse>(
+        `${BFF_API_BASE_URL}/api/content/affirmations?${queryParams.toString()}`
+      );
       return data;
     } catch (error) {
       return handleServiceError(error, 'Affirmations');
@@ -177,7 +181,9 @@ export const affirmationService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<AffirmationResponse>(`/affirmations?${queryParams}`);
+      const { data } = await apiClient.get<AffirmationResponse>(
+        `${BFF_API_BASE_URL}/api/content/affirmations?${queryParams.toString()}`
+      );
       return data;
     } catch (error) {
       return handleServiceError(error, 'Affirmations');
@@ -246,7 +252,9 @@ export const affirmationService = {
         queryParams.append('pagination[pageSize]', aggregatedPageSize.toString());
       }
 
-      const { data } = await apiClient.get<AffirmationResponse>(`/affirmations?${queryParams}`);
+      const { data } = await apiClient.get<AffirmationResponse>(
+        `${BFF_API_BASE_URL}/api/content/affirmations?${queryParams.toString()}`
+      );
       return data;
     } catch (error) {
       return handleServiceError(error, 'Affirmations');

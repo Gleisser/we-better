@@ -43,6 +43,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Security guardrails
+        run: pnpm security:guardrails
+
       - name: Lint
         run: pnpm lint
 

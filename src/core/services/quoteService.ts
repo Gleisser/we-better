@@ -1,6 +1,8 @@
 import { apiClient } from '@/core/services/api-client';
 import { handleServiceError } from '@/utils/helpers/service-utils';
 
+const BFF_API_BASE_URL = import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000';
+
 export interface QuoteCategory {
   id: number;
   documentId: string;
@@ -88,7 +90,9 @@ export const quoteService = {
         queryParams.append('pagination[pageSize]', params.pagination.pageSize.toString());
       }
 
-      const { data } = await apiClient.get<QuoteResponse>(`/quotes?${queryParams}`);
+      const { data } = await apiClient.get<QuoteResponse>(
+        `${BFF_API_BASE_URL}/api/content/quotes?${queryParams.toString()}`
+      );
       return data;
     } catch (error) {
       return handleServiceError(error, 'Quotes');

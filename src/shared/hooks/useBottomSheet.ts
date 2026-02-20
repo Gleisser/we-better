@@ -15,9 +15,6 @@ import { BottomSheetContext, BottomSheetContextType } from '../contexts/BottomSh
  *
  *   return (
  *     <div>
- *       <button onClick={() => setActiveSheet('stories')}>
- *         Open Stories
- *       </button>
  *       <button onClick={() => setActiveSheet('aiChat')}>
  *         Open AI Chat
  *       </button>

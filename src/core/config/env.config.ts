@@ -1,8 +1,30 @@
+const DEFAULT_API_BASE_URL = 'http://localhost:3000/api';
+
+function normalizeUrl(url: string): string {
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+}
+
+function resolveApiBaseUrl(): string {
+  const backendUrl = import.meta.env.VITE_API_BACKEND_URL;
+  if (backendUrl) {
+    try {
+      return normalizeUrl(new URL('/api', backendUrl).toString());
+    } catch {
+      return `${normalizeUrl(backendUrl)}/api`;
+    }
+  }
+
+  const explicitApiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+  if (explicitApiBaseUrl) {
+    return normalizeUrl(explicitApiBaseUrl);
+  }
+
+  return DEFAULT_API_BASE_URL;
+}
+
 export const ENV_CONFIG = {
   API: {
-    URL:
-      import.meta.env.VITE_API_BASE_URL || 'https://original-melody-94a4138af3.strapiapp.com/api',
-    TOKEN: import.meta.env.VITE_API_TOKEN,
+    URL: resolveApiBaseUrl(),
     TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || 45000,
   },
   RATE_LIMIT: {

@@ -75,6 +75,7 @@ pnpm lint:fix      # Fix ESLint issues
 pnpm format        # Format code with Prettier
 pnpm format:check  # Check code formatting
 pnpm type-check    # Run TypeScript checks
+pnpm security:guardrails # Run frontend security guardrail checks
 
 # Assets
 pnpm optimize-svgs # Optimize SVG assets
@@ -205,7 +206,6 @@ A Strapi-based CMS handling all content-related operations.
 
 ```env
 VITE_API_BASE_URL=your_strapi_url
-VITE_API_TOKEN=your_api_token
 VITE_API_TIMEOUT=45000
 VITE_RATE_LIMIT_MAX_REQUESTS=50
 VITE_RATE_LIMIT_WINDOW=60000
@@ -501,7 +501,6 @@ Required environment variables:
 
 ```env
 VITE_API_BASE_URL=your_api_url
-VITE_API_TOKEN=your_api_token
 VITE_API_TIMEOUT=45000
 VITE_RATE_LIMIT_MAX_REQUESTS=50
 VITE_RATE_LIMIT_WINDOW=60000

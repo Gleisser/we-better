@@ -40,9 +40,47 @@
   @apply text-white font-semibold;
 }
 
+.tabBar {
+  @apply px-8 flex flex-wrap gap-2;
+}
+
+.tabButton {
+  @apply text-xs font-semibold uppercase tracking-wide px-4 py-2 rounded-full border border-white/20 text-white/80 transition-all duration-200;
+  background: rgba(2, 6, 23, 0.24);
+}
+
+.tabButton:hover {
+  background: rgba(15, 23, 42, 0.35);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.tabButton:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.95);
+  outline-offset: 2px;
+}
+
+.tabActive {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.45);
+  background: linear-gradient(120deg, rgba(59, 130, 246, 0.45), rgba(14, 116, 144, 0.45));
+}
+
+.categoryEmptyState {
+  @apply rounded-2xl border border-white/15 px-8 py-8 mx-8 text-center;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.categoryEmptyTitle {
+  @apply text-lg font-semibold text-white;
+}
+
+.categoryEmptyDescription {
+  @apply mt-2 text-sm text-white/75 leading-relaxed;
+}
+
 .heroRibbon {
   @apply relative rounded-3xl shadow-[0_12px_45px_-12px_rgba(17,24,39,0.6)]
-         overflow-hidden text-white px-10 py-8 min-h-[120px];
+         overflow-hidden text-white px-10 py-8 min-h-[180px];
 }
 
 .ribbonGlow {
@@ -51,19 +89,112 @@
 }
 
 .ribbonContent {
-  @apply relative flex flex-wrap items-center justify-between gap-6;
+  @apply relative grid gap-6 items-start;
+  grid-template-columns: minmax(220px, 0.95fr) minmax(280px, 1.45fr) minmax(200px, 0.8fr);
 }
 
 .ribbonMain {
   @apply flex items-center gap-4 min-w-0;
 }
 
-.ribbonIcon {
-  @apply text-4xl drop-shadow-[0_6px_18px_rgba(15,23,42,0.45)];
+.ribbonIdentityMedia {
+  @apply h-16 w-16 rounded-full overflow-hidden border border-white/25
+         shadow-[0_8px_22px_rgba(15,23,42,0.45)] flex-shrink-0;
+}
+
+.ribbonCategoryImage {
+  @apply h-full w-full;
+  object-fit: cover;
+  object-position: center;
+}
+
+.ribbonIdentityCopy {
+  @apply min-w-0;
+}
+
+.ribbonInsight {
+  @apply flex flex-col gap-3;
+}
+
+.ribbonSummary {
+  @apply text-sm font-medium text-white/95 leading-relaxed;
+  text-shadow: 0 1px 10px rgba(15, 23, 42, 0.55);
+}
+
+.ribbonStats {
+  @apply flex flex-wrap gap-2;
+}
+
+.statPill {
+  @apply text-[11px] font-semibold uppercase tracking-wide px-3 py-1 rounded-full border border-white/25;
+  background: rgba(2, 6, 23, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.ribbonRecommendation {
+  @apply text-sm font-semibold text-white leading-snug;
+  text-shadow: 0 1px 10px rgba(15, 23, 42, 0.55);
+}
+
+.ribbonActions {
+  @apply flex flex-col items-stretch gap-2 justify-start;
+}
+
+.ribbonActionPrimary,
+.ribbonActionSecondary {
+  @apply px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-left;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(8px);
+}
+
+.ribbonActionPrimary {
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.26);
+}
+
+.ribbonActionPrimary:hover {
+  background: rgba(15, 23, 42, 0.34);
+  transform: translateY(-1px);
+}
+
+.ribbonActionSecondary {
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.ribbonActionSecondary:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+.ribbonActionPrimary:focus-visible,
+.ribbonActionSecondary:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.95);
+  outline-offset: 2px;
+}
+
+.whyPanel {
+  @apply relative mt-4 rounded-2xl border border-white/20 px-5 py-4 text-white;
+  background: rgba(2, 6, 23, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.whyPanelTitle {
+  @apply text-xs uppercase tracking-[0.14em] text-white/80 font-semibold;
+}
+
+.whyPanelFocus {
+  @apply mt-2 text-sm leading-relaxed font-medium text-white/95;
+}
+
+.whyPanelHabit {
+  @apply mt-2 text-sm leading-relaxed text-white/80;
+  color: rgba(255, 255, 255, 0.88);
 }
 
 .ribbonTitle {
-  @apply text-xl font-semibold tracking-tight leading-tight;
+  @apply text-2xl font-bold tracking-tight leading-tight;
+  text-shadow: 0 1px 12px rgba(15, 23, 42, 0.58);
 }
 
 .ribbonSubtitle {
@@ -74,6 +205,7 @@
   @apply absolute -right-12 bottom-0 top-0 w-40 opacity-40;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), transparent 55%);
   background-size: 200% 200%;
+  pointer-events: none;
 }
 
 .missionGrid {
@@ -89,6 +221,22 @@
 .missionCardWrapper {
   @apply relative;
   perspective: 1200px;
+}
+
+.cardHighlighted {
+  animation: spotlightPulse 1.3s ease;
+}
+
+@keyframes spotlightPulse {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.012);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .missionCard {
@@ -340,7 +488,22 @@
 }
 
 .cardDescription {
-  @apply text-sm text-white/80 leading-relaxed;
+  @apply leading-relaxed;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.97);
+  letter-spacing: 0.01em;
+  padding: 0.8rem 0.9rem;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 3px solid var(--mission-primary);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  text-shadow: 0 1px 7px rgba(15, 23, 42, 0.55);
+}
+
+.missionCta {
+  margin-top: 0.95rem;
+  margin-bottom: 0.6rem;
 }
 
 .cardFooter {
@@ -377,11 +540,34 @@
   }
 
   .heroRibbon {
-    @apply px-6 py-7;
+    @apply px-6 py-7 min-h-0;
+  }
+
+  .ribbonContent {
+    grid-template-columns: 1fr;
+    @apply gap-4;
+  }
+
+  .ribbonActions {
+    @apply flex-row flex-wrap;
+  }
+
+  .ribbonActionPrimary,
+  .ribbonActionSecondary {
+    @apply text-center;
+    min-width: 160px;
   }
 
   .panelGuide {
     @apply px-6;
+  }
+
+  .tabBar {
+    @apply px-6;
+  }
+
+  .categoryEmptyState {
+    @apply mx-6 px-6;
   }
 
   .cardHeader {
@@ -390,6 +576,11 @@
 
   .cardBody {
     @apply pt-16;
+  }
+
+  .cardDescription {
+    font-size: 1rem;
+    padding: 0.75rem 0.8rem;
   }
 
   .missionBadge {
