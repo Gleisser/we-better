@@ -20,10 +20,8 @@
  *
  * Navigation sections include:
  * - Dashboard (Home)
- * - Videos
- * - Articles
- * - Courses
- * - Podcasts
+ * - Dream Board
+ * - Missions
  *
  * @component
  * @example
@@ -40,15 +38,7 @@
  */
 
 import { Link, useLocation } from 'react-router-dom';
-import {
-  HomeIcon,
-  VideoIcon,
-  ArticleIcon,
-  CourseIcon,
-  PodcastIcon,
-  DreamBoardIcon,
-  SparkleIcon,
-} from '@/shared/components/common/icons';
+import { HomeIcon, DreamBoardIcon, SparkleIcon } from '@/shared/components/common/icons';
 import styles from './MobileNav.module.css';
 
 const NAV_ITEMS = [
@@ -66,26 +56,6 @@ const NAV_ITEMS = [
     label: 'Missions',
     icon: SparkleIcon,
     path: '/app/missions',
-  },
-  {
-    label: 'Videos',
-    icon: VideoIcon,
-    path: '/app/videos',
-  },
-  {
-    label: 'Articles',
-    icon: ArticleIcon,
-    path: '/app/articles',
-  },
-  {
-    label: 'Courses',
-    icon: CourseIcon,
-    path: '/app/courses',
-  },
-  {
-    label: 'Podcasts',
-    icon: PodcastIcon,
-    path: '/app/podcasts',
   },
 ];
 
