@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useThemeToggle } from '@/shared/hooks/useTheme';
+import { useTheme, useThemeToggle } from '@/shared/hooks/useTheme';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { CheckmarkIcon } from '@/shared/components/common/icons';
@@ -17,6 +17,7 @@ interface ThemeSelectorProps {
 
 const ThemeSelector = ({ className }: ThemeSelectorProps): JSX.Element => {
   const { t } = useCommonTranslation();
+  const { setThemeMode } = useTheme();
   const { currentMode, effectiveTheme } = useThemeToggle();
   const { updateThemeMode, isLoading } = useUserPreferences();
 
@@ -36,9 +37,16 @@ const ThemeSelector = ({ className }: ThemeSelectorProps): JSX.Element => {
   const handleThemeSelect = async (themeId: 'light' | 'dark'): Promise<void> => {
     if (isLoading) return;
 
+    const previousMode = currentMode;
+    setThemeMode(themeId);
+
     try {
-      await updateThemeMode(themeId);
+      const success = await updateThemeMode(themeId);
+      if (!success) {
+        setThemeMode(previousMode);
+      }
     } catch (error) {
+      setThemeMode(previousMode);
       console.error('Failed to update theme:', error);
     }
   };

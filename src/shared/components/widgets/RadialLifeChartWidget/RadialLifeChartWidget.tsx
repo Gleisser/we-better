@@ -3,6 +3,8 @@ import styles from './RadialLifeChartWidget.module.css';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useLatestLifeWheel } from '@/features/life-wheel/hooks/useLatestLifeWheel';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { getInitials } from '@/shared/utils/string/getInitials';
 
 type LifeArea = {
   id: string;
@@ -174,6 +176,7 @@ const extractString = (value: string | string[]): string =>
 const RadialLifeChartWidget = (): JSX.Element => {
   const { t } = useCommonTranslation();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const {
     data: latestLifeWheel,
@@ -266,6 +269,35 @@ const RadialLifeChartWidget = (): JSX.Element => {
   }, [areas]);
 
   const [hoveredArc, setHoveredArc] = useState<ArcPresentation | null>(null);
+  const [avatarLoadError, setAvatarLoadError] = useState(false);
+
+  const userAvatarUrl = useMemo(() => {
+    if (user?.avatar_url?.trim()) {
+      return user.avatar_url.trim();
+    }
+
+    const metadataAvatar = user?.user_metadata?.avatar_url;
+    if (typeof metadataAvatar === 'string' && metadataAvatar.trim().length > 0) {
+      return metadataAvatar;
+    }
+
+    return undefined;
+  }, [user]);
+
+  const userName = useMemo(() => {
+    if (user?.display_name?.trim()) {
+      return user.display_name.trim();
+    }
+    if (user?.full_name?.trim()) {
+      return user.full_name.trim();
+    }
+    if (user?.email?.trim()) {
+      return user.email.split('@')[0];
+    }
+    return translateString('header.user');
+  }, [user, translateString]);
+
+  const userInitials = useMemo(() => getInitials(userName, 2) || 'U', [userName]);
 
   const tooltipContent =
     hoveredArc === null
@@ -274,6 +306,10 @@ const RadialLifeChartWidget = (): JSX.Element => {
           category: hoveredArc.item.label,
           value: hoveredArc.item.score.toFixed(1),
         });
+
+  useEffect(() => {
+    setAvatarLoadError(false);
+  }, [userAvatarUrl]);
 
   const hasFetchError = Boolean(fetchError);
   const hasData = areas.length > 0;
@@ -417,11 +453,18 @@ const RadialLifeChartWidget = (): JSX.Element => {
 
             <div className={styles.avatarSlot}>
               <div className={styles.avatarShell}>
-                <img
-                  className={styles.avatarImage}
-                  src="https://images.unsplash.com/photo-1679611978819-f10168367155?auto=format&fit=crop&w=240&q=80"
-                  alt="Profile avatar"
-                />
+                {userAvatarUrl && !avatarLoadError ? (
+                  <img
+                    className={styles.avatarImage}
+                    src={userAvatarUrl}
+                    alt={`${userName} avatar`}
+                    onError={() => setAvatarLoadError(true)}
+                  />
+                ) : (
+                  <div className={styles.avatarFallback} aria-label="Profile initials">
+                    <span className={styles.avatarInitials}>{userInitials}</span>
+                  </div>
+                )}
               </div>
             </div>
 

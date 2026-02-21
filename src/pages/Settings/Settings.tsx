@@ -1,10 +1,15 @@
-import { useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { SettingsIcon } from '@/shared/components/common/icons';
 import ThemeSelector from '@/shared/components/theme/ThemeSelector';
 import LanguageSelector from '@/shared/components/i18n/LanguageSelector';
 import ProfileSettings from '@/shared/components/user/ProfileSettings';
 import Toggle from '@/shared/components/common/Toggle';
+import {
+  sessionsService,
+  type SessionDto,
+  type SessionsSummary,
+} from '@/core/services/sessionsService';
 import styles from './Settings.module.css';
 
 interface NotificationSettings {
@@ -48,16 +53,6 @@ interface SecuritySettings {
   smsBackup: boolean;
   hasBackupCodes: boolean;
   trustedDevices: number;
-}
-
-interface LoginSession {
-  id: string;
-  device: string;
-  location: string;
-  browser: string;
-  loginTime: string;
-  ipAddress: string;
-  isCurrent: boolean;
 }
 
 // Create custom icons
@@ -154,6 +149,15 @@ const QrCodeIcon = ({ className }: { className?: string }): JSX.Element => (
     <path d="M12 21v-1" stroke="currentColor" strokeWidth="2" />
   </svg>
 );
+
+const EMPTY_SESSION_SUMMARY: SessionsSummary = {
+  totalSessions: 0,
+  activeSessions: 0,
+  currentSessionId: null,
+  lastLogin: null,
+  suspiciousSessions: 0,
+  trustedDevices: 0,
+};
 
 const Settings = (): JSX.Element => {
   const { t } = useCommonTranslation();
@@ -324,36 +328,14 @@ const Settings = (): JSX.Element => {
     trustedDevices: 3,
   });
 
-  // Mock login sessions data
-  const [loginSessions] = useState<LoginSession[]>([
-    {
-      id: '1',
-      device: 'MacBook Pro',
-      location: 'San Francisco, CA',
-      browser: 'Chrome 119',
-      loginTime: '2024-01-25T10:30:00Z',
-      ipAddress: '192.168.1.1',
-      isCurrent: true,
-    },
-    {
-      id: '2',
-      device: 'iPhone 15 Pro',
-      location: 'San Francisco, CA',
-      browser: 'Safari',
-      loginTime: '2024-01-24T14:20:00Z',
-      ipAddress: '192.168.1.2',
-      isCurrent: false,
-    },
-    {
-      id: '3',
-      device: 'Windows PC',
-      location: 'New York, NY',
-      browser: 'Firefox 120',
-      loginTime: '2024-01-23T09:15:00Z',
-      ipAddress: '10.0.0.1',
-      isCurrent: false,
-    },
-  ]);
+  const [sessionSummary, setSessionSummary] = useState<SessionsSummary>(EMPTY_SESSION_SUMMARY);
+  const [recentSessions, setRecentSessions] = useState<SessionDto[]>([]);
+  const [sessionHistory, setSessionHistory] = useState<SessionDto[]>([]);
+  const [showLoginHistory, setShowLoginHistory] = useState(false);
+  const [isSessionsLoading, setIsSessionsLoading] = useState(true);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [isSigningOutSessions, setIsSigningOutSessions] = useState(false);
+  const [sessionsError, setSessionsError] = useState<string | null>(null);
 
   // Mock billing information - in real app this would come from API
   const [billingInfo] = useState<BillingInfo>({
@@ -448,6 +430,43 @@ const Settings = (): JSX.Element => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
+  const loadSessionsOverview = useCallback(async (): Promise<void> => {
+    setIsSessionsLoading(true);
+    setSessionsError(null);
+
+    const { data, error } = await sessionsService.getSessionsOverview();
+    if (error || !data) {
+      setSessionsError(error || 'Failed to load sessions');
+      setSessionSummary(EMPTY_SESSION_SUMMARY);
+      setRecentSessions([]);
+      setIsSessionsLoading(false);
+      return;
+    }
+
+    setSessionSummary(data.summary);
+    setRecentSessions(data.recentSessions);
+    setIsSessionsLoading(false);
+  }, []);
+
+  const loadSessionHistory = useCallback(async (): Promise<void> => {
+    setIsHistoryLoading(true);
+
+    const { data, error } = await sessionsService.getHistory(50, 0);
+    if (error || !data) {
+      setSessionsError(error || 'Failed to load session history');
+      setSessionHistory([]);
+      setIsHistoryLoading(false);
+      return;
+    }
+
+    setSessionHistory(data.sessions);
+    setIsHistoryLoading(false);
+  }, []);
+
+  useEffect(() => {
+    void loadSessionsOverview();
+  }, [loadSessionsOverview]);
+
   // Handle data export
   const handleDataExport = (format: 'json' | 'csv'): void => {
     console.info(`Exporting data in ${format} format`);
@@ -480,18 +499,45 @@ const Settings = (): JSX.Element => {
   };
 
   // Handle login history view
-  const handleViewLoginHistory = (): void => {
+  const handleViewLoginHistory = async (): Promise<void> => {
     console.info(translations.privacy.accountSecurity.viewingHistory);
-    // TODO: Open login history modal with detailed view
+
+    const nextVisible = !showLoginHistory;
+    setShowLoginHistory(nextVisible);
+
+    if (nextVisible) {
+      await loadSessionHistory();
+    }
   };
 
   // Handle sign out all sessions
-  const handleSignOutAllSessions = (): void => {
+  const handleSignOutAllSessions = async (): Promise<void> => {
     const confirmed = window.confirm(translations.privacy.accountSecurity.signOutConfirm);
-    if (confirmed) {
-      console.info(translations.privacy.accountSecurity.signingOutSessions);
-      // TODO: Implement sign out all sessions
+    if (!confirmed) {
+      return;
     }
+
+    setIsSigningOutSessions(true);
+    console.info(translations.privacy.accountSecurity.signingOutSessions);
+
+    const { data, error } = await sessionsService.logoutOtherSessions();
+
+    if (error || !data?.success) {
+      setSessionsError(error || 'Failed to sign out from other sessions');
+      setIsSigningOutSessions(false);
+      return;
+    }
+
+    if (data.warning) {
+      console.warn('Logout other sessions warning:', data.warning);
+    }
+
+    await loadSessionsOverview();
+    if (showLoginHistory) {
+      await loadSessionHistory();
+    }
+
+    setIsSigningOutSessions(false);
   };
 
   // Get plan display information
@@ -1051,7 +1097,12 @@ const Settings = (): JSX.Element => {
                 </p>
               </div>
               <div className={styles.settingControl}>
-                <button className={styles.actionButtonSmall} onClick={handleViewLoginHistory}>
+                <button
+                  className={styles.actionButtonSmall}
+                  onClick={() => {
+                    void handleViewLoginHistory();
+                  }}
+                >
                   <HistoryIcon className={styles.buttonIcon} />
                   {translations.privacy.accountSecurity.viewHistory}
                 </button>
@@ -1064,32 +1115,104 @@ const Settings = (): JSX.Element => {
                 {translations.privacy.accountSecurity.recentSessions}
               </h4>
               <div className={styles.loginSessionsList}>
-                {loginSessions.slice(0, 3).map(session => (
-                  <div key={session.id} className={styles.loginSessionItem}>
-                    <div className={styles.sessionIcon}>
-                      <DevicesIcon className={styles.icon} />
-                    </div>
+                {isSessionsLoading && (
+                  <div className={styles.loginSessionItem}>
                     <div className={styles.sessionInfo}>
                       <div className={styles.sessionHeader}>
-                        <span className={styles.sessionDevice}>{session.device}</span>
-                        {session.isCurrent && (
-                          <span className={styles.currentSessionBadge}>
-                            {translations.privacy.accountSecurity.current}
-                          </span>
-                        )}
-                      </div>
-                      <div className={styles.sessionDetails}>
-                        <span className={styles.sessionLocation}>{session.location}</span>
-                        <span className={styles.sessionDot}>•</span>
-                        <span className={styles.sessionTime}>
-                          {formatLoginDate(session.loginTime)}
-                        </span>
+                        <span className={styles.sessionDevice}>Loading sessions...</span>
                       </div>
                     </div>
                   </div>
-                ))}
+                )}
+                {!isSessionsLoading &&
+                  recentSessions.slice(0, 3).map(session => (
+                    <div key={session.id} className={styles.loginSessionItem}>
+                      <div className={styles.sessionIcon}>
+                        <DevicesIcon className={styles.icon} />
+                      </div>
+                      <div className={styles.sessionInfo}>
+                        <div className={styles.sessionHeader}>
+                          <span className={styles.sessionDevice}>{session.device}</span>
+                          {session.isCurrent && (
+                            <span className={styles.currentSessionBadge}>
+                              {translations.privacy.accountSecurity.current}
+                            </span>
+                          )}
+                        </div>
+                        <div className={styles.sessionDetails}>
+                          <span className={styles.sessionLocation}>{session.location}</span>
+                          <span className={styles.sessionDot}>•</span>
+                          <span className={styles.sessionTime}>
+                            {formatLoginDate(session.loginTime)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                {!isSessionsLoading && recentSessions.length === 0 && (
+                  <div className={styles.loginSessionItem}>
+                    <div className={styles.sessionInfo}>
+                      <div className={styles.sessionHeader}>
+                        <span className={styles.sessionDevice}>No recent sessions found</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
+
+            {showLoginHistory && (
+              <div className={styles.loginSessionsPreview}>
+                <h4 className={styles.subsectionTitle}>
+                  {translations.privacy.accountSecurity.loginHistory}
+                </h4>
+                <div className={styles.loginSessionsList}>
+                  {isHistoryLoading && (
+                    <div className={styles.loginSessionItem}>
+                      <div className={styles.sessionInfo}>
+                        <div className={styles.sessionHeader}>
+                          <span className={styles.sessionDevice}>Loading history...</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {!isHistoryLoading &&
+                    sessionHistory.map(session => (
+                      <div key={session.id} className={styles.loginSessionItem}>
+                        <div className={styles.sessionIcon}>
+                          <DevicesIcon className={styles.icon} />
+                        </div>
+                        <div className={styles.sessionInfo}>
+                          <div className={styles.sessionHeader}>
+                            <span className={styles.sessionDevice}>{session.device}</span>
+                            {session.isCurrent && (
+                              <span className={styles.currentSessionBadge}>
+                                {translations.privacy.accountSecurity.current}
+                              </span>
+                            )}
+                          </div>
+                          <div className={styles.sessionDetails}>
+                            <span className={styles.sessionLocation}>{session.location}</span>
+                            <span className={styles.sessionDot}>•</span>
+                            <span className={styles.sessionTime}>
+                              {formatLoginDate(session.loginTime)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  {!isHistoryLoading && sessionHistory.length === 0 && (
+                    <div className={styles.loginSessionItem}>
+                      <div className={styles.sessionInfo}>
+                        <div className={styles.sessionHeader}>
+                          <span className={styles.sessionDevice}>No login history found</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className={styles.settingItem}>
               <div className={styles.settingInfo}>
@@ -1097,15 +1220,29 @@ const Settings = (): JSX.Element => {
                   {translations.privacy.accountSecurity.activeSessions}
                 </h4>
                 <p className={styles.settingDescription}>
-                  {translations.privacy.accountSecurity.activeDescription}
+                  {translations.privacy.accountSecurity.activeDescription} (
+                  {sessionSummary.activeSessions})
                 </p>
               </div>
               <div className={styles.settingControl}>
-                <button className={styles.actionButtonSecondary} onClick={handleSignOutAllSessions}>
+                <button
+                  className={styles.actionButtonSecondary}
+                  onClick={() => {
+                    void handleSignOutAllSessions();
+                  }}
+                  disabled={isSigningOutSessions}
+                >
                   {translations.privacy.accountSecurity.signOutAll}
                 </button>
               </div>
             </div>
+            {sessionsError && (
+              <div className={styles.settingItem}>
+                <div className={styles.settingInfo}>
+                  <p className={styles.settingDescription}>{sessionsError}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

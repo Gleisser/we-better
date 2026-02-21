@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState, useCallback } from 'react';
 import { authService } from '@/core/services/authService';
 import { supabase } from '@/core/services/supabaseClient';
+import { sessionsService } from '@/core/services/sessionsService';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 /**
@@ -17,6 +18,7 @@ export interface User {
   email?: string;
   full_name?: string;
   display_name?: string;
+  avatar_url?: string;
   user_metadata?: Record<string, unknown>;
 }
 
@@ -78,6 +80,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const getMetadataString = (
+    metadata: SupabaseUser['user_metadata'] | undefined,
+    key: string
+  ): string | undefined => {
+    const value = metadata?.[key];
+    return typeof value === 'string' && value.trim().length > 0 ? value : undefined;
+  };
+
+  const trackCurrentSessionSilently = useCallback(async () => {
+    const { error } = await sessionsService.trackCurrentSession();
+    if (error) {
+      console.warn('Session tracking warning:', error);
+    }
+  }, []);
+
   /**
    * Verifies the current authentication status and updates the user state.
    * Handles error cases and updates loading state appropriately.
@@ -94,20 +111,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
       }
 
       if (currentUser) {
-        // Extract display name from user metadata
         const supabaseUser = currentUser as SupabaseUser;
-        const displayName =
-          supabaseUser.user_metadata?.display_name || supabaseUser.user_metadata?.full_name || '';
+        const metadataFullName = getMetadataString(supabaseUser.user_metadata, 'full_name');
+        const metadataDisplayName = getMetadataString(supabaseUser.user_metadata, 'display_name');
+        const metadataAvatarUrl = getMetadataString(supabaseUser.user_metadata, 'avatar_url');
+
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('full_name, avatar_url')
+          .eq('id', supabaseUser.id)
+          .maybeSingle();
+
+        if (profileError) {
+          console.warn('Profile lookup warning:', profileError.message);
+        }
+
+        const resolvedFullName = metadataFullName || profileData?.full_name || '';
+        const resolvedAvatarUrl = metadataAvatarUrl || profileData?.avatar_url || undefined;
+        const resolvedDisplayName = metadataDisplayName || resolvedFullName;
 
         const userWithDisplayName: User = {
           id: supabaseUser.id,
           email: supabaseUser.email,
-          full_name: supabaseUser.user_metadata?.full_name as string,
-          display_name: displayName as string,
-          user_metadata: supabaseUser.user_metadata,
+          full_name: resolvedFullName || undefined,
+          display_name: resolvedDisplayName || undefined,
+          avatar_url: resolvedAvatarUrl,
+          user_metadata: {
+            ...(supabaseUser.user_metadata || {}),
+            ...(resolvedFullName
+              ? { full_name: resolvedFullName, display_name: resolvedDisplayName }
+              : {}),
+            ...(resolvedAvatarUrl ? { avatar_url: resolvedAvatarUrl } : {}),
+          },
         };
 
         setUser(userWithDisplayName);
+        void trackCurrentSessionSilently();
       } else {
         console.warn('No valid user session found');
         setUser(null);
@@ -118,7 +157,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [trackCurrentSessionSilently]);
 
   /**
    * Signs out the current user and redirects to the login page.
@@ -150,6 +189,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
         checkAuth();
+      } else if (event === 'USER_UPDATED' && session) {
+        checkAuth();
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
       }
@@ -159,6 +200,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
       data.subscription.unsubscribe();
     };
   }, [checkAuth]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const HEARTBEAT_INTERVAL_MS = 5 * 60 * 1000;
+    const intervalId = window.setInterval(() => {
+      void trackCurrentSessionSilently();
+    }, HEARTBEAT_INTERVAL_MS);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [user, trackCurrentSessionSilently]);
 
   return (
     <AuthContext.Provider
