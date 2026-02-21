@@ -11,6 +11,7 @@ declare const styles: {
   readonly profileContainer: string;
   readonly profileButton: string;
   readonly profileFallback: string;
+  readonly profileImage: string;
   readonly profileStatus: string;
 };
 

@@ -10,17 +10,34 @@ import LanguageSwitcher from '@/shared/components/i18n/LanguageSwitcher';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useThemeToggle } from '@/shared/hooks/useTheme';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { getInitials } from '@/shared/utils/string/getInitials';
 import styles from './HeaderActions.module.css';
 
 const HeaderActions = (): JSX.Element => {
   const { t } = useCommonTranslation();
+  const { user } = useAuth();
   const [notificationCount] = useState(10);
   const { activePopup, setActivePopup } = useHeader();
   const [isMobile, setIsMobile] = useState(false);
+  const [avatarLoadError, setAvatarLoadError] = useState(false);
 
   // Theme functionality
   const { currentMode, effectiveTheme, toggleTheme, isDark } = useThemeToggle();
   const { updateThemeMode, isLoading: preferencesLoading } = useUserPreferences();
+
+  const avatarFromMetadata = user?.user_metadata?.avatar_url;
+  const userAvatarUrl =
+    user?.avatar_url ||
+    (typeof avatarFromMetadata === 'string' && avatarFromMetadata.trim().length > 0
+      ? avatarFromMetadata
+      : undefined);
+  const userName =
+    user?.display_name ||
+    user?.full_name ||
+    user?.email?.split('@')[0] ||
+    (t('header.user') as string);
+  const userInitials = getInitials(userName, 2) || 'U';
 
   // Handle theme toggle with backend sync
   const handleThemeToggle = async (): Promise<void> => {
@@ -100,6 +117,10 @@ const HeaderActions = (): JSX.Element => {
 
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
+
+  useEffect(() => {
+    setAvatarLoadError(false);
+  }, [userAvatarUrl]);
 
   // Close popups when clicking outside
   useEffect(() => {
@@ -242,9 +263,18 @@ const HeaderActions = (): JSX.Element => {
           aria-expanded={activePopup === 'profile'}
           aria-haspopup="true"
         >
-          <div className={styles.profileFallback}>
-            <span>GS</span>
-          </div>
+          {userAvatarUrl && !avatarLoadError ? (
+            <img
+              src={userAvatarUrl}
+              alt={`${userName} avatar`}
+              className={styles.profileImage}
+              onError={() => setAvatarLoadError(true)}
+            />
+          ) : (
+            <div className={styles.profileFallback}>
+              <span>{userInitials}</span>
+            </div>
+          )}
           <div className={styles.profileStatus} />
         </button>
 

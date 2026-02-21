@@ -20,6 +20,7 @@ interface LifeWheelProps {
   categories: LifeCategory[];
   onCategorySelect: (category: LifeCategory) => void;
   userName?: string;
+  userAvatarUrl?: string;
 }
 
 // Debug function to log component updates
@@ -31,9 +32,11 @@ const LifeWheel = ({
   categories = [],
   onCategorySelect,
   userName = 'Gleisser Santos',
+  userAvatarUrl,
 }: LifeWheelProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [avatarLoadError, setAvatarLoadError] = useState(false);
   const rendersRef = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -44,6 +47,10 @@ const LifeWheel = ({
       //logDebug('LifeWheel unmounted');
     };
   }, []);
+
+  useEffect(() => {
+    setAvatarLoadError(false);
+  }, [userAvatarUrl]);
 
   useEffect(() => {
     rendersRef.current += 1;
@@ -58,11 +65,15 @@ const LifeWheel = ({
 
   // Get user initials for display
   const getInitials = (name: string): string => {
-    return name
+    const initials = name
       .split(' ')
+      .filter(Boolean)
       .map(word => word[0])
       .join('')
-      .toUpperCase();
+      .toUpperCase()
+      .slice(0, 2);
+
+    return initials || 'U';
   };
 
   // Handle category click
@@ -155,7 +166,16 @@ const LifeWheel = ({
         {/* Center button - moved after categories to render on top */}
         <button className={styles.centerPiece} onClick={toggleMenu}>
           <div className={styles.scoreRing}>
-            <div className={styles.initials}>{getInitials(userName)}</div>
+            {userAvatarUrl && !avatarLoadError ? (
+              <img
+                src={userAvatarUrl}
+                alt={`${userName} avatar`}
+                className={styles.avatarImage}
+                onError={() => setAvatarLoadError(true)}
+              />
+            ) : (
+              <div className={styles.initials}>{getInitials(userName)}</div>
+            )}
           </div>
         </button>
 

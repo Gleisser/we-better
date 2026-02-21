@@ -1,6 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import type { UserAttributes } from '@supabase/supabase-js';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { supabase } from '@/core/services/supabaseClient';
 import { PencilIcon, CheckmarkIcon, CloseIcon, EyeOffIcon } from '@/shared/components/common/icons';
 import styles from './ProfileSettings.module.css';
 
@@ -44,7 +46,7 @@ const EyeIcon = ({ className }: { className?: string }): JSX.Element => (
 );
 
 const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
-  const { user } = useAuth();
+  const { user, checkAuth } = useAuth();
   const { t } = useCommonTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -64,6 +66,18 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (isEditing) return;
+    setFormData({
+      fullName: user?.full_name || '',
+      email: user?.email || '',
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    });
+  }, [user, isEditing]);
 
   // Handle form input changes
   const handleInputChange = (field: keyof ProfileFormData, value: string): void => {
@@ -92,7 +106,47 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
         setPreviewImage(e.target?.result as string);
       };
       reader.readAsDataURL(file);
+      setAvatarFile(file);
     }
+  };
+
+  const getCurrentAvatarUrl = (): string | null => {
+    if (previewImage) {
+      return previewImage;
+    }
+
+    if (typeof user?.avatar_url === 'string' && user.avatar_url.trim()) {
+      return user.avatar_url;
+    }
+
+    const metadataAvatar = user?.user_metadata?.avatar_url;
+    if (typeof metadataAvatar === 'string' && metadataAvatar.trim()) {
+      return metadataAvatar;
+    }
+
+    return null;
+  };
+
+  const uploadAvatar = async (file: File, userId: string): Promise<string> => {
+    const extension = file.name.includes('.') ? file.name.split('.').pop() : 'jpg';
+    const safeExtension = extension?.toLowerCase() || 'jpg';
+    const filePath = `${userId}/avatar-${Date.now()}.${safeExtension}`;
+
+    const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, {
+      upsert: true,
+      contentType: file.type,
+      cacheControl: '3600',
+    });
+
+    if (uploadError) {
+      throw new Error(uploadError.message);
+    }
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('avatars').getPublicUrl(filePath);
+
+    return publicUrl;
   };
 
   // Handle save
@@ -115,12 +169,68 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
         }
       }
 
-      // TODO: Implement actual API calls here
-      console.info('Saving profile data:', formData);
-      console.info('Profile image:', previewImage);
+      if (!user?.id) {
+        throw new Error('No authenticated user found');
+      }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const trimmedFullName = formData.fullName.trim();
+      const trimmedEmail = formData.email.trim();
+      let nextAvatarUrl = user.avatar_url || null;
+
+      if (avatarFile) {
+        nextAvatarUrl = await uploadAvatar(avatarFile, user.id);
+      } else {
+        const existingAvatar = getCurrentAvatarUrl();
+        nextAvatarUrl = existingAvatar || null;
+      }
+
+      const { error: profileError } = await supabase.from('profiles').upsert(
+        {
+          id: user.id,
+          email: trimmedEmail || user.email || null,
+          full_name: trimmedFullName || null,
+          avatar_url: nextAvatarUrl,
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'id',
+        }
+      );
+
+      if (profileError) {
+        throw new Error(profileError.message);
+      }
+
+      const metadata: Record<string, string> = {
+        ...(typeof user.user_metadata?.display_name === 'string' &&
+        user.user_metadata.display_name.trim()
+          ? { display_name: user.user_metadata.display_name }
+          : {}),
+        ...(trimmedFullName ? { full_name: trimmedFullName, display_name: trimmedFullName } : {}),
+        ...(nextAvatarUrl ? { avatar_url: nextAvatarUrl } : {}),
+      };
+
+      const updatePayload: UserAttributes = {
+        data: metadata,
+      };
+
+      if (trimmedEmail && trimmedEmail !== user.email) {
+        updatePayload.email = trimmedEmail;
+      }
+
+      if (formData.newPassword) {
+        updatePayload.password = formData.newPassword;
+      }
+
+      const { error: authUpdateError } = await supabase.auth.updateUser(updatePayload);
+
+      if (authUpdateError) {
+        throw new Error(authUpdateError.message);
+      }
+
+      await checkAuth();
+      setPreviewImage(nextAvatarUrl);
+      setAvatarFile(null);
 
       setIsEditing(false);
       // Reset password fields
@@ -130,6 +240,7 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
         newPassword: '',
         confirmPassword: '',
       }));
+      alert(t('settings.profile.profileUpdated'));
     } catch (error) {
       console.error('Failed to save profile:', error);
       alert(t('settings.profile.failedToSave'));
@@ -148,6 +259,7 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
       confirmPassword: '',
     });
     setPreviewImage(null);
+    setAvatarFile(null);
     setIsEditing(false);
   };
 
@@ -179,9 +291,9 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
         <div className={styles.profilePictureSection}>
           <div className={styles.avatarContainer}>
             <div className={styles.avatar}>
-              {previewImage || user?.user_metadata?.avatar_url ? (
+              {getCurrentAvatarUrl() ? (
                 <img
-                  src={previewImage || (user?.user_metadata?.avatar_url as string)}
+                  src={getCurrentAvatarUrl() as string}
                   alt={t('settings.profile.profilePicture') as string}
                   className={styles.avatarImage}
                 />

@@ -42,6 +42,10 @@
   height: var(--wheel-ring-size);
 }
 
+.avatarImage {
+  @apply w-full h-full rounded-full object-cover;
+}
+
 .initials {
   font-size: clamp(1rem, 1.5vw + 0.6rem, 1.75rem);
   font-weight: 700;

@@ -125,6 +125,26 @@ const LifeWheelWidget = (): JSX.Element => {
     if (user?.display_name?.trim()) {
       return user.display_name.trim();
     }
+    if (user?.full_name?.trim()) {
+      return user.full_name.trim();
+    }
+    if (user?.email?.trim()) {
+      return user.email.split('@')[0];
+    }
+    return '';
+  }, [user]);
+
+  const userAvatarUrl = useMemo(() => {
+    if (user?.avatar_url?.trim()) {
+      return user.avatar_url.trim();
+    }
+
+    const metadataAvatar = user?.user_metadata?.avatar_url;
+    if (typeof metadataAvatar === 'string' && metadataAvatar.trim().length > 0) {
+      return metadataAvatar;
+    }
+
+    return undefined;
   }, [user]);
 
   // Fetch initial data (only once)
@@ -247,6 +267,7 @@ const LifeWheelWidget = (): JSX.Element => {
           categories={categories}
           onCategorySelect={handleCategorySelect}
           userName={username}
+          userAvatarUrl={userAvatarUrl}
         />
 
         {/* Fixed positioned tooltip to minimize layout changes */}
