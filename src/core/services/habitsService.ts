@@ -77,6 +77,14 @@ export interface HabitStreak {
   updated_at: string;
 }
 
+interface ApiError {
+  error?: string;
+  code?: string;
+  resource?: string;
+  used?: number;
+  limit?: number;
+}
+
 /**
  * Get the auth token from Supabase session or storage
  */
@@ -136,12 +144,29 @@ const apiRequest = async <T>(
       }
     }
 
+    const payload = (await response.json().catch(() => null)) as ApiError | null;
+
     if (!response.ok) {
-      // Handle specific error cases
       if (response.status === 401) {
-        // Trigger auth refresh or redirect to login
         throw new Error('Authentication expired');
       }
+
+      if (
+        response.status === 409 &&
+        payload?.code === 'PLAN_LIMIT_REACHED' &&
+        typeof payload.used === 'number' &&
+        typeof payload.limit === 'number'
+      ) {
+        const resource = payload.resource === 'goals' ? 'goals' : 'habits';
+        throw new Error(
+          `Plan limit reached for ${resource} (${payload.used}/${payload.limit}). Upgrade your plan in Settings.`
+        );
+      }
+
+      if (payload?.error) {
+        throw new Error(payload.error);
+      }
+
       throw new Error(`API request failed: ${response.statusText}`);
     }
 
@@ -150,12 +175,15 @@ const apiRequest = async <T>(
       return { success: true } as unknown as T;
     }
 
-    return await response.json();
+    return payload as T;
   } catch (error) {
     console.error(`API ${method} request to ${endpoint} failed:`, error);
     throw error;
   }
 };
+
+const shouldRethrowPlanLimit = (error: unknown): error is Error =>
+  error instanceof Error && error.message.toLowerCase().includes('plan limit reached');
 
 /**
  * HABITS OPERATIONS
@@ -202,6 +230,9 @@ export const createHabit = async (
   try {
     return await apiRequest<Habit>(API_URL, 'POST', { name, category, start_date: startDate });
   } catch (error) {
+    if (shouldRethrowPlanLimit(error)) {
+      throw error;
+    }
     console.error('Error creating habit:', error);
     return null;
   }
@@ -215,6 +246,9 @@ export const updateHabit = async (
   try {
     return await apiRequest<Habit>(`${API_URL}/${id}`, 'PUT', { ...data, id });
   } catch (error) {
+    if (shouldRethrowPlanLimit(error)) {
+      throw error;
+    }
     console.error(`Error updating habit ${id}:`, error);
     return null;
   }

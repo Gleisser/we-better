@@ -10,32 +10,18 @@ import {
   type SessionDto,
   type SessionsSummary,
 } from '@/core/services/sessionsService';
+import {
+  billingService,
+  type BillingSummary,
+  type PlanCode,
+  type BillingCycle,
+  type PortalFlow,
+} from '@/core/services/billingService';
 import styles from './Settings.module.css';
 
 interface NotificationSettings {
   emailNotifications: boolean;
   pushNotifications: boolean;
-}
-
-interface BillingInfo {
-  currentPlan: 'free' | 'premium' | 'pro';
-  nextBillingDate: string;
-  billingCycle: 'monthly' | 'yearly';
-  amount: number;
-  currency: string;
-  paymentMethod: {
-    type: 'card' | 'paypal';
-    lastFour?: string;
-    brand?: string;
-  };
-  usage: {
-    goalsUsed: number;
-    goalsLimit: number;
-    habitsUsed: number;
-    habitsLimit: number;
-    storageUsed: number; // in MB
-    storageLimit: number; // in MB
-  };
 }
 
 interface PrivacySettings {
@@ -184,6 +170,12 @@ const Settings = (): JSX.Element => {
         nextBillingDate: t('settings.billing.nextBillingDate') as string,
         paymentMethod: t('settings.billing.paymentMethod') as string,
         update: t('settings.billing.update') as string,
+        unavailable: t('settings.billing.unavailable') as string,
+        loadingSummary: t('settings.billing.loadingSummary') as string,
+        noPaymentMethod: t('settings.billing.noPaymentMethod') as string,
+        freePlanPrice: t('settings.billing.freePlanPrice') as string,
+        cancelAtPeriodEnd: t('settings.billing.cancelAtPeriodEnd') as string,
+        processing: t('settings.billing.processing') as string,
         currentUsage: t('settings.billing.currentUsage') as string,
         viewBillingHistory: t('settings.billing.viewBillingHistory') as string,
         downloadInvoice: t('settings.billing.downloadInvoice') as string,
@@ -191,11 +183,22 @@ const Settings = (): JSX.Element => {
         usage: {
           goals: t('settings.billing.usage.goals') as string,
           habits: t('settings.billing.usage.habits') as string,
-          storage: t('settings.billing.usage.storage') as string,
         },
         billing: {
           monthly: t('settings.billing.billing.monthly') as string,
           yearly: t('settings.billing.billing.yearly') as string,
+        },
+        planPicker: {
+          title: t('settings.billing.planPicker.title') as string,
+          description: t('settings.billing.planPicker.description') as string,
+          selectPlan: t('settings.billing.planPicker.selectPlan') as string,
+          selectCycle: t('settings.billing.planPicker.selectCycle') as string,
+          monthly: t('settings.billing.planPicker.monthly') as string,
+          yearly: t('settings.billing.planPicker.yearly') as string,
+          premium: t('settings.billing.planPicker.premium') as string,
+          pro: t('settings.billing.planPicker.pro') as string,
+          continue: t('settings.billing.planPicker.continue') as string,
+          cancel: t('settings.billing.planPicker.cancel') as string,
         },
       },
       notifications: {
@@ -336,28 +339,13 @@ const Settings = (): JSX.Element => {
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [isSigningOutSessions, setIsSigningOutSessions] = useState(false);
   const [sessionsError, setSessionsError] = useState<string | null>(null);
-
-  // Mock billing information - in real app this would come from API
-  const [billingInfo] = useState<BillingInfo>({
-    currentPlan: 'premium',
-    nextBillingDate: '2024-02-15',
-    billingCycle: 'monthly',
-    amount: 9.99,
-    currency: 'USD',
-    paymentMethod: {
-      type: 'card',
-      lastFour: '4242',
-      brand: 'Visa',
-    },
-    usage: {
-      goalsUsed: 12,
-      goalsLimit: 50,
-      habitsUsed: 8,
-      habitsLimit: 25,
-      storageUsed: 245,
-      storageLimit: 1024,
-    },
-  });
+  const [billingInfo, setBillingInfo] = useState<BillingSummary | null>(null);
+  const [isBillingLoading, setIsBillingLoading] = useState(true);
+  const [isBillingActionLoading, setIsBillingActionLoading] = useState(false);
+  const [billingError, setBillingError] = useState<string | null>(null);
+  const [isPlanPickerOpen, setIsPlanPickerOpen] = useState(false);
+  const [selectedPlanCode, setSelectedPlanCode] = useState<Exclude<PlanCode, 'free'>>('premium');
+  const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>('monthly');
 
   // Handle notification setting changes
   const handleNotificationChange = (
@@ -463,9 +451,85 @@ const Settings = (): JSX.Element => {
     setIsHistoryLoading(false);
   }, []);
 
+  const loadBillingSummary = useCallback(async (): Promise<void> => {
+    setIsBillingLoading(true);
+    setBillingError(null);
+
+    const { data, error } = await billingService.getBillingSummary();
+    if (error || !data) {
+      setBillingInfo(null);
+      setBillingError(error || 'Failed to load billing summary');
+      setIsBillingLoading(false);
+      return;
+    }
+
+    setBillingInfo(data);
+    setIsBillingLoading(false);
+  }, []);
+
   useEffect(() => {
     void loadSessionsOverview();
   }, [loadSessionsOverview]);
+
+  useEffect(() => {
+    void loadBillingSummary();
+  }, [loadBillingSummary]);
+
+  const buildReturnUrl = (): string => {
+    return window.location.href;
+  };
+
+  const openPortalSession = async (flow: PortalFlow): Promise<void> => {
+    setIsBillingActionLoading(true);
+    setBillingError(null);
+
+    const { data, error } = await billingService.createPortalSession(flow, buildReturnUrl());
+    if (error || !data?.url) {
+      setBillingError(error || 'Failed to open billing portal');
+      setIsBillingActionLoading(false);
+      return;
+    }
+
+    window.location.assign(data.url);
+  };
+
+  const handleManagePlan = async (): Promise<void> => {
+    if (!billingInfo) {
+      return;
+    }
+
+    if (billingInfo.currentPlan === 'free') {
+      setIsPlanPickerOpen(true);
+      return;
+    }
+
+    await openPortalSession('manage');
+  };
+
+  const handlePlanPickerContinue = async (): Promise<void> => {
+    setIsBillingActionLoading(true);
+    setBillingError(null);
+
+    const successUrl = new URL(window.location.href);
+    successUrl.searchParams.set('billing', 'success');
+    const cancelUrl = new URL(window.location.href);
+    cancelUrl.searchParams.set('billing', 'cancel');
+
+    const { data, error } = await billingService.createCheckoutSession(
+      selectedPlanCode,
+      selectedBillingCycle,
+      successUrl.toString(),
+      cancelUrl.toString()
+    );
+
+    if (error || !data?.url) {
+      setBillingError(error || 'Failed to start checkout');
+      setIsBillingActionLoading(false);
+      return;
+    }
+
+    window.location.assign(data.url);
+  };
 
   // Handle data export
   const handleDataExport = (format: 'json' | 'csv'): void => {
@@ -540,9 +604,25 @@ const Settings = (): JSX.Element => {
     setIsSigningOutSessions(false);
   };
 
+  const handleUpdatePaymentMethod = async (): Promise<void> => {
+    await openPortalSession('payment_method_update');
+  };
+
+  const handleViewBillingHistory = async (): Promise<void> => {
+    await openPortalSession('history');
+  };
+
+  const handleDownloadInvoice = async (): Promise<void> => {
+    await openPortalSession('history');
+  };
+
+  const handleCancelSubscription = async (): Promise<void> => {
+    await openPortalSession('cancel');
+  };
+
   // Get plan display information
   const getPlanInfo = (
-    plan: BillingInfo['currentPlan']
+    plan: BillingSummary['currentPlan']
   ): { name: string; color: string; icon: string } => {
     switch (plan) {
       case 'free':
@@ -560,10 +640,11 @@ const Settings = (): JSX.Element => {
     }
   };
 
-  const planInfo = getPlanInfo(billingInfo.currentPlan);
+  const planInfo = billingInfo ? getPlanInfo(billingInfo.currentPlan) : null;
 
   // Format date
-  const formatDate = (dateString: string): string => {
+  const formatDate = (dateString: string | null): string => {
+    if (!dateString) return '-';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -574,6 +655,7 @@ const Settings = (): JSX.Element => {
 
   // Calculate usage percentage
   const getUsagePercentage = (used: number, limit: number): number => {
+    if (limit <= 0) return 0;
     return Math.round((used / limit) * 100);
   };
 
@@ -595,127 +677,258 @@ const Settings = (): JSX.Element => {
           <h2 className={styles.sectionTitle}>{translations.sections.plansAndBilling}</h2>
           <p className={styles.sectionDescription}>{translations.descriptions.plansAndBilling}</p>
 
-          {/* Current Plan */}
-          <div className={styles.billingCard}>
-            <div className={styles.planHeader}>
-              <div className={styles.planInfo}>
-                <div className={styles.planIcon} style={{ backgroundColor: planInfo.color }}>
-                  <CrownIcon className={styles.planIconSvg} />
+          {billingError && <p className={styles.billingErrorText}>{billingError}</p>}
+
+          {isBillingLoading && (
+            <div className={styles.billingCard}>
+              <p className={styles.billingStatusText}>{translations.billing.loadingSummary}</p>
+            </div>
+          )}
+
+          {!isBillingLoading && !billingInfo && (
+            <div className={styles.billingCard}>
+              <p className={styles.billingStatusText}>{translations.billing.unavailable}</p>
+            </div>
+          )}
+
+          {!isBillingLoading && billingInfo && planInfo && (
+            <div className={styles.billingCard}>
+              <div className={styles.planHeader}>
+                <div className={styles.planInfo}>
+                  <div className={styles.planIcon} style={{ backgroundColor: planInfo.color }}>
+                    <CrownIcon className={styles.planIconSvg} />
+                  </div>
+                  <div>
+                    <h3 className={styles.planName}>{planInfo.name}</h3>
+                    <p className={styles.planPrice}>
+                      {billingInfo.billingCycle
+                        ? `$${billingInfo.amount.toFixed(2)}/${
+                            billingInfo.billingCycle === 'monthly'
+                              ? translations.billing.billing.monthly
+                              : translations.billing.billing.yearly
+                          }`
+                        : translations.billing.freePlanPrice}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className={styles.planName}>{planInfo.name}</h3>
-                  <p className={styles.planPrice}>
-                    ${billingInfo.amount}/
-                    {billingInfo.billingCycle === 'monthly'
-                      ? translations.billing.billing.monthly
-                      : translations.billing.billing.yearly}
+                <button
+                  className={styles.managePlanButton}
+                  onClick={() => {
+                    void handleManagePlan();
+                  }}
+                  disabled={isBillingActionLoading}
+                >
+                  {isBillingActionLoading
+                    ? translations.billing.processing
+                    : translations.billing.managePlan}
+                </button>
+              </div>
+
+              {/* Billing Information */}
+              <div className={styles.billingDetails}>
+                <div className={styles.billingItem}>
+                  <div className={styles.billingItemIcon}>
+                    <CalendarIcon className={styles.icon} />
+                  </div>
+                  <div className={styles.billingItemContent}>
+                    <span className={styles.billingLabel}>
+                      {translations.billing.nextBillingDate}
+                    </span>
+                    <span className={styles.billingValue}>
+                      {formatDate(billingInfo.nextBillingDate)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.billingItem}>
+                  <div className={styles.billingItemIcon}>
+                    <CreditCardIcon className={styles.icon} />
+                  </div>
+                  <div className={styles.billingItemContent}>
+                    <span className={styles.billingLabel}>
+                      {translations.billing.paymentMethod}
+                    </span>
+                    <span className={styles.billingValue}>
+                      {billingInfo.paymentMethod.type === 'card'
+                        ? `${billingInfo.paymentMethod.brand || 'Card'} ••••${billingInfo.paymentMethod.lastFour || ''}`
+                        : translations.billing.noPaymentMethod}
+                    </span>
+                  </div>
+                  <button
+                    className={styles.updateButton}
+                    onClick={() => {
+                      void handleUpdatePaymentMethod();
+                    }}
+                    disabled={isBillingActionLoading || billingInfo.currentPlan === 'free'}
+                  >
+                    {translations.billing.update}
+                  </button>
+                </div>
+              </div>
+
+              {billingInfo.cancelAtPeriodEnd && (
+                <p className={styles.billingStatusText}>{translations.billing.cancelAtPeriodEnd}</p>
+              )}
+
+              {/* Usage Statistics */}
+              <div className={styles.usageSection}>
+                <h4 className={styles.usageTitle}>{translations.billing.currentUsage}</h4>
+
+                <div className={styles.usageStats}>
+                  <div className={styles.usageStat}>
+                    <div className={styles.usageHeader}>
+                      <span className={styles.usageLabel}>{translations.billing.usage.goals}</span>
+                      <span className={styles.usageNumbers}>
+                        {billingInfo.usage.goalsUsed} / {billingInfo.usage.goalsLimit}
+                      </span>
+                    </div>
+                    <div className={styles.progressBar}>
+                      <div
+                        className={styles.progressFill}
+                        style={{
+                          width: `${getUsagePercentage(
+                            billingInfo.usage.goalsUsed,
+                            billingInfo.usage.goalsLimit
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.usageStat}>
+                    <div className={styles.usageHeader}>
+                      <span className={styles.usageLabel}>{translations.billing.usage.habits}</span>
+                      <span className={styles.usageNumbers}>
+                        {billingInfo.usage.habitsUsed} / {billingInfo.usage.habitsLimit}
+                      </span>
+                    </div>
+                    <div className={styles.progressBar}>
+                      <div
+                        className={styles.progressFill}
+                        style={{
+                          width: `${getUsagePercentage(
+                            billingInfo.usage.habitsUsed,
+                            billingInfo.usage.habitsLimit
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div className={styles.billingActions}>
+                <button
+                  className={styles.actionButton}
+                  onClick={() => {
+                    void handleViewBillingHistory();
+                  }}
+                  disabled={isBillingActionLoading}
+                >
+                  {translations.billing.viewBillingHistory}
+                </button>
+                <button
+                  className={styles.actionButton}
+                  onClick={() => {
+                    void handleDownloadInvoice();
+                  }}
+                  disabled={isBillingActionLoading}
+                >
+                  {translations.billing.downloadInvoice}
+                </button>
+                <button
+                  className={styles.actionButtonSecondary}
+                  onClick={() => {
+                    void handleCancelSubscription();
+                  }}
+                  disabled={isBillingActionLoading || billingInfo.currentPlan === 'free'}
+                >
+                  {translations.billing.cancelSubscription}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {isPlanPickerOpen && (
+            <div className={styles.planPickerOverlay} role="dialog" aria-modal="true">
+              <div className={styles.planPickerModal}>
+                <h3 className={styles.planPickerTitle}>{translations.billing.planPicker.title}</h3>
+                <p className={styles.planPickerDescription}>
+                  {translations.billing.planPicker.description}
+                </p>
+
+                <div className={styles.planPickerSection}>
+                  <p className={styles.planPickerLabel}>
+                    {translations.billing.planPicker.selectPlan}
                   </p>
-                </div>
-              </div>
-              <button className={styles.managePlanButton}>{translations.billing.managePlan}</button>
-            </div>
-
-            {/* Billing Information */}
-            <div className={styles.billingDetails}>
-              <div className={styles.billingItem}>
-                <div className={styles.billingItemIcon}>
-                  <CalendarIcon className={styles.icon} />
-                </div>
-                <div className={styles.billingItemContent}>
-                  <span className={styles.billingLabel}>
-                    {translations.billing.nextBillingDate}
-                  </span>
-                  <span className={styles.billingValue}>
-                    {formatDate(billingInfo.nextBillingDate)}
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.billingItem}>
-                <div className={styles.billingItemIcon}>
-                  <CreditCardIcon className={styles.icon} />
-                </div>
-                <div className={styles.billingItemContent}>
-                  <span className={styles.billingLabel}>{translations.billing.paymentMethod}</span>
-                  <span className={styles.billingValue}>
-                    {billingInfo.paymentMethod.brand} ••••{billingInfo.paymentMethod.lastFour}
-                  </span>
-                </div>
-                <button className={styles.updateButton}>{translations.billing.update}</button>
-              </div>
-            </div>
-
-            {/* Usage Statistics */}
-            <div className={styles.usageSection}>
-              <h4 className={styles.usageTitle}>{translations.billing.currentUsage}</h4>
-
-              <div className={styles.usageStats}>
-                <div className={styles.usageStat}>
-                  <div className={styles.usageHeader}>
-                    <span className={styles.usageLabel}>{translations.billing.usage.goals}</span>
-                    <span className={styles.usageNumbers}>
-                      {billingInfo.usage.goalsUsed} / {billingInfo.usage.goalsLimit}
-                    </span>
-                  </div>
-                  <div className={styles.progressBar}>
-                    <div
-                      className={styles.progressFill}
-                      style={{
-                        width: `${getUsagePercentage(billingInfo.usage.goalsUsed, billingInfo.usage.goalsLimit)}%`,
-                      }}
-                    />
+                  <div className={styles.planPickerOptions}>
+                    <button
+                      className={`${styles.planPickerOption} ${
+                        selectedPlanCode === 'premium' ? styles.planPickerOptionSelected : ''
+                      }`}
+                      onClick={() => setSelectedPlanCode('premium')}
+                    >
+                      {translations.billing.planPicker.premium}
+                    </button>
+                    <button
+                      className={`${styles.planPickerOption} ${
+                        selectedPlanCode === 'pro' ? styles.planPickerOptionSelected : ''
+                      }`}
+                      onClick={() => setSelectedPlanCode('pro')}
+                    >
+                      {translations.billing.planPicker.pro}
+                    </button>
                   </div>
                 </div>
 
-                <div className={styles.usageStat}>
-                  <div className={styles.usageHeader}>
-                    <span className={styles.usageLabel}>{translations.billing.usage.habits}</span>
-                    <span className={styles.usageNumbers}>
-                      {billingInfo.usage.habitsUsed} / {billingInfo.usage.habitsLimit}
-                    </span>
-                  </div>
-                  <div className={styles.progressBar}>
-                    <div
-                      className={styles.progressFill}
-                      style={{
-                        width: `${getUsagePercentage(billingInfo.usage.habitsUsed, billingInfo.usage.habitsLimit)}%`,
-                      }}
-                    />
+                <div className={styles.planPickerSection}>
+                  <p className={styles.planPickerLabel}>
+                    {translations.billing.planPicker.selectCycle}
+                  </p>
+                  <div className={styles.planPickerOptions}>
+                    <button
+                      className={`${styles.planPickerOption} ${
+                        selectedBillingCycle === 'monthly' ? styles.planPickerOptionSelected : ''
+                      }`}
+                      onClick={() => setSelectedBillingCycle('monthly')}
+                    >
+                      {translations.billing.planPicker.monthly}
+                    </button>
+                    <button
+                      className={`${styles.planPickerOption} ${
+                        selectedBillingCycle === 'yearly' ? styles.planPickerOptionSelected : ''
+                      }`}
+                      onClick={() => setSelectedBillingCycle('yearly')}
+                    >
+                      {translations.billing.planPicker.yearly}
+                    </button>
                   </div>
                 </div>
 
-                <div className={styles.usageStat}>
-                  <div className={styles.usageHeader}>
-                    <span className={styles.usageLabel}>{translations.billing.usage.storage}</span>
-                    <span className={styles.usageNumbers}>
-                      {billingInfo.usage.storageUsed}MB / {billingInfo.usage.storageLimit}MB
-                    </span>
-                  </div>
-                  <div className={styles.progressBar}>
-                    <div
-                      className={styles.progressFill}
-                      style={{
-                        width: `${getUsagePercentage(billingInfo.usage.storageUsed, billingInfo.usage.storageLimit)}%`,
-                      }}
-                    />
-                  </div>
+                <div className={styles.planPickerActions}>
+                  <button
+                    className={styles.actionButton}
+                    onClick={() => setIsPlanPickerOpen(false)}
+                    disabled={isBillingActionLoading}
+                  >
+                    {translations.billing.planPicker.cancel}
+                  </button>
+                  <button
+                    className={styles.managePlanButton}
+                    onClick={() => {
+                      void handlePlanPickerContinue();
+                    }}
+                    disabled={isBillingActionLoading}
+                  >
+                    {isBillingActionLoading
+                      ? translations.billing.processing
+                      : translations.billing.planPicker.continue}
+                  </button>
                 </div>
               </div>
             </div>
-
-            {/* Quick Actions */}
-            <div className={styles.billingActions}>
-              <button className={styles.actionButton}>
-                {translations.billing.viewBillingHistory}
-              </button>
-              <button className={styles.actionButton}>
-                {translations.billing.downloadInvoice}
-              </button>
-              <button className={styles.actionButtonSecondary}>
-                {translations.billing.cancelSubscription}
-              </button>
-            </div>
-          </div>
+          )}
         </div>
 
         <div className={styles.section}>
