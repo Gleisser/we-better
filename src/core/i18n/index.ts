@@ -1296,6 +1296,12 @@ const resources = {
           nextBillingDate: 'Next Billing Date',
           paymentMethod: 'Payment Method',
           update: 'Update',
+          unavailable: 'Billing information is currently unavailable.',
+          loadingSummary: 'Loading billing information...',
+          noPaymentMethod: 'No payment method on file',
+          freePlanPrice: 'Free',
+          cancelAtPeriodEnd: 'Cancellation scheduled for period end.',
+          processing: 'Processing...',
           currentUsage: 'Current Usage',
           viewBillingHistory: 'View Billing History',
           downloadInvoice: 'Download Invoice',
@@ -1308,11 +1314,27 @@ const resources = {
           usage: {
             goals: 'Goals',
             habits: 'Habits',
-            storage: 'Storage',
           },
           billing: {
             monthly: 'month',
             yearly: 'year',
+          },
+          planPicker: {
+            title: 'Choose a Plan',
+            description: 'Select your plan and billing cycle to continue to checkout.',
+            selectPlan: 'Plan',
+            selectCycle: 'Billing Cycle',
+            monthly: 'Monthly',
+            yearly: 'Yearly',
+            premium: 'Premium',
+            pro: 'Pro',
+            continue: 'Continue to Checkout',
+            cancel: 'Cancel',
+          },
+          limitReached: {
+            title: 'Plan limit reached',
+            description:
+              'You have reached your current limit. Upgrade your plan in Settings to continue.',
           },
         },
         notifications: {
@@ -2707,6 +2729,12 @@ const resources = {
           nextBillingDate: 'Próxima Data de Cobrança',
           paymentMethod: 'Método de Pagamento',
           update: 'Atualizar',
+          unavailable: 'As informações de cobrança estão indisponíveis no momento.',
+          loadingSummary: 'Carregando informações de cobrança...',
+          noPaymentMethod: 'Nenhum método de pagamento cadastrado',
+          freePlanPrice: 'Grátis',
+          cancelAtPeriodEnd: 'Cancelamento agendado para o fim do período.',
+          processing: 'Processando...',
           currentUsage: 'Uso Atual',
           viewBillingHistory: 'Visualizar Histórico de Cobrança',
           downloadInvoice: 'Baixar Fatura',
@@ -2719,11 +2747,27 @@ const resources = {
           usage: {
             goals: 'Metas',
             habits: 'Hábitos',
-            storage: 'Armazenamento',
           },
           billing: {
             monthly: 'mês',
             yearly: 'ano',
+          },
+          planPicker: {
+            title: 'Escolha um Plano',
+            description: 'Selecione seu plano e ciclo para continuar ao checkout.',
+            selectPlan: 'Plano',
+            selectCycle: 'Ciclo de Cobrança',
+            monthly: 'Mensal',
+            yearly: 'Anual',
+            premium: 'Premium',
+            pro: 'Pro',
+            continue: 'Continuar para Checkout',
+            cancel: 'Cancelar',
+          },
+          limitReached: {
+            title: 'Limite do plano atingido',
+            description:
+              'Você atingiu o limite do seu plano atual. Atualize seu plano nas Configurações para continuar.',
           },
         },
         notifications: {

@@ -329,6 +329,113 @@
   color: white;
 }
 
+.billingErrorText {
+  margin: 0 0 16px 0;
+  color: #ef4444;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.billingStatusText {
+  margin: 0;
+  color: var(--theme-text-secondary);
+  font-size: 14px;
+}
+
+.planPickerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.planPickerModal {
+  width: 100%;
+  max-width: 520px;
+  background: var(--theme-bg-primary);
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.24);
+}
+
+.planPickerTitle {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--theme-text-primary);
+  font-family: var(--font-plus-jakarta);
+}
+
+.planPickerDescription {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: var(--theme-text-secondary);
+}
+
+.planPickerSection {
+  margin-bottom: 16px;
+}
+
+.planPickerLabel {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.planPickerOptions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.planPickerOption {
+  padding: 10px 14px;
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 8px;
+  background: var(--theme-bg-secondary);
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-plus-jakarta);
+}
+
+.planPickerOption:hover {
+  border-color: var(--theme-border-secondary);
+}
+
+.planPickerOptionSelected {
+  border-color: transparent;
+  background: var(--theme-gradient-primary);
+  color: white;
+}
+
+.planPickerActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.managePlanButton:disabled,
+.updateButton:disabled,
+.actionButton:disabled,
+.actionButtonSecondary:disabled,
+.planPickerOption:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Theme Selector */
 .themeSelector {
   margin-bottom: 24px;
@@ -778,6 +885,15 @@
 
   .billingActions {
     flex-direction: column;
+  }
+
+  .planPickerActions {
+    flex-direction: column;
+  }
+
+  .planPickerActions .actionButton,
+  .planPickerActions .managePlanButton {
+    width: 100%;
   }
 
   .actionButton,

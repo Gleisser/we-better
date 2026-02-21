@@ -76,6 +76,10 @@ export interface MilestonesResponse {
 // API Error type
 export interface ApiError {
   error: string;
+  code?: string;
+  resource?: string;
+  used?: number;
+  limit?: number;
   status?: number;
 }
 
@@ -138,12 +142,29 @@ const apiRequest = async <T>(
       }
     }
 
+    const payload = (await response.json().catch(() => null)) as ApiError | null;
+
     if (!response.ok) {
-      // Handle specific error cases
       if (response.status === 401) {
-        // Trigger auth refresh or redirect to login
         throw new Error('Authentication expired');
       }
+
+      if (
+        response.status === 409 &&
+        payload?.code === 'PLAN_LIMIT_REACHED' &&
+        typeof payload.used === 'number' &&
+        typeof payload.limit === 'number'
+      ) {
+        const resource = payload.resource === 'habits' ? 'habits' : 'goals';
+        throw new Error(
+          `Plan limit reached for ${resource} (${payload.used}/${payload.limit}). Upgrade your plan in Settings.`
+        );
+      }
+
+      if (payload?.error) {
+        throw new Error(payload.error);
+      }
+
       throw new Error(`API request failed: ${response.statusText}`);
     }
 
@@ -152,12 +173,15 @@ const apiRequest = async <T>(
       return { success: true } as unknown as T;
     }
 
-    return await response.json();
+    return payload as T;
   } catch (error) {
     console.error(`API ${method} request to ${endpoint} failed:`, error);
     throw error;
   }
 };
+
+const shouldRethrowPlanLimit = (error: unknown): error is Error =>
+  error instanceof Error && error.message.toLowerCase().includes('plan limit reached');
 
 /**
  * GOALS API FUNCTIONS
@@ -198,6 +222,9 @@ export const createGoal = async (
       target_date: targetDate,
     });
   } catch (error) {
+    if (shouldRethrowPlanLimit(error)) {
+      throw error;
+    }
     console.error('Error creating goal:', error);
     return null;
   }
@@ -216,6 +243,9 @@ export const updateGoal = async (
   try {
     return await apiRequest<Goal>(`${API_URL}/${goalId}`, 'PUT', updates);
   } catch (error) {
+    if (shouldRethrowPlanLimit(error)) {
+      throw error;
+    }
     console.error(`Error updating goal ${goalId}:`, error);
     return null;
   }
