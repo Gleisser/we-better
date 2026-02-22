@@ -30,6 +30,14 @@ initializeDatabase()
     console.error('Failed to initialize database:', error);
   });
 
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw-notifications.js').catch(error => {
+      console.warn('Service worker registration failed:', error);
+    });
+  });
+}
+
 const rootElement = document.getElementById('root');
 if (rootElement) {
   ReactDOM.createRoot(rootElement).render(

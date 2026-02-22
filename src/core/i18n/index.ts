@@ -1343,6 +1343,67 @@ const resources = {
           pushNotifications: 'Push Notifications',
           pushDescription: 'Receive push notifications in your browser for important updates',
         },
+        notificationsV1: {
+          pushPermissionError:
+            'Push permission was denied or subscription failed. Enable browser notifications and try again.',
+          master: {
+            email: 'Email channel',
+            emailDescription: 'Master switch for all email notifications.',
+            push: 'Push channel',
+            pushDescription: 'Master switch for browser push notifications.',
+            inApp: 'In-app channel',
+            inAppDescription: 'Show notifications in your app inbox.',
+          },
+          reminders: {
+            title: 'Reminder Events',
+          },
+          achievements: {
+            title: 'Achievement Events',
+          },
+          events: {
+            habitsEmail: 'Habit reminders by email',
+            habitsEmailDescription: 'Daily habit reminders by email.',
+            habitsPush: 'Habit reminders by push',
+            habitsPushDescription: 'Daily habit reminders by browser push.',
+            goalsEmail: 'Goal review reminders by email',
+            goalsEmailDescription: 'Review due reminders and overdue notices by email.',
+            goalsPush: 'Goal review reminders by push',
+            goalsPushDescription: 'Review due reminders and overdue notices by push.',
+            dreamChallengesEmail: 'Dream challenge reminders by email',
+            dreamChallengesEmailDescription: 'Configured dream challenge reminders by email.',
+            dreamChallengesPush: 'Dream challenge reminders by push',
+            dreamChallengesPushDescription: 'Configured dream challenge reminders by push.',
+            affirmationsPush: 'Affirmation reminders by push',
+            affirmationsPushDescription: 'Daily affirmation reminders by browser push.',
+            habitStreakEmail: 'Habit streak achievements by email',
+            habitStreakEmailDescription: 'Include streak milestones in weekly email summary.',
+            habitStreakPush: 'Habit streak achievements by push',
+            habitStreakPushDescription: 'Send immediate push for streak milestones.',
+            goalMilestonesEmail: 'Goal milestones by email',
+            goalMilestonesEmailDescription: 'Include completed goal milestones in weekly summary.',
+            goalMilestonesPush: 'Goal milestones by push',
+            goalMilestonesPushDescription:
+              'Send immediate push when goal milestones are completed.',
+            weeklySummaryEmail: 'Weekly summary email',
+            weeklySummaryEmailDescription:
+              'Receive the weekly digest with reminder outcomes and achievements.',
+          },
+          schedule: {
+            title: 'Schedule and Quiet Hours',
+            timezone: 'Timezone',
+            timezoneDescription: 'Used to schedule reminders and weekly summaries.',
+            quietHoursEnabled: 'Enable quiet hours',
+            quietHoursEnabledDescription: 'Delay push and email notifications during quiet hours.',
+            quietHoursStart: 'Quiet hours start',
+            quietHoursStartDescription: 'Local start time for quiet hours.',
+            quietHoursEnd: 'Quiet hours end',
+            quietHoursEndDescription: 'Local end time for quiet hours.',
+            habitReminderTime: 'Habit reminder time',
+            habitReminderTimeDescription: 'Preferred local time for daily habit reminders.',
+            goalReminderTime: 'Goal review reminder time',
+            goalReminderTimeDescription: 'Preferred local time for goal review reminders.',
+          },
+        },
         privacy: {
           securityScore: {
             title: 'Security Score',
@@ -2776,6 +2837,69 @@ const resources = {
           pushNotifications: 'Notificações Push',
           pushDescription:
             'Receba notificações push no seu navegador para atualizações importantes',
+        },
+        notificationsV1: {
+          pushPermissionError:
+            'A permissão de push foi negada ou a inscrição falhou. Ative as notificações do navegador e tente novamente.',
+          master: {
+            email: 'Canal de email',
+            emailDescription: 'Chave principal para todas as notificações por email.',
+            push: 'Canal push',
+            pushDescription: 'Chave principal para notificações push do navegador.',
+            inApp: 'Canal no app',
+            inAppDescription: 'Mostrar notificações na sua caixa de entrada do app.',
+          },
+          reminders: {
+            title: 'Eventos de Lembrete',
+          },
+          achievements: {
+            title: 'Eventos de Conquistas',
+          },
+          events: {
+            habitsEmail: 'Lembretes de hábitos por email',
+            habitsEmailDescription: 'Lembretes diários de hábitos por email.',
+            habitsPush: 'Lembretes de hábitos por push',
+            habitsPushDescription: 'Lembretes diários de hábitos por push do navegador.',
+            goalsEmail: 'Lembretes de revisão de metas por email',
+            goalsEmailDescription: 'Lembretes de revisão e atrasos por email.',
+            goalsPush: 'Lembretes de revisão de metas por push',
+            goalsPushDescription: 'Lembretes de revisão e atrasos por push.',
+            dreamChallengesEmail: 'Lembretes de desafios por email',
+            dreamChallengesEmailDescription: 'Lembretes configurados de desafios por email.',
+            dreamChallengesPush: 'Lembretes de desafios por push',
+            dreamChallengesPushDescription: 'Lembretes configurados de desafios por push.',
+            affirmationsPush: 'Lembretes de afirmações por push',
+            affirmationsPushDescription: 'Lembretes diários de afirmações por push do navegador.',
+            habitStreakEmail: 'Conquistas de sequência por email',
+            habitStreakEmailDescription: 'Incluir marcos de sequência no resumo semanal por email.',
+            habitStreakPush: 'Conquistas de sequência por push',
+            habitStreakPushDescription: 'Enviar push imediato para marcos de sequência.',
+            goalMilestonesEmail: 'Marcos de metas por email',
+            goalMilestonesEmailDescription: 'Incluir marcos de metas concluídos no resumo semanal.',
+            goalMilestonesPush: 'Marcos de metas por push',
+            goalMilestonesPushDescription:
+              'Enviar push imediato quando marcos de metas forem concluídos.',
+            weeklySummaryEmail: 'Resumo semanal por email',
+            weeklySummaryEmailDescription: 'Receba o resumo semanal com lembretes e conquistas.',
+          },
+          schedule: {
+            title: 'Agenda e Horário Silencioso',
+            timezone: 'Fuso horário',
+            timezoneDescription: 'Usado para agendar lembretes e resumos semanais.',
+            quietHoursEnabled: 'Ativar horário silencioso',
+            quietHoursEnabledDescription:
+              'Adiar notificações push e email durante o horário silencioso.',
+            quietHoursStart: 'Início do horário silencioso',
+            quietHoursStartDescription: 'Hora local de início do horário silencioso.',
+            quietHoursEnd: 'Fim do horário silencioso',
+            quietHoursEndDescription: 'Hora local de fim do horário silencioso.',
+            habitReminderTime: 'Horário do lembrete de hábito',
+            habitReminderTimeDescription:
+              'Horário local preferido para lembretes diários de hábitos.',
+            goalReminderTime: 'Horário do lembrete de revisão de metas',
+            goalReminderTimeDescription:
+              'Horário local preferido para lembretes de revisão de metas.',
+          },
         },
         privacy: {
           securityScore: {

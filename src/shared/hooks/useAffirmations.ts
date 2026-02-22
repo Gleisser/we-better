@@ -30,6 +30,7 @@ import {
   transformTimeToBackend,
   getDaysOfWeekForFrequency,
 } from '@/core/services/affirmationsService';
+import { pushSubscriptionService } from '@/core/services/pushSubscriptionService';
 
 // Hook return type
 export interface UseAffirmationsReturn {
@@ -122,6 +123,17 @@ export const useAffirmations = (): UseAffirmationsReturn => {
     const errorObj = error instanceof Error ? error : new Error('An unknown error occurred');
     setError(errorObj);
     console.error('Affirmations hook error:', errorObj);
+  }, []);
+
+  const syncReminderPushSubscription = useCallback(async (isEnabled: boolean | undefined) => {
+    if (!isEnabled) {
+      return;
+    }
+
+    const result = await pushSubscriptionService.subscribeCurrentBrowser();
+    if (!result.success) {
+      console.warn('Failed to register push subscription for affirmation reminder:', result.error);
+    }
   }, []);
 
   // Fetch personal affirmation
@@ -360,6 +372,7 @@ export const useAffirmations = (): UseAffirmationsReturn => {
           // Transform time format back for frontend
           savedSettings.reminder_time = transformTimeFormat(savedSettings.reminder_time);
           setReminderSettings(savedSettings);
+          await syncReminderPushSubscription(savedSettings.is_enabled);
         }
 
         return savedSettings;
@@ -368,7 +381,7 @@ export const useAffirmations = (): UseAffirmationsReturn => {
         throw err;
       }
     },
-    [handleError]
+    [handleError, syncReminderPushSubscription]
   );
 
   // Update reminder settings
@@ -403,13 +416,17 @@ export const useAffirmations = (): UseAffirmationsReturn => {
           setReminderSettings(updatedSettings);
         }
 
+        if (settings.is_enabled !== undefined) {
+          await syncReminderPushSubscription(settings.is_enabled);
+        }
+
         return updatedSettings;
       } catch (err) {
         handleError(err);
         throw err;
       }
     },
-    [handleError]
+    [handleError, syncReminderPushSubscription]
   );
 
   // Clear error

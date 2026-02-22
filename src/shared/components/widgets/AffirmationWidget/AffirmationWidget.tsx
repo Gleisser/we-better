@@ -186,16 +186,12 @@ const AffirmationWidget = (): JSX.Element => {
     time: string;
     days: number[];
   }): Promise<void> => {
-    try {
-      await updateReminderSettings({
-        is_enabled: newSettings.enabled,
-        reminder_time: newSettings.time,
-        frequency: 'custom', // Default to custom when updating via component
-        days_of_week: newSettings.days,
-      });
-    } catch (error) {
-      console.error('Failed to update reminder settings:', error);
-    }
+    await updateReminderSettings({
+      is_enabled: newSettings.enabled,
+      reminder_time: newSettings.time,
+      frequency: 'custom', // Default to custom when updating via component
+      days_of_week: newSettings.days,
+    });
   };
 
   // Initialize notification permission on mount

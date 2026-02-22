@@ -5,6 +5,7 @@ import ThemeSelector from '@/shared/components/theme/ThemeSelector';
 import LanguageSelector from '@/shared/components/i18n/LanguageSelector';
 import ProfileSettings from '@/shared/components/user/ProfileSettings';
 import Toggle from '@/shared/components/common/Toggle';
+import NotificationPreferencesSection from './components/NotificationPreferencesSection';
 import {
   sessionsService,
   type SessionDto,
@@ -18,11 +19,6 @@ import {
   type PortalFlow,
 } from '@/core/services/billingService';
 import styles from './Settings.module.css';
-
-interface NotificationSettings {
-  emailNotifications: boolean;
-  pushNotifications: boolean;
-}
 
 interface PrivacySettings {
   profileVisibility: boolean;
@@ -306,12 +302,6 @@ const Settings = (): JSX.Element => {
     [t]
   );
 
-  // Notification settings state
-  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
-    emailNotifications: true,
-    pushNotifications: false,
-  });
-
   // Privacy settings state
   const [privacySettings, setPrivacySettings] = useState<PrivacySettings>({
     profileVisibility: true,
@@ -346,20 +336,6 @@ const Settings = (): JSX.Element => {
   const [isPlanPickerOpen, setIsPlanPickerOpen] = useState(false);
   const [selectedPlanCode, setSelectedPlanCode] = useState<Exclude<PlanCode, 'free'>>('premium');
   const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>('monthly');
-
-  // Handle notification setting changes
-  const handleNotificationChange = (
-    setting: keyof NotificationSettings,
-    enabled: boolean
-  ): void => {
-    setNotificationSettings(prev => ({
-      ...prev,
-      [setting]: enabled,
-    }));
-
-    // TODO: Save to backend/localStorage
-    console.info(`${setting} set to:`, enabled);
-  };
 
   // Handle privacy setting changes
   const handlePrivacyChange = (setting: keyof PrivacySettings, enabled: boolean): void => {
@@ -943,44 +919,7 @@ const Settings = (): JSX.Element => {
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>{translations.sections.notifications}</h2>
           <p className={styles.sectionDescription}>{translations.descriptions.notifications}</p>
-
-          <div className={styles.settingItem}>
-            <div className={styles.settingInfo}>
-              <h3 className={styles.settingLabel}>
-                {translations.notifications.emailNotifications}
-              </h3>
-              <p className={styles.settingDescription}>
-                {translations.notifications.emailDescription}
-              </p>
-            </div>
-            <div className={styles.settingControl}>
-              <Toggle
-                enabled={notificationSettings.emailNotifications}
-                onChange={enabled => handleNotificationChange('emailNotifications', enabled)}
-                aria-label={`Toggle ${translations.notifications.emailNotifications}`}
-                size="medium"
-              />
-            </div>
-          </div>
-
-          <div className={styles.settingItem}>
-            <div className={styles.settingInfo}>
-              <h3 className={styles.settingLabel}>
-                {translations.notifications.pushNotifications}
-              </h3>
-              <p className={styles.settingDescription}>
-                {translations.notifications.pushDescription}
-              </p>
-            </div>
-            <div className={styles.settingControl}>
-              <Toggle
-                enabled={notificationSettings.pushNotifications}
-                onChange={enabled => handleNotificationChange('pushNotifications', enabled)}
-                aria-label={`Toggle ${translations.notifications.pushNotifications}`}
-                size="medium"
-              />
-            </div>
-          </div>
+          <NotificationPreferencesSection />
         </div>
 
         {/* Privacy & Security Section */}

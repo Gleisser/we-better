@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BellIcon } from '@/shared/components/common/icons';
 import NotificationsPopup from '../NotificationsPopup/NotificationsPopup';
-import type { NotificationItem } from '../NotificationsPopup/NotificationsPopup';
 import { MobileNotifications } from '../NotificationsPanel/MobileNotifications';
 import ProfileMenu from './ProfileMenu/ProfileMenu';
 import { useHeader } from '@/shared/hooks/useHeader';
@@ -11,16 +10,26 @@ import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useThemeToggle } from '@/shared/hooks/useTheme';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { useNotificationsFeed } from '@/shared/hooks/useNotificationsFeed';
 import { getInitials } from '@/shared/utils/string/getInitials';
 import styles from './HeaderActions.module.css';
 
 const HeaderActions = (): JSX.Element => {
   const { t } = useCommonTranslation();
   const { user } = useAuth();
-  const [notificationCount] = useState(10);
   const { activePopup, setActivePopup } = useHeader();
   const [isMobile, setIsMobile] = useState(false);
   const [avatarLoadError, setAvatarLoadError] = useState(false);
+  const {
+    notifications,
+    unreadCount,
+    isLoading: notificationsLoading,
+    markAsRead,
+    markAllAsRead,
+  } = useNotificationsFeed({
+    pageSize: 8,
+    unreadRefreshIntervalMs: 15_000,
+  });
 
   // Theme functionality
   const { currentMode, effectiveTheme, toggleTheme, isDark } = useThemeToggle();
@@ -63,48 +72,6 @@ const HeaderActions = (): JSX.Element => {
       // The UI will still work with localStorage fallback
     }
   };
-
-  // Mock notifications data with undefined images to trigger initials fallback
-  const notifications: NotificationItem[] = [
-    {
-      id: '1',
-      type: 'reply',
-      user: {
-        name: 'Tommy Lee',
-        image: '/placeholder.jpg',
-        isOnline: true,
-      },
-      content: 'replied to you in',
-      target: 'Generic File',
-      timestamp: '7 November 2023 • 12:35 AM',
-      isRead: false,
-    },
-    {
-      id: '2',
-      type: 'follow',
-      user: {
-        name: 'Jennifer Lee',
-        image: '/placeholder.jpg',
-        isOnline: true,
-      },
-      content: 'followed you',
-      timestamp: '6 November 2023 • 9:12 PM',
-      isRead: false,
-    },
-    {
-      id: '3',
-      type: 'task',
-      user: {
-        name: 'Eve Monroe',
-        image: '/placeholder.jpg',
-        isOnline: false,
-      },
-      content: 'assigned a task to you',
-      target: '#JP-2137',
-      timestamp: '6 November 2023 • 8:56 PM',
-      isRead: false,
-    },
-  ];
 
   // Check if mobile
   useEffect(() => {
@@ -228,21 +195,32 @@ const HeaderActions = (): JSX.Element => {
           onClick={() => setActivePopup(activePopup === 'notifications' ? null : 'notifications')}
         >
           <BellIcon className={styles.notificationIcon} />
-          {notificationCount > 0 && (
+          {unreadCount > 0 && (
             <motion.span
               className={styles.notificationBadge}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 500, damping: 25 }}
             >
-              {notificationCount}
+              {unreadCount}
             </motion.span>
           )}
         </button>
 
         {/* Desktop Notifications */}
         {!isMobile && activePopup === 'notifications' && (
-          <NotificationsPopup onClose={() => setActivePopup(null)} />
+          <NotificationsPopup
+            onClose={() => setActivePopup(null)}
+            notifications={notifications}
+            unreadCount={unreadCount}
+            isLoading={notificationsLoading}
+            onMarkAsRead={notificationId => {
+              void markAsRead(notificationId);
+            }}
+            onMarkAllAsRead={() => {
+              void markAllAsRead();
+            }}
+          />
         )}
       </div>
 
@@ -252,6 +230,14 @@ const HeaderActions = (): JSX.Element => {
           isOpen={true}
           onClose={() => setActivePopup(null)}
           notifications={notifications}
+          unreadCount={unreadCount}
+          isLoading={notificationsLoading}
+          onMarkAsRead={notificationId => {
+            void markAsRead(notificationId);
+          }}
+          onMarkAllAsRead={() => {
+            void markAllAsRead();
+          }}
         />
       )}
 
