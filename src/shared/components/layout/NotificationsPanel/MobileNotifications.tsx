@@ -1,114 +1,49 @@
-/**
- * MobileNotifications Component
- *
- * A mobile-optimized notifications panel that displays user notifications with animations
- * and interactive features. Provides a sliding panel interface with notification management
- * capabilities.
- *
- * Features:
- * - Animated entrance/exit using Framer Motion
- * - Support for multiple notification types
- * - User avatar integration
- * - Read/unread state handling
- * - Interactive actions based on notification type
- * - Batch actions (mark all as read)
- * - Individual notification deletion
- *
- * The component handles:
- * - Notification display and formatting
- * - Animation states and transitions
- * - User interaction with notifications
- * - Conditional rendering of action buttons
- * - Responsive layout for mobile devices
- *
- * @component
- * @param {Object} props - Component props
- * @param {boolean} props.isOpen - Controls the visibility of the notifications panel
- * @param {() => void} props.onClose - Callback function to close the panel
- * @param {NotificationItem[]} props.notifications - Array of notification items to display
- *
- * @example
- * ```tsx
- * function App() {
- *   const [isOpen, setIsOpen] = useState(false);
- *   const notifications = [
- *     {
- *       id: '1',
- *       type: 'follow',
- *       user: {
- *         name: 'John Doe',
- *         image: '/avatar.jpg',
- *         isOnline: true
- *       },
- *       content: 'started following you',
- *       timestamp: '2m ago',
- *       isRead: false
- *     }
- *   ];
- *
- *   return (
- *     <MobileNotifications
- *       isOpen={isOpen}
- *       onClose={() => setIsOpen(false)}
- *       notifications={notifications}
- *     />
- *   );
- * }
- * ```
- */
-
-/**
- * Represents the possible types of notifications in the system.
- * @typedef {'follow' | 'reply' | 'mention' | 'task' | 'like' | 'achievement'} NotificationType
- */
-
-/**
- * Represents a single notification item with all its properties.
- * @interface NotificationItem
- * @property {string} id - Unique identifier for the notification
- * @property {NotificationType} type - The type of notification
- * @property {Object} user - Information about the user who triggered the notification
- * @property {string} user.name - The name of the user
- * @property {string} user.image - URL to the user's avatar image
- * @property {boolean} user.isOnline - Whether the user is currently online
- * @property {string} content - The main content/message of the notification
- * @property {string} [target] - Optional target reference (e.g., post title, task name)
- * @property {string} timestamp - Human-readable timestamp for the notification
- * @property {boolean} isRead - Whether the notification has been read
- */
-
 import { motion, AnimatePresence } from 'framer-motion';
-import { XIcon, TrashIcon } from '@/shared/components/common/icons';
-import UserAvatar from '@/shared/components/common/UserAvatar/UserAvatar';
+import { XIcon } from '@/shared/components/common/icons';
+import type { NotificationFeedItemDto } from '@/core/services/notificationsService';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './MobileNotifications.module.css';
-
-type NotificationType = 'follow' | 'reply' | 'mention' | 'task' | 'like' | 'achievement';
-
-interface NotificationItem {
-  id: string;
-  type: NotificationType;
-  user: {
-    name: string;
-    image: string;
-    isOnline: boolean;
-  };
-  content: string;
-  target?: string;
-  timestamp: string;
-  isRead: boolean;
-}
 
 interface MobileNotificationsProps {
   isOpen: boolean;
   onClose: () => void;
-  notifications: NotificationItem[];
+  notifications: NotificationFeedItemDto[];
+  unreadCount: number;
+  isLoading: boolean;
+  onMarkAsRead: (notificationId: string) => void;
+  onMarkAllAsRead: () => void;
 }
+
+const formatRelativeTimestamp = (value: string, language: string): string => {
+  const date = new Date(value);
+  const diffMs = Date.now() - date.getTime();
+  const minutes = Math.max(0, Math.floor(diffMs / 60_000));
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) {
+    return language === 'pt' ? `${days}d atrás` : `${days}d ago`;
+  }
+  if (hours > 0) {
+    return language === 'pt' ? `${hours}h atrás` : `${hours}h ago`;
+  }
+  if (minutes > 0) {
+    return language === 'pt' ? `${minutes}m atrás` : `${minutes}m ago`;
+  }
+  return language === 'pt' ? 'Agora' : 'Just now';
+};
 
 export const MobileNotifications = ({
   isOpen,
   onClose,
   notifications,
+  unreadCount,
+  isLoading,
+  onMarkAsRead,
+  onMarkAllAsRead,
 }: MobileNotificationsProps): JSX.Element => {
+  const { t, currentLanguage } = useCommonTranslation();
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -120,64 +55,62 @@ export const MobileNotifications = ({
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         >
           <div className={styles.header}>
-            <h2 className={styles.title}>Notifications</h2>
+            <h2 className={styles.title}>{t('notifications.title') as string}</h2>
             <button
               onClick={onClose}
               className={styles.closeButton}
-              aria-label="Close notifications"
+              aria-label={t('common.actions.close') as string}
             >
               <XIcon className={styles.closeIcon} />
             </button>
           </div>
 
           <div className={styles.content}>
-            {notifications.map(notification => (
-              <div
-                key={notification.id}
-                className={`${styles.notificationItem} ${!notification.isRead ? styles.unread : ''}`}
-              >
-                <div className={styles.notificationHeader}>
-                  <UserAvatar
-                    name={notification.user.name}
-                    image={notification.user.image}
-                    isOnline={notification.user.isOnline}
-                    size="sm"
-                  />
-                  <div className={styles.notificationInfo}>
-                    <div className={styles.userAction}>
-                      <span className={styles.userName}>{notification.user.name}</span>
-                      <span className={styles.action}>{notification.content}</span>
-                      {notification.target && (
-                        <span className={styles.target}>{notification.target}</span>
-                      )}
-                    </div>
-                    <span className={styles.timestamp}>{notification.timestamp}</span>
-                  </div>
-                  <button className={styles.deleteButton} aria-label="Delete notification">
-                    <TrashIcon className={styles.trashIcon} />
-                  </button>
-                </div>
+            {isLoading && <p className={styles.action}>{t('common.actions.loading') as string}</p>}
 
-                <div className={styles.actions}>
-                  {notification.type === 'follow' && (
-                    <button className={styles.followButton}>Follow back</button>
-                  )}
-                  {notification.type === 'reply' && (
-                    <>
-                      <button className={styles.replyButton}>Reply</button>
-                      <button className={styles.viewButton}>View</button>
-                    </>
-                  )}
-                  {notification.type === 'task' && (
-                    <button className={styles.viewButton}>View task</button>
-                  )}
+            {!isLoading && notifications.length === 0 && (
+              <p className={styles.action}>{t('notificationsPage.emptyState.title') as string}</p>
+            )}
+
+            {!isLoading &&
+              notifications.map(notification => (
+                <div
+                  key={notification.id}
+                  className={`${styles.notificationItem} ${!notification.read_at ? styles.unread : ''}`}
+                >
+                  <div className={styles.notificationHeader}>
+                    <div className={styles.notificationInfo}>
+                      <div className={styles.userAction}>
+                        <span className={styles.userName}>{notification.title}</span>
+                      </div>
+                      <span className={styles.action}>{notification.body}</span>
+                      <span className={styles.timestamp}>
+                        {formatRelativeTimestamp(notification.created_at, currentLanguage)}
+                      </span>
+                    </div>
+                    {!notification.read_at && (
+                      <button
+                        className={styles.replyButton}
+                        onClick={() => {
+                          onMarkAsRead(notification.id);
+                        }}
+                      >
+                        {t('notificationsPage.actions.markAsRead') as string}
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
 
           <div className={styles.footer}>
-            <button className={styles.markReadButton}>Mark all as read</button>
+            <button
+              className={styles.markReadButton}
+              onClick={onMarkAllAsRead}
+              disabled={unreadCount === 0 || isLoading}
+            >
+              {t('header.markAllAsRead') as string}
+            </button>
           </div>
         </motion.div>
       )}

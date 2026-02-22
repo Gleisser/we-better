@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { BellIcon, XIcon } from '@/shared/components/common/icons';
+import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import styles from './ReminderSettings.module.css';
 
 type ReminderSettings = {
@@ -18,7 +19,7 @@ interface ReminderSettingsProps {
     time: string;
     days: number[];
   };
-  onUpdate: (settings: ReminderSettings) => void;
+  onUpdate: (settings: ReminderSettings) => void | Promise<void>;
   onRequestPermission: () => Promise<boolean>;
   permission: NotificationPermission;
 }
@@ -33,33 +34,66 @@ export const ReminderSettings = ({
   onRequestPermission,
   permission,
 }: ReminderSettingsProps): JSX.Element => {
+  const { t } = useCommonTranslation();
   const [localSettings, setLocalSettings] = useState(settings);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    setLocalSettings(settings);
+    setSaveError(null);
+  }, [isOpen, settings]);
+
+  const hasChanges = useMemo(() => {
+    const sameEnabled = localSettings.enabled === settings.enabled;
+    const sameTime = localSettings.time === settings.time;
+    const sameDays =
+      localSettings.days.length === settings.days.length &&
+      localSettings.days.every((day, index) => day === settings.days[index]);
+    return !(sameEnabled && sameTime && sameDays);
+  }, [localSettings, settings]);
 
   const handleToggleDay = (day: number): void => {
     const newDays = localSettings.days.includes(day)
       ? localSettings.days.filter(d => d !== day)
       : [...localSettings.days, day].sort();
 
-    const newSettings = { ...localSettings, days: newDays };
-    setLocalSettings(newSettings);
-    onUpdate(newSettings);
+    setLocalSettings(previous => ({ ...previous, days: newDays }));
   };
 
   const handleTimeChange = (time: string): void => {
-    const newSettings = { ...localSettings, time };
-    setLocalSettings(newSettings);
-    onUpdate(newSettings);
+    setLocalSettings(previous => ({ ...previous, time }));
   };
 
-  const handleToggleEnabled = async (): Promise<void> => {
-    if (!localSettings.enabled && permission !== 'granted') {
-      const granted = await onRequestPermission();
-      if (!granted) return;
-    }
+  const handleToggleEnabled = (): void => {
+    setLocalSettings(previous => ({ ...previous, enabled: !previous.enabled }));
+  };
 
-    const newSettings = { ...localSettings, enabled: !localSettings.enabled };
-    setLocalSettings(newSettings);
-    onUpdate(newSettings);
+  const handleSave = async (): Promise<void> => {
+    setSaveError(null);
+    setIsSaving(true);
+
+    try {
+      if (localSettings.enabled && permission !== 'granted') {
+        const granted = await onRequestPermission();
+        if (!granted) {
+          setSaveError('Please allow browser notification permission to enable reminders.');
+          setIsSaving(false);
+          return;
+        }
+      }
+
+      await onUpdate(localSettings);
+      onClose();
+    } catch {
+      setSaveError('Failed to save reminder settings. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return createPortal(
@@ -121,12 +155,38 @@ export const ReminderSettings = ({
                       className={`${styles.dayButton} ${
                         localSettings.days.includes(index) ? styles.selected : ''
                       }`}
+                      type="button"
                       onClick={() => handleToggleDay(index)}
                     >
                       {day}
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {saveError && <p className={styles.saveError}>{saveError}</p>}
+
+              <div className={styles.footer}>
+                <button
+                  type="button"
+                  className={styles.cancelButton}
+                  onClick={onClose}
+                  disabled={isSaving}
+                >
+                  {t('actions.cancel') as string}
+                </button>
+                <button
+                  type="button"
+                  className={styles.saveButton}
+                  onClick={() => {
+                    void handleSave();
+                  }}
+                  disabled={isSaving || !hasChanges}
+                >
+                  {isSaving
+                    ? (t('actions.loading') as string) || 'Saving...'
+                    : (t('actions.save') as string) || 'Save'}
+                </button>
               </div>
             </div>
           </motion.div>

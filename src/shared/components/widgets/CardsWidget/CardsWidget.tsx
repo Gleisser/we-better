@@ -446,16 +446,12 @@ const CardsWidget = (): JSX.Element => {
 
   const updateSettings = useCallback(
     async (newSettings: { enabled: boolean; time: string; days: number[] }) => {
-      try {
-        await updateReminderSettings({
-          is_enabled: newSettings.enabled,
-          reminder_time: newSettings.time,
-          frequency: 'custom',
-          days_of_week: newSettings.days,
-        });
-      } catch (updateError) {
-        console.error('Failed to update reminder settings:', updateError);
-      }
+      await updateReminderSettings({
+        is_enabled: newSettings.enabled,
+        reminder_time: newSettings.time,
+        frequency: 'custom',
+        days_of_week: newSettings.days,
+      });
     },
     [updateReminderSettings]
   );
