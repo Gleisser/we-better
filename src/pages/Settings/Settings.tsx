@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { SettingsIcon } from '@/shared/components/common/icons';
 import ThemeSelector from '@/shared/components/theme/ThemeSelector';
 import LanguageSelector from '@/shared/components/i18n/LanguageSelector';
 import ProfileSettings from '@/shared/components/user/ProfileSettings';
 import Toggle from '@/shared/components/common/Toggle';
+import PricingModal from '@/shared/components/billing/PricingModal/PricingModal';
 import NotificationPreferencesSection from './components/NotificationPreferencesSection';
 import {
   sessionsService,
@@ -14,6 +16,7 @@ import {
 import {
   billingService,
   type BillingSummary,
+  type BillingPlanCatalogItem,
   type PlanCode,
   type BillingCycle,
   type PortalFlow,
@@ -176,6 +179,7 @@ const Settings = (): JSX.Element => {
         viewBillingHistory: t('settings.billing.viewBillingHistory') as string,
         downloadInvoice: t('settings.billing.downloadInvoice') as string,
         cancelSubscription: t('settings.billing.cancelSubscription') as string,
+        seeAllPlans: t('settings.billing.seeAllPlans') as string,
         usage: {
           goals: t('settings.billing.usage.goals') as string,
           habits: t('settings.billing.usage.habits') as string,
@@ -183,18 +187,6 @@ const Settings = (): JSX.Element => {
         billing: {
           monthly: t('settings.billing.billing.monthly') as string,
           yearly: t('settings.billing.billing.yearly') as string,
-        },
-        planPicker: {
-          title: t('settings.billing.planPicker.title') as string,
-          description: t('settings.billing.planPicker.description') as string,
-          selectPlan: t('settings.billing.planPicker.selectPlan') as string,
-          selectCycle: t('settings.billing.planPicker.selectCycle') as string,
-          monthly: t('settings.billing.planPicker.monthly') as string,
-          yearly: t('settings.billing.planPicker.yearly') as string,
-          premium: t('settings.billing.planPicker.premium') as string,
-          pro: t('settings.billing.planPicker.pro') as string,
-          continue: t('settings.billing.planPicker.continue') as string,
-          cancel: t('settings.billing.planPicker.cancel') as string,
         },
       },
       notifications: {
@@ -330,11 +322,12 @@ const Settings = (): JSX.Element => {
   const [isSigningOutSessions, setIsSigningOutSessions] = useState(false);
   const [sessionsError, setSessionsError] = useState<string | null>(null);
   const [billingInfo, setBillingInfo] = useState<BillingSummary | null>(null);
+  const [planCatalog, setPlanCatalog] = useState<BillingPlanCatalogItem[]>([]);
+  const [isPlanCatalogLoading, setIsPlanCatalogLoading] = useState(false);
   const [isBillingLoading, setIsBillingLoading] = useState(true);
   const [isBillingActionLoading, setIsBillingActionLoading] = useState(false);
   const [billingError, setBillingError] = useState<string | null>(null);
-  const [isPlanPickerOpen, setIsPlanPickerOpen] = useState(false);
-  const [selectedPlanCode, setSelectedPlanCode] = useState<Exclude<PlanCode, 'free'>>('premium');
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>('monthly');
 
   // Handle privacy setting changes
@@ -440,7 +433,25 @@ const Settings = (): JSX.Element => {
     }
 
     setBillingInfo(data);
+    if (data.billingCycle) {
+      setSelectedBillingCycle(data.billingCycle);
+    }
     setIsBillingLoading(false);
+  }, []);
+
+  const loadPlanCatalog = useCallback(async (): Promise<void> => {
+    setIsPlanCatalogLoading(true);
+
+    const { data, error } = await billingService.getPlanCatalog();
+    if (error || !data) {
+      setBillingError(prev => prev || error || 'Failed to load billing plan catalog');
+      setPlanCatalog([]);
+      setIsPlanCatalogLoading(false);
+      return;
+    }
+
+    setPlanCatalog(data);
+    setIsPlanCatalogLoading(false);
   }, []);
 
   useEffect(() => {
@@ -450,6 +461,10 @@ const Settings = (): JSX.Element => {
   useEffect(() => {
     void loadBillingSummary();
   }, [loadBillingSummary]);
+
+  useEffect(() => {
+    void loadPlanCatalog();
+  }, [loadPlanCatalog]);
 
   const buildReturnUrl = (): string => {
     return window.location.href;
@@ -475,14 +490,17 @@ const Settings = (): JSX.Element => {
     }
 
     if (billingInfo.currentPlan === 'free') {
-      setIsPlanPickerOpen(true);
+      setIsPricingModalOpen(true);
       return;
     }
 
     await openPortalSession('manage');
   };
 
-  const handlePlanPickerContinue = async (): Promise<void> => {
+  const handlePricingCheckout = async (
+    planCode: Exclude<PlanCode, 'free'>,
+    cycle: BillingCycle
+  ): Promise<void> => {
     setIsBillingActionLoading(true);
     setBillingError(null);
 
@@ -492,8 +510,8 @@ const Settings = (): JSX.Element => {
     cancelUrl.searchParams.set('billing', 'cancel');
 
     const { data, error } = await billingService.createCheckoutSession(
-      selectedPlanCode,
-      selectedBillingCycle,
+      planCode,
+      cycle,
       successUrl.toString(),
       cancelUrl.toString()
     );
@@ -650,8 +668,17 @@ const Settings = (): JSX.Element => {
 
         {/* Plans & Billing Section */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{translations.sections.plansAndBilling}</h2>
-          <p className={styles.sectionDescription}>{translations.descriptions.plansAndBilling}</p>
+          <div className={styles.sectionHeadingRow}>
+            <div>
+              <h2 className={styles.sectionTitle}>{translations.sections.plansAndBilling}</h2>
+              <p className={styles.sectionDescription}>
+                {translations.descriptions.plansAndBilling}
+              </p>
+            </div>
+            <Link className={styles.seePlansLink} to="/app/pricing">
+              {translations.billing.seeAllPlans}
+            </Link>
+          </div>
 
           {billingError && <p className={styles.billingErrorText}>{billingError}</p>}
 
@@ -822,86 +849,6 @@ const Settings = (): JSX.Element => {
                 >
                   {translations.billing.cancelSubscription}
                 </button>
-              </div>
-            </div>
-          )}
-
-          {isPlanPickerOpen && (
-            <div className={styles.planPickerOverlay} role="dialog" aria-modal="true">
-              <div className={styles.planPickerModal}>
-                <h3 className={styles.planPickerTitle}>{translations.billing.planPicker.title}</h3>
-                <p className={styles.planPickerDescription}>
-                  {translations.billing.planPicker.description}
-                </p>
-
-                <div className={styles.planPickerSection}>
-                  <p className={styles.planPickerLabel}>
-                    {translations.billing.planPicker.selectPlan}
-                  </p>
-                  <div className={styles.planPickerOptions}>
-                    <button
-                      className={`${styles.planPickerOption} ${
-                        selectedPlanCode === 'premium' ? styles.planPickerOptionSelected : ''
-                      }`}
-                      onClick={() => setSelectedPlanCode('premium')}
-                    >
-                      {translations.billing.planPicker.premium}
-                    </button>
-                    <button
-                      className={`${styles.planPickerOption} ${
-                        selectedPlanCode === 'pro' ? styles.planPickerOptionSelected : ''
-                      }`}
-                      onClick={() => setSelectedPlanCode('pro')}
-                    >
-                      {translations.billing.planPicker.pro}
-                    </button>
-                  </div>
-                </div>
-
-                <div className={styles.planPickerSection}>
-                  <p className={styles.planPickerLabel}>
-                    {translations.billing.planPicker.selectCycle}
-                  </p>
-                  <div className={styles.planPickerOptions}>
-                    <button
-                      className={`${styles.planPickerOption} ${
-                        selectedBillingCycle === 'monthly' ? styles.planPickerOptionSelected : ''
-                      }`}
-                      onClick={() => setSelectedBillingCycle('monthly')}
-                    >
-                      {translations.billing.planPicker.monthly}
-                    </button>
-                    <button
-                      className={`${styles.planPickerOption} ${
-                        selectedBillingCycle === 'yearly' ? styles.planPickerOptionSelected : ''
-                      }`}
-                      onClick={() => setSelectedBillingCycle('yearly')}
-                    >
-                      {translations.billing.planPicker.yearly}
-                    </button>
-                  </div>
-                </div>
-
-                <div className={styles.planPickerActions}>
-                  <button
-                    className={styles.actionButton}
-                    onClick={() => setIsPlanPickerOpen(false)}
-                    disabled={isBillingActionLoading}
-                  >
-                    {translations.billing.planPicker.cancel}
-                  </button>
-                  <button
-                    className={styles.managePlanButton}
-                    onClick={() => {
-                      void handlePlanPickerContinue();
-                    }}
-                    disabled={isBillingActionLoading}
-                  >
-                    {isBillingActionLoading
-                      ? translations.billing.processing
-                      : translations.billing.planPicker.continue}
-                  </button>
-                </div>
               </div>
             </div>
           )}
@@ -1398,6 +1345,24 @@ const Settings = (): JSX.Element => {
           </div>
         </div>
       </div>
+
+      <PricingModal
+        isOpen={isPricingModalOpen}
+        onClose={() => setIsPricingModalOpen(false)}
+        plans={planCatalog}
+        billingInfo={billingInfo}
+        selectedCycle={selectedBillingCycle}
+        onCycleChange={setSelectedBillingCycle}
+        onCheckout={(planCode, cycle) => {
+          void handlePricingCheckout(planCode, cycle);
+        }}
+        onPortalManage={() => {
+          void openPortalSession('manage');
+        }}
+        isLoading={isPlanCatalogLoading || isBillingLoading}
+        isBusy={isBillingActionLoading}
+        error={billingError}
+      />
     </div>
   );
 };

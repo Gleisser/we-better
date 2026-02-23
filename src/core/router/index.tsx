@@ -17,6 +17,7 @@ import { MissionsPage } from '@/features/missions';
 import Settings from '@/pages/Settings';
 import Bookmarks from '@/pages/Bookmarks';
 import Notifications from '@/pages/Notifications';
+import Pricing from '@/pages/Pricing';
 
 export const router = createBrowserRouter([
   {
@@ -91,6 +92,10 @@ export const router = createBrowserRouter([
       {
         path: 'notifications',
         element: <Notifications />,
+      },
+      {
+        path: 'pricing',
+        element: <Pricing />,
       },
     ],
   },
