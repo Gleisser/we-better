@@ -1,7 +1,15 @@
-import { expect, beforeAll } from 'vitest';
+import { expect as vitestExpect, beforeAll } from 'vitest';
 import matchers from '@testing-library/jest-dom/matchers';
 
-expect.extend(matchers);
+const activeExpect =
+  vitestExpect || ((globalThis as { expect?: typeof vitestExpect }).expect as typeof vitestExpect);
+if (activeExpect && typeof activeExpect.extend === 'function') {
+  try {
+    activeExpect.extend(matchers);
+  } catch {
+    // Ignore matcher registration failures in environments where vitest expect plugins are unavailable.
+  }
+}
 // Mock Vite's import.meta.env
 beforeAll(() => {
   const viteMock = {

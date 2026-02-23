@@ -78,6 +78,33 @@
   line-height: 1.5;
 }
 
+.sectionHeadingRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.seePlansLink {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid var(--theme-border-primary);
+  border-radius: 999px;
+  background: var(--theme-bg-secondary);
+  color: var(--theme-text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-family: var(--font-plus-jakarta);
+}
+
+.seePlansLink:hover {
+  background: var(--theme-bg-tertiary);
+  border-color: var(--theme-border-secondary);
+}
+
 /* Plans & Billing Styles */
 .billingCard {
   background: var(--theme-bg-secondary);
@@ -862,6 +889,11 @@
 
   .section {
     padding: 20px;
+  }
+
+  .sectionHeadingRow {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .billingCard {

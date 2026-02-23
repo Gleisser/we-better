@@ -28,6 +28,21 @@ export interface BillingSummary {
   };
 }
 
+export interface BillingPlanCatalogItem {
+  code: PlanCode;
+  displayName: string;
+  goalsLimit: number;
+  habitsLimit: number;
+  monthlyPriceCents: number | null;
+  yearlyPriceCents: number | null;
+  isActive: boolean;
+  currency: string;
+}
+
+interface PlanCatalogResponse {
+  plans: BillingPlanCatalogItem[];
+}
+
 interface CheckoutSessionResponse {
   url: string;
   sessionId: string;
@@ -36,6 +51,25 @@ interface CheckoutSessionResponse {
 interface PortalSessionResponse {
   url: string;
 }
+
+export const getBillingAmountFromCents = (cents: number | null | undefined): number =>
+  cents && cents > 0 ? cents / 100 : 0;
+
+export const getYearlySavingsPercent = (
+  monthlyPriceCents: number | null | undefined,
+  yearlyPriceCents: number | null | undefined
+): number | null => {
+  if (!monthlyPriceCents || !yearlyPriceCents || monthlyPriceCents <= 0 || yearlyPriceCents <= 0) {
+    return null;
+  }
+
+  const monthlyYearTotal = monthlyPriceCents * 12;
+  if (monthlyYearTotal <= yearlyPriceCents) {
+    return 0;
+  }
+
+  return Math.round((1 - yearlyPriceCents / monthlyYearTotal) * 100);
+};
 
 const getAuthToken = async (): Promise<string | null> => {
   try {
@@ -101,6 +135,18 @@ class BillingService {
       return {
         data: null,
         error: error instanceof Error ? error.message : 'Failed to fetch billing summary',
+      };
+    }
+  }
+
+  async getPlanCatalog(): Promise<{ data: BillingPlanCatalogItem[] | null; error: string | null }> {
+    try {
+      const data = await apiRequest<PlanCatalogResponse>(`${API_BASE_URL}/plan-catalog`);
+      return { data: data.plans || [], error: null };
+    } catch (error) {
+      return {
+        data: null,
+        error: error instanceof Error ? error.message : 'Failed to fetch billing plan catalog',
       };
     }
   }
