@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
+import { ChevronDownIcon } from '@/shared/components/common/icons';
 import Toggle from '@/shared/components/common/Toggle';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useNotificationSettings } from '@/shared/hooks/useNotificationSettings';
@@ -11,6 +12,8 @@ interface ToggleConfig {
   label: string;
   description: string;
 }
+
+type NotificationSubsectionKey = 'master' | 'reminders' | 'achievements' | 'schedule';
 
 const normalizeTimeForInput = (value: string): string => {
   if (!value) return '00:00';
@@ -26,6 +29,14 @@ const NotificationPreferencesSection = (): JSX.Element => {
   const { t } = useCommonTranslation();
   const { settings, isLoading, isSaving, error, updateSettings } = useNotificationSettings();
   const [pushPermissionError, setPushPermissionError] = useState<string | null>(null);
+  const [openSubsections, setOpenSubsections] = useState<
+    Record<NotificationSubsectionKey, boolean>
+  >({
+    master: true,
+    reminders: true,
+    achievements: true,
+    schedule: true,
+  });
 
   const timezoneOptions = useMemo(() => {
     const localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
@@ -136,6 +147,60 @@ const NotificationPreferencesSection = (): JSX.Element => {
     [t]
   );
 
+  const subsectionTitles = useMemo<Record<NotificationSubsectionKey, string>>(
+    () => ({
+      master: t('settings.notificationsV1.master.title') as string,
+      reminders: t('settings.notificationsV1.reminders.title') as string,
+      achievements: t('settings.notificationsV1.achievements.title') as string,
+      schedule: t('settings.notificationsV1.schedule.title') as string,
+    }),
+    [t]
+  );
+
+  const toggleSubsection = (key: NotificationSubsectionKey): void => {
+    setOpenSubsections(previous => ({
+      ...previous,
+      [key]: !previous[key],
+    }));
+  };
+
+  const renderSubsection = (
+    key: NotificationSubsectionKey,
+    content: ReactNode,
+    titleTag: 'h3' | 'h4' = 'h3'
+  ): JSX.Element => {
+    const isOpen = openSubsections[key];
+    const contentId = `notification-subsection-${key}`;
+    const TitleTag = titleTag;
+
+    return (
+      <div className={styles.privacySubsection}>
+        <button
+          type="button"
+          className={styles.subsectionCollapsibleTrigger}
+          onClick={() => {
+            toggleSubsection(key);
+          }}
+          aria-expanded={isOpen}
+          aria-controls={contentId}
+        >
+          <TitleTag className={`${styles.subsectionTitle} ${styles.subsectionCollapsibleTitle}`}>
+            {subsectionTitles[key]}
+          </TitleTag>
+          <ChevronDownIcon
+            className={`${styles.collapsibleIcon} ${isOpen ? styles.collapsibleIconOpen : ''}`}
+          />
+        </button>
+
+        {isOpen && (
+          <div id={contentId} className={styles.subsectionCollapsibleContent}>
+            {content}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const handleToggleUpdate = async (
     key: keyof NotificationSettingsDto,
     enabled: boolean
@@ -188,218 +253,222 @@ const NotificationPreferencesSection = (): JSX.Element => {
         <p className={styles.billingErrorText}>{pushPermissionError || error}</p>
       )}
 
-      {masterToggles.map(toggle => (
-        <div key={toggle.key} className={styles.settingItem}>
-          <div className={styles.settingInfo}>
-            <h3 className={styles.settingLabel}>{toggle.label}</h3>
-            <p className={styles.settingDescription}>{toggle.description}</p>
-          </div>
-          <div className={styles.settingControl}>
-            <Toggle
-              enabled={Boolean(settings[toggle.key])}
-              onChange={enabled => {
-                void handleToggleUpdate(toggle.key, enabled);
-              }}
-              disabled={isSaving}
-              aria-label={`Toggle ${toggle.label}`}
-              size="medium"
-            />
-          </div>
-        </div>
-      ))}
+      {renderSubsection(
+        'master',
+        <>
+          {masterToggles.map(toggle => (
+            <div key={toggle.key} className={styles.settingItem}>
+              <div className={styles.settingInfo}>
+                <h3 className={styles.settingLabel}>{toggle.label}</h3>
+                <p className={styles.settingDescription}>{toggle.description}</p>
+              </div>
+              <div className={styles.settingControl}>
+                <Toggle
+                  enabled={Boolean(settings[toggle.key])}
+                  onChange={enabled => {
+                    void handleToggleUpdate(toggle.key, enabled);
+                  }}
+                  disabled={isSaving}
+                  aria-label={`Toggle ${toggle.label}`}
+                  size="medium"
+                />
+              </div>
+            </div>
+          ))}
+        </>
+      )}
 
-      <div className={styles.privacySubsection}>
-        <h3 className={styles.subsectionTitle}>
-          {t('settings.notificationsV1.reminders.title') as string}
-        </h3>
-        {reminderToggles.map(toggle => (
-          <div key={toggle.key} className={styles.settingItem}>
+      {renderSubsection(
+        'reminders',
+        <>
+          {reminderToggles.map(toggle => (
+            <div key={toggle.key} className={styles.settingItem}>
+              <div className={styles.settingInfo}>
+                <h4 className={styles.settingLabel}>{toggle.label}</h4>
+                <p className={styles.settingDescription}>{toggle.description}</p>
+              </div>
+              <div className={styles.settingControl}>
+                <Toggle
+                  enabled={Boolean(settings[toggle.key])}
+                  onChange={enabled => {
+                    void handleToggleUpdate(toggle.key, enabled);
+                  }}
+                  disabled={isSaving}
+                  aria-label={`Toggle ${toggle.label}`}
+                  size="medium"
+                />
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {renderSubsection(
+        'achievements',
+        <>
+          {achievementToggles.map(toggle => (
+            <div key={toggle.key} className={styles.settingItem}>
+              <div className={styles.settingInfo}>
+                <h4 className={styles.settingLabel}>{toggle.label}</h4>
+                <p className={styles.settingDescription}>{toggle.description}</p>
+              </div>
+              <div className={styles.settingControl}>
+                <Toggle
+                  enabled={Boolean(settings[toggle.key])}
+                  onChange={enabled => {
+                    void handleToggleUpdate(toggle.key, enabled);
+                  }}
+                  disabled={isSaving}
+                  aria-label={`Toggle ${toggle.label}`}
+                  size="medium"
+                />
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {renderSubsection(
+        'schedule',
+        <>
+          <div className={styles.settingItem}>
             <div className={styles.settingInfo}>
-              <h4 className={styles.settingLabel}>{toggle.label}</h4>
-              <p className={styles.settingDescription}>{toggle.description}</p>
+              <h4 className={styles.settingLabel}>
+                {t('settings.notificationsV1.schedule.timezone') as string}
+              </h4>
+              <p className={styles.settingDescription}>
+                {t('settings.notificationsV1.schedule.timezoneDescription') as string}
+              </p>
+            </div>
+            <div className={styles.settingControl}>
+              <input
+                list="notification-timezones"
+                defaultValue={settings.timezone}
+                onBlur={event => {
+                  void handleTimezoneUpdate(event.target.value);
+                }}
+                className={styles.actionButton}
+                aria-label={t('settings.notificationsV1.schedule.timezone') as string}
+              />
+              <datalist id="notification-timezones">
+                {timezoneOptions.map(timezone => (
+                  <option key={timezone} value={timezone} />
+                ))}
+              </datalist>
+            </div>
+          </div>
+
+          <div className={styles.settingItem}>
+            <div className={styles.settingInfo}>
+              <h4 className={styles.settingLabel}>
+                {t('settings.notificationsV1.schedule.quietHoursEnabled') as string}
+              </h4>
+              <p className={styles.settingDescription}>
+                {t('settings.notificationsV1.schedule.quietHoursEnabledDescription') as string}
+              </p>
             </div>
             <div className={styles.settingControl}>
               <Toggle
-                enabled={Boolean(settings[toggle.key])}
+                enabled={settings.quiet_hours_enabled}
                 onChange={enabled => {
-                  void handleToggleUpdate(toggle.key, enabled);
+                  void handleToggleUpdate('quiet_hours_enabled', enabled);
                 }}
                 disabled={isSaving}
-                aria-label={`Toggle ${toggle.label}`}
+                aria-label={t('settings.notificationsV1.schedule.quietHoursEnabled') as string}
                 size="medium"
               />
             </div>
           </div>
-        ))}
-      </div>
 
-      <div className={styles.privacySubsection}>
-        <h3 className={styles.subsectionTitle}>
-          {t('settings.notificationsV1.achievements.title') as string}
-        </h3>
-        {achievementToggles.map(toggle => (
-          <div key={toggle.key} className={styles.settingItem}>
+          <div className={styles.settingItem}>
             <div className={styles.settingInfo}>
-              <h4 className={styles.settingLabel}>{toggle.label}</h4>
-              <p className={styles.settingDescription}>{toggle.description}</p>
+              <h4 className={styles.settingLabel}>
+                {t('settings.notificationsV1.schedule.quietHoursStart') as string}
+              </h4>
+              <p className={styles.settingDescription}>
+                {t('settings.notificationsV1.schedule.quietHoursStartDescription') as string}
+              </p>
             </div>
             <div className={styles.settingControl}>
-              <Toggle
-                enabled={Boolean(settings[toggle.key])}
-                onChange={enabled => {
-                  void handleToggleUpdate(toggle.key, enabled);
+              <input
+                type="time"
+                defaultValue={normalizeTimeForInput(settings.quiet_hours_start)}
+                onBlur={event => {
+                  void handleTimeUpdate('quiet_hours_start', event.target.value);
                 }}
-                disabled={isSaving}
-                aria-label={`Toggle ${toggle.label}`}
-                size="medium"
+                className={styles.actionButton}
+                aria-label={t('settings.notificationsV1.schedule.quietHoursStart') as string}
               />
             </div>
           </div>
-        ))}
-      </div>
 
-      <div className={styles.privacySubsection}>
-        <h3 className={styles.subsectionTitle}>
-          {t('settings.notificationsV1.schedule.title') as string}
-        </h3>
+          <div className={styles.settingItem}>
+            <div className={styles.settingInfo}>
+              <h4 className={styles.settingLabel}>
+                {t('settings.notificationsV1.schedule.quietHoursEnd') as string}
+              </h4>
+              <p className={styles.settingDescription}>
+                {t('settings.notificationsV1.schedule.quietHoursEndDescription') as string}
+              </p>
+            </div>
+            <div className={styles.settingControl}>
+              <input
+                type="time"
+                defaultValue={normalizeTimeForInput(settings.quiet_hours_end)}
+                onBlur={event => {
+                  void handleTimeUpdate('quiet_hours_end', event.target.value);
+                }}
+                className={styles.actionButton}
+                aria-label={t('settings.notificationsV1.schedule.quietHoursEnd') as string}
+              />
+            </div>
+          </div>
 
-        <div className={styles.settingItem}>
-          <div className={styles.settingInfo}>
-            <h4 className={styles.settingLabel}>
-              {t('settings.notificationsV1.schedule.timezone') as string}
-            </h4>
-            <p className={styles.settingDescription}>
-              {t('settings.notificationsV1.schedule.timezoneDescription') as string}
-            </p>
+          <div className={styles.settingItem}>
+            <div className={styles.settingInfo}>
+              <h4 className={styles.settingLabel}>
+                {t('settings.notificationsV1.schedule.habitReminderTime') as string}
+              </h4>
+              <p className={styles.settingDescription}>
+                {t('settings.notificationsV1.schedule.habitReminderTimeDescription') as string}
+              </p>
+            </div>
+            <div className={styles.settingControl}>
+              <input
+                type="time"
+                defaultValue={normalizeTimeForInput(settings.habit_reminder_time)}
+                onBlur={event => {
+                  void handleTimeUpdate('habit_reminder_time', event.target.value);
+                }}
+                className={styles.actionButton}
+                aria-label={t('settings.notificationsV1.schedule.habitReminderTime') as string}
+              />
+            </div>
           </div>
-          <div className={styles.settingControl}>
-            <input
-              list="notification-timezones"
-              defaultValue={settings.timezone}
-              onBlur={event => {
-                void handleTimezoneUpdate(event.target.value);
-              }}
-              className={styles.actionButton}
-              aria-label={t('settings.notificationsV1.schedule.timezone') as string}
-            />
-            <datalist id="notification-timezones">
-              {timezoneOptions.map(timezone => (
-                <option key={timezone} value={timezone} />
-              ))}
-            </datalist>
-          </div>
-        </div>
 
-        <div className={styles.settingItem}>
-          <div className={styles.settingInfo}>
-            <h4 className={styles.settingLabel}>
-              {t('settings.notificationsV1.schedule.quietHoursEnabled') as string}
-            </h4>
-            <p className={styles.settingDescription}>
-              {t('settings.notificationsV1.schedule.quietHoursEnabledDescription') as string}
-            </p>
+          <div className={styles.settingItem}>
+            <div className={styles.settingInfo}>
+              <h4 className={styles.settingLabel}>
+                {t('settings.notificationsV1.schedule.goalReminderTime') as string}
+              </h4>
+              <p className={styles.settingDescription}>
+                {t('settings.notificationsV1.schedule.goalReminderTimeDescription') as string}
+              </p>
+            </div>
+            <div className={styles.settingControl}>
+              <input
+                type="time"
+                defaultValue={normalizeTimeForInput(settings.goal_review_reminder_time)}
+                onBlur={event => {
+                  void handleTimeUpdate('goal_review_reminder_time', event.target.value);
+                }}
+                className={styles.actionButton}
+                aria-label={t('settings.notificationsV1.schedule.goalReminderTime') as string}
+              />
+            </div>
           </div>
-          <div className={styles.settingControl}>
-            <Toggle
-              enabled={settings.quiet_hours_enabled}
-              onChange={enabled => {
-                void handleToggleUpdate('quiet_hours_enabled', enabled);
-              }}
-              disabled={isSaving}
-              aria-label={t('settings.notificationsV1.schedule.quietHoursEnabled') as string}
-              size="medium"
-            />
-          </div>
-        </div>
-
-        <div className={styles.settingItem}>
-          <div className={styles.settingInfo}>
-            <h4 className={styles.settingLabel}>
-              {t('settings.notificationsV1.schedule.quietHoursStart') as string}
-            </h4>
-            <p className={styles.settingDescription}>
-              {t('settings.notificationsV1.schedule.quietHoursStartDescription') as string}
-            </p>
-          </div>
-          <div className={styles.settingControl}>
-            <input
-              type="time"
-              defaultValue={normalizeTimeForInput(settings.quiet_hours_start)}
-              onBlur={event => {
-                void handleTimeUpdate('quiet_hours_start', event.target.value);
-              }}
-              className={styles.actionButton}
-              aria-label={t('settings.notificationsV1.schedule.quietHoursStart') as string}
-            />
-          </div>
-        </div>
-
-        <div className={styles.settingItem}>
-          <div className={styles.settingInfo}>
-            <h4 className={styles.settingLabel}>
-              {t('settings.notificationsV1.schedule.quietHoursEnd') as string}
-            </h4>
-            <p className={styles.settingDescription}>
-              {t('settings.notificationsV1.schedule.quietHoursEndDescription') as string}
-            </p>
-          </div>
-          <div className={styles.settingControl}>
-            <input
-              type="time"
-              defaultValue={normalizeTimeForInput(settings.quiet_hours_end)}
-              onBlur={event => {
-                void handleTimeUpdate('quiet_hours_end', event.target.value);
-              }}
-              className={styles.actionButton}
-              aria-label={t('settings.notificationsV1.schedule.quietHoursEnd') as string}
-            />
-          </div>
-        </div>
-
-        <div className={styles.settingItem}>
-          <div className={styles.settingInfo}>
-            <h4 className={styles.settingLabel}>
-              {t('settings.notificationsV1.schedule.habitReminderTime') as string}
-            </h4>
-            <p className={styles.settingDescription}>
-              {t('settings.notificationsV1.schedule.habitReminderTimeDescription') as string}
-            </p>
-          </div>
-          <div className={styles.settingControl}>
-            <input
-              type="time"
-              defaultValue={normalizeTimeForInput(settings.habit_reminder_time)}
-              onBlur={event => {
-                void handleTimeUpdate('habit_reminder_time', event.target.value);
-              }}
-              className={styles.actionButton}
-              aria-label={t('settings.notificationsV1.schedule.habitReminderTime') as string}
-            />
-          </div>
-        </div>
-
-        <div className={styles.settingItem}>
-          <div className={styles.settingInfo}>
-            <h4 className={styles.settingLabel}>
-              {t('settings.notificationsV1.schedule.goalReminderTime') as string}
-            </h4>
-            <p className={styles.settingDescription}>
-              {t('settings.notificationsV1.schedule.goalReminderTimeDescription') as string}
-            </p>
-          </div>
-          <div className={styles.settingControl}>
-            <input
-              type="time"
-              defaultValue={normalizeTimeForInput(settings.goal_review_reminder_time)}
-              onBlur={event => {
-                void handleTimeUpdate('goal_review_reminder_time', event.target.value);
-              }}
-              className={styles.actionButton}
-              aria-label={t('settings.notificationsV1.schedule.goalReminderTime') as string}
-            />
-          </div>
-        </div>
-      </div>
+        </>
+      )}
     </>
   );
 };

@@ -47,11 +47,15 @@
 }
 
 .notificationHeader {
-  @apply flex items-center gap-3;
+  @apply flex items-start gap-3;
 }
 
 .notificationInfo {
   @apply flex-1 min-w-0;
+}
+
+.eventAvatar {
+  @apply mt-0.5;
 }
 
 .userAction {

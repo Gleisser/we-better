@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
-import { SettingsIcon } from '@/shared/components/common/icons';
+import { ChevronDownIcon, SettingsIcon } from '@/shared/components/common/icons';
 import ThemeSelector from '@/shared/components/theme/ThemeSelector';
 import LanguageSelector from '@/shared/components/i18n/LanguageSelector';
 import ProfileSettings from '@/shared/components/user/ProfileSettings';
@@ -329,6 +329,7 @@ const Settings = (): JSX.Element => {
   const [billingError, setBillingError] = useState<string | null>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>('monthly');
+  const [isNotificationsSectionOpen, setIsNotificationsSectionOpen] = useState(true);
 
   // Handle privacy setting changes
   const handlePrivacyChange = (setting: keyof PrivacySettings, enabled: boolean): void => {
@@ -864,9 +865,31 @@ const Settings = (): JSX.Element => {
         </div>
 
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{translations.sections.notifications}</h2>
-          <p className={styles.sectionDescription}>{translations.descriptions.notifications}</p>
-          <NotificationPreferencesSection />
+          <button
+            type="button"
+            className={styles.collapsibleTrigger}
+            onClick={() => {
+              setIsNotificationsSectionOpen(previous => !previous);
+            }}
+            aria-expanded={isNotificationsSectionOpen}
+            aria-controls="notifications-settings-content"
+          >
+            <div className={styles.collapsibleHeading}>
+              <h2 className={styles.sectionTitle}>{translations.sections.notifications}</h2>
+              <p className={styles.sectionDescription}>{translations.descriptions.notifications}</p>
+            </div>
+            <ChevronDownIcon
+              className={`${styles.collapsibleIcon} ${
+                isNotificationsSectionOpen ? styles.collapsibleIconOpen : ''
+              }`}
+            />
+          </button>
+
+          {isNotificationsSectionOpen && (
+            <div id="notifications-settings-content" className={styles.collapsibleContent}>
+              <NotificationPreferencesSection />
+            </div>
+          )}
         </div>
 
         {/* Privacy & Security Section */}
