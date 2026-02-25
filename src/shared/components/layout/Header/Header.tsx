@@ -14,7 +14,6 @@ import { MegaMenu as MegaMenuType } from '@/utils/types/menu';
 import { MegaMenuProps } from './MegaMenu/types';
 import { SolutionsMegaMenuProps } from './SolutionsMegaMenu/types';
 import { ResourcesMegaMenuProps } from './ResourcesMegaMenu/types';
-import { MenuLink } from '@/utils/types/common/menulink';
 
 const Header = (): JSX.Element => {
   const { data } = useMenu();
@@ -54,23 +53,21 @@ const Header = (): JSX.Element => {
           isOpen: isFeaturesOpen,
           setIsOpen: setIsFeaturesOpen,
           Component: MegaMenu,
-          menuData: data?.data.megamenus.find(
-            (menu: MegaMenuType) => menu.type === MenuType.Highlight
-          ),
+          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.Highlight),
         };
       case MenuType.SVG:
         return {
           isOpen: isSolutionsOpen,
           setIsOpen: setIsSolutionsOpen,
           Component: SolutionsMegaMenu,
-          menuData: data?.data.megamenus.find((menu: MegaMenuType) => menu.type === MenuType.SVG),
+          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.SVG),
         };
       case MenuType.Blog:
         return {
           isOpen: isResourcesOpen,
           setIsOpen: setResourcesOpen,
           Component: ResourcesMegaMenu,
-          menuData: data?.data.megamenus.find((menu: MegaMenuType) => menu.type === MenuType.Blog),
+          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.Blog),
         };
       default:
         return null;
@@ -120,7 +117,7 @@ const Header = (): JSX.Element => {
 
             <nav className={styles.headerNav} aria-label="Main menu">
               <ul className={styles.navList}>
-                {megamenus.map((item: MegaMenuType) => {
+                {megamenus.map(item => {
                   const menuState = getMegaMenuState(item.type);
                   return (
                     <li key={item.id}>
@@ -145,9 +142,9 @@ const Header = (): JSX.Element => {
                     </li>
                   );
                 })}
-                {data?.data.links.map((link: MenuLink) => (
+                {data?.data.links.map(link => (
                   <li key={link.id}>
-                    <NavItem href={link.href} title={link.title} />
+                    <NavItem href={link.href || '#'} title={link.title} />
                   </li>
                 ))}
                 {!data && (

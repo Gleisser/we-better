@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+import 'react';
 
 interface ImportMetaEnv {
   readonly VITE_API_BACKEND_URL: string;
@@ -15,3 +16,21 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+declare module '*.module.css' {
+  const classes: Record<string, string>;
+  export default classes;
+}
+
+declare module '*.module.scss' {
+  const classes: Record<string, string>;
+  export default classes;
+}
+
+declare module 'react' {
+  interface CSSProperties {
+    [key: `--${string}`]: string | number | undefined;
+  }
+}
+
+export {};

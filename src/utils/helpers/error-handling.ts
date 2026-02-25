@@ -1,4 +1,4 @@
-import { APIError } from '@/types/common/meta';
+import { APIError } from '@/utils/types/common/meta';
 
 export function isAPIError(error: unknown): error is APIError {
   return (
@@ -64,4 +64,4 @@ export function getDetailedErrorMessage(error: unknown): string {
     return `${error.message}${details}`;
   }
   return getErrorMessage(error);
-} 
+}

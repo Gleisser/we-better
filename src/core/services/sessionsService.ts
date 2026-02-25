@@ -80,7 +80,7 @@ const getAuthToken = async (): Promise<string | null> => {
 const apiRequest = async <T>(
   endpoint: string,
   method: 'GET' | 'POST' = 'GET',
-  body?: Record<string, unknown>
+  body?: object
 ): Promise<T> => {
   const token = await getAuthToken();
   if (!token) {

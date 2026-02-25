@@ -860,11 +860,6 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     }
   };
 
-  // Toggle view mode between cosmic and constellation
-  const _toggleViewMode = (): void => {
-    setViewMode(viewMode === 'cosmic' ? 'constellation' : 'cosmic');
-  };
-
   // Select a category to focus on
   const handleCategorySelect = (event: React.ChangeEvent<HTMLSelectElement>): void => {
     const category = event.target.value as string | 'all';

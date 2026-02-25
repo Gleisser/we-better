@@ -13,8 +13,6 @@ import ShowcaseSkeleton from './ShowcaseSkeleton';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { Belt } from '@/utils/types/showcase';
-import { ThumbnailImage } from '@/utils/types/common/image';
 
 const Showcase = (): JSX.Element => {
   // State management
@@ -52,10 +50,8 @@ const Showcase = (): JSX.Element => {
   const getCurrentPageUrls = useCallback(() => {
     if (!currentItems.length) return [];
 
-    return currentItems.reduce((urls: string[], item: Belt) => {
-      const itemUrls = item.images.map((image: ThumbnailImage) =>
-        showcase ? image.src : image.src
-      );
+    return currentItems.reduce((urls: string[], item) => {
+      const itemUrls = item.images.map(image => (showcase ? image.src : image.src));
       return [...urls, ...itemUrls];
     }, []);
   }, [currentItems, showcase]);
@@ -100,7 +96,7 @@ const Showcase = (): JSX.Element => {
     let interval: NodeJS.Timeout | undefined;
 
     if (hoveredItem && currentItems.length) {
-      const hoveredBelt = currentItems.find((item: Belt) => item.id === hoveredItem);
+      const hoveredBelt = currentItems.find(item => item.id === hoveredItem);
       // Only set up interval if there are multiple images
       if (hoveredBelt && hoveredBelt.images.length > 1) {
         interval = setInterval(() => {
@@ -175,7 +171,7 @@ const Showcase = (): JSX.Element => {
   const swipeConfidenceThreshold = 10000;
 
   const handleDragEnd = (
-    e: MouseEvent | TouchEvent | PointerEvent,
+    _e: MouseEvent | TouchEvent | PointerEvent,
     { offset, velocity }: PanInfo
   ): void => {
     if (isMobile) {
@@ -274,7 +270,7 @@ const Showcase = (): JSX.Element => {
             role="region"
             aria-label="Showcase items"
           >
-            {currentItems.map((item: Belt, index: number) => (
+            {currentItems.map((item, index: number) => (
               <div
                 key={item.id}
                 className={styles.item}

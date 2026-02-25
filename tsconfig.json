@@ -1,22 +1,4 @@
 {
   "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "types": [
-      "jest",
-      "@testing-library/jest-dom",
-      "node"
-    ]
-  },
-  "include": [
-    "src",
-    "src/test/utils/custom.d.ts"
-  ]
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
 }

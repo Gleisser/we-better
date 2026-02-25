@@ -42,25 +42,25 @@ export default defineConfig({
     contextOptions: {
       reducedMotion: 'reduce',
       forcedColors: 'none',
-    }
+    },
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'Desktop Chrome',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
-        viewport: { width: 1280, height: 720 }
+        viewport: { width: 1280, height: 720 },
       },
     },
     {
       name: 'Mobile Chrome',
-      use: { 
+      use: {
         ...devices['Pixel 5'],
-        viewport: { width: 375, height: 667 }
+        viewport: { width: 375, height: 667 },
       },
-    }
+    },
   ],
 
   globalSetup: './global-setup.ts',
@@ -79,9 +79,9 @@ export default defineConfig({
       NODE_ENV: 'test',
     },
     async setup() {
-      console.log('Waiting for Vite server to be ready...');
+      console.info('Waiting for Vite server to be ready...');
       await waitForServer('http://localhost:5173');
-      console.log('Vite server is ready');
+      console.info('Vite server is ready');
     },
   },
 

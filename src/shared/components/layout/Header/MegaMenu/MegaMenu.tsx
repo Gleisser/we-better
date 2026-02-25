@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MegaMenuProps } from './types';
 import { API_CONFIG } from '@/core/config/api-config';
 import { SOLUTIONS_MEGA_MENU_FALLBACK } from '@/utils/constants/fallback/megamenu';
-import { MenuLink } from './types';
 
 const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps): JSX.Element => {
   const menuItems = menuData?.menu_links || SOLUTIONS_MEGA_MENU_FALLBACK;
@@ -25,10 +24,10 @@ const MegaMenu = ({ isOpen, onClose, menuData }: MegaMenuProps): JSX.Element => 
             <div className="grid grid-cols-[1.5fr,1fr] gap-6">
               {/* Menu items */}
               <div className="space-y-4">
-                {menuItems.map((item: MenuLink) => (
+                {menuItems.map(item => (
                   <a
-                    key={item.id || item.href}
-                    href={item.href}
+                    key={item.id || item.href || item.title}
+                    href={item.href || '#'}
                     className="block group text-white hover:text-white visited:text-white active:text-white focus:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-lg"
                   >
                     <div className="flex items-start space-x-3">

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
+import { billingService } from '@/core/services/billingService';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { CollapseIcon, LifeWheelIcon, SparkleIcon } from '@/shared/components/common/icons';
@@ -41,6 +42,7 @@ const SidebarLottieIcon = ({ animationData }: { animationData: object }): JSX.El
 const Sidebar = (): JSX.Element => {
   const { t } = useCommonTranslation();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [hasActivePaidPlan, setHasActivePaidPlan] = useState(false);
   const location = useLocation();
   const { logout } = useAuth();
 
@@ -55,6 +57,25 @@ const Sidebar = (): JSX.Element => {
       document.body.classList.remove('sidebar-collapsed');
     };
   }, [isCollapsed]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadBillingSummary = async (): Promise<void> => {
+      const { data } = await billingService.getBillingSummary();
+      if (!isMounted || !data) return;
+
+      const userHasPaidPlan =
+        data.currentPlan !== 'free' && data.subscriptionStatus.toLowerCase() !== 'free';
+      setHasActivePaidPlan(userHasPaidPlan);
+    };
+
+    void loadBillingSummary();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   type MenuItem = {
     path: string;
@@ -118,60 +139,61 @@ const Sidebar = (): JSX.Element => {
 
         {/* Main Navigation */}
         <nav className={styles.mainNav}>
-          {isCollapsed ? (
-            <Link
-              to="/app/pricing"
-              className={styles.navItem}
-              data-active={isActiveRoute('/app/pricing')}
-              aria-label={pricingLabel}
-              title={pricingLabel}
-            >
-              <span className={styles.icon}>
-                <SparkleIcon className={styles.icon} />
-              </span>
-            </Link>
-          ) : (
-            <Link
-              to="/app/pricing"
-              className={styles.pricingCta}
-              data-active={isActiveRoute('/app/pricing')}
-              aria-label={pricingLabel}
-            >
-              <span className={`${styles.pricingDrawer} ${styles.pricingDrawerTop}`}>
-                {pricingCtaTop}
-              </span>
-              <span className={`${styles.pricingDrawer} ${styles.pricingDrawerBottom}`}>
-                {pricingCtaBottom}
-              </span>
-              <span className={styles.pricingButtonCore}>
-                <span className={styles.pricingButtonText}>{pricingCtaLabel}</span>
-              </span>
-              <svg
-                className={`${styles.pricingCorner} ${styles.pricingCornerOne}`}
-                viewBox="-1 1 32 32"
+          {!hasActivePaidPlan &&
+            (isCollapsed ? (
+              <Link
+                to="/app/pricing"
+                className={styles.navItem}
+                data-active={isActiveRoute('/app/pricing')}
+                aria-label={pricingLabel}
+                title={pricingLabel}
               >
-                <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
-              </svg>
-              <svg
-                className={`${styles.pricingCorner} ${styles.pricingCornerTwo}`}
-                viewBox="-1 1 32 32"
+                <span className={styles.icon}>
+                  <SparkleIcon className={styles.icon} />
+                </span>
+              </Link>
+            ) : (
+              <Link
+                to="/app/pricing"
+                className={styles.pricingCta}
+                data-active={isActiveRoute('/app/pricing')}
+                aria-label={pricingLabel}
               >
-                <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
-              </svg>
-              <svg
-                className={`${styles.pricingCorner} ${styles.pricingCornerThree}`}
-                viewBox="-1 1 32 32"
-              >
-                <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
-              </svg>
-              <svg
-                className={`${styles.pricingCorner} ${styles.pricingCornerFour}`}
-                viewBox="-1 1 32 32"
-              >
-                <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
-              </svg>
-            </Link>
-          )}
+                <span className={`${styles.pricingDrawer} ${styles.pricingDrawerTop}`}>
+                  {pricingCtaTop}
+                </span>
+                <span className={`${styles.pricingDrawer} ${styles.pricingDrawerBottom}`}>
+                  {pricingCtaBottom}
+                </span>
+                <span className={styles.pricingButtonCore}>
+                  <span className={styles.pricingButtonText}>{pricingCtaLabel}</span>
+                </span>
+                <svg
+                  className={`${styles.pricingCorner} ${styles.pricingCornerOne}`}
+                  viewBox="-1 1 32 32"
+                >
+                  <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+                </svg>
+                <svg
+                  className={`${styles.pricingCorner} ${styles.pricingCornerTwo}`}
+                  viewBox="-1 1 32 32"
+                >
+                  <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+                </svg>
+                <svg
+                  className={`${styles.pricingCorner} ${styles.pricingCornerThree}`}
+                  viewBox="-1 1 32 32"
+                >
+                  <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+                </svg>
+                <svg
+                  className={`${styles.pricingCorner} ${styles.pricingCornerFour}`}
+                  viewBox="-1 1 32 32"
+                >
+                  <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+                </svg>
+              </Link>
+            ))}
 
           {menuItems.map(item => (
             <Link

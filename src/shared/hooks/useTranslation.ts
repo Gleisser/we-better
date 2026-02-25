@@ -10,7 +10,7 @@ import { i18n } from 'i18next';
 export const useTranslation = (
   namespace?: string
 ): {
-  t: (key: string, options?: Record<string, unknown>) => string | string[];
+  t: (key: string, options?: Record<string, unknown>) => string;
   changeLanguage: (lng: SupportedLanguage) => Promise<void>;
   currentLanguage: SupportedLanguage;
   isLoading: boolean;
@@ -32,7 +32,7 @@ export const useTranslation = (
 
   // Helper function for translations with fallback
   const translate = useCallback(
-    (key: string, options?: Record<string, unknown>): string | string[] => {
+    (key: string, options?: Record<string, unknown>): string => {
       try {
         const result = t(key, options);
         return typeof result === 'string' ? result : key;
@@ -58,7 +58,7 @@ export const useTranslation = (
  * Hook specifically for common translations (most frequently used)
  */
 export const useCommonTranslation = (): {
-  t: (key: string, options?: Record<string, unknown>) => string | string[];
+  t: (key: string, options?: Record<string, unknown>) => string;
   changeLanguage: (lng: SupportedLanguage) => Promise<void>;
   currentLanguage: SupportedLanguage;
   isLoading: boolean;
@@ -72,7 +72,7 @@ export const useCommonTranslation = (): {
  * Hook specifically for auth translations
  */
 export const useAuthTranslation = (): {
-  t: (key: string, options?: Record<string, unknown>) => string | string[];
+  t: (key: string, options?: Record<string, unknown>) => string;
   changeLanguage: (lng: SupportedLanguage) => Promise<void>;
   currentLanguage: SupportedLanguage;
   isLoading: boolean;
@@ -86,7 +86,7 @@ export const useAuthTranslation = (): {
  * Hook specifically for error translations
  */
 export const useErrorTranslation = (): {
-  t: (key: string, options?: Record<string, unknown>) => string | string[];
+  t: (key: string, options?: Record<string, unknown>) => string;
   changeLanguage: (lng: SupportedLanguage) => Promise<void>;
   currentLanguage: SupportedLanguage;
   isLoading: boolean;

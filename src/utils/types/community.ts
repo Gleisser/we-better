@@ -1,4 +1,4 @@
-import { APIResponse } from '@/shared/types/common/meta';
+import { APIResponse } from '@/utils/types/common/meta';
 
 export interface Community {
   documentId: string;

@@ -1,4 +1,4 @@
-import { useAuth } from '@/shared/contexts/AuthContext';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 const AuthDebugger = (): JSX.Element => {
   const { user, isLoading, isAuthenticated } = useAuth();

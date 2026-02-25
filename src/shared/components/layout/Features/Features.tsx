@@ -8,7 +8,7 @@ import FeaturesSkeleton from './FeaturesSkeleton';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { Brand, Card } from '@/utils/types/features-response';
+import { Brand } from '@/utils/types/features-response';
 
 const Features = (): JSX.Element => {
   // Initialize hooks
@@ -96,8 +96,8 @@ const Features = (): JSX.Element => {
         </h2>
 
         <div className={styles.featuresCard} data-testid="features-cards">
-          {cards.map((card: Card, index: number) => (
-            <div key={card.id || index}>
+          {cards.map((card, index: number) => (
+            <div key={'id' in card ? card.id : index}>
               <h3 className={styles.cardTitle}>{card.title}</h3>
               <FeaturesCard card={card} index={index} />
             </div>

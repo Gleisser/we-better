@@ -1,20 +1,20 @@
-import { Partner } from "@/types/partner";
+import { Partner } from '@/utils/types/partner';
 
-export const PARTNERS_FALLBACK : Partner = {
-    id: 1,
-    documentId: '1',
-    title: 'Our [highlight]Partners[/highlight]',
-    brands: [
-      {
-        id: 1,
-        documentId: '1',
-        name: 'Lambda',
-        logo: {
-          img: {
-              url: '/assets/images/partners/partner_1.svg',
-          },
+export const PARTNERS_FALLBACK: Partner = {
+  id: 1,
+  documentId: '1',
+  title: 'Our [highlight]Partners[/highlight]',
+  brands: [
+    {
+      id: 1,
+      documentId: '1',
+      name: 'Lambda',
+      logo: {
+        img: {
+          url: '/assets/images/partners/partner_1.svg',
         },
       },
+    },
     {
       id: 2,
       documentId: '2',
@@ -44,7 +44,8 @@ export const PARTNERS_FALLBACK : Partner = {
           url: '/assets/images/partners/partner_4.svg',
         },
       },
-    }
-  ]} as const;
+    },
+  ],
+} as const;
 
-  export default PARTNERS_FALLBACK;
+export default PARTNERS_FALLBACK;
