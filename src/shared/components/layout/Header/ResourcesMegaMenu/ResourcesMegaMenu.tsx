@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ResourcesMegaMenuProps } from './types';
 import { API_CONFIG } from '@/core/config/api-config';
 import { RESOURCES_MEGA_MENU_FALLBACK } from '@/utils/constants/fallback/megamenu';
-import { MenuLink } from '../MegaMenu/types';
 
 const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps): JSX.Element => {
   const menuItems = menuData?.menu_links || RESOURCES_MEGA_MENU_FALLBACK;
@@ -67,7 +66,7 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
 
               {/* Resources Links */}
               <div className="space-y-4">
-                {menuItems.map((item: MenuLink, index: number) => (
+                {menuItems.map((item, index: number) => (
                   <a
                     key={index}
                     href="#"

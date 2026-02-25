@@ -95,8 +95,9 @@ export function useNotificationsFeed(
       return;
     }
 
-    setNotifications(previous => [...previous, ...result.data.notifications]);
-    setTotal(result.data.total);
+    const nextData = result.data;
+    setNotifications(previous => [...previous, ...nextData.notifications]);
+    setTotal(nextData.total);
     setIsLoadingMore(false);
   }, [hasMore, isLoadingMore, notifications.length, pageSize, unreadOnly]);
 

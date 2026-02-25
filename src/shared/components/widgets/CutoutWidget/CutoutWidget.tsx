@@ -5,7 +5,7 @@ import styles from './CutoutWidget.module.css';
 const FEATURED_IMAGE =
   'https://images.unsplash.com/photo-1598601065215-751bf8798a2c?q=80&w=1883&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
-const COLLABORATOR_AVATARS = [
+const COLLABORATOR_AVATARS: Array<{ src: string; alt: string; countLabel?: string }> = [
   {
     src: 'https://plus.unsplash.com/premium_photo-1672115680958-54438df0ab82?q=80&w=1784&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     alt: 'Urban skyline at dawn',
@@ -23,7 +23,7 @@ const COLLABORATOR_AVATARS = [
     alt: 'Forest pathway at dusk',
     countLabel: '50+',
   },
-] as const;
+];
 
 const ArrowIcon = (): JSX.Element => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={styles.arrowIcon} aria-hidden="true">

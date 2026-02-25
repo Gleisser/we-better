@@ -16,6 +16,14 @@ export interface Resource {
   relevantDreamIds: string[];
 }
 
+export interface JournalEntry {
+  id: string;
+  dreamId: string;
+  content: string;
+  date: string;
+  emotion: string;
+}
+
 export interface Challenge {
   id: string;
   title: string;

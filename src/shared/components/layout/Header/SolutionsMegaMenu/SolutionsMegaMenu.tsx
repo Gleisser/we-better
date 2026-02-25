@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SolutionsMegaMenuProps } from './types';
 import { API_CONFIG } from '@/core/config/api-config';
 import { SOLUTIONS_MEGA_MENU_FALLBACK } from '@/utils/constants/fallback/megamenu';
-import { MenuLink } from '../MegaMenu/types';
 
 const SolutionsMegaMenu = ({ isOpen, onClose, menuData }: SolutionsMegaMenuProps): JSX.Element => {
   const menuItems = menuData?.menu_links || SOLUTIONS_MEGA_MENU_FALLBACK;
@@ -22,13 +21,17 @@ const SolutionsMegaMenu = ({ isOpen, onClose, menuData }: SolutionsMegaMenuProps
         >
           <div className="p-6">
             <div className="grid grid-cols-2 gap-6">
-              {menuItems.map((item: MenuLink, index: number) => (
+              {menuItems.map((item, index: number) => (
                 <a key={index} href="#" className="group text-white">
                   <div className="flex items-start space-x-3">
                     <div className="pt-1">
                       <img
                         src={
-                          (menuData && API_CONFIG.imageBaseURL + item.image.url) || item.image.url
+                          (menuData &&
+                            item.image?.url &&
+                            API_CONFIG.imageBaseURL + item.image.url) ||
+                          item.image?.url ||
+                          '/assets/images/header/svg/marketing.svg'
                         }
                         alt={`${item.title} solution - ${item.description}`}
                         className="w-6 h-6"

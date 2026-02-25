@@ -7,7 +7,6 @@ import HighlightsSkeleton from './HighlightsSkeleton';
 import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { Slide } from '@/utils/types/highlight';
 
 const Highlights = (): JSX.Element => {
   // Initialize hooks
@@ -35,11 +34,13 @@ const Highlights = (): JSX.Element => {
 
   // Collect image URLs for preloading
   const getImageUrls = useCallback(() => {
-    return highlights.map((highlight: Slide) => {
-      return data?.data?.slides
-        ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url
-        : highlight?.image?.img?.formats?.large?.url;
-    });
+    return highlights
+      .map(highlight => {
+        return data?.data?.slides
+          ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url
+          : highlight?.image?.img?.formats?.large?.url;
+      })
+      .filter((url): url is string => typeof url === 'string' && url.length > 0);
   }, [highlights, data?.data?.slides]);
 
   // Handle image preloading
@@ -154,7 +155,7 @@ const Highlights = (): JSX.Element => {
           <span className={styles.gradientText}>{highlights[activeIndex]?.title}</span>
         </h2>
         <div className={styles.sliderContainer} role="region" aria-label="Highlights slider">
-          {highlights.map((highlight: Slide, index: number) => {
+          {highlights.map((highlight, index: number) => {
             const imageSrc = data?.data?.slides
               ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url
               : highlight?.image?.img?.formats?.large?.url;

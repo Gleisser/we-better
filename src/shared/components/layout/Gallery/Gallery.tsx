@@ -11,6 +11,13 @@ import { TopLevelImage } from '@/utils/types/common/image';
 const INITIAL_LOAD = 12;
 const LOAD_MORE_COUNT = 8;
 
+type GalleryImage = {
+  id: number;
+  src: string;
+  alt: string;
+  size: 'small' | 'large';
+};
+
 const GALLERY_IMAGES = [
   {
     id: 1,
@@ -112,20 +119,22 @@ const Gallery = (): JSX.Element => {
     id: image.id,
     src: `${API_CONFIG.imageBaseURL}${image.url}`,
     alt: image.alternativeText,
-    size: image.height > 400 ? 'large' : 'small',
+    size: (image.height > 400 ? 'large' : 'small') as 'large' | 'small',
   }));
 
   // Image ordering logic
-  const orderImages = useCallback((images: typeof GALLERY_IMAGES | undefined) => {
+  const orderImages = useCallback((images: GalleryImage[] | undefined) => {
     if (!images) return [];
 
-    const orderedImages = [];
+    const orderedImages: GalleryImage[] = [];
     const smallImages = images.filter(image => image.size === 'small');
     const largeImages = images.filter(image => image.size === 'large');
 
     while (smallImages?.length > 0 && largeImages?.length > 0) {
-      orderedImages.push(largeImages.shift());
-      orderedImages.push(smallImages.shift());
+      const nextLarge = largeImages.shift();
+      const nextSmall = smallImages.shift();
+      if (nextLarge) orderedImages.push(nextLarge);
+      if (nextSmall) orderedImages.push(nextSmall);
     }
 
     return orderedImages;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DreamBoardContainer } from '@/features/dream-board/components/Board/DreamBoardContainer';
 import styles from './DreamBoardModal.module.css';
-import { DreamBoardData, DreamBoardProps } from '@/features/dream-board/components/Board/types';
+import { DreamBoardData, DreamBoardProps } from '@/features/dream-board/types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import { Dream } from '../../types';
 import { getLatestDreamBoardData, saveDreamBoardData } from '../../api/dreamBoardApi';
@@ -104,7 +104,6 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
 
           if (existingData?.id) {
             // Use existing data if available
-            // @ts-expect-error - Type compatibility issue between duplicate type definitions
             setVisionBoardData(existingData);
           } else {
             // Start with empty board if no existing data
@@ -136,7 +135,6 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
 
       if (result) {
         // Update local state with the saved data
-        // @ts-expect-error - Type compatibility issue between duplicate type definitions
         setVisionBoardData(result);
 
         // Convert vision board data to dreams array and pass to parent
