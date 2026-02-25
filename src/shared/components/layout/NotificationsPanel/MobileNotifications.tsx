@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
 import type { NotificationFeedItemDto } from '@/core/services/notificationsService';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import NotificationEventAvatar from '@/shared/components/layout/NotificationEventAvatar';
 import styles from './MobileNotifications.module.css';
 
 interface MobileNotificationsProps {
@@ -79,6 +80,10 @@ export const MobileNotifications = ({
                   className={`${styles.notificationItem} ${!notification.read_at ? styles.unread : ''}`}
                 >
                   <div className={styles.notificationHeader}>
+                    <NotificationEventAvatar
+                      eventType={notification.event_type}
+                      className={styles.eventAvatar}
+                    />
                     <div className={styles.notificationInfo}>
                       <div className={styles.userAction}>
                         <span className={styles.userName}>{notification.title}</span>

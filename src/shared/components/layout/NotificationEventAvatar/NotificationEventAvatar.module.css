@@ -1,0 +1,68 @@
+.avatar {
+  @apply inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full;
+  border: 1px solid var(--theme-border-secondary);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+}
+
+.icon {
+  @apply h-[18px] w-[18px];
+}
+
+.habit {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.26), rgba(16, 185, 129, 0.12));
+  color: #16a34a;
+}
+
+.goal {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.26), rgba(14, 116, 144, 0.14));
+  color: #2563eb;
+}
+
+.dream {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.28), rgba(236, 72, 153, 0.14));
+  color: #8b5cf6;
+}
+
+.milestone {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.3), rgba(234, 88, 12, 0.14));
+  color: #ea580c;
+}
+
+.affirmation {
+  background: linear-gradient(135deg, rgba(244, 114, 182, 0.3), rgba(217, 70, 239, 0.14));
+  color: #db2777;
+}
+
+.achievement {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.3), rgba(245, 158, 11, 0.14));
+  color: #ca8a04;
+}
+
+.defaultTone {
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.28), rgba(100, 116, 139, 0.14));
+  color: var(--theme-text-secondary);
+}
+
+[data-theme='dark'] .habit {
+  color: #4ade80;
+}
+
+[data-theme='dark'] .goal {
+  color: #60a5fa;
+}
+
+[data-theme='dark'] .dream {
+  color: #c084fc;
+}
+
+[data-theme='dark'] .milestone {
+  color: #fb923c;
+}
+
+[data-theme='dark'] .affirmation {
+  color: #f472b6;
+}
+
+[data-theme='dark'] .achievement {
+  color: #facc15;
+}

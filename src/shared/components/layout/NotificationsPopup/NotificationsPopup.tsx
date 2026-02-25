@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { XIcon } from '@/shared/components/common/icons';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import type { NotificationFeedItemDto } from '@/core/services/notificationsService';
+import NotificationEventAvatar from '@/shared/components/layout/NotificationEventAvatar';
 import styles from './NotificationsPopup.module.css';
 
 interface NotificationsPopupProps {
@@ -89,6 +90,7 @@ const NotificationsPopup = ({
         {!isLoading &&
           notifications.map(notification => (
             <div key={notification.id} className={styles.notificationItem}>
+              <NotificationEventAvatar eventType={notification.event_type} />
               <div className={styles.content}>
                 <div className={styles.userAction}>
                   <span className={styles.userName}>{notification.title}</span>

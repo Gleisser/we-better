@@ -1395,6 +1395,7 @@ const resources = {
           pushPermissionError:
             'Push permission was denied or subscription failed. Enable browser notifications and try again.',
           master: {
+            title: 'Notification Channels',
             email: 'Email channel',
             emailDescription: 'Master switch for all email notifications.',
             push: 'Push channel',
@@ -2938,6 +2939,7 @@ const resources = {
           pushPermissionError:
             'A permissão de push foi negada ou a inscrição falhou. Ative as notificações do navegador e tente novamente.',
           master: {
+            title: 'Canais de Notificação',
             email: 'Canal de email',
             emailDescription: 'Chave principal para todas as notificações por email.',
             push: 'Canal push',
