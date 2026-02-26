@@ -812,6 +812,17 @@ const resources = {
           description:
             'Welcome to your dream journey! Start by creating your personal dream board. Visualize your aspirations, track your progress, and turn your dreams into reality.',
           createButton: 'Create Dream Board',
+          firstImage: {
+            title: 'Start Your Dream Board With Your First Image',
+            description:
+              'Upload your first photo to unlock your full Dream Board workspace and begin visualizing the future you want to build.',
+            cta: 'Upload First Dream Image',
+            features: {
+              quickVision: 'Quick Vision tracking to keep momentum visible',
+              categories: 'Dream Categories dashboard to organize life areas',
+              insights: 'Milestone and insight tools to guide your progress',
+            },
+          },
         },
         loading: {
           dreamBoard: 'Loading your dream board...',
@@ -1010,6 +1021,103 @@ const resources = {
           increaseProgress: 'Increase progress',
           scrollToSeeMore: 'Scroll to see more dreams',
         },
+        timelineGallery: {
+          title: 'Dream Board Timeline',
+          subtitle: 'Scroll through your dream images in a circular timeline.',
+          addImage: 'Add Image',
+          emptyHint: 'Add an image to begin shaping your timeline.',
+          scrollHint: 'Use arrows, keyboard, or tap cards to rotate',
+          previousImage: 'Previous image',
+          nextImage: 'Next image',
+          removeImageAria: 'Remove image {{title}}',
+          removeImageConfirm: 'Are you sure you want to remove this image?',
+          wizard: {
+            title: 'Upload a picture',
+            subtitle: 'Upload a picture that represents your dream.',
+            progressLabel: 'Upload Progress',
+            steps: {
+              file: {
+                title: 'Upload File',
+                description: 'Upload files in JPG and PNG format',
+              },
+              details: {
+                title: 'Title or Caption',
+                description: 'Add a title or caption to describe this dream image',
+              },
+              category: {
+                title: 'Category',
+                description: 'Choose where this dream belongs',
+              },
+              milestones: {
+                title: 'Milestones',
+                description: 'Add milestones to track progress for this dream',
+              },
+            },
+            dropzone: {
+              title: 'Upload File',
+              hint: 'Or drag and drop file',
+              browse: 'Browse Files',
+              selected: 'Selected file: {{name}}',
+            },
+            fileHint: 'Choose one picture to continue.',
+            preview: {
+              alt: 'Selected dream picture preview',
+              selected: 'Picture selected',
+              change: 'Choose another picture',
+            },
+            fields: {
+              caption: 'Caption (optional)',
+              captionPlaceholder: 'Write a short caption for this image',
+            },
+            uploading: {
+              title: 'Uploading your picture',
+              subtitle: 'Please wait while we upload this picture to your dream board.',
+            },
+            completed: {
+              title: 'Picture uploaded successfully',
+              subtitle: 'What would you like to do next?',
+            },
+            validation: {
+              fileRequired: 'Please upload an image to continue.',
+              detailsRequired: 'Please provide a title or caption to continue.',
+              categoryRequired: 'Please choose a category to continue.',
+            },
+            buttons: {
+              cancel: 'Cancel',
+              back: 'Back',
+              next: 'Next',
+              save: 'Save',
+              uploadAnother: 'Upload another picture',
+              close: 'Close',
+            },
+          },
+          form: {
+            title: 'Add Dream Image',
+            fileLabel: 'Picture',
+            dreamTitleLabel: 'Dream Title',
+            dreamTitlePlaceholder: 'Name this dream',
+            categoryLabel: 'Category',
+            milestonesLabel: 'Milestones',
+            milestonesEmpty: 'No milestones yet. Add one to track your first step.',
+            milestoneTitlePlaceholder: 'Milestone title',
+            pickDate: 'Pick date',
+            addMilestone: 'Add Milestone',
+            removeMilestone: 'Remove',
+            cancel: 'Cancel',
+            save: 'Save Image',
+            saving: 'Saving...',
+            errors: {
+              fileRequired: 'Please select a picture.',
+              titleRequired: 'Please add a title for this picture.',
+              submitFailed: 'Failed to save this image. Please try again.',
+            },
+          },
+          status: {
+            saving: 'Saving...',
+            pending: 'Unsaved changes',
+            saved: 'All changes saved',
+          },
+        },
         board: {
           title: 'Vision Board',
           defaultTitle: 'My Dream Board',
@@ -1167,6 +1275,7 @@ const resources = {
             career: 'Career',
             education: 'Education',
             spirituality: 'Spirituality',
+            general: 'General',
           },
         },
         cosmic: {
@@ -2337,6 +2446,17 @@ const resources = {
           description:
             'Bem-vindo à sua jornada dos sonhos! Comece criando seu quadro dos sonhos pessoal. Visualize suas aspirações, acompanhe seu progresso e transforme seus sonhos em realidade.',
           createButton: 'Criar Quadro dos Sonhos',
+          firstImage: {
+            title: 'Comece Seu Quadro dos Sonhos Com a Primeira Imagem',
+            description:
+              'Envie sua primeira foto para desbloquear seu espaço completo do Quadro dos Sonhos e visualizar o futuro que você quer construir.',
+            cta: 'Enviar Primeira Imagem do Sonho',
+            features: {
+              quickVision: 'Acompanhamento da Visão Rápida para manter o foco',
+              categories: 'Painel de Categorias dos Sonhos para organizar áreas da vida',
+              insights: 'Ferramentas de marcos e insights para guiar seu progresso',
+            },
+          },
         },
         loading: {
           dreamBoard: 'Carregando seu quadro dos sonhos...',
@@ -2536,6 +2656,103 @@ const resources = {
           increaseProgress: 'Aumentar progresso',
           scrollToSeeMore: 'Role para ver mais sonhos',
         },
+        timelineGallery: {
+          title: 'Linha do Tempo do Quadro dos Sonhos',
+          subtitle: 'Role suas imagens em uma linha do tempo circular.',
+          addImage: 'Adicionar Imagem',
+          emptyHint: 'Adicione uma imagem para começar sua linha do tempo.',
+          scrollHint: 'Use as setas, o teclado ou toque nos cards para girar',
+          previousImage: 'Imagem anterior',
+          nextImage: 'Próxima imagem',
+          removeImageAria: 'Remover imagem {{title}}',
+          removeImageConfirm: 'Tem certeza de que deseja remover esta imagem?',
+          wizard: {
+            title: 'Enviar uma imagem',
+            subtitle: 'Envie uma imagem que represente o seu sonho.',
+            progressLabel: 'Progresso do Upload',
+            steps: {
+              file: {
+                title: 'Enviar Arquivo',
+                description: 'Envie arquivos nos formatos JPG e PNG',
+              },
+              details: {
+                title: 'Título ou Legenda',
+                description: 'Adicione um título ou legenda para esta imagem do sonho',
+              },
+              category: {
+                title: 'Categoria',
+                description: 'Escolha onde este sonho se encaixa',
+              },
+              milestones: {
+                title: 'Marcos',
+                description: 'Adicione marcos para acompanhar o progresso desse sonho',
+              },
+            },
+            dropzone: {
+              title: 'Enviar Arquivo',
+              hint: 'Ou arraste e solte o arquivo',
+              browse: 'Selecionar Arquivo',
+              selected: 'Arquivo selecionado: {{name}}',
+            },
+            fileHint: 'Escolha uma imagem para continuar.',
+            preview: {
+              alt: 'Prévia da imagem do sonho selecionada',
+              selected: 'Imagem selecionada',
+              change: 'Escolher outra imagem',
+            },
+            fields: {
+              caption: 'Legenda (opcional)',
+              captionPlaceholder: 'Escreva uma legenda curta para esta imagem',
+            },
+            uploading: {
+              title: 'Enviando sua imagem',
+              subtitle: 'Aguarde enquanto enviamos essa imagem para o seu quadro dos sonhos.',
+            },
+            completed: {
+              title: 'Imagem enviada com sucesso',
+              subtitle: 'O que você deseja fazer agora?',
+            },
+            validation: {
+              fileRequired: 'Envie uma imagem para continuar.',
+              detailsRequired: 'Adicione um título ou legenda para continuar.',
+              categoryRequired: 'Escolha uma categoria para continuar.',
+            },
+            buttons: {
+              cancel: 'Cancelar',
+              back: 'Voltar',
+              next: 'Próximo',
+              save: 'Salvar',
+              uploadAnother: 'Enviar outra imagem',
+              close: 'Fechar',
+            },
+          },
+          form: {
+            title: 'Adicionar Imagem do Sonho',
+            fileLabel: 'Foto',
+            dreamTitleLabel: 'Título do Sonho',
+            dreamTitlePlaceholder: 'Nomeie este sonho',
+            categoryLabel: 'Categoria',
+            milestonesLabel: 'Marcos',
+            milestonesEmpty: 'Nenhum marco ainda. Adicione um para começar.',
+            milestoneTitlePlaceholder: 'Título do marco',
+            pickDate: 'Selecionar data',
+            addMilestone: 'Adicionar Marco',
+            removeMilestone: 'Remover',
+            cancel: 'Cancelar',
+            save: 'Salvar Imagem',
+            saving: 'Salvando...',
+            errors: {
+              fileRequired: 'Selecione uma foto.',
+              titleRequired: 'Adicione um título para esta foto.',
+              submitFailed: 'Não foi possível salvar esta imagem. Tente novamente.',
+            },
+          },
+          status: {
+            saving: 'Salvando...',
+            pending: 'Alterações não salvas',
+            saved: 'Todas as alterações salvas',
+          },
+        },
         board: {
           title: 'Quadro de Visão',
           defaultTitle: 'Meu Quadro dos Sonhos',
@@ -2703,6 +2920,7 @@ const resources = {
             career: 'Carreira',
             education: 'Educação',
             spirituality: 'Espiritualidade',
+            general: 'Geral',
             spiritual: 'Espiritual',
             personalgrowth: 'Crescimento Pessoal',
             'personal growth': 'Crescimento Pessoal',

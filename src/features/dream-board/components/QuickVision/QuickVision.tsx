@@ -9,7 +9,6 @@ interface QuickVisionProps {
   expandedMiniBoard: boolean;
   toggleMiniBoard: () => void;
   updateDreamProgress: (dreamId: string, adjustment: number) => void;
-  openDreamBoardModal: () => void;
 }
 
 const QuickVision: React.FC<QuickVisionProps> = ({
@@ -17,7 +16,6 @@ const QuickVision: React.FC<QuickVisionProps> = ({
   expandedMiniBoard,
   toggleMiniBoard,
   updateDreamProgress: externalUpdateDreamProgress,
-  openDreamBoardModal,
 }) => {
   const { t } = useCommonTranslation();
 
@@ -147,10 +145,6 @@ const QuickVision: React.FC<QuickVisionProps> = ({
       <div className={styles.miniBoardHeader}>
         <h2>{t('dreamBoard.quickVision.title')}</h2>
         <div className={styles.miniBoardHeaderControls}>
-          <button className={styles.dreamBoardButton} onClick={openDreamBoardModal}>
-            <span className={styles.dreamBoardButtonIcon}>🎨</span>
-            <span>{t('dreamBoard.quickVision.myDreamBoard')}</span>
-          </button>
           <button
             className={expandedMiniBoard ? styles.minimizeButton : styles.expandButton}
             onClick={toggleMiniBoard}

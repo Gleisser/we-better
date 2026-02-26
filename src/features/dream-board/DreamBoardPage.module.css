@@ -3363,7 +3363,24 @@
   font-size: 1.1rem;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 2rem;
+  margin-bottom: 1.35rem;
+}
+
+.emptyDreamBoardFeatureList {
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.emptyDreamBoardFeatureList li {
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.55rem;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(241, 245, 249, 0.94);
+  font-size: 0.96rem;
 }
 
 .createDreamBoardButton {
@@ -3401,6 +3418,10 @@
 .createButtonIcon {
   font-size: 1.4rem;
   line-height: 1;
+}
+
+.hiddenFileInput {
+  display: none;
 }
 
 /* Responsive adjustments for empty state */
