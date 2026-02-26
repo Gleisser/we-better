@@ -1,9 +1,10 @@
 import React from 'react';
-import { Dream } from '../../types';
+import { Dream, DreamImageUploadInput } from '../../types';
 import styles from '../../DreamBoardPage.module.css';
 import DreamCategories from '../DreamCategories';
 import DreamProgress from '../DreamProgress';
 import QuickVision from '../QuickVision';
+import { DreamBoardTimelineGallery } from '../DreamBoardTimelineGallery';
 
 // Define CategoryDetails type
 type CategoryDetails = {
@@ -21,7 +22,14 @@ interface VisionBoardTabProps {
   toggleMiniBoard: () => void;
   updateDreamProgress: (dreamId: string, adjustment: number) => void;
   handleOpenMilestoneManager: (dreamId: string) => void;
-  openDreamBoardModal: () => void;
+  onAddDreamImage: (
+    upload: DreamImageUploadInput,
+    onProgress?: (percent: number) => void
+  ) => Promise<void>;
+  onRemoveDreamImage: (dreamId: string) => void;
+  isDreamBoardSaving: boolean;
+  hasUnsavedChanges: boolean;
+  dreamBoardErrorMessage: string | null;
   getCategoryDetails: (category: string) => CategoryDetails;
   calculateCategoryProgress: (category: string) => number;
   hoveredCategory: string | null;
@@ -43,7 +51,11 @@ const VisionBoardTab: React.FC<VisionBoardTabProps> = ({
   toggleMiniBoard,
   updateDreamProgress,
   handleOpenMilestoneManager,
-  openDreamBoardModal,
+  onAddDreamImage,
+  onRemoveDreamImage,
+  isDreamBoardSaving,
+  hasUnsavedChanges,
+  dreamBoardErrorMessage,
   getCategoryDetails,
   calculateCategoryProgress,
   hoveredCategory,
@@ -58,13 +70,22 @@ const VisionBoardTab: React.FC<VisionBoardTabProps> = ({
 }) => {
   return (
     <>
+      <DreamBoardTimelineGallery
+        dreams={dreams}
+        onAddImage={onAddDreamImage}
+        onRemoveImage={onRemoveDreamImage}
+        isDreamBoardSaving={isDreamBoardSaving}
+        hasUnsavedChanges={hasUnsavedChanges}
+        errorMessage={dreamBoardErrorMessage}
+        categories={categories}
+      />
+
       {/* Quick Access Mini Vision Board */}
       <QuickVision
         dreams={dreams}
         expandedMiniBoard={expandedMiniBoard}
         toggleMiniBoard={toggleMiniBoard}
         updateDreamProgress={updateDreamProgress}
-        openDreamBoardModal={openDreamBoardModal}
       />
 
       <div className={styles.visionBoardTab}>

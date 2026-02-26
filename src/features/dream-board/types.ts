@@ -8,6 +8,20 @@ export interface Milestone {
   date?: string; // ISO date string
 }
 
+export interface DreamImageMilestoneInput {
+  title: string;
+  description?: string;
+  date?: string;
+}
+
+export interface DreamImageUploadInput {
+  file: File;
+  title: string;
+  caption?: string;
+  category: string;
+  milestones: DreamImageMilestoneInput[];
+}
+
 export interface Resource {
   id: string;
   title: string;

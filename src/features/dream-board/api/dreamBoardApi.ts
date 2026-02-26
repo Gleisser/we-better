@@ -4,6 +4,10 @@ import { supabase } from '@/core/services/supabaseClient';
 // Define the API URL
 const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/dream-board`;
 
+type ApiRequestOptions = {
+  onUploadProgress?: (percent: number) => void;
+};
+
 /**
  * Get the auth token from Supabase session or storage
  */
@@ -23,7 +27,8 @@ const getAuthToken = async (): Promise<string | null> => {
 const apiRequest = async <T>(
   endpoint: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
-  body?: Record<string, unknown> | DreamBoardData
+  body?: Record<string, unknown> | DreamBoardData,
+  options?: ApiRequestOptions
 ): Promise<T | null> => {
   try {
     const token = await getAuthToken();
@@ -44,6 +49,60 @@ const apiRequest = async <T>(
 
     if (body && (method === 'POST' || method === 'PUT')) {
       config.body = JSON.stringify(body);
+    }
+
+    if (options?.onUploadProgress && body && (method === 'POST' || method === 'PUT')) {
+      options.onUploadProgress(0);
+
+      return await new Promise<T>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open(method, endpoint);
+        xhr.withCredentials = true;
+        Object.entries(headers).forEach(([key, value]) => {
+          xhr.setRequestHeader(key, value);
+        });
+
+        xhr.upload.onprogress = event => {
+          if (!event.lengthComputable) {
+            return;
+          }
+
+          const percent = Math.min(
+            100,
+            Math.max(0, Math.round((event.loaded / event.total) * 100))
+          );
+          options.onUploadProgress?.(percent);
+        };
+
+        xhr.onerror = () => reject(new Error('Network error while uploading dream board data'));
+        xhr.onabort = () => reject(new Error('Dream board upload was aborted'));
+        xhr.onload = () => {
+          if (xhr.status < 200 || xhr.status >= 300) {
+            if (xhr.status === 401) {
+              reject(new Error('Authentication expired'));
+              return;
+            }
+            reject(new Error(`API request failed: ${xhr.statusText || String(xhr.status)}`));
+            return;
+          }
+
+          options.onUploadProgress?.(100);
+
+          if (!xhr.responseText) {
+            resolve({ success: true } as unknown as T);
+            return;
+          }
+
+          try {
+            resolve(JSON.parse(xhr.responseText) as T);
+          } catch (error) {
+            reject(error);
+          }
+        };
+
+        const uploadBody = typeof config.body === 'string' ? config.body : JSON.stringify(body);
+        xhr.send(uploadBody);
+      });
     }
 
     // Implement exponential backoff for retries
@@ -128,7 +187,10 @@ export const getDreamBoardHistory = async (limit = 10, offset = 0): Promise<Drea
  * If no ID is provided, it will create a new dream board
  * If an ID is provided, it will update the existing dream board
  */
-export const saveDreamBoardData = async (data: DreamBoardData): Promise<DreamBoardData | null> => {
+export const saveDreamBoardData = async (
+  data: DreamBoardData,
+  options?: ApiRequestOptions
+): Promise<DreamBoardData | null> => {
   try {
     const endpoint = data.id ? `${API_URL}/${data.id}` : API_URL;
     const method = data.id ? 'PUT' : 'POST';
@@ -136,7 +198,7 @@ export const saveDreamBoardData = async (data: DreamBoardData): Promise<DreamBoa
       data.title = 'My Vision Board';
     }
     console.info('data', data);
-    const result = await apiRequest<DreamBoardData>(endpoint, method, data);
+    const result = await apiRequest<DreamBoardData>(endpoint, method, data, options);
     return result;
   } catch (error) {
     console.error('Error saving dream board data:', error);
