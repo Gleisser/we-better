@@ -8,6 +8,7 @@
   grid-template-areas:
     'quote cards radial'
     'mood mood mood'
+    'dreamBoard dreamBoard dreamBoard'
     'habits habits habits'
     'goals goals goals'
     'cutout videos videos'
@@ -39,6 +40,10 @@
 
 .mood {
   grid-area: mood;
+}
+
+.dreamBoard {
+  grid-area: dreamBoard;
 }
 
 .article {
@@ -94,6 +99,7 @@
       'quote affirmation'
       'lifeWheel lifeWheel'
       'mood mood'
+      'dreamBoard dreamBoard'
       'habits habits'
       'goals cards'
       'radial radial'
@@ -112,6 +118,7 @@
       'affirmation'
       'lifeWheel'
       'mood'
+      'dreamBoard'
       'habits'
       'goals'
       'radial'

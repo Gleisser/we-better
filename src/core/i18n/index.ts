@@ -340,6 +340,31 @@ const resources = {
             },
           },
         },
+        dreamBoardWidget: {
+          title: 'Dream Board Snapshot',
+          subtitle: 'A visual glance at the dreams you are building.',
+          openDreamBoard: 'Open Dream Board',
+          refresh: 'Refresh',
+          refreshing: 'Refreshing...',
+          retry: 'Try again',
+          loading: 'Loading your dream board snapshot...',
+          error: 'Unable to load your dream board snapshot right now.',
+          previousImage: 'Previous dream image',
+          nextImage: 'Next dream image',
+          carouselAria: 'Dream board image carousel',
+          keyboardHint: 'Use arrow keys',
+          counter: '{{current}} / {{total}}',
+          metrics: {
+            images: 'Images',
+            categories: 'Categories',
+            averageProgress: 'Avg progress',
+          },
+          empty: {
+            title: 'Your dream gallery will appear here',
+            description:
+              'Once your Dream Board has images, this widget will show them in a timeline-style view.',
+          },
+        },
         quote: {
           title: 'Quote of the day',
           shareQuote: 'Share quote',
@@ -1972,6 +1997,31 @@ const resources = {
               label: 'Esgotado',
               description: 'As reservas estão baixas — descanso e acolhimento são bem-vindos.',
             },
+          },
+        },
+        dreamBoardWidget: {
+          title: 'Resumo do Quadro dos Sonhos',
+          subtitle: 'Uma visão rápida dos sonhos que você está construindo.',
+          openDreamBoard: 'Abrir Quadro dos Sonhos',
+          refresh: 'Atualizar',
+          refreshing: 'Atualizando...',
+          retry: 'Tentar novamente',
+          loading: 'Carregando o resumo do seu quadro dos sonhos...',
+          error: 'Não foi possível carregar o resumo do quadro dos sonhos agora.',
+          previousImage: 'Imagem de sonho anterior',
+          nextImage: 'Próxima imagem de sonho',
+          carouselAria: 'Carrossel de imagens do quadro dos sonhos',
+          keyboardHint: 'Use as setas do teclado',
+          counter: '{{current}} / {{total}}',
+          metrics: {
+            images: 'Imagens',
+            categories: 'Categorias',
+            averageProgress: 'Progresso médio',
+          },
+          empty: {
+            title: 'Sua galeria de sonhos aparecerá aqui',
+            description:
+              'Quando o seu Quadro dos Sonhos tiver imagens, este widget vai mostrá-las em uma visualização de linha do tempo.',
           },
         },
         quote: {
