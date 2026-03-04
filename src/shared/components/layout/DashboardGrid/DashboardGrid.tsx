@@ -9,6 +9,7 @@ import styles from './DashboardGrid.module.css';
 //import LifeWheelWidget from '../../widgets/LifeWheelWidget/LifeWheelWidget';
 import RadialLifeChartWidget from '../../widgets/RadialLifeChartWidget/RadialLifeChartWidget';
 import MoodWidget from '../../widgets/MoodWidget/MoodWidget';
+import DreamBoardTimelineWidget from '../../widgets/DreamBoardTimelineWidget';
 
 interface DashboardGridProps {
   featuredArticle: Article | null;
@@ -43,6 +44,11 @@ const DashboardGrid: React.FC<DashboardGridProps> = () => {
         {/* Mood Widget */}
         <div className={`${styles.widget} ${styles.mood}`}>
           <MoodWidget />
+        </div>
+
+        {/* Dream Board Timeline Widget */}
+        <div className={`${styles.widget} ${styles.dreamBoard}`}>
+          <DreamBoardTimelineWidget />
         </div>
 
         {/* Habits Widget */}

@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { Dream, DreamImageMilestoneInput, DreamImageUploadInput } from '../../types';
+import {
+  getDreamCategoryTranslationKey,
+  normalizeDreamCategoryKey,
+} from '../../utils/categoryUtils';
 import categoryDetails from '../constants/dreamboard';
 import styles from './DreamBoardTimelineGallery.module.css';
 
@@ -43,10 +47,6 @@ type CategoryVisualDetails = {
   color: string;
 };
 
-const CATEGORY_KEY_ALIASES: Record<string, string> = {
-  finance: 'finances',
-};
-
 const CATEGORY_DETAIL_KEY_BY_NORMALIZED: Record<string, keyof typeof categoryDetails> = {
   travel: 'Travel',
   skills: 'Skills',
@@ -59,13 +59,8 @@ const CATEGORY_DETAIL_KEY_BY_NORMALIZED: Record<string, keyof typeof categoryDet
   spirituality: 'Spirituality',
 };
 
-const normalizeCategoryKey = (category: string): string => {
-  const normalized = category.trim().toLowerCase().replace(/\s+/g, '');
-  return CATEGORY_KEY_ALIASES[normalized] || normalized;
-};
-
 const getCategoryVisualDetails = (category: string): CategoryVisualDetails => {
-  const normalizedKey = normalizeCategoryKey(category);
+  const normalizedKey = normalizeDreamCategoryKey(category);
   const mappedKey = CATEGORY_DETAIL_KEY_BY_NORMALIZED[normalizedKey];
 
   if (mappedKey) {
@@ -173,7 +168,7 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
         return;
       }
 
-      const normalizedKey = normalizeCategoryKey(cleanedCategory);
+      const normalizedKey = normalizeDreamCategoryKey(cleanedCategory);
       if (!uniqueCategories.has(normalizedKey)) {
         uniqueCategories.set(normalizedKey, cleanedCategory);
       }
@@ -183,8 +178,7 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
   }, [categories, dreams]);
 
   const getTranslatedCategoryName = (categoryName: string): string => {
-    const normalizedKey = normalizeCategoryKey(categoryName);
-    const translationKey = `dreamBoard.categories.names.${normalizedKey}`;
+    const translationKey = getDreamCategoryTranslationKey(categoryName);
     const translated = t(translationKey) as string;
     return translated !== translationKey ? translated : categoryName;
   };

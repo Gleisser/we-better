@@ -1,0 +1,320 @@
+.container {
+  @apply relative flex h-full w-full flex-col gap-4 rounded-[32px] border p-5;
+  background: var(--theme-gradient-widget);
+  border-color: var(--theme-border-primary);
+  box-shadow: var(--theme-shadow-large);
+  font-family: var(--font-plus-jakarta, 'Plus Jakarta Sans', sans-serif);
+  min-height: 420px;
+}
+
+.header {
+  @apply flex items-start justify-between gap-3;
+}
+
+.headerActions {
+  @apply flex flex-wrap items-center justify-end gap-2;
+}
+
+.title {
+  @apply text-base font-semibold;
+  color: var(--theme-text-primary);
+}
+
+.subtitle {
+  @apply mt-1 text-xs;
+  color: var(--theme-text-secondary);
+}
+
+.refreshButton {
+  @apply rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors duration-200;
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-secondary);
+  background: var(--theme-bg-secondary);
+}
+
+.refreshButton:hover:not(:disabled) {
+  color: var(--theme-text-primary);
+  border-color: var(--theme-interactive-primary);
+}
+
+.refreshButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.openBoardButton {
+  @apply rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors duration-200;
+  border-color: color-mix(in srgb, var(--theme-interactive-primary) 55%, transparent);
+  color: var(--theme-text-inverse);
+  background: var(--theme-interactive-primary);
+}
+
+.openBoardButton:hover {
+  background: var(--theme-interactive-hover);
+}
+
+.progressBadge {
+  @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1;
+  border-color: var(--theme-border-secondary);
+  background: color-mix(in srgb, var(--theme-bg-secondary) 82%, transparent);
+}
+
+.progressBadge span {
+  @apply text-[11px];
+  color: var(--theme-text-secondary);
+}
+
+.progressBadge strong {
+  @apply text-xs font-semibold;
+  color: var(--theme-text-primary);
+}
+
+.loadingState {
+  @apply flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border px-4 py-6 text-center;
+  border-color: var(--theme-border-secondary);
+  color: var(--theme-text-secondary);
+  background: color-mix(in srgb, var(--theme-bg-secondary) 70%, transparent);
+}
+
+.loadingSkeletonCard {
+  @apply h-36 w-28 rounded-2xl;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--theme-bg-tertiary) 85%, transparent) 20%,
+    color-mix(in srgb, var(--theme-bg-hover) 90%, transparent) 50%,
+    color-mix(in srgb, var(--theme-bg-tertiary) 85%, transparent) 80%
+  );
+  animation: shimmer 1.6s infinite linear;
+}
+
+.loadingSkeletonLine {
+  @apply h-3 w-44 rounded-full;
+  background: color-mix(in srgb, var(--theme-bg-tertiary) 86%, transparent);
+}
+
+.loadingSkeletonMeta {
+  @apply h-2.5 w-28 rounded-full;
+  background: color-mix(in srgb, var(--theme-bg-tertiary) 72%, transparent);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.errorState {
+  @apply flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border px-4 py-6 text-center;
+  border-color: var(--theme-error-border);
+  background: var(--theme-error-bg);
+  color: var(--theme-error-text);
+}
+
+.errorState button {
+  @apply rounded-full border px-3 py-1.5 text-xs font-semibold;
+  border-color: color-mix(in srgb, var(--theme-error) 35%, transparent);
+  color: inherit;
+  background: color-mix(in srgb, var(--theme-error) 12%, transparent);
+}
+
+.emptyState {
+  @apply flex flex-1 flex-col items-center justify-center gap-2 rounded-2xl border px-5 py-8 text-center;
+  border-color: var(--theme-border-secondary);
+  background:
+    radial-gradient(circle at 20% 25%, rgba(56, 189, 248, 0.18), transparent 52%),
+    radial-gradient(circle at 78% 20%, rgba(236, 72, 153, 0.16), transparent 46%),
+    color-mix(in srgb, var(--theme-bg-secondary) 78%, transparent);
+}
+
+.emptyState h4 {
+  @apply text-sm font-semibold;
+  color: var(--theme-text-primary);
+}
+
+.emptyState p {
+  @apply max-w-[420px] text-xs;
+  color: var(--theme-text-secondary);
+}
+
+.carouselViewport {
+  @apply relative flex items-center justify-center;
+  min-height: 260px;
+  outline: none;
+}
+
+.galleryStage {
+  @apply relative w-full overflow-hidden rounded-2xl;
+  min-height: 240px;
+  background:
+    radial-gradient(circle at 50% 76%, rgba(14, 165, 233, 0.2), rgba(0, 0, 0, 0) 56%),
+    radial-gradient(circle at 25% 38%, rgba(99, 102, 241, 0.24), rgba(0, 0, 0, 0) 52%),
+    radial-gradient(circle at 84% 30%, rgba(15, 118, 110, 0.2), rgba(0, 0, 0, 0) 48%),
+    color-mix(in srgb, var(--theme-bg-primary) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-border-primary) 78%, transparent);
+}
+
+.galleryStage::after {
+  content: '';
+  @apply pointer-events-none absolute inset-x-0 bottom-0;
+  height: 42%;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--theme-bg-primary) 0%, transparent),
+    color-mix(in srgb, var(--theme-bg-primary) 88%, transparent)
+  );
+  z-index: 150;
+}
+
+.cardLayer {
+  @apply absolute inset-0 grid place-items-center;
+  perspective: 1200px;
+  z-index: 100;
+}
+
+.galleryCard {
+  --offset: 0;
+  --abs-offset: 0;
+
+  @apply absolute left-1/2 top-3 overflow-hidden rounded-2xl;
+  width: min(205px, 40vw);
+  min-width: 130px;
+  aspect-ratio: 3 / 4;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 20px 34px rgba(0, 0, 0, 0.35);
+  transform: translateX(-50%) translateX(calc(var(--offset) * 138px))
+    translateY(calc(var(--abs-offset) * 22px)) rotate(calc(var(--offset) * 13deg))
+    scale(calc(1 - (min(var(--abs-offset), 3) * 0.1)));
+  opacity: calc(1 - (min(var(--abs-offset), 4) * 0.22));
+  filter: blur(calc(var(--abs-offset) * 2.6px)) grayscale(calc(min(var(--abs-offset) * 0.58, 1)));
+  cursor: pointer;
+  transition:
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.42s ease,
+    opacity 0.3s ease;
+}
+
+.galleryCard img {
+  @apply h-full w-full object-cover;
+}
+
+.activeCard {
+  opacity: 1;
+  filter: none;
+}
+
+.hiddenCard {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.captionOverlay {
+  @apply absolute bottom-2 left-1/2 grid w-[92%] -translate-x-1/2 justify-items-center gap-1 rounded-2xl px-4 py-2 text-center;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.12), rgba(2, 6, 23, 0.78));
+  box-shadow: 0 -10px 28px rgba(2, 6, 23, 0.45);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  z-index: 220;
+}
+
+.activeCaption {
+  @apply m-0 text-base font-semibold;
+  color: #f8fafc;
+  text-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.captionMeta {
+  @apply flex flex-wrap items-center justify-center gap-2 text-[11px];
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.categoryChip {
+  @apply rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em];
+  border-color: rgba(147, 197, 253, 0.42);
+  background: rgba(37, 99, 235, 0.24);
+  color: #dbeafe;
+}
+
+.navButton {
+  @apply absolute top-[44%] flex h-9 w-9 items-center justify-center rounded-full border text-2xl leading-none transition-transform duration-200;
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(2, 6, 23, 0.62);
+  color: #f8fafc;
+  z-index: 260;
+}
+
+.navButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.navButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.navButtonLeft {
+  left: 0.65rem;
+}
+
+.navButtonRight {
+  right: 0.65rem;
+}
+
+.reducedMotion .galleryCard {
+  transition: none;
+}
+
+@media (max-width: 768px) {
+  .container {
+    min-height: 360px;
+    border-radius: 24px;
+    @apply p-4;
+  }
+
+  .title {
+    @apply text-sm;
+  }
+
+  .subtitle {
+    @apply text-[11px];
+  }
+
+  .headerActions {
+    @apply w-full justify-start;
+  }
+
+  .carouselViewport {
+    min-height: 236px;
+  }
+
+  .galleryStage {
+    min-height: 216px;
+  }
+
+  .galleryCard {
+    width: min(160px, 42vw);
+    transform: translateX(-50%) translateX(calc(var(--offset) * 102px))
+      translateY(calc(var(--abs-offset) * 17px)) rotate(calc(var(--offset) * 10deg))
+      scale(calc(1 - (min(var(--abs-offset), 3) * 0.1)));
+  }
+
+  .activeCaption {
+    @apply text-sm;
+  }
+
+  .captionMeta {
+    @apply text-[10px];
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingSkeletonCard,
+  .galleryCard,
+  .navButton,
+  .refreshButton {
+    animation: none;
+    transition: none;
+  }
+}
