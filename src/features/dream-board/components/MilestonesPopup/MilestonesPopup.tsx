@@ -72,24 +72,51 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
   const [isLoadingChart, setIsLoadingChart] = useState<boolean>(false);
   const [chartError, setChartError] = useState<string | null>(null);
 
+  // Local cache to store chart data per dreamId and avoid refetching
+  const chartCacheRef = React.useRef<Record<string, Array<{ date: Date; percentage: number }>>>({});
+
   // Fetch chart data when the chart tab is active
   useEffect(() => {
+    let isMounted = true;
+    const abortController = new AbortController();
+
     if (activeVizTab === 'chart' && selectedDream) {
+      // Check cache first
+      if (chartCacheRef.current[selectedDream.id]) {
+        setChartData(chartCacheRef.current[selectedDream.id]);
+        setIsLoadingChart(false);
+        setChartError(null);
+        return;
+      }
+
       setIsLoadingChart(true);
       setChartError(null);
 
+      // We pass the signal if getProgressChartData supports it, otherwise we just drop the result if aborted
       getProgressChartData(selectedDream.id)
         .then(data => {
+          if (!isMounted || abortController.signal.aborted) return;
+
+          chartCacheRef.current[selectedDream.id] = data;
           setChartData(data);
         })
         .catch(error => {
+          if (!isMounted || abortController.signal.aborted) return;
+
           console.error('❌ Error loading chart data:', error);
           setChartError('Failed to load progress chart data');
           setChartData([]);
         })
         .finally(() => {
-          setIsLoadingChart(false);
+          if (isMounted && !abortController.signal.aborted) {
+            setIsLoadingChart(false);
+          }
         });
+
+      return () => {
+        isMounted = false;
+        abortController.abort();
+      };
     }
   }, [activeVizTab, selectedDream?.id, getProgressChartData, selectedDream]);
 

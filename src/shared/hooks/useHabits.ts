@@ -263,6 +263,7 @@ export const useHabits = (): UseHabitsReturn => {
     } else {
       setHabits([]);
       setStats(null);
+      setIsLoading(false); // Fix: Ensure loading state is reset when not authenticated
     }
   }, [isAuthenticated, fetchHabits, refreshStats]);
 

@@ -272,6 +272,7 @@ const resources = {
         common: {
           readMore: 'Read more',
           showLess: 'Show less',
+          retry: 'Try again',
         },
         cardsWidget: {
           title: 'Affirmation Cards',
@@ -1931,6 +1932,7 @@ const resources = {
         common: {
           readMore: 'Ler mais',
           showLess: 'Mostrar menos',
+          retry: 'Tentar novamente',
         },
         cardsWidget: {
           title: 'Cartas de Afirmação',

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   preferencesService,
   UserPreferences,
@@ -25,27 +25,41 @@ export function useUserPreferences(): UseUserPreferencesReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Track in-flight request to prevent concurrent loads
+  const loadPromiseRef = useRef<Promise<void> | null>(null);
+
   /**
    * Load preferences from API
    */
   const loadPreferences = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const { data, error: apiError } = await preferencesService.getUserPreferences();
-
-      if (apiError) {
-        setError(apiError);
-      } else {
-        setPreferences(data);
-      }
-    } catch (err) {
-      setError('Failed to load preferences');
-      console.error('Error loading preferences:', err);
-    } finally {
-      setIsLoading(false);
+    // Return existing promise if already in-flight
+    if (loadPromiseRef.current) {
+      return loadPromiseRef.current;
     }
+
+    const loadTask = async (): Promise<void> => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const { data, error: apiError } = await preferencesService.getUserPreferences();
+
+        if (apiError) {
+          setError(apiError);
+        } else {
+          setPreferences(data);
+        }
+      } catch (err) {
+        setError('Failed to load preferences');
+        console.error('Error loading preferences:', err);
+      } finally {
+        setIsLoading(false);
+        loadPromiseRef.current = null; // Clear ref when done
+      }
+    };
+
+    loadPromiseRef.current = loadTask();
+    return loadPromiseRef.current;
   }, []);
 
   /**
