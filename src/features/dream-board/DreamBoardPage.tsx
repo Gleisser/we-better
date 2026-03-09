@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
-import styles from './DreamBoardPage.module.css';
+import { cn } from '@/utils/classnames';
 import {
   Dream,
   DreamImageUploadInput,
@@ -27,6 +27,8 @@ import {
   deleteMilestoneForContent,
   toggleMilestoneCompletionForContent,
 } from './services/milestonesService';
+import { deleteDreamBoardStorageFiles, uploadDreamBoardImageFile } from './utils/imageStorage';
+import { formatDreamBoardImageLimit, validateDreamBoardUploadFile } from './utils/imagePersistence';
 
 type CategoryDetails = {
   icon: string;
@@ -39,6 +41,15 @@ type CategoryDetails = {
 
 const AUTOSAVE_DELAY_MS = 900;
 const MAX_DREAM_BOARD_IMAGES = 7;
+const TAB_BUTTON_CLASS_NAME =
+  'rounded-lg border px-4 py-2 text-slate-50 transition-all duration-200';
+const TAB_BUTTON_INACTIVE_CLASS_NAME =
+  'border-violet-500/30 bg-neutral-950/60 hover:border-violet-500/50 hover:bg-neutral-800/60';
+const TAB_BUTTON_ACTIVE_CLASS_NAME = 'border-violet-500/70 bg-violet-500/20';
+const ERROR_NOTIFICATION_CLASS_NAME =
+  'fixed right-5 top-5 z-[1000] flex max-w-[400px] items-center justify-between gap-4 rounded-lg border border-rose-200 bg-rose-50 p-4 text-rose-700 shadow-[0_4px_12px_rgba(0,0,0,0.1)]';
+const ERROR_NOTIFICATION_BUTTON_CLASS_NAME =
+  'flex h-6 w-6 items-center justify-center rounded-full p-0 text-xl text-rose-700 transition hover:bg-rose-100';
 
 // Utility function to get category details
 const getCategoryDetails = (category: string): CategoryDetails => {
@@ -224,6 +235,10 @@ const DreamBoardPage: React.FC = () => {
       progress: 0,
       createdAt: data.createdAt || backendData.created_at || new Date().toISOString(),
       imageUrl: contentItem.src,
+      imageStorageBucket: contentItem.storageBucket,
+      imageStoragePath: contentItem.storagePath,
+      imageMimeType: contentItem.mimeType,
+      imageFileSizeBytes: contentItem.fileSizeBytes,
       milestones: [],
       isShared: false,
       // Preserve position data from dream board
@@ -248,6 +263,10 @@ const DreamBoardPage: React.FC = () => {
         src: dream.imageUrl,
         alt: dream.title,
         caption: dream.description,
+        storageBucket: dream.imageStorageBucket,
+        storagePath: dream.imageStoragePath,
+        mimeType: dream.imageMimeType,
+        fileSizeBytes: dream.imageFileSizeBytes,
       }));
 
       return {
@@ -259,20 +278,6 @@ const DreamBoardPage: React.FC = () => {
     },
     [t]
   );
-
-  const readFileAsDataUrl = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (!reader.result || typeof reader.result !== 'string') {
-          reject(new Error('Failed to read selected image'));
-          return;
-        }
-        resolve(reader.result);
-      };
-      reader.onerror = () => reject(reader.error || new Error('Failed to read selected image'));
-      reader.readAsDataURL(file);
-    });
 
   const persistDreamBoard = useCallback(
     async (
@@ -399,7 +404,13 @@ const DreamBoardPage: React.FC = () => {
     }
 
     try {
-      const imageSource = await readFileAsDataUrl(upload.file);
+      onProgress?.(5);
+      const newDreamId =
+        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      const uploadedImage = await uploadDreamBoardImageFile(upload.file, newDreamId);
+      onProgress?.(35);
       const uploadMilestones = upload.milestones.map(milestone => ({
         id:
           typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
@@ -411,17 +422,18 @@ const DreamBoardPage: React.FC = () => {
         date: milestone.date,
       }));
       const newDream: Dream = {
-        id:
-          typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        id: newDreamId,
         title: upload.title,
         description: upload.caption || '',
         category: upload.category || mockCategories[0] || 'General',
         timeframe: 'mid-term',
         progress: 0,
         createdAt: new Date().toISOString(),
-        imageUrl: imageSource,
+        imageUrl: uploadedImage.publicUrl,
+        imageStorageBucket: uploadedImage.bucket,
+        imageStoragePath: uploadedImage.path,
+        imageMimeType: uploadedImage.mimeType,
+        imageFileSizeBytes: uploadedImage.fileSizeBytes,
         milestones: uploadMilestones,
         isShared: false,
       };
@@ -445,6 +457,12 @@ const DreamBoardPage: React.FC = () => {
 
       const didPersist = await persistDreamBoard(updatedDreams, onProgress);
       if (!didPersist) {
+        await deleteDreamBoardStorageFiles([
+          {
+            bucket: uploadedImage.bucket,
+            path: uploadedImage.path,
+          },
+        ]);
         delete pendingMilestonesRef.current[newDream.id];
         setDreams(prevDreams => prevDreams.filter(dream => dream.id !== newDream.id));
         pendingDreamsRef.current = null;
@@ -453,7 +471,19 @@ const DreamBoardPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Error adding dream image:', error);
-      setSaveError('SAVE_FAILED');
+      const errorMessage = error instanceof Error ? error.message : '';
+
+      if (errorMessage.includes('Unsupported dream board image format')) {
+        setSaveError(t('dreamBoard.board.imageUnsupportedType') as string);
+      } else if (errorMessage.includes('5 MB upload limit')) {
+        setSaveError(
+          t('dreamBoard.board.imageUploadLimit', {
+            limit: formatDreamBoardImageLimit(),
+          }) as string
+        );
+      } else {
+        setSaveError('SAVE_FAILED');
+      }
       throw error;
     }
   };
@@ -713,6 +743,19 @@ const DreamBoardPage: React.FC = () => {
       : saveError === 'IMAGE_LIMIT'
         ? (t('dreamBoard.board.imageLimit') as string)
         : saveError;
+  const experienceCategories = useMemo(
+    () => [...new Set(dreams.map(dream => dream.category))],
+    [dreams]
+  );
+  const footerWeather = useMemo(
+    () =>
+      dreamWeather ?? {
+        overall: 'cloudy' as const,
+        message: weatherError ? 'Unable to load weather data' : 'Loading weather...',
+        categoryStatus: {},
+      },
+    [dreamWeather, weatherError]
+  );
 
   const triggerFirstImageUpload = (): void => {
     firstImageInputRef.current?.click();
@@ -726,41 +769,71 @@ const DreamBoardPage: React.FC = () => {
       return;
     }
 
-    const defaultTitle = selectedFile.name.replace(/\.[^/.]+$/, '').trim() || 'My Dream';
-    void handleAddDreamImage({
-      file: selectedFile,
-      title: defaultTitle,
-      category: mockCategories[0] || 'General',
-      milestones: [],
-    });
+    void (async () => {
+      const validationResult = await validateDreamBoardUploadFile(selectedFile);
+
+      if (!validationResult.fitsLimit) {
+        setSaveError(
+          validationResult.reason === 'unsupportedType'
+            ? (t('dreamBoard.board.imageUnsupportedType') as string) || ''
+            : (t('dreamBoard.board.imageUploadLimit', {
+                limit: formatDreamBoardImageLimit(),
+              }) as string) || ''
+        );
+        return;
+      }
+
+      const defaultTitle = selectedFile.name.replace(/\.[^/.]+$/, '').trim() || 'My Dream';
+
+      try {
+        await handleAddDreamImage({
+          file: selectedFile,
+          title: defaultTitle,
+          category: mockCategories[0] || 'General',
+          milestones: [],
+        });
+      } catch (error) {
+        console.error('Error handling first dream image selection:', error);
+      }
+    })();
   };
 
   // Empty state content
   const renderEmptyState = (): JSX.Element => (
-    <div className={styles.emptyDreamBoardContainer}>
-      <div className={styles.emptyDreamBoardContent}>
-        <div className={styles.emptyDreamBoardIcon}>✨</div>
-        <h2 className={styles.emptyDreamBoardTitle}>
+    <div className="flex min-h-[60vh] items-center justify-center p-8">
+      <div className="max-w-[650px] rounded-3xl border border-violet-500/20 bg-[linear-gradient(135deg,rgba(30,30,60,0.8),rgba(45,35,75,0.8))] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.3),0_0_0_1px_rgba(255,255,255,0.1)] backdrop-blur-[10px] md:p-12">
+        <div className="mb-6 inline-block text-6xl motion-safe:animate-pulse">✨</div>
+        <h2 className="mb-6 bg-gradient-to-br from-violet-500 to-fuchsia-500 bg-clip-text text-[1.8rem] font-bold text-transparent md:text-[2.2rem]">
           {t('dreamBoard.emptyState.firstImage.title')}
         </h2>
-        <p className={styles.emptyDreamBoardDescription}>
+        <p className="mb-5 text-base leading-7 text-white/90 md:text-[1.1rem]">
           {t('dreamBoard.emptyState.firstImage.description')}
         </p>
-        <ul className={styles.emptyDreamBoardFeatureList}>
-          <li>{t('dreamBoard.emptyState.firstImage.features.quickVision')}</li>
-          <li>{t('dreamBoard.emptyState.firstImage.features.categories')}</li>
-          <li>{t('dreamBoard.emptyState.firstImage.features.insights')}</li>
+        <ul className="mb-8 grid gap-2.5">
+          <li className="rounded-[0.55rem] border border-white/15 bg-white/10 px-3 py-2.5 text-[0.96rem] text-slate-100/95">
+            {t('dreamBoard.emptyState.firstImage.features.quickVision')}
+          </li>
+          <li className="rounded-[0.55rem] border border-white/15 bg-white/10 px-3 py-2.5 text-[0.96rem] text-slate-100/95">
+            {t('dreamBoard.emptyState.firstImage.features.categories')}
+          </li>
+          <li className="rounded-[0.55rem] border border-white/15 bg-white/10 px-3 py-2.5 text-[0.96rem] text-slate-100/95">
+            {t('dreamBoard.emptyState.firstImage.features.insights')}
+          </li>
         </ul>
-        <button className={styles.createDreamBoardButton} onClick={triggerFirstImageUpload}>
-          <span className={styles.createButtonIcon}>+</span>
+        <button
+          className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 px-6 py-4 text-base font-semibold text-white shadow-[0_10px_25px_rgba(139,92,246,0.4),inset_0_0_0_1px_rgba(255,255,255,0.1)] transition hover:-translate-y-0.5 hover:shadow-[0_15px_30px_rgba(139,92,246,0.5),inset_0_0_0_1px_rgba(255,255,255,0.2)] active:-translate-y-px active:shadow-[0_5px_15px_rgba(139,92,246,0.4),inset_0_0_0_1px_rgba(255,255,255,0.1)] md:px-8 md:text-[1.1rem]"
+          onClick={triggerFirstImageUpload}
+          type="button"
+        >
+          <span className="text-[1.4rem] leading-none">+</span>
           {t('dreamBoard.emptyState.firstImage.cta')}
         </button>
         <input
           ref={firstImageInputRef}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp"
           onChange={handleFirstImageSelection}
-          className={styles.hiddenFileInput}
+          className="hidden"
           aria-label={t('dreamBoard.emptyState.firstImage.cta') as string}
           data-testid="dream-board-empty-upload-input"
         />
@@ -775,33 +848,45 @@ const DreamBoardPage: React.FC = () => {
     },
     []
   );
+  const getTabButtonClassName = (tab: string): string =>
+    cn(
+      TAB_BUTTON_CLASS_NAME,
+      activeTab === tab ? TAB_BUTTON_ACTIVE_CLASS_NAME : TAB_BUTTON_INACTIVE_CLASS_NAME
+    );
 
   return (
-    <div className={styles.dreamBoardContainer}>
-      <header className={styles.header}>
+    <div className="mx-auto max-w-[1200px] px-4 py-6 text-slate-50 md:p-8">
+      <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
         {!hasNoDreams && (
-          <div className={styles.titleContainer}>
-            <h1 className={styles.title}>{t('dreamBoard.title')}</h1>
-            {hasUnsavedChanges && <span className={styles.unsavedIndicator}>●</span>}
+          <div className="flex items-center gap-2">
+            <h1 className="bg-gradient-to-br from-violet-500 to-fuchsia-500 bg-clip-text text-3xl font-bold text-transparent md:text-[2rem]">
+              {t('dreamBoard.title')}
+            </h1>
+            {hasUnsavedChanges && (
+              <span className="-mt-1 text-xl leading-none text-amber-500 animate-pulse">●</span>
+            )}
           </div>
         )}
         {!hasNoDreams && (
-          <div className={styles.tabs}>
+          <div className="flex flex-wrap gap-4">
             <button
-              className={`${styles.tab} ${activeTab === 'vision-board' ? styles.activeTab : ''}`}
+              className={getTabButtonClassName('vision-board')}
               onClick={() => setActiveTab('vision-board')}
+              type="button"
             >
               {t('dreamBoard.tabs.visionBoard')}
             </button>
             <button
-              className={`${styles.tab} ${activeTab === 'experience' ? styles.activeTab : ''}`}
+              className={getTabButtonClassName('experience')}
               onClick={() => setActiveTab('experience')}
+              type="button"
             >
               {t('dreamBoard.tabs.experience')}
             </button>
             <button
-              className={`${styles.tab} ${activeTab === 'insights' ? styles.activeTab : ''}`}
+              className={getTabButtonClassName('insights')}
               onClick={() => setActiveTab('insights')}
+              type="button"
             >
               {t('dreamBoard.tabs.insights')}
             </button>
@@ -810,18 +895,24 @@ const DreamBoardPage: React.FC = () => {
       </header>
 
       {/* Main Content Section */}
-      <main className={styles.mainContent}>
+      <main className="mb-8">
         {isLoading ? (
-          <div className={styles.loadingOverlay}>
-            <div className={styles.loadingSpinner}>
-              <div className={styles.spinner}></div>
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50">
+            <div className="rounded-xl bg-white p-8 text-center text-slate-900 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+              <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-100 border-t-violet-500"></div>
               <p>{t('dreamBoard.loading.dreamBoard')}</p>
             </div>
           </div>
         ) : loadError ? (
-          <div className={styles.errorNotification}>
+          <div className={ERROR_NOTIFICATION_CLASS_NAME}>
             <p>{loadError === 'LOAD_FAILED' ? t('dreamBoard.errors.loadFailed') : loadError}</p>
-            <button onClick={() => setLoadError(null)}>×</button>
+            <button
+              className={ERROR_NOTIFICATION_BUTTON_CLASS_NAME}
+              onClick={() => setLoadError(null)}
+              type="button"
+            >
+              ×
+            </button>
           </div>
         ) : hasNoDreams ? (
           renderEmptyState()
@@ -854,10 +945,10 @@ const DreamBoardPage: React.FC = () => {
             )}
 
             {activeTab === 'experience' && (
-              <div className={styles.experienceTab}>
+              <div>
                 <CosmicDreamExperience
                   dreams={dreams}
-                  categories={[...new Set(dreams.map(dream => dream.category))]}
+                  categories={experienceCategories}
                   onDreamSelect={handleDreamSelect}
                   activeDream={activeDream}
                 />
@@ -873,26 +964,23 @@ const DreamBoardPage: React.FC = () => {
 
       {/* Footer Tools Section - Only show if the user has dreams */}
       {!hasNoDreams && (
-        <div className={styles.bottomToolsContainer}>
-          <FooterTools
-            weather={
-              dreamWeather || {
-                overall: 'cloudy',
-                message: weatherError ? 'Unable to load weather data' : 'Loading weather...',
-                categoryStatus: {},
-              }
-            }
-            notifications={mockNotifications}
-          />
+        <div className="mt-8 grid gap-4 md:gap-8 lg:grid-cols-2">
+          <FooterTools weather={footerWeather} notifications={mockNotifications} />
           <DreamChallengeContainer dreams={dreams} />
         </div>
       )}
 
       {/* Save Error Notification */}
       {saveError && (
-        <div className={styles.errorNotification}>
+        <div className={ERROR_NOTIFICATION_CLASS_NAME}>
           <p>{saveErrorMessage}</p>
-          <button onClick={() => setSaveError(null)}>×</button>
+          <button
+            className={ERROR_NOTIFICATION_BUTTON_CLASS_NAME}
+            onClick={() => setSaveError(null)}
+            type="button"
+          >
+            ×
+          </button>
         </div>
       )}
 

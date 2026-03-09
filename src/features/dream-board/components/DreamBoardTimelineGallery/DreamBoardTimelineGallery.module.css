@@ -439,6 +439,13 @@
   font-size: 1.3rem;
 }
 
+.uploadWizardPanelHeader p {
+  margin: 0.28rem 0 0;
+  color: var(--upload-wizard-subtitle);
+  font-size: 0.92rem;
+  max-width: 58ch;
+}
+
 .progressMeta {
   display: flex;
   align-items: center;
@@ -604,11 +611,56 @@
   display: none;
 }
 
-.selectedFileText {
+.fileLimitNotice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+  border: 1px solid color-mix(in srgb, var(--upload-wizard-accent-border) 75%, transparent);
+  background: color-mix(in srgb, var(--upload-wizard-accent-bg) 88%, white 12%);
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+}
+
+.fileLimitNoticeSuccess {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.fileLimitNoticeError {
+  border-color: var(--upload-wizard-danger-border);
+  background: color-mix(in srgb, var(--upload-wizard-danger-bg) 88%, white 12%);
+}
+
+.fileLimitBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 5.25rem;
+  padding: 0.34rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.74);
+  color: #f8fafc;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.fileLimitBody {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.fileLimitBody strong {
+  color: var(--upload-wizard-title);
+  font-size: 0.9rem;
+}
+
+.fileLimitBody p {
   margin: 0;
   color: var(--upload-wizard-subtitle);
-  font-size: 0.88rem;
-  word-break: break-word;
+  font-size: 0.84rem;
+  line-height: 1.45;
 }
 
 .selectedFilePreview {
@@ -915,6 +967,10 @@
 
   .selectedFilePreview img {
     height: 170px;
+  }
+
+  .fileLimitNotice {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .categorySelectionGrid {

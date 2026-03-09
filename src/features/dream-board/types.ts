@@ -63,6 +63,10 @@ export interface Dream {
   progress: number; // 0 to 1
   createdAt: string; // ISO date string
   imageUrl?: string;
+  imageStorageBucket?: string;
+  imageStoragePath?: string;
+  imageMimeType?: string;
+  imageFileSizeBytes?: number;
   milestones: Milestone[];
   isShared: boolean;
   sharedWith?: string[]; // user IDs
@@ -145,6 +149,10 @@ export interface DreamBoardContent {
   src?: string;
   alt?: string;
   caption?: string;
+  storageBucket?: string;
+  storagePath?: string;
+  mimeType?: string;
+  fileSizeBytes?: number;
 
   // AI specific properties
   prompt?: string;

@@ -28,10 +28,12 @@ export function useImagePreloader({
 
   const preloadImages = useCallback(
     async (urls: string[]): Promise<void> => {
-      if (urls.length === 0 || isLoading) return;
+      if (urls.length === 0) return;
 
       setIsLoading(true);
-      setFailedUrls([]);
+
+      // Keep track of failures locally first to avoid multiple re-renders
+      const localFailures: string[] = [];
 
       try {
         await Promise.all(
@@ -39,16 +41,20 @@ export function useImagePreloader({
             try {
               await preloadImage(url);
             } catch (error) {
-              setFailedUrls(prev => [...prev, url]);
+              localFailures.push(url);
               onError?.(error);
             }
           })
         );
       } finally {
+        // Update state once at the end
+        if (localFailures.length > 0) {
+          setFailedUrls(prev => [...prev, ...localFailures]);
+        }
         setIsLoading(false);
       }
     },
-    [isLoading, preloadImage, onError]
+    [preloadImage, onError]
   );
 
   return {
