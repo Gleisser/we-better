@@ -1,7 +1,4 @@
-import { useState } from 'react';
-import { MOCK_AFFIRMATIONS } from '@/utils/mockData/bookmarks';
-
-const STORAGE_KEY = 'bookmarked_affirmations';
+import { useBookmarksByType } from './useBookmarks';
 
 export interface BookmarkedAffirmation {
   id: string;
@@ -12,48 +9,59 @@ export interface BookmarkedAffirmation {
 
 interface UseBookmarkedAffirmationsResult {
   bookmarkedAffirmations: BookmarkedAffirmation[];
-  addBookmark: (affirmation: BookmarkedAffirmation) => void;
-  removeBookmark: (id: string) => void;
+  addBookmark: (affirmation: BookmarkedAffirmation) => Promise<void>;
+  removeBookmark: (id: string) => Promise<void>;
   isBookmarked: (id: string) => boolean;
+  isBookmarkActionPending: (id: string) => boolean;
+  isLoading: boolean;
+  error: Error | null;
 }
 
+const getMetadataString = (metadata: Record<string, unknown>, key: string): string => {
+  const value = metadata[key];
+  return typeof value === 'string' ? value : '';
+};
+
+const toTimestamp = (value: string): number => {
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? Date.now() : parsed;
+};
+
 export const useBookmarkedAffirmations = (): UseBookmarkedAffirmationsResult => {
-  const [bookmarkedAffirmations, setBookmarkedAffirmations] = useState<BookmarkedAffirmation[]>(
-    () => {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        return JSON.parse(stored);
-      }
-      // Initialize with mock data for development
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_AFFIRMATIONS));
-      return MOCK_AFFIRMATIONS;
-    }
-  );
-
-  const addBookmark = (affirmation: BookmarkedAffirmation): void => {
-    setBookmarkedAffirmations(prev => {
-      const newBookmarks = [...prev, { ...affirmation, timestamp: Date.now() }];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newBookmarks));
-      return newBookmarks;
-    });
-  };
-
-  const removeBookmark = (id: string): void => {
-    setBookmarkedAffirmations(prev => {
-      const newBookmarks = prev.filter(a => a.id !== id);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newBookmarks));
-      return newBookmarks;
-    });
-  };
-
-  const isBookmarked = (id: string): boolean => {
-    return bookmarkedAffirmations.some(a => a.id === id);
-  };
-
-  return {
-    bookmarkedAffirmations,
+  const {
+    bookmarks,
     addBookmark,
     removeBookmark,
     isBookmarked,
+    isBookmarkActionPending,
+    isLoading,
+    error,
+  } = useBookmarksByType<BookmarkedAffirmation>({
+    itemType: 'affirmation',
+    fromRecord: bookmark => ({
+      id: bookmark.itemId,
+      text: getMetadataString(bookmark.metadata, 'text') || bookmark.title,
+      category: getMetadataString(bookmark.metadata, 'category') || 'personal',
+      timestamp: toTimestamp(bookmark.createdAt),
+    }),
+    toCreateInput: affirmation => ({
+      itemId: affirmation.id,
+      itemType: 'affirmation',
+      title: affirmation.text,
+      metadata: {
+        text: affirmation.text,
+        category: affirmation.category,
+      },
+    }),
+  });
+
+  return {
+    bookmarkedAffirmations: bookmarks,
+    addBookmark,
+    removeBookmark,
+    isBookmarked,
+    isBookmarkActionPending,
+    isLoading,
+    error,
   };
 };

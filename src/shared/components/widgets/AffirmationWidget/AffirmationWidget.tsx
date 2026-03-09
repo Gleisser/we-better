@@ -200,7 +200,8 @@ const AffirmationWidget = (): JSX.Element => {
   }, []);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
-  const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations();
+  const { addBookmark, removeBookmark, isBookmarked, isBookmarkActionPending } =
+    useBookmarkedAffirmations();
   const [checkedPersonal, setCheckedPersonal] = useState(false);
 
   const nonPersonalCategory: NonPersonalAffirmationCategory | null =
@@ -439,6 +440,35 @@ const AffirmationWidget = (): JSX.Element => {
   const streakLabel = getText(t('widgets.affirmation.daysStreaking'));
   const reminderMeta = reminderSettings.enabled ? reminderSettings.time : '--:--';
   const streakMeta = `${streak?.current_streak || 0}d`;
+  const currentAffirmationId = currentAffirmation?.id;
+  const isCurrentAffirmationBookmarked = currentAffirmationId
+    ? isBookmarked(currentAffirmationId)
+    : false;
+  const isCurrentAffirmationBookmarkPending = currentAffirmationId
+    ? isBookmarkActionPending(currentAffirmationId)
+    : false;
+
+  const handleToggleBookmark = async (): Promise<void> => {
+    if (!currentAffirmation?.id || isCurrentAffirmationBookmarkPending) {
+      return;
+    }
+
+    try {
+      if (isCurrentAffirmationBookmarked) {
+        await removeBookmark(currentAffirmation.id);
+        return;
+      }
+
+      await addBookmark({
+        id: currentAffirmation.id,
+        text: currentAffirmation.text,
+        category: currentAffirmation.category,
+        timestamp: Date.now(),
+      });
+    } catch (error) {
+      console.error('Failed to update affirmation bookmark:', error);
+    }
+  };
 
   return (
     <div
@@ -642,40 +672,30 @@ const AffirmationWidget = (): JSX.Element => {
 
                 <Tooltip
                   content={
-                    currentAffirmation?.id && isBookmarked(currentAffirmation.id)
+                    isCurrentAffirmationBookmarked
                       ? t('widgets.affirmation.removeBookmark')
                       : t('widgets.affirmation.bookmark')
                   }
                 >
                   <button
-                    className={`${styles.voiceButton} ${currentAffirmation?.id && isBookmarked(currentAffirmation.id) ? styles.bookmarked : ''}`}
+                    className={`${styles.voiceButton} ${
+                      isCurrentAffirmationBookmarked ? styles.bookmarked : ''
+                    }`}
                     onClick={() => {
-                      if (currentAffirmation?.id) {
-                        if (isBookmarked(currentAffirmation.id)) {
-                          removeBookmark(currentAffirmation.id);
-                        } else {
-                          addBookmark({
-                            id: currentAffirmation.id,
-                            text: currentAffirmation.text,
-                            category: currentAffirmation.category,
-                            timestamp: Date.now(),
-                          });
-                        }
-                      }
+                      void handleToggleBookmark();
                     }}
                     aria-label={
-                      currentAffirmation?.id && isBookmarked(currentAffirmation.id)
+                      isCurrentAffirmationBookmarked
                         ? (t('widgets.affirmation.removeBookmark') as string)
                         : (t('widgets.affirmation.bookmarkAffirmation') as string)
                     }
-                    disabled={!currentAffirmation?.id}
+                    aria-pressed={isCurrentAffirmationBookmarked}
+                    disabled={!currentAffirmationId || isCurrentAffirmationBookmarkPending}
                   >
                     <span className={styles.controlIconWrap}>
                       <BookmarkIcon
                         className={styles.voiceIcon}
-                        filled={
-                          currentAffirmation?.id ? isBookmarked(currentAffirmation.id) : false
-                        }
+                        filled={isCurrentAffirmationBookmarked}
                       />
                     </span>
                     <span className={styles.controlText}>

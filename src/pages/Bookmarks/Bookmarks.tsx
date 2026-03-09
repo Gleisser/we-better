@@ -94,8 +94,8 @@ const ListIcon = ({ className }: { className?: string }): JSX.Element => (
 );
 
 const Bookmarks = (): JSX.Element => {
-  const { bookmarkedQuotes } = useBookmarkedQuotes();
-  const { bookmarkedAffirmations } = useBookmarkedAffirmations();
+  const { bookmarkedQuotes, isLoading: areQuotesLoading } = useBookmarkedQuotes();
+  const { bookmarkedAffirmations, isLoading: areAffirmationsLoading } = useBookmarkedAffirmations();
   const { t } = useCommonTranslation();
 
   // State
@@ -119,7 +119,7 @@ const Bookmarks = (): JSX.Element => {
 
   // Filter and sort bookmarks
   const filteredBookmarks = useMemo(() => {
-    let filtered = allBookmarks;
+    let filtered = [...allBookmarks];
 
     // Filter by type
     if (selectedType !== 'all') {
@@ -174,10 +174,12 @@ const Bookmarks = (): JSX.Element => {
   const totalBookmarks = allBookmarks.length;
   const quotesCount = bookmarkedQuotes.length;
   const affirmationsCount = bookmarkedAffirmations.length;
+  const isLoadingBookmarks = areQuotesLoading || areAffirmationsLoading;
 
   // Memoize translated values to prevent infinite re-renders
   const translations = useMemo(
     () => ({
+      loading: t('common.actions.loading') as string,
       title: t('bookmarks.title') as string,
       subtitle: t('bookmarks.subtitle') as string,
       itemCount: t('bookmarks.itemCount', { count: totalBookmarks }) as string,
@@ -381,7 +383,12 @@ const Bookmarks = (): JSX.Element => {
 
       {/* Content */}
       <div className={styles.content}>
-        {filteredBookmarks.length === 0 ? (
+        {isLoadingBookmarks ? (
+          <div className={styles.emptyState}>
+            <BookmarkIcon className={styles.emptyIcon} />
+            <h3 className={styles.emptyTitle}>{translations.loading}</h3>
+          </div>
+        ) : filteredBookmarks.length === 0 ? (
           <div className={styles.emptyState}>
             <BookmarkIcon className={styles.emptyIcon} />
             <h3 className={styles.emptyTitle}>
