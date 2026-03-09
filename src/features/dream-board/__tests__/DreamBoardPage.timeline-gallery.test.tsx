@@ -4,6 +4,8 @@ import DreamBoardPage from '../DreamBoardPage';
 import { DreamBoardContentType, DreamBoardData } from '../types';
 import { getLatestDreamBoardData, saveDreamBoardData } from '../api/dreamBoardApi';
 import { createMilestoneForContent } from '../services/milestonesService';
+import { validateDreamBoardUploadFile } from '../utils/imagePersistence';
+import { uploadDreamBoardImageFile } from '../utils/imageStorage';
 
 const mockUpdateProgressBackend = vi.fn(async () => 0.5);
 const mockGetProgressForDream = vi.fn(async () => undefined);
@@ -17,6 +19,30 @@ vi.mock('@/shared/hooks/useTranslation', () => ({
 vi.mock('../api/dreamBoardApi', () => ({
   getLatestDreamBoardData: vi.fn(),
   saveDreamBoardData: vi.fn(),
+}));
+
+vi.mock('../utils/imagePersistence', async () => {
+  return {
+    formatBytes: vi.fn((bytes: number) => `${bytes} B`),
+    formatDreamBoardImageLimit: vi.fn(() => '5 MB'),
+    validateDreamBoardUploadFile: vi.fn(async () => ({
+      originalBytes: 1024,
+      fitsLimit: true,
+      mimeType: 'image/png',
+      reason: null,
+    })),
+  };
+});
+
+vi.mock('../utils/imageStorage', () => ({
+  uploadDreamBoardImageFile: vi.fn(async (_file: File, contentId: string) => ({
+    bucket: 'dream-board-images',
+    path: `mock-user/${contentId}/dream.png`,
+    publicUrl: `https://example.com/mock-user/${contentId}/dream.png`,
+    mimeType: 'image/png',
+    fileSizeBytes: 1024,
+  })),
+  deleteDreamBoardStorageFiles: vi.fn(async () => undefined),
 }));
 
 vi.mock('../services/milestonesService', () => ({
@@ -77,6 +103,8 @@ vi.mock('../components/CosmicDreamExperience/CosmicDreamExperience', () => ({
 const mockedGetLatestDreamBoardData = vi.mocked(getLatestDreamBoardData);
 const mockedSaveDreamBoardData = vi.mocked(saveDreamBoardData);
 const mockedCreateMilestoneForContent = vi.mocked(createMilestoneForContent);
+const mockedValidateDreamBoardUploadFile = vi.mocked(validateDreamBoardUploadFile);
+const mockedUploadDreamBoardImageFile = vi.mocked(uploadDreamBoardImageFile);
 
 const createDreamBoardData = (count: number): DreamBoardData => ({
   id: 'board-1',
@@ -122,9 +150,17 @@ beforeEach(() => {
   mockUpdateProgressBackend.mockClear();
   mockGetProgressForDream.mockClear();
   mockedCreateMilestoneForContent.mockClear();
+  mockedValidateDreamBoardUploadFile.mockClear();
+  mockedUploadDreamBoardImageFile.mockClear();
 
   mockedGetLatestDreamBoardData.mockResolvedValue(null);
   mockedSaveDreamBoardData.mockResolvedValue(createDreamBoardData(1));
+  mockedValidateDreamBoardUploadFile.mockResolvedValue({
+    originalBytes: 1024,
+    fitsLimit: true,
+    mimeType: 'image/png',
+    reason: null,
+  });
 
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
@@ -206,6 +242,17 @@ describe('DreamBoardPage timeline gallery flow', () => {
     fireEvent.change(await screen.findByLabelText('dreamBoard.timelineGallery.form.fileLabel'), {
       target: { files: [new File(['binary'], 'bridge.png', { type: 'image/png' })] },
     });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('dreamBoard.timelineGallery.wizard.validation.fileReady')
+      ).not.toBeNull();
+    });
+
+    expect(screen.getByText('dreamBoard.timelineGallery.wizard.fileLimit.title')).not.toBeNull();
+    expect(
+      screen.getByText('dreamBoard.timelineGallery.wizard.preview.originalSize')
+    ).not.toBeNull();
 
     fireEvent.click(screen.getByText('dreamBoard.timelineGallery.wizard.buttons.next'));
 
@@ -295,6 +342,35 @@ describe('DreamBoardPage timeline gallery flow', () => {
     expect(addButton.getAttribute('disabled')).not.toBeNull();
     fireEvent.click(addButton);
     expect(screen.queryByText('dreamBoard.timelineGallery.wizard.title')).toBeNull();
+    expect(mockedSaveDreamBoardData).not.toHaveBeenCalled();
+  });
+
+  it('shows file-size validation feedback as soon as an oversized image is chosen', async () => {
+    mockedGetLatestDreamBoardData.mockResolvedValue(createDreamBoardData(1));
+    mockedValidateDreamBoardUploadFile.mockResolvedValueOnce({
+      originalBytes: 7 * 1024 * 1024,
+      fitsLimit: false,
+      mimeType: 'image/png',
+      reason: 'fileTooLarge',
+    });
+
+    render(<DreamBoardPage />);
+
+    fireEvent.click(await screen.findByText('dreamBoard.timelineGallery.addImage'));
+    expect(
+      (await screen.findAllByText('dreamBoard.timelineGallery.wizard.steps.file.description'))
+        .length
+    ).toBeGreaterThan(0);
+
+    fireEvent.change(await screen.findByLabelText('dreamBoard.timelineGallery.form.fileLabel'), {
+      target: { files: [new File(['oversized'], 'large.png', { type: 'image/png' })] },
+    });
+
+    expect(
+      await screen.findByText('dreamBoard.timelineGallery.wizard.validation.fileTooLarge')
+    ).not.toBeNull();
+    expect(screen.getByText('dreamBoard.timelineGallery.wizard.fileLimit.title')).not.toBeNull();
+    expect(screen.getByText('dreamBoard.timelineGallery.wizard.fileLimit.tooLarge')).not.toBeNull();
     expect(mockedSaveDreamBoardData).not.toHaveBeenCalled();
   });
 

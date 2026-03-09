@@ -5,6 +5,12 @@ import {
   getDreamCategoryTranslationKey,
   normalizeDreamCategoryKey,
 } from '../../utils/categoryUtils';
+import {
+  type DreamBoardUploadValidationResult,
+  formatBytes,
+  formatDreamBoardImageLimit,
+  validateDreamBoardUploadFile,
+} from '../../utils/imagePersistence';
 import categoryDetails from '../constants/dreamboard';
 import styles from './DreamBoardTimelineGallery.module.css';
 
@@ -45,6 +51,11 @@ type CategoryVisualDetails = {
   hoverGradient: string;
   shadowColor: string;
   color: string;
+};
+
+type SelectedFileValidationState = DreamBoardUploadValidationResult & {
+  fileName: string;
+  status: 'validating' | 'ready' | 'tooLarge' | 'unsupportedType' | 'failed';
 };
 
 const CATEGORY_DETAIL_KEY_BY_NORMALIZED: Record<string, keyof typeof categoryDetails> = {
@@ -107,11 +118,16 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFilePreviewUrl, setSelectedFilePreviewUrl] = useState<string | null>(null);
+  const [selectedFileStatus, setSelectedFileStatus] = useState<string | null>(null);
+  const [selectedFileValidation, setSelectedFileValidation] =
+    useState<SelectedFileValidationState | null>(null);
+  const [isValidatingSelectedFile, setIsValidatingSelectedFile] = useState(false);
   const [draftTitle, setDraftTitle] = useState('');
   const [draftCaption, setDraftCaption] = useState('');
   const [draftCategory, setDraftCategory] = useState('');
   const [milestonesDraft, setMilestonesDraft] = useState<MilestoneDraft[]>([]);
   const milestoneDateInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const fileValidationRequestRef = useRef(0);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -131,12 +147,16 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
     });
   }, [dreams.length]);
 
+  const imageLimitLabel = useMemo(() => formatDreamBoardImageLimit(), []);
+
   const uploadSteps = useMemo<UploadStep[]>(
     () => [
       {
         key: 'file',
         title: t('dreamBoard.timelineGallery.wizard.steps.file.title') as string,
-        description: t('dreamBoard.timelineGallery.wizard.steps.file.description') as string,
+        description: t('dreamBoard.timelineGallery.wizard.steps.file.description', {
+          limit: imageLimitLabel,
+        }) as string,
       },
       {
         key: 'details',
@@ -154,7 +174,7 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
         description: t('dreamBoard.timelineGallery.wizard.steps.milestones.description') as string,
       },
     ],
-    [t]
+    [imageLimitLabel, t]
   );
 
   const availableCategories = useMemo(() => {
@@ -285,6 +305,9 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
     setUploadProgress(0);
     setUploadError(null);
     setSelectedFile(null);
+    setSelectedFileStatus(null);
+    setSelectedFileValidation(null);
+    setIsValidatingSelectedFile(false);
     setDraftTitle('');
     setDraftCaption('');
     setDraftCategory(availableCategories[0] || 'General');
@@ -305,17 +328,95 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
     setUploadError(null);
   };
 
-  const applySelectedFile = (file: File | null): void => {
+  const applySelectedFile = async (file: File | null): Promise<void> => {
     if (!file) {
       return;
     }
 
-    setSelectedFile(file);
+    const requestId = fileValidationRequestRef.current + 1;
+    fileValidationRequestRef.current = requestId;
+    setIsValidatingSelectedFile(true);
+    setSelectedFile(null);
+    setSelectedFileValidation({
+      fileName: file.name,
+      originalBytes: file.size,
+      fitsLimit: false,
+      mimeType: file.type,
+      reason: null,
+      status: 'validating',
+    });
+    setSelectedFileStatus(
+      t('dreamBoard.timelineGallery.wizard.validation.validatingFile', {
+        limit: imageLimitLabel,
+      }) as string
+    );
     setUploadProgress(0);
     setUploadError(null);
 
-    if (!draftTitle.trim()) {
-      setDraftTitle(file.name.replace(/\.[^/.]+$/, '').trim());
+    try {
+      const validationResult = await validateDreamBoardUploadFile(file);
+      if (fileValidationRequestRef.current !== requestId) {
+        return;
+      }
+
+      if (!validationResult.fitsLimit) {
+        setSelectedFile(null);
+        setSelectedFileStatus(null);
+        const nextStatus =
+          validationResult.reason === 'unsupportedType' ? 'unsupportedType' : 'tooLarge';
+        setSelectedFileValidation({
+          fileName: file.name,
+          ...validationResult,
+          status: nextStatus,
+        });
+        setUploadError(
+          (validationResult.reason === 'unsupportedType'
+            ? t('dreamBoard.timelineGallery.wizard.validation.unsupportedType')
+            : t('dreamBoard.timelineGallery.wizard.validation.fileTooLarge', {
+                limit: imageLimitLabel,
+              })) as string
+        );
+        return;
+      }
+
+      setSelectedFile(file);
+      setSelectedFileValidation({
+        fileName: file.name,
+        ...validationResult,
+        status: 'ready',
+      });
+      setSelectedFileStatus(
+        t('dreamBoard.timelineGallery.wizard.validation.fileReady', {
+          limit: imageLimitLabel,
+        }) as string
+      );
+
+      if (!draftTitle.trim()) {
+        setDraftTitle(file.name.replace(/\.[^/.]+$/, '').trim());
+      }
+    } catch (error) {
+      if (fileValidationRequestRef.current !== requestId) {
+        return;
+      }
+
+      console.error('Failed to validate selected dream image:', error);
+      setSelectedFile(null);
+      setSelectedFileStatus(null);
+      setSelectedFileValidation({
+        fileName: file.name,
+        originalBytes: file.size,
+        fitsLimit: false,
+        mimeType: file.type,
+        reason: null,
+        status: 'failed',
+      });
+      setUploadError(
+        t('dreamBoard.timelineGallery.wizard.validation.fileValidationFailed') as string
+      );
+    } finally {
+      if (fileValidationRequestRef.current === requestId) {
+        setIsValidatingSelectedFile(false);
+      }
     }
   };
 
@@ -351,7 +452,13 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
     const stepKey = uploadSteps[currentStep]?.key;
 
     if (stepKey === 'file' && !selectedFile) {
-      setUploadError(t('dreamBoard.timelineGallery.wizard.validation.fileRequired') as string);
+      setUploadError(
+        (isValidatingSelectedFile
+          ? t('dreamBoard.timelineGallery.wizard.validation.validatingFile', {
+              limit: imageLimitLabel,
+            })
+          : t('dreamBoard.timelineGallery.wizard.validation.fileRequired')) as string
+      );
       return false;
     }
 
@@ -449,6 +556,85 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
   };
 
   const currentStepData = uploadSteps[currentStep];
+  const selectedFileOriginalSizeLabel = selectedFile
+    ? formatBytes(selectedFileValidation?.originalBytes ?? selectedFile.size)
+    : null;
+  const fileLimitNoticeTitle = t('dreamBoard.timelineGallery.wizard.fileLimit.title', {
+    limit: imageLimitLabel,
+  }) as string;
+  const fileLimitNoticeMessage = (() => {
+    if (!selectedFileValidation) {
+      return t('dreamBoard.timelineGallery.wizard.fileLimit.default', {
+        limit: imageLimitLabel,
+      }) as string;
+    }
+
+    const originalSize = formatBytes(selectedFileValidation.originalBytes);
+
+    switch (selectedFileValidation.status) {
+      case 'validating':
+        return t('dreamBoard.timelineGallery.wizard.fileLimit.validating', {
+          name: selectedFileValidation.fileName,
+          originalSize,
+          limit: imageLimitLabel,
+        }) as string;
+      case 'ready':
+        return t('dreamBoard.timelineGallery.wizard.fileLimit.ready', {
+          name: selectedFileValidation.fileName,
+          originalSize,
+          limit: imageLimitLabel,
+        }) as string;
+      case 'tooLarge':
+        return t('dreamBoard.timelineGallery.wizard.fileLimit.tooLarge', {
+          name: selectedFileValidation.fileName,
+          originalSize,
+          limit: imageLimitLabel,
+        }) as string;
+      case 'unsupportedType':
+        return t('dreamBoard.timelineGallery.wizard.fileLimit.unsupportedType', {
+          name: selectedFileValidation.fileName,
+          limit: imageLimitLabel,
+        }) as string;
+      default:
+        return t('dreamBoard.timelineGallery.wizard.fileLimit.failed', {
+          name: selectedFileValidation.fileName,
+          originalSize,
+          limit: imageLimitLabel,
+        }) as string;
+    }
+  })();
+  const fileLimitNoticeClassName = [
+    styles.fileLimitNotice,
+    selectedFileValidation?.status === 'ready'
+      ? styles.fileLimitNoticeSuccess
+      : selectedFileValidation?.status === 'tooLarge' ||
+          selectedFileValidation?.status === 'unsupportedType' ||
+          selectedFileValidation?.status === 'failed'
+        ? styles.fileLimitNoticeError
+        : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const fileLimitNoticeRole =
+    selectedFileValidation?.status === 'tooLarge' ||
+    selectedFileValidation?.status === 'unsupportedType' ||
+    selectedFileValidation?.status === 'failed'
+      ? 'alert'
+      : 'status';
+
+  const renderFileLimitNotice = (): JSX.Element => (
+    <div className={fileLimitNoticeClassName} role={fileLimitNoticeRole} aria-live="polite">
+      <span className={styles.fileLimitBadge}>
+        {t('dreamBoard.timelineGallery.wizard.fileLimit.badge', {
+          limit: imageLimitLabel,
+        })}
+      </span>
+      <div className={styles.fileLimitBody}>
+        <strong>{fileLimitNoticeTitle}</strong>
+        <p>{fileLimitNoticeMessage}</p>
+      </div>
+    </div>
+  );
 
   const renderWizardStepContent = (): JSX.Element => {
     if (!currentStepData) {
@@ -468,18 +654,32 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
               )}
               <div className={styles.selectedFileMeta}>
                 <strong>{selectedFile.name}</strong>
-                <span>{t('dreamBoard.timelineGallery.wizard.preview.selected')}</span>
+                <span>
+                  {selectedFileStatus || t('dreamBoard.timelineGallery.wizard.preview.selected')}
+                </span>
+                {selectedFileOriginalSizeLabel && (
+                  <span>
+                    {t('dreamBoard.timelineGallery.wizard.preview.originalSize', {
+                      size: selectedFileOriginalSizeLabel,
+                    })}
+                  </span>
+                )}
                 <button type="button" onClick={triggerFileSelection}>
                   {t('dreamBoard.timelineGallery.wizard.preview.change')}
                 </button>
               </div>
             </div>
+            {renderFileLimitNotice()}
             <input
               id="dream-upload-file"
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               className={styles.hiddenInput}
-              onChange={event => applySelectedFile(event.target.files?.[0] || null)}
+              onChange={event => {
+                const nextFile = event.target.files?.[0] || null;
+                event.target.value = '';
+                void applySelectedFile(nextFile);
+              }}
               aria-label={t('dreamBoard.timelineGallery.form.fileLabel') as string}
             />
           </div>
@@ -499,7 +699,7 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
             onDrop={event => {
               event.preventDefault();
               setIsDragOver(false);
-              applySelectedFile(event.dataTransfer.files?.[0] || null);
+              void applySelectedFile(event.dataTransfer.files?.[0] || null);
             }}
           >
             <strong>{t('dreamBoard.timelineGallery.wizard.dropzone.title')}</strong>
@@ -510,16 +710,18 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
             <input
               id="dream-upload-file"
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               className={styles.hiddenInput}
-              onChange={event => applySelectedFile(event.target.files?.[0] || null)}
+              onChange={event => {
+                const nextFile = event.target.files?.[0] || null;
+                event.target.value = '';
+                void applySelectedFile(nextFile);
+              }}
               aria-label={t('dreamBoard.timelineGallery.form.fileLabel') as string}
             />
           </label>
 
-          <p className={styles.selectedFileText}>
-            {t('dreamBoard.timelineGallery.wizard.fileHint')}
-          </p>
+          {renderFileLimitNotice()}
         </div>
       );
     }
@@ -694,7 +896,10 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
               {isWizardStage && (
                 <>
                   <div className={styles.uploadWizardPanelHeader}>
-                    <h4>{currentStepData.title}</h4>
+                    <div>
+                      <h4>{currentStepData.title}</h4>
+                      <p>{currentStepData.description}</p>
+                    </div>
                   </div>
 
                   {renderWizardStepContent()}
@@ -714,7 +919,7 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
                       <button
                         type="button"
                         onClick={() => void handleNext()}
-                        disabled={isSubmittingUpload}
+                        disabled={isSubmittingUpload || isValidatingSelectedFile}
                       >
                         {currentStep === uploadSteps.length - 1
                           ? t('dreamBoard.timelineGallery.wizard.buttons.save')

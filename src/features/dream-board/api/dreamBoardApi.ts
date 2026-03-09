@@ -1,5 +1,9 @@
 import { DreamBoardData } from '../types';
 import { supabase } from '@/core/services/supabaseClient';
+import {
+  deleteDreamBoardStorageFiles,
+  normalizeDreamBoardDataForPersistence,
+} from '../utils/imageStorage';
 
 // Define the API URL
 const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/dream-board`;
@@ -52,8 +56,6 @@ const apiRequest = async <T>(
     }
 
     if (options?.onUploadProgress && body && (method === 'POST' || method === 'PUT')) {
-      options.onUploadProgress(0);
-
       return await new Promise<T>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open(method, endpoint);
@@ -192,14 +194,28 @@ export const saveDreamBoardData = async (
   options?: ApiRequestOptions
 ): Promise<DreamBoardData | null> => {
   try {
-    const endpoint = data.id ? `${API_URL}/${data.id}` : API_URL;
-    const method = data.id ? 'PUT' : 'POST';
-    if (data.title === '' || data.title === null || data.title === undefined) {
-      data.title = 'My Vision Board';
+    const normalizationResult = await normalizeDreamBoardDataForPersistence({
+      ...data,
+      title: data.title || 'My Vision Board',
+    });
+    const normalizedData = normalizationResult.data;
+    const endpoint = normalizedData.id ? `${API_URL}/${normalizedData.id}` : API_URL;
+    const method = normalizedData.id ? 'PUT' : 'POST';
+
+    try {
+      const result = await apiRequest<DreamBoardData>(endpoint, method, normalizedData, options);
+      return result;
+    } catch (error) {
+      try {
+        await deleteDreamBoardStorageFiles(normalizationResult.uploadedRefs);
+      } catch (cleanupError) {
+        console.error(
+          'Error cleaning up uploaded dream board images after save failure:',
+          cleanupError
+        );
+      }
+      throw error;
     }
-    console.info('data', data);
-    const result = await apiRequest<DreamBoardData>(endpoint, method, data, options);
-    return result;
   } catch (error) {
     console.error('Error saving dream board data:', error);
     return null;

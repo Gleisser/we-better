@@ -1064,7 +1064,7 @@ const resources = {
             steps: {
               file: {
                 title: 'Upload File',
-                description: 'Upload files in JPG and PNG format',
+                description: 'Upload JPG, PNG, or WebP files up to {{limit}}.',
               },
               details: {
                 title: 'Title or Caption',
@@ -1085,11 +1085,26 @@ const resources = {
               browse: 'Browse Files',
               selected: 'Selected file: {{name}}',
             },
-            fileHint: 'Choose one picture to continue.',
+            fileHint: 'Choose one picture up to {{limit}} to continue.',
+            fileLimit: {
+              badge: 'Limit {{limit}}',
+              title: 'Dream board upload limit',
+              default: 'Choose a JPG, PNG, or WebP file up to {{limit}}.',
+              validating:
+                'Checking whether {{name}} ({{originalSize}}) fits within the {{limit}} upload limit.',
+              ready: '{{name}} is {{originalSize}} and is ready to upload to your dream board.',
+              tooLarge:
+                '{{name}} is {{originalSize}}, which is above the {{limit}} upload limit. Please choose a smaller image.',
+              unsupportedType:
+                '{{name}} is not a supported format. Please upload a JPG, PNG, or WebP image up to {{limit}}.',
+              failed:
+                'We could not validate whether {{name}} ({{originalSize}}) fits within the {{limit}} upload limit. Please try another file.',
+            },
             preview: {
               alt: 'Selected dream picture preview',
               selected: 'Picture selected',
               change: 'Choose another picture',
+              originalSize: 'Original file size: {{size}}',
             },
             fields: {
               caption: 'Caption (optional)',
@@ -1105,6 +1120,14 @@ const resources = {
             },
             validation: {
               fileRequired: 'Please upload an image to continue.',
+              validatingFile:
+                'Checking whether this image fits within the {{limit}} upload limit...',
+              fileTooLarge:
+                'This image is larger than the {{limit}} upload limit. Please choose a smaller image.',
+              unsupportedType: 'Please choose a JPG, PNG, or WebP image.',
+              fileReady: 'Image selected. It fits within the {{limit}} upload limit.',
+              fileValidationFailed:
+                'We could not validate this image. Please try a different file.',
               detailsRequired: 'Please provide a title or caption to continue.',
               categoryRequired: 'Please choose a category to continue.',
             },
@@ -1155,6 +1178,8 @@ const resources = {
           failedToSave: 'Failed to save dream board',
           errorSaving: 'An error occurred while saving',
           imageLimit: 'You can only add up to 7 images to your dream board.',
+          imageUploadLimit: 'Dream board images must be JPG, PNG, or WebP files up to {{limit}}.',
+          imageUnsupportedType: 'Please choose a JPG, PNG, or WebP image.',
           introScreen: {
             title: 'Welcome to Your Vision Board',
             description:
@@ -2725,7 +2750,7 @@ const resources = {
             steps: {
               file: {
                 title: 'Enviar Arquivo',
-                description: 'Envie arquivos nos formatos JPG e PNG',
+                description: 'Envie arquivos JPG, PNG ou WebP de até {{limit}}.',
               },
               details: {
                 title: 'Título ou Legenda',
@@ -2746,11 +2771,27 @@ const resources = {
               browse: 'Selecionar Arquivo',
               selected: 'Arquivo selecionado: {{name}}',
             },
-            fileHint: 'Escolha uma imagem para continuar.',
+            fileHint: 'Escolha uma imagem de até {{limit}} para continuar.',
+            fileLimit: {
+              badge: 'Limite {{limit}}',
+              title: 'Limite de upload do quadro dos sonhos',
+              default: 'Escolha uma imagem JPG, PNG ou WebP de até {{limit}}.',
+              validating:
+                'Verificando se {{name}} ({{originalSize}}) cabe no limite de upload de {{limit}}.',
+              ready:
+                '{{name}} tem {{originalSize}} e está pronta para envio ao seu quadro dos sonhos.',
+              tooLarge:
+                '{{name}} tem {{originalSize}}, acima do limite de upload de {{limit}}. Escolha uma imagem menor.',
+              unsupportedType:
+                '{{name}} não está em um formato compatível. Envie uma imagem JPG, PNG ou WebP de até {{limit}}.',
+              failed:
+                'Não foi possível validar se {{name}} ({{originalSize}}) cabe no limite de upload de {{limit}}. Tente outro arquivo.',
+            },
             preview: {
               alt: 'Prévia da imagem do sonho selecionada',
               selected: 'Imagem selecionada',
               change: 'Escolher outra imagem',
+              originalSize: 'Tamanho original do arquivo: {{size}}',
             },
             fields: {
               caption: 'Legenda (opcional)',
@@ -2766,6 +2807,12 @@ const resources = {
             },
             validation: {
               fileRequired: 'Envie uma imagem para continuar.',
+              validatingFile: 'Verificando se esta imagem cabe no limite de upload de {{limit}}...',
+              fileTooLarge:
+                'Esta imagem é maior que o limite de upload de {{limit}}. Escolha uma imagem menor.',
+              unsupportedType: 'Escolha uma imagem JPG, PNG ou WebP.',
+              fileReady: 'Imagem selecionada. Ela cabe no limite de upload de {{limit}}.',
+              fileValidationFailed: 'Não foi possível validar esta imagem. Tente outro arquivo.',
               detailsRequired: 'Adicione um título ou legenda para continuar.',
               categoryRequired: 'Escolha uma categoria para continuar.',
             },
@@ -2816,6 +2863,9 @@ const resources = {
           failedToSave: 'Falha ao salvar quadro dos sonhos',
           errorSaving: 'Ocorreu um erro ao salvar',
           imageLimit: 'Você pode adicionar apenas até 7 imagens ao seu quadro dos sonhos.',
+          imageUploadLimit:
+            'As imagens do quadro dos sonhos devem ser JPG, PNG ou WebP de até {{limit}}.',
+          imageUnsupportedType: 'Escolha uma imagem JPG, PNG ou WebP.',
           introScreen: {
             title: 'Bem-vindo ao Seu Quadro de Visão',
             description:

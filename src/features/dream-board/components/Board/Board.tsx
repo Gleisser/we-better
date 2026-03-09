@@ -14,64 +14,11 @@ import { ContentControls } from './ContentControls/ContentControls';
 import { Toolbar } from './Toolbar/Toolbar';
 import { IntroScreen } from './IntroScreen/IntroScreen';
 import showToast from '@/utils/helpers/toast';
+import {
+  formatDreamBoardImageLimit,
+  validateDreamBoardUploadFile,
+} from '../../utils/imagePersistence';
 import styles from './Board.module.css';
-
-// Add this utility function for image compression
-const compressImage = (base64Image: string, maxSizeKB: number = 100): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      let width = img.width;
-      let height = img.height;
-
-      // Calculate the ratio to maintain aspect ratio while reducing size
-      const MAX_WIDTH = 800;
-      const MAX_HEIGHT = 800;
-
-      if (width > height) {
-        if (width > MAX_WIDTH) {
-          height *= MAX_WIDTH / width;
-          width = MAX_WIDTH;
-        }
-      } else {
-        if (height > MAX_HEIGHT) {
-          width *= MAX_HEIGHT / height;
-          height = MAX_HEIGHT;
-        }
-      }
-
-      canvas.width = width;
-      canvas.height = height;
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        reject(new Error('Failed to get canvas context'));
-        return;
-      }
-
-      ctx.drawImage(img, 0, 0, width, height);
-
-      // Start with a high quality
-      let quality = 0.9;
-      let result = canvas.toDataURL('image/jpeg', quality);
-
-      // Gradually reduce quality until the size is under the maxSizeKB
-      while (result.length > maxSizeKB * 1024 && quality > 0.1) {
-        quality -= 0.1;
-        result = canvas.toDataURL('image/jpeg', quality);
-      }
-
-      resolve(result);
-    };
-
-    img.onerror = error => {
-      reject(error);
-    };
-
-    img.src = base64Image;
-  });
-};
 
 export const DreamBoard: React.FC<DreamBoardProps> = ({
   lifeWheelCategories,
@@ -231,29 +178,9 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
     setIsSaving(true);
 
     try {
-      // Compress images in content array before saving
-      const compressedContent = await Promise.all(
-        boardData.content.map(async item => {
-          if (
-            item.type === DreamBoardContentType.IMAGE &&
-            item.src &&
-            item.src.startsWith('data:')
-          ) {
-            try {
-              const compressedSrc = await compressImage(item.src, 500); // 500KB max
-              return { ...item, src: compressedSrc };
-            } catch (error) {
-              console.error('Error compressing image:', error);
-              return item; // Return original if compression fails
-            }
-          }
-          return item;
-        })
-      );
-
       const dataToSave: DreamBoardData = {
         ...boardData,
-        content: compressedContent,
+        content: boardData.content,
         updatedAt: new Date().toISOString(),
       };
 
@@ -299,7 +226,7 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
     };
 
     let newContent: DreamBoardContent = {
-      id: uuidv4(),
+      id: (contentData?.id as string) || uuidv4(),
       type,
       position: newPosition,
       size: {
@@ -317,6 +244,10 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
           ...newContent,
           src: (contentData?.src as string) || 'https://via.placeholder.com/200',
           alt: (contentData?.alt as string) || 'Dream board image',
+          storageBucket: contentData?.storageBucket as string | undefined,
+          storagePath: contentData?.storagePath as string | undefined,
+          mimeType: contentData?.mimeType as string | undefined,
+          fileSizeBytes: contentData?.fileSizeBytes as number | undefined,
         };
         break;
     }
@@ -371,25 +302,39 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
     // Rest of the existing upload logic
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
-    fileInput.accept = 'image/*';
+    fileInput.accept = 'image/jpeg,image/png,image/webp';
     fileInput.onchange = (e): void => {
       const target = e.target as HTMLInputElement;
       if (target && target.files && target.files.length > 0) {
         const file = target.files[0];
-        const reader = new FileReader();
+        void (async () => {
+          const validationResult = await validateDreamBoardUploadFile(file);
 
-        reader.onload = (event): void => {
-          if (event.target?.result) {
-            // Use handleAddContent correctly with type first, then content details
-            handleAddContent(DreamBoardContentType.IMAGE, {
-              src: event.target.result as string,
-              alt: file.name,
-              caption: '',
-            });
+          if (!validationResult.fitsLimit) {
+            showToast.error(
+              validationResult.reason === 'unsupportedType'
+                ? (t('dreamBoard.board.imageUnsupportedType') as string)
+                : (t('dreamBoard.board.imageUploadLimit', {
+                    limit: formatDreamBoardImageLimit(),
+                  }) as string)
+            );
+            return;
           }
-        };
 
-        reader.readAsDataURL(file);
+          const reader = new FileReader();
+
+          reader.onload = (event): void => {
+            if (event.target?.result) {
+              handleAddContent(DreamBoardContentType.IMAGE, {
+                src: event.target.result as string,
+                alt: file.name,
+                caption: '',
+              });
+            }
+          };
+
+          reader.readAsDataURL(file);
+        })();
       }
     };
 

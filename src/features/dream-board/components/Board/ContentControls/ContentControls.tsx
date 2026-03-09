@@ -2,6 +2,11 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { DreamBoardContent, DreamBoardContentType } from '../../../types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import showToast from '@/utils/helpers/toast';
+import {
+  formatDreamBoardImageLimit,
+  validateDreamBoardUploadFile,
+} from '../../../utils/imagePersistence';
 import styles from './ContentControls.module.css';
 import { Milestones } from '../Milestones/Milestones';
 
@@ -377,20 +382,37 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         onClick={() => {
           const fileInput = document.createElement('input');
           fileInput.type = 'file';
-          fileInput.accept = 'image/*';
+          fileInput.accept = 'image/jpeg,image/png,image/webp';
           fileInput.onchange = e => {
             const target = e.target as HTMLInputElement;
             if (target.files && target.files[0]) {
-              const reader = new FileReader();
-              reader.onload = event => {
-                if (event.target && typeof event.target.result === 'string') {
-                  handleChange({
-                    src: event.target.result,
-                    alt: target.files ? target.files[0].name : 'Replaced image',
-                  });
+              const nextFile = target.files[0];
+
+              void (async () => {
+                const validationResult = await validateDreamBoardUploadFile(nextFile);
+
+                if (!validationResult.fitsLimit) {
+                  showToast.error(
+                    validationResult.reason === 'unsupportedType'
+                      ? (t('dreamBoard.board.imageUnsupportedType') as string)
+                      : (t('dreamBoard.board.imageUploadLimit', {
+                          limit: formatDreamBoardImageLimit(),
+                        }) as string)
+                  );
+                  return;
                 }
-              };
-              reader.readAsDataURL(target.files[0]);
+
+                const reader = new FileReader();
+                reader.onload = event => {
+                  if (event.target && typeof event.target.result === 'string') {
+                    handleChange({
+                      src: event.target.result,
+                      alt: target.files ? target.files[0].name : 'Replaced image',
+                    });
+                  }
+                };
+                reader.readAsDataURL(nextFile);
+              })();
             }
           };
           fileInput.click();

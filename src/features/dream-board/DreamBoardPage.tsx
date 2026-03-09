@@ -27,6 +27,8 @@ import {
   deleteMilestoneForContent,
   toggleMilestoneCompletionForContent,
 } from './services/milestonesService';
+import { deleteDreamBoardStorageFiles, uploadDreamBoardImageFile } from './utils/imageStorage';
+import { formatDreamBoardImageLimit, validateDreamBoardUploadFile } from './utils/imagePersistence';
 
 type CategoryDetails = {
   icon: string;
@@ -233,6 +235,10 @@ const DreamBoardPage: React.FC = () => {
       progress: 0,
       createdAt: data.createdAt || backendData.created_at || new Date().toISOString(),
       imageUrl: contentItem.src,
+      imageStorageBucket: contentItem.storageBucket,
+      imageStoragePath: contentItem.storagePath,
+      imageMimeType: contentItem.mimeType,
+      imageFileSizeBytes: contentItem.fileSizeBytes,
       milestones: [],
       isShared: false,
       // Preserve position data from dream board
@@ -257,6 +263,10 @@ const DreamBoardPage: React.FC = () => {
         src: dream.imageUrl,
         alt: dream.title,
         caption: dream.description,
+        storageBucket: dream.imageStorageBucket,
+        storagePath: dream.imageStoragePath,
+        mimeType: dream.imageMimeType,
+        fileSizeBytes: dream.imageFileSizeBytes,
       }));
 
       return {
@@ -268,20 +278,6 @@ const DreamBoardPage: React.FC = () => {
     },
     [t]
   );
-
-  const readFileAsDataUrl = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (!reader.result || typeof reader.result !== 'string') {
-          reject(new Error('Failed to read selected image'));
-          return;
-        }
-        resolve(reader.result);
-      };
-      reader.onerror = () => reject(reader.error || new Error('Failed to read selected image'));
-      reader.readAsDataURL(file);
-    });
 
   const persistDreamBoard = useCallback(
     async (
@@ -408,7 +404,13 @@ const DreamBoardPage: React.FC = () => {
     }
 
     try {
-      const imageSource = await readFileAsDataUrl(upload.file);
+      onProgress?.(5);
+      const newDreamId =
+        typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      const uploadedImage = await uploadDreamBoardImageFile(upload.file, newDreamId);
+      onProgress?.(35);
       const uploadMilestones = upload.milestones.map(milestone => ({
         id:
           typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
@@ -420,17 +422,18 @@ const DreamBoardPage: React.FC = () => {
         date: milestone.date,
       }));
       const newDream: Dream = {
-        id:
-          typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-            ? crypto.randomUUID()
-            : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        id: newDreamId,
         title: upload.title,
         description: upload.caption || '',
         category: upload.category || mockCategories[0] || 'General',
         timeframe: 'mid-term',
         progress: 0,
         createdAt: new Date().toISOString(),
-        imageUrl: imageSource,
+        imageUrl: uploadedImage.publicUrl,
+        imageStorageBucket: uploadedImage.bucket,
+        imageStoragePath: uploadedImage.path,
+        imageMimeType: uploadedImage.mimeType,
+        imageFileSizeBytes: uploadedImage.fileSizeBytes,
         milestones: uploadMilestones,
         isShared: false,
       };
@@ -454,6 +457,12 @@ const DreamBoardPage: React.FC = () => {
 
       const didPersist = await persistDreamBoard(updatedDreams, onProgress);
       if (!didPersist) {
+        await deleteDreamBoardStorageFiles([
+          {
+            bucket: uploadedImage.bucket,
+            path: uploadedImage.path,
+          },
+        ]);
         delete pendingMilestonesRef.current[newDream.id];
         setDreams(prevDreams => prevDreams.filter(dream => dream.id !== newDream.id));
         pendingDreamsRef.current = null;
@@ -462,7 +471,19 @@ const DreamBoardPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Error adding dream image:', error);
-      setSaveError('SAVE_FAILED');
+      const errorMessage = error instanceof Error ? error.message : '';
+
+      if (errorMessage.includes('Unsupported dream board image format')) {
+        setSaveError(t('dreamBoard.board.imageUnsupportedType') as string);
+      } else if (errorMessage.includes('5 MB upload limit')) {
+        setSaveError(
+          t('dreamBoard.board.imageUploadLimit', {
+            limit: formatDreamBoardImageLimit(),
+          }) as string
+        );
+      } else {
+        setSaveError('SAVE_FAILED');
+      }
       throw error;
     }
   };
@@ -748,13 +769,33 @@ const DreamBoardPage: React.FC = () => {
       return;
     }
 
-    const defaultTitle = selectedFile.name.replace(/\.[^/.]+$/, '').trim() || 'My Dream';
-    void handleAddDreamImage({
-      file: selectedFile,
-      title: defaultTitle,
-      category: mockCategories[0] || 'General',
-      milestones: [],
-    });
+    void (async () => {
+      const validationResult = await validateDreamBoardUploadFile(selectedFile);
+
+      if (!validationResult.fitsLimit) {
+        setSaveError(
+          validationResult.reason === 'unsupportedType'
+            ? (t('dreamBoard.board.imageUnsupportedType') as string) || ''
+            : (t('dreamBoard.board.imageUploadLimit', {
+                limit: formatDreamBoardImageLimit(),
+              }) as string) || ''
+        );
+        return;
+      }
+
+      const defaultTitle = selectedFile.name.replace(/\.[^/.]+$/, '').trim() || 'My Dream';
+
+      try {
+        await handleAddDreamImage({
+          file: selectedFile,
+          title: defaultTitle,
+          category: mockCategories[0] || 'General',
+          milestones: [],
+        });
+      } catch (error) {
+        console.error('Error handling first dream image selection:', error);
+      }
+    })();
   };
 
   // Empty state content
@@ -790,7 +831,7 @@ const DreamBoardPage: React.FC = () => {
         <input
           ref={firstImageInputRef}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp"
           onChange={handleFirstImageSelection}
           className="hidden"
           aria-label={t('dreamBoard.emptyState.firstImage.cta') as string}
