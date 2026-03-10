@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
-import { billingService } from '@/core/services/billingService';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
 import { CollapseIcon, LifeWheelIcon, SparkleIcon } from '@/shared/components/common/icons';
 import styles from './Sidebar.module.css';
 import homeAnimation from './icons/home.json';
@@ -42,14 +42,24 @@ const SidebarLottieIcon = ({ animationData }: { animationData: object }): JSX.El
 const Sidebar = (): JSX.Element => {
   const { t } = useCommonTranslation();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [hasActivePaidPlan, setHasActivePaidPlan] = useState(false);
   const location = useLocation();
   const { logout } = useAuth();
+  const { data: billingSummary } = useBillingSummary();
 
   const pricingLabel = t('navigation.pricing') as string;
   const pricingCtaLabel = t('navigation.pricingCta') as string;
   const pricingCtaTop = t('navigation.pricingCtaTop') as string;
   const pricingCtaBottom = t('navigation.pricingCtaBottom') as string;
+  const hasActivePaidPlan = useMemo(() => {
+    if (!billingSummary) {
+      return false;
+    }
+
+    return (
+      billingSummary.currentPlan !== 'free' &&
+      billingSummary.subscriptionStatus.toLowerCase() !== 'free'
+    );
+  }, [billingSummary]);
 
   useEffect(() => {
     document.body.classList.toggle('sidebar-collapsed', isCollapsed);
@@ -57,25 +67,6 @@ const Sidebar = (): JSX.Element => {
       document.body.classList.remove('sidebar-collapsed');
     };
   }, [isCollapsed]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadBillingSummary = async (): Promise<void> => {
-      const { data } = await billingService.getBillingSummary();
-      if (!isMounted || !data) return;
-
-      const userHasPaidPlan =
-        data.currentPlan !== 'free' && data.subscriptionStatus.toLowerCase() !== 'free';
-      setHasActivePaidPlan(userHasPaidPlan);
-    };
-
-    void loadBillingSummary();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   type MenuItem = {
     path: string;

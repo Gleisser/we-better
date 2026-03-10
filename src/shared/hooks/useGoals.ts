@@ -1,9 +1,6 @@
-/**
- * Custom hook for goals management
- * Follows the same patterns as useHabits for consistency
- */
-
-import { useState, useCallback, useEffect } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useState } from 'react';
+import { AUTH_SCOPED_QUERY_META } from '@/core/config/react-query';
 import {
   Goal,
   GoalWithMilestones,
@@ -12,34 +9,36 @@ import {
   GoalStats,
   GoalCategory,
   ReviewFrequency,
-  fetchGoals,
-  createGoal,
-  updateGoal,
-  deleteGoal,
+  fetchGoals as fetchGoalsApi,
+  createGoal as createGoalApi,
+  updateGoal as updateGoalApi,
+  deleteGoal as deleteGoalApi,
   fetchGoalById,
-  createMilestone,
-  updateMilestone,
-  deleteMilestone,
-  fetchReviewSettings,
+  createMilestone as createMilestoneApi,
+  updateMilestone as updateMilestoneApi,
+  deleteMilestone as deleteMilestoneApi,
+  fetchReviewSettings as fetchReviewSettingsApi,
   upsertReviewSettings,
-  updateReviewSettings,
-  completeReview,
-  fetchGoalStats,
+  updateReviewSettings as updateReviewSettingsApi,
+  completeReview as completeReviewApi,
+  fetchGoalStats as fetchGoalStatsApi,
   increaseProgress,
   decreaseProgress,
   toggleMilestoneCompletion,
 } from '@/core/services/goalsService';
+import { useAuth } from '@/shared/hooks/useAuth';
 
-// Hook return type
+export interface UseGoalsOptions {
+  category?: GoalCategory;
+  includeMilestones?: boolean;
+}
+
 export interface UseGoalsReturn {
-  // State
   goals: GoalWithMilestones[];
   reviewSettings: UserReviewSettings | null;
   stats: GoalStats | null;
   isLoading: boolean;
   error: Error | null;
-
-  // Goal operations
   fetchGoals: (category?: GoalCategory, includeMilestones?: boolean) => Promise<void>;
   createGoal: (title: string, category: GoalCategory, targetDate?: string) => Promise<Goal>;
   updateGoal: (
@@ -53,12 +52,8 @@ export interface UseGoalsReturn {
   ) => Promise<Goal>;
   deleteGoal: (goalId: string) => Promise<void>;
   refreshGoal: (goalId: string) => Promise<void>;
-
-  // Progress operations
   increaseGoalProgress: (goalId: string, increment?: number) => Promise<void>;
   decreaseGoalProgress: (goalId: string, decrement?: number) => Promise<void>;
-
-  // Milestone operations
   addMilestone: (goalId: string, title: string) => Promise<Milestone>;
   updateMilestone: (
     goalId: string,
@@ -67,8 +62,6 @@ export interface UseGoalsReturn {
   ) => Promise<Milestone>;
   deleteMilestone: (goalId: string, milestoneId: string) => Promise<void>;
   toggleMilestone: (goalId: string, milestoneId: string, completed: boolean) => Promise<void>;
-
-  // Review settings operations
   fetchReviewSettings: () => Promise<void>;
   saveReviewSettings: (settings: {
     frequency: ReviewFrequency;
@@ -83,97 +76,352 @@ export interface UseGoalsReturn {
     reminder_days?: number;
   }) => Promise<UserReviewSettings>;
   completeReview: () => Promise<UserReviewSettings>;
-
-  // Statistics
   fetchStats: () => Promise<void>;
-
-  // Utility
   clearError: () => void;
   refetch: () => Promise<void>;
 }
 
-export const useGoals = (): UseGoalsReturn => {
-  // State
-  const [goals, setGoals] = useState<GoalWithMilestones[]>([]);
-  const [reviewSettings, setReviewSettings] = useState<UserReviewSettings | null>(null);
-  const [stats, setStats] = useState<GoalStats | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+const goalsQueryKeyPrefix = (userId: string | null) => ['goals', userId ?? 'anonymous'] as const;
 
-  // Helper function to handle errors
-  const handleError = useCallback((error: unknown) => {
-    const errorObj = error instanceof Error ? error : new Error('An unknown error occurred');
-    setError(errorObj);
-    console.error('Goals hook error:', errorObj);
-  }, []);
+const goalsQueryKey = (userId: string | null, category?: GoalCategory, includeMilestones = true) =>
+  [
+    ...goalsQueryKeyPrefix(userId),
+    'list',
+    category ?? 'all',
+    includeMilestones ? 'full' : 'base',
+  ] as const;
 
-  // Helper function to find and update a goal in state
-  const updateGoalInState = useCallback(
-    (goalId: string, updater: (goal: GoalWithMilestones) => GoalWithMilestones) => {
-      setGoals(prevGoals => prevGoals.map(goal => (goal.id === goalId ? updater(goal) : goal)));
+const goalReviewSettingsQueryKey = (userId: string | null) =>
+  [...goalsQueryKeyPrefix(userId), 'reviewSettings'] as const;
+
+const goalStatsQueryKey = (userId: string | null) =>
+  [...goalsQueryKeyPrefix(userId), 'stats'] as const;
+
+const loadGoals = async (
+  category?: GoalCategory,
+  includeMilestones = true
+): Promise<GoalWithMilestones[]> => {
+  const response = await fetchGoalsApi(category, includeMilestones);
+
+  if (!response) {
+    return [];
+  }
+
+  return response.goals.map(goal => ({
+    ...goal,
+    milestones: 'milestones' in goal ? goal.milestones : [],
+  }));
+};
+
+const updateGoalAcrossCaches = (
+  goals: GoalWithMilestones[] | undefined,
+  goalId: string,
+  updater: (goal: GoalWithMilestones) => GoalWithMilestones
+): GoalWithMilestones[] | undefined => {
+  if (!goals) {
+    return goals;
+  }
+
+  return goals.map(goal => (goal.id === goalId ? updater(goal) : goal));
+};
+
+export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
+  const category = options.category;
+  const includeMilestones = options.includeMilestones ?? true;
+  const [manualError, setManualError] = useState<Error | null>(null);
+
+  const goalsQuery = useQuery({
+    queryKey: goalsQueryKey(userId, category, includeMilestones),
+    queryFn: async () => loadGoals(category, includeMilestones),
+    enabled: Boolean(userId),
+    meta: AUTH_SCOPED_QUERY_META,
+  });
+
+  const reviewSettingsQuery = useQuery({
+    queryKey: goalReviewSettingsQueryKey(userId),
+    queryFn: async () => fetchReviewSettingsApi(),
+    enabled: Boolean(userId),
+    meta: AUTH_SCOPED_QUERY_META,
+  });
+
+  const statsQuery = useQuery({
+    queryKey: goalStatsQueryKey(userId),
+    queryFn: async () => fetchGoalStatsApi(),
+    enabled: false,
+    meta: AUTH_SCOPED_QUERY_META,
+  });
+
+  const createGoalMutation = useMutation({
+    mutationFn: async ({
+      title,
+      goalCategory,
+      targetDate,
+    }: {
+      title: string;
+      goalCategory: GoalCategory;
+      targetDate?: string;
+    }) => {
+      const goal = await createGoalApi(title, goalCategory, 0, targetDate);
+
+      if (!goal) {
+        throw new Error('Failed to create goal');
+      }
+
+      return goal;
     },
-    []
-  );
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: goalsQueryKeyPrefix(userId) });
+    },
+  });
 
-  // Fetch goals
-  const fetchGoalsData = useCallback(
-    async (category?: GoalCategory, includeMilestones = true) => {
+  const updateGoalMutation = useMutation({
+    mutationFn: async ({
+      goalId,
+      updates,
+    }: {
+      goalId: string;
+      updates: {
+        title?: string;
+        category?: GoalCategory;
+        progress?: number;
+        target_date?: string;
+      };
+    }) => {
+      const goal = await updateGoalApi(goalId, updates);
+
+      if (!goal) {
+        throw new Error('Failed to update goal');
+      }
+
+      return goal;
+    },
+    onSuccess: updatedGoal => {
+      queryClient.setQueriesData<GoalWithMilestones[]>(
+        { queryKey: goalsQueryKeyPrefix(userId) },
+        goals =>
+          updateGoalAcrossCaches(goals, updatedGoal.id, goal => ({
+            ...goal,
+            ...updatedGoal,
+          }))
+      );
+    },
+  });
+
+  const deleteGoalMutation = useMutation({
+    mutationFn: async (goalId: string) => {
+      const success = await deleteGoalApi(goalId);
+
+      if (!success) {
+        throw new Error('Failed to delete goal');
+      }
+
+      return goalId;
+    },
+    onSuccess: goalId => {
+      queryClient.setQueriesData<GoalWithMilestones[]>(
+        { queryKey: goalsQueryKeyPrefix(userId) },
+        goals => goals?.filter(goal => goal.id !== goalId) ?? []
+      );
+    },
+  });
+
+  const refreshGoal = useCallback(
+    async (goalId: string): Promise<void> => {
       try {
-        setIsLoading(true);
-        setError(null);
+        const refreshedGoal = (await fetchGoalById(goalId, true)) as GoalWithMilestones | null;
 
-        const response = await fetchGoals(category, includeMilestones);
-
-        if (!response) {
-          setGoals([]);
-          return;
+        if (!refreshedGoal) {
+          throw new Error('Failed to refresh goal');
         }
 
-        // Transform goals to include empty milestones array if not included
-        const goalsWithMilestones: GoalWithMilestones[] = response.goals.map(goal => ({
-          ...goal,
-          milestones: 'milestones' in goal ? goal.milestones : [],
-        }));
-
-        setGoals(goalsWithMilestones);
-      } catch (err) {
-        handleError(err);
-      } finally {
-        setIsLoading(false);
+        queryClient.setQueriesData<GoalWithMilestones[]>(
+          { queryKey: goalsQueryKeyPrefix(userId) },
+          goals =>
+            updateGoalAcrossCaches(goals, goalId, existingGoal => ({
+              ...existingGoal,
+              ...refreshedGoal,
+              milestones: refreshedGoal.milestones ?? existingGoal.milestones,
+            }))
+        );
+        setManualError(null);
+      } catch (error) {
+        setManualError(error instanceof Error ? error : new Error('Failed to refresh goal'));
       }
     },
-    [handleError]
+    [queryClient, userId]
   );
 
-  // Create goal
-  const createGoalData = useCallback(
-    async (title: string, category: GoalCategory, targetDate?: string): Promise<Goal> => {
+  const addMilestoneMutation = useMutation({
+    mutationFn: async ({ goalId, title }: { goalId: string; title: string }) => {
+      const milestone = await createMilestoneApi(goalId, title);
+
+      if (!milestone) {
+        throw new Error('Failed to create milestone');
+      }
+
+      return { goalId, milestone };
+    },
+    onSuccess: ({ goalId, milestone }) => {
+      queryClient.setQueriesData<GoalWithMilestones[]>(
+        { queryKey: goalsQueryKeyPrefix(userId) },
+        goals =>
+          updateGoalAcrossCaches(goals, goalId, goal => ({
+            ...goal,
+            milestones: [...goal.milestones, milestone],
+          }))
+      );
+    },
+  });
+
+  const updateMilestoneMutation = useMutation({
+    mutationFn: async ({
+      goalId,
+      milestoneId,
+      updates,
+    }: {
+      goalId: string;
+      milestoneId: string;
+      updates: { title?: string; completed?: boolean };
+    }) => {
+      const milestone = await updateMilestoneApi(goalId, milestoneId, updates);
+
+      if (!milestone) {
+        throw new Error('Failed to update milestone');
+      }
+
+      return { goalId, milestone };
+    },
+    onSuccess: ({ goalId, milestone }) => {
+      queryClient.setQueriesData<GoalWithMilestones[]>(
+        { queryKey: goalsQueryKeyPrefix(userId) },
+        goals =>
+          updateGoalAcrossCaches(goals, goalId, goal => ({
+            ...goal,
+            milestones: goal.milestones.map(existingMilestone =>
+              existingMilestone.id === milestone.id ? milestone : existingMilestone
+            ),
+          }))
+      );
+    },
+  });
+
+  const deleteMilestoneMutation = useMutation({
+    mutationFn: async ({ goalId, milestoneId }: { goalId: string; milestoneId: string }) => {
+      const success = await deleteMilestoneApi(goalId, milestoneId);
+
+      if (!success) {
+        throw new Error('Failed to delete milestone');
+      }
+
+      return { goalId, milestoneId };
+    },
+    onSuccess: ({ goalId, milestoneId }) => {
+      queryClient.setQueriesData<GoalWithMilestones[]>(
+        { queryKey: goalsQueryKeyPrefix(userId) },
+        goals =>
+          updateGoalAcrossCaches(goals, goalId, goal => ({
+            ...goal,
+            milestones: goal.milestones.filter(milestone => milestone.id !== milestoneId),
+          }))
+      );
+    },
+  });
+
+  const saveReviewSettingsMutation = useMutation({
+    mutationFn: async (settings: {
+      frequency: ReviewFrequency;
+      notification_preferences: Record<string, boolean>;
+      next_review_date?: string;
+      reminder_days?: number;
+    }) => {
+      const reviewSettings = await upsertReviewSettings(settings);
+
+      if (!reviewSettings) {
+        throw new Error('Failed to save review settings');
+      }
+
+      return reviewSettings;
+    },
+    onSuccess: reviewSettings => {
+      queryClient.setQueryData(goalReviewSettingsQueryKey(userId), reviewSettings);
+    },
+  });
+
+  const updateReviewSettingsMutation = useMutation({
+    mutationFn: async (settings: {
+      frequency?: ReviewFrequency;
+      notification_preferences?: Record<string, boolean>;
+      next_review_date?: string;
+      reminder_days?: number;
+    }) => {
+      const reviewSettings = await updateReviewSettingsApi(settings);
+
+      if (!reviewSettings) {
+        throw new Error('Failed to update review settings');
+      }
+
+      return reviewSettings;
+    },
+    onSuccess: reviewSettings => {
+      queryClient.setQueryData(goalReviewSettingsQueryKey(userId), reviewSettings);
+    },
+  });
+
+  const completeReviewMutation = useMutation({
+    mutationFn: async () => {
+      const reviewSettings = await completeReviewApi();
+
+      if (!reviewSettings) {
+        throw new Error('Failed to complete review');
+      }
+
+      return reviewSettings;
+    },
+    onSuccess: reviewSettings => {
+      queryClient.setQueryData(goalReviewSettingsQueryKey(userId), reviewSettings);
+    },
+  });
+
+  const fetchGoals = useCallback(
+    async (nextCategory?: GoalCategory, nextIncludeMilestones = true): Promise<void> => {
+      if (!userId) {
+        setManualError(new Error('Not authenticated'));
+        return;
+      }
+
       try {
-        setError(null);
-        const newGoal = await createGoal(title, category, 0, targetDate);
-
-        if (!newGoal) {
-          throw new Error('Failed to create goal');
-        }
-
-        // Optimistically add to state with empty milestones
-        const goalWithMilestones: GoalWithMilestones = {
-          ...newGoal,
-          milestones: [],
-        };
-        setGoals(prevGoals => [goalWithMilestones, ...prevGoals]);
-
-        return newGoal;
-      } catch (err) {
-        handleError(err);
-        throw err;
+        await queryClient.fetchQuery({
+          queryKey: goalsQueryKey(userId, nextCategory, nextIncludeMilestones),
+          queryFn: async () => loadGoals(nextCategory, nextIncludeMilestones),
+          meta: AUTH_SCOPED_QUERY_META,
+        });
+        setManualError(null);
+      } catch (error) {
+        setManualError(error instanceof Error ? error : new Error('Failed to fetch goals'));
       }
     },
-    [handleError]
+    [queryClient, userId]
   );
 
-  // Update goal
-  const updateGoalData = useCallback(
+  const createGoal = useCallback(
+    async (title: string, goalCategory: GoalCategory, targetDate?: string): Promise<Goal> => {
+      try {
+        const goal = await createGoalMutation.mutateAsync({ title, goalCategory, targetDate });
+        setManualError(null);
+        return goal;
+      } catch (error) {
+        const nextError = error instanceof Error ? error : new Error('Failed to create goal');
+        setManualError(nextError);
+        throw nextError;
+      }
+    },
+    [createGoalMutation]
+  );
+
+  const updateGoal = useCallback(
     async (
       goalId: string,
       updates: {
@@ -184,230 +432,169 @@ export const useGoals = (): UseGoalsReturn => {
       }
     ): Promise<Goal> => {
       try {
-        setError(null);
-
-        // Optimistic update
-        updateGoalInState(goalId, goal => ({ ...goal, ...updates }));
-
-        const updatedGoal = await updateGoal(goalId, updates);
-
-        if (!updatedGoal) {
-          throw new Error('Failed to update goal');
-        }
-
-        // Update with server response
-        updateGoalInState(goalId, goal => ({ ...goal, ...updatedGoal }));
-
-        return updatedGoal;
-      } catch (err) {
-        handleError(err);
-        // Revert optimistic update on error
-        await fetchGoalsData();
-        throw err;
+        const goal = await updateGoalMutation.mutateAsync({ goalId, updates });
+        setManualError(null);
+        return goal;
+      } catch (error) {
+        const nextError = error instanceof Error ? error : new Error('Failed to update goal');
+        setManualError(nextError);
+        throw nextError;
       }
     },
-    [handleError, fetchGoalsData, updateGoalInState]
+    [updateGoalMutation]
   );
 
-  // Delete goal
-  const deleteGoalData = useCallback(
+  const deleteGoal = useCallback(
     async (goalId: string): Promise<void> => {
       try {
-        setError(null);
-
-        // Optimistic removal
-        setGoals(prevGoals => prevGoals.filter(goal => goal.id !== goalId));
-
-        await deleteGoal(goalId);
-      } catch (err) {
-        handleError(err);
-        // Revert optimistic update on error
-        await fetchGoalsData();
-        throw err;
+        await deleteGoalMutation.mutateAsync(goalId);
+        setManualError(null);
+      } catch (error) {
+        const nextError = error instanceof Error ? error : new Error('Failed to delete goal');
+        setManualError(nextError);
+        throw nextError;
       }
     },
-    [handleError, fetchGoalsData]
+    [deleteGoalMutation]
   );
 
-  // Refresh a specific goal
-  const refreshGoal = useCallback(
-    async (goalId: string): Promise<void> => {
-      try {
-        setError(null);
-        const refreshedGoal = (await fetchGoalById(goalId, true)) as GoalWithMilestones;
-        updateGoalInState(goalId, () => refreshedGoal);
-      } catch (err) {
-        handleError(err);
-      }
-    },
-    [handleError, updateGoalInState]
-  );
-
-  // Increase goal progress
   const increaseGoalProgress = useCallback(
     async (goalId: string, increment = 5): Promise<void> => {
       try {
-        setError(null);
+        const goal = await increaseProgress(goalId, increment);
 
-        // Optimistic update
-        updateGoalInState(goalId, goal => ({
-          ...goal,
-          progress: Math.min(100, goal.progress + increment),
-        }));
+        if (!goal) {
+          throw new Error('Failed to increase goal progress');
+        }
 
-        await increaseProgress(goalId, increment);
-      } catch (err) {
-        handleError(err);
-        // Revert optimistic update on error
-        await refreshGoal(goalId);
-        throw err;
+        queryClient.setQueriesData<GoalWithMilestones[]>(
+          { queryKey: goalsQueryKeyPrefix(userId) },
+          goals =>
+            updateGoalAcrossCaches(goals, goalId, existingGoal => ({
+              ...existingGoal,
+              ...goal,
+            }))
+        );
+        setManualError(null);
+      } catch (error) {
+        const nextError =
+          error instanceof Error ? error : new Error('Failed to increase goal progress');
+        setManualError(nextError);
+        throw nextError;
       }
     },
-    [handleError, refreshGoal, updateGoalInState]
+    [queryClient, userId]
   );
 
-  // Decrease goal progress
   const decreaseGoalProgress = useCallback(
     async (goalId: string, decrement = 5): Promise<void> => {
       try {
-        setError(null);
+        const goal = await decreaseProgress(goalId, decrement);
 
-        // Optimistic update
-        updateGoalInState(goalId, goal => ({
-          ...goal,
-          progress: Math.max(0, goal.progress - decrement),
-        }));
+        if (!goal) {
+          throw new Error('Failed to decrease goal progress');
+        }
 
-        await decreaseProgress(goalId, decrement);
-      } catch (err) {
-        handleError(err);
-        // Revert optimistic update on error
-        await refreshGoal(goalId);
-        throw err;
+        queryClient.setQueriesData<GoalWithMilestones[]>(
+          { queryKey: goalsQueryKeyPrefix(userId) },
+          goals =>
+            updateGoalAcrossCaches(goals, goalId, existingGoal => ({
+              ...existingGoal,
+              ...goal,
+            }))
+        );
+        setManualError(null);
+      } catch (error) {
+        const nextError =
+          error instanceof Error ? error : new Error('Failed to decrease goal progress');
+        setManualError(nextError);
+        throw nextError;
       }
     },
-    [handleError, refreshGoal, updateGoalInState]
+    [queryClient, userId]
   );
 
-  // Add milestone
   const addMilestone = useCallback(
     async (goalId: string, title: string): Promise<Milestone> => {
       try {
-        setError(null);
-        const newMilestone = await createMilestone(goalId, title);
-
-        if (!newMilestone) {
-          throw new Error('Failed to create milestone');
-        }
-
-        // Update goal state with new milestone
-        updateGoalInState(goalId, goal => ({
-          ...goal,
-          milestones: [...goal.milestones, newMilestone],
-        }));
-
-        return newMilestone;
-      } catch (err) {
-        handleError(err);
-        throw err;
+        const result = await addMilestoneMutation.mutateAsync({ goalId, title });
+        setManualError(null);
+        return result.milestone;
+      } catch (error) {
+        const nextError = error instanceof Error ? error : new Error('Failed to create milestone');
+        setManualError(nextError);
+        throw nextError;
       }
     },
-    [handleError, updateGoalInState]
+    [addMilestoneMutation]
   );
 
-  // Update milestone
-  const updateMilestoneData = useCallback(
+  const updateMilestone = useCallback(
     async (
       goalId: string,
       milestoneId: string,
       updates: { title?: string; completed?: boolean }
     ): Promise<Milestone> => {
       try {
-        setError(null);
-
-        // Optimistic update
-        updateGoalInState(goalId, goal => ({
-          ...goal,
-          milestones: goal.milestones.map(milestone =>
-            milestone.id === milestoneId ? { ...milestone, ...updates } : milestone
-          ),
-        }));
-
-        const updatedMilestone = await updateMilestone(goalId, milestoneId, updates);
-
-        if (!updatedMilestone) {
-          throw new Error('Failed to update milestone');
-        }
-
-        // Update with server response
-        updateGoalInState(goalId, goal => ({
-          ...goal,
-          milestones: goal.milestones.map(milestone =>
-            milestone.id === milestoneId ? updatedMilestone : milestone
-          ),
-        }));
-
-        return updatedMilestone;
-      } catch (err) {
-        handleError(err);
-        // Revert optimistic update on error
-        await refreshGoal(goalId);
-        throw err;
+        const result = await updateMilestoneMutation.mutateAsync({ goalId, milestoneId, updates });
+        setManualError(null);
+        return result.milestone;
+      } catch (error) {
+        const nextError = error instanceof Error ? error : new Error('Failed to update milestone');
+        setManualError(nextError);
+        throw nextError;
       }
     },
-    [handleError, refreshGoal, updateGoalInState]
+    [updateMilestoneMutation]
   );
 
-  // Delete milestone
-  const deleteMilestoneData = useCallback(
+  const deleteMilestone = useCallback(
     async (goalId: string, milestoneId: string): Promise<void> => {
       try {
-        setError(null);
-
-        // Optimistic removal
-        updateGoalInState(goalId, goal => ({
-          ...goal,
-          milestones: goal.milestones.filter(milestone => milestone.id !== milestoneId),
-        }));
-
-        await deleteMilestone(goalId, milestoneId);
-      } catch (err) {
-        handleError(err);
-        // Revert optimistic update on error
-        await refreshGoal(goalId);
-        throw err;
+        await deleteMilestoneMutation.mutateAsync({ goalId, milestoneId });
+        setManualError(null);
+      } catch (error) {
+        const nextError = error instanceof Error ? error : new Error('Failed to delete milestone');
+        setManualError(nextError);
+        throw nextError;
       }
     },
-    [handleError, refreshGoal, updateGoalInState]
+    [deleteMilestoneMutation]
   );
 
-  // Toggle milestone
   const toggleMilestone = useCallback(
     async (goalId: string, milestoneId: string, completed: boolean): Promise<void> => {
       try {
-        setError(null);
-        await toggleMilestoneCompletion(goalId, milestoneId, completed);
-        await updateMilestoneData(goalId, milestoneId, { completed });
-      } catch (err) {
-        handleError(err);
-        throw err;
+        const milestone = await toggleMilestoneCompletion(goalId, milestoneId, completed);
+
+        if (!milestone) {
+          throw new Error('Failed to update milestone');
+        }
+
+        queryClient.setQueriesData<GoalWithMilestones[]>(
+          { queryKey: goalsQueryKeyPrefix(userId) },
+          goals =>
+            updateGoalAcrossCaches(goals, goalId, goal => ({
+              ...goal,
+              milestones: goal.milestones.map(existingMilestone =>
+                existingMilestone.id === milestone.id ? milestone : existingMilestone
+              ),
+            }))
+        );
+        setManualError(null);
+      } catch (error) {
+        const nextError = error instanceof Error ? error : new Error('Failed to update milestone');
+        setManualError(nextError);
+        throw nextError;
       }
     },
-    [handleError, updateMilestoneData]
+    [queryClient, userId]
   );
 
-  // Fetch review settings
-  const fetchReviewSettingsData = useCallback(async (): Promise<void> => {
-    try {
-      setError(null);
-      const settings = await fetchReviewSettings();
-      setReviewSettings(settings);
-    } catch (err) {
-      handleError(err);
-    }
-  }, [handleError]);
+  const fetchReviewSettings = useCallback(async (): Promise<void> => {
+    await reviewSettingsQuery.refetch();
+  }, [reviewSettingsQuery]);
 
-  // Save review settings
   const saveReviewSettings = useCallback(
     async (settings: {
       frequency: ReviewFrequency;
@@ -416,23 +603,20 @@ export const useGoals = (): UseGoalsReturn => {
       reminder_days?: number;
     }): Promise<UserReviewSettings> => {
       try {
-        setError(null);
-        const savedSettings = await upsertReviewSettings(settings);
-        if (!savedSettings) {
-          throw new Error('Failed to save review settings');
-        }
-        setReviewSettings(savedSettings);
-        return savedSettings;
-      } catch (err) {
-        handleError(err);
-        throw err;
+        const reviewSettings = await saveReviewSettingsMutation.mutateAsync(settings);
+        setManualError(null);
+        return reviewSettings;
+      } catch (error) {
+        const nextError =
+          error instanceof Error ? error : new Error('Failed to save review settings');
+        setManualError(nextError);
+        throw nextError;
       }
     },
-    [handleError]
+    [saveReviewSettingsMutation]
   );
 
-  // Update review settings
-  const updateReviewSettingsData = useCallback(
+  const updateReviewSettings = useCallback(
     async (settings: {
       frequency?: ReviewFrequency;
       notification_preferences?: Record<string, boolean>;
@@ -440,102 +624,80 @@ export const useGoals = (): UseGoalsReturn => {
       reminder_days?: number;
     }): Promise<UserReviewSettings> => {
       try {
-        setError(null);
-        const updatedSettings = await updateReviewSettings(settings);
-        if (!updatedSettings) {
-          throw new Error('Failed to update review settings');
-        }
-        setReviewSettings(updatedSettings);
-        return updatedSettings;
-      } catch (err) {
-        handleError(err);
-        throw err;
+        const reviewSettings = await updateReviewSettingsMutation.mutateAsync(settings);
+        setManualError(null);
+        return reviewSettings;
+      } catch (error) {
+        const nextError =
+          error instanceof Error ? error : new Error('Failed to update review settings');
+        setManualError(nextError);
+        throw nextError;
       }
     },
-    [handleError]
+    [updateReviewSettingsMutation]
   );
 
-  // Complete review
-  const completeReviewData = useCallback(async (): Promise<UserReviewSettings> => {
+  const completeReview = useCallback(async (): Promise<UserReviewSettings> => {
     try {
-      setError(null);
-      const completedReview = await completeReview();
-      if (!completedReview) {
-        throw new Error('Failed to complete review');
-      }
-      setReviewSettings(completedReview);
-      return completedReview;
-    } catch (err) {
-      handleError(err);
-      throw err;
+      const reviewSettings = await completeReviewMutation.mutateAsync();
+      setManualError(null);
+      return reviewSettings;
+    } catch (error) {
+      const nextError = error instanceof Error ? error : new Error('Failed to complete review');
+      setManualError(nextError);
+      throw nextError;
     }
-  }, [handleError]);
+  }, [completeReviewMutation]);
 
-  // Fetch statistics
-  const fetchStatsData = useCallback(async (): Promise<void> => {
-    try {
-      setError(null);
-      const statsData = await fetchGoalStats();
-      setStats(statsData);
-    } catch (err) {
-      handleError(err);
-    }
-  }, [handleError]);
+  const fetchStats = useCallback(async (): Promise<void> => {
+    await statsQuery.refetch();
+  }, [statsQuery]);
 
-  // Clear error
   const clearError = useCallback(() => {
-    setError(null);
+    setManualError(null);
   }, []);
 
-  // Refetch all data
   const refetch = useCallback(async (): Promise<void> => {
-    await Promise.all([
-      fetchGoalsData(undefined, true),
-      fetchReviewSettingsData(),
-      fetchStatsData(),
-    ]);
-  }, [fetchGoalsData, fetchReviewSettingsData, fetchStatsData]);
-
-  // Auto-fetch on mount
-  useEffect(() => {
-    fetchGoalsData(undefined, true);
-  }, [fetchGoalsData]);
+    await Promise.all([goalsQuery.refetch(), reviewSettingsQuery.refetch()]);
+  }, [goalsQuery, reviewSettingsQuery]);
 
   return {
-    // State
-    goals,
-    reviewSettings,
-    stats,
-    isLoading,
-    error,
-
-    // Goal operations
-    fetchGoals: fetchGoalsData,
-    createGoal: createGoalData,
-    updateGoal: updateGoalData,
-    deleteGoal: deleteGoalData,
+    goals: goalsQuery.data ?? [],
+    reviewSettings: reviewSettingsQuery.data ?? null,
+    stats: statsQuery.data ?? null,
+    isLoading:
+      goalsQuery.isLoading ||
+      reviewSettingsQuery.isLoading ||
+      createGoalMutation.isPending ||
+      updateGoalMutation.isPending ||
+      deleteGoalMutation.isPending ||
+      addMilestoneMutation.isPending ||
+      updateMilestoneMutation.isPending ||
+      deleteMilestoneMutation.isPending ||
+      saveReviewSettingsMutation.isPending ||
+      updateReviewSettingsMutation.isPending ||
+      completeReviewMutation.isPending,
+    error:
+      manualError ||
+      (goalsQuery.error instanceof Error ? goalsQuery.error : null) ||
+      (reviewSettingsQuery.error instanceof Error ? reviewSettingsQuery.error : null) ||
+      (statsQuery.error instanceof Error ? statsQuery.error : null),
+    fetchGoals,
+    createGoal,
+    updateGoal,
+    deleteGoal,
     refreshGoal,
-
-    // Progress operations
     increaseGoalProgress,
     decreaseGoalProgress,
-
-    // Milestone operations
     addMilestone,
-    updateMilestone: updateMilestoneData,
-    deleteMilestone: deleteMilestoneData,
+    updateMilestone,
+    deleteMilestone,
     toggleMilestone,
-
-    // Review settings operations
-    fetchReviewSettings: fetchReviewSettingsData,
+    fetchReviewSettings,
     saveReviewSettings,
-    updateReviewSettings: updateReviewSettingsData,
-    completeReview: completeReviewData,
-
-    // Statistics
-    fetchStats: fetchStatsData,
-
-    // Utility
+    updateReviewSettings,
+    completeReview,
+    fetchStats,
     clearError,
     refetch,
   };

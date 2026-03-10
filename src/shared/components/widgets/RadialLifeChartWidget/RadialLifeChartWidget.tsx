@@ -5,6 +5,7 @@ import { useLatestLifeWheel } from '@/features/life-wheel/hooks/useLatestLifeWhe
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { getInitials } from '@/shared/utils/string/getInitials';
+import { resolveCategoryKey } from './categoryUtils';
 
 type LifeArea = {
   id: string;
@@ -50,29 +51,6 @@ const CATEGORY_PRESENTATION: Record<string, { gradient: [string, string]; backgr
   community: { gradient: ['#00ffd1', '#00c3ff'], background: '#083038' },
 };
 
-const CATEGORY_KEY_MAP: Record<string, string> = {
-  health: 'health',
-  career: 'career',
-  money: 'money',
-  family: 'family',
-  relationship: 'relationship',
-  relationships: 'relationship',
-  social: 'social',
-  spirituality: 'spirituality',
-  spiritual: 'spiritual',
-  selfcare: 'selfCare',
-  personal: 'personal',
-  education: 'education',
-  recreation: 'recreation',
-  environment: 'environment',
-  community: 'community',
-  finances: 'finances',
-  personalgrowth: 'personalGrowth',
-  growth: 'personalGrowth',
-  vitality: 'health',
-  wellness: 'health',
-};
-
 const clampPercentage = (value: number): number => Math.max(0, Math.min(100, value));
 const normalizeScore = (score: number): number => clampPercentage((score / 10) * 100);
 
@@ -82,12 +60,6 @@ const polarToCartesian = (radius: number, angle: number): { x: number; y: number
 });
 
 const gradientId = (id: string): string => `radial-life-gradient-${id}`;
-
-const normalizeCategoryName = (categoryName: string): string =>
-  categoryName
-    .toLowerCase()
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9]/g, '');
 
 const normalizeHex = (color: string): string | null => {
   if (!color) return null;
@@ -126,11 +98,6 @@ const darkenColor = (color: string, amount = 0.25): string | null => {
   };
 
   return `#${componentToHex(darkened.r)}${componentToHex(darkened.g)}${componentToHex(darkened.b)}`;
-};
-
-const resolveCategoryKey = (categoryName: string): string => {
-  const normalized = normalizeCategoryName(categoryName);
-  return CATEGORY_KEY_MAP[normalized] ?? normalized;
 };
 
 const parseGradientDefinition = (

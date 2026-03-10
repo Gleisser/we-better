@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, useScroll } from 'framer-motion';
+import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
 import MegaMenu from './MegaMenu';
 import SolutionsMegaMenu from './SolutionsMegaMenu';
 import ResourcesMegaMenu from './ResourcesMegaMenu';
@@ -35,7 +35,7 @@ const Header = (): JSX.Element => {
     }
   }, [isMobileMenuOpen]);
 
-  scrollY.on('change', latest => {
+  useMotionValueEvent(scrollY, 'change', latest => {
     setHasScrolled(latest > 10);
   });
 
@@ -89,10 +89,14 @@ const Header = (): JSX.Element => {
     <>
       <motion.header
         className={styles.headerContainer}
+        style={{
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+        }}
         animate={{
-          backgroundColor: hasScrolled ? 'rgba(0, 0, 0, 0.5)' : 'transparent',
-          backdropFilter: hasScrolled ? 'blur(8px)' : 'none',
-          borderBottom: hasScrolled ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+          backgroundColor: hasScrolled ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)',
+          backdropFilter: hasScrolled ? 'blur(8px)' : 'blur(0px)',
+          borderBottomColor: hasScrolled ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0)',
         }}
         transition={{ duration: 0.2 }}
       >

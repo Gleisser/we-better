@@ -21,6 +21,7 @@ import {
   type BillingCycle,
   type PortalFlow,
 } from '@/core/services/billingService';
+import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
 import styles from './Settings.module.css';
 
 interface PrivacySettings {
@@ -321,15 +322,19 @@ const Settings = (): JSX.Element => {
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [isSigningOutSessions, setIsSigningOutSessions] = useState(false);
   const [sessionsError, setSessionsError] = useState<string | null>(null);
-  const [billingInfo, setBillingInfo] = useState<BillingSummary | null>(null);
   const [planCatalog, setPlanCatalog] = useState<BillingPlanCatalogItem[]>([]);
   const [isPlanCatalogLoading, setIsPlanCatalogLoading] = useState(false);
-  const [isBillingLoading, setIsBillingLoading] = useState(true);
   const [isBillingActionLoading, setIsBillingActionLoading] = useState(false);
   const [billingError, setBillingError] = useState<string | null>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>('monthly');
   const [isNotificationsSectionOpen, setIsNotificationsSectionOpen] = useState(true);
+  const {
+    data: billingInfo,
+    error: billingSummaryError,
+    isLoading: isBillingLoading,
+  } = useBillingSummary();
+  const effectiveBillingError = billingError || billingSummaryError;
 
   // Handle privacy setting changes
   const handlePrivacyChange = (setting: keyof PrivacySettings, enabled: boolean): void => {
@@ -421,25 +426,6 @@ const Settings = (): JSX.Element => {
     setIsHistoryLoading(false);
   }, []);
 
-  const loadBillingSummary = useCallback(async (): Promise<void> => {
-    setIsBillingLoading(true);
-    setBillingError(null);
-
-    const { data, error } = await billingService.getBillingSummary();
-    if (error || !data) {
-      setBillingInfo(null);
-      setBillingError(error || 'Failed to load billing summary');
-      setIsBillingLoading(false);
-      return;
-    }
-
-    setBillingInfo(data);
-    if (data.billingCycle) {
-      setSelectedBillingCycle(data.billingCycle);
-    }
-    setIsBillingLoading(false);
-  }, []);
-
   const loadPlanCatalog = useCallback(async (): Promise<void> => {
     setIsPlanCatalogLoading(true);
 
@@ -460,12 +446,14 @@ const Settings = (): JSX.Element => {
   }, [loadSessionsOverview]);
 
   useEffect(() => {
-    void loadBillingSummary();
-  }, [loadBillingSummary]);
-
-  useEffect(() => {
     void loadPlanCatalog();
   }, [loadPlanCatalog]);
+
+  useEffect(() => {
+    if (billingInfo?.billingCycle) {
+      setSelectedBillingCycle(billingInfo.billingCycle);
+    }
+  }, [billingInfo?.billingCycle]);
 
   const buildReturnUrl = (): string => {
     return window.location.href;
@@ -681,7 +669,9 @@ const Settings = (): JSX.Element => {
             </Link>
           </div>
 
-          {billingError && <p className={styles.billingErrorText}>{billingError}</p>}
+          {effectiveBillingError && (
+            <p className={styles.billingErrorText}>{effectiveBillingError}</p>
+          )}
 
           {isBillingLoading && (
             <div className={styles.billingCard}>
@@ -1384,7 +1374,7 @@ const Settings = (): JSX.Element => {
         }}
         isLoading={isPlanCatalogLoading || isBillingLoading}
         isBusy={isBillingActionLoading}
-        error={billingError}
+        error={effectiveBillingError}
       />
     </div>
   );

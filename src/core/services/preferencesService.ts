@@ -30,6 +30,14 @@ export interface UserPreferencesResponse {
   preferences: UserPreferences;
 }
 
+const isExpectedAuthError = (error: unknown): boolean => {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  return error.message === 'Not authenticated' || error.message === 'Authentication expired';
+};
+
 /**
  * Get the auth token from Supabase session or storage
  */
@@ -105,7 +113,9 @@ const apiRequest = async <T>(
 
     return await response.json();
   } catch (error) {
-    console.error(`API ${method} request to ${endpoint} failed:`, error);
+    if (!isExpectedAuthError(error)) {
+      console.error(`API ${method} request to ${endpoint} failed:`, error);
+    }
     throw error;
   }
 };
@@ -149,7 +159,9 @@ export class PreferencesService {
         return { data: null, error: 'No preferences found' };
       }
     } catch (error) {
-      console.error('Error fetching user preferences:', error);
+      if (!isExpectedAuthError(error)) {
+        console.error('Error fetching user preferences:', error);
+      }
       return {
         data: null,
         error: error instanceof Error ? error.message : 'Network error',
@@ -175,7 +187,9 @@ export class PreferencesService {
         return { data: null, error: 'Failed to update preferences' };
       }
     } catch (error) {
-      console.error('Error updating user preferences:', error);
+      if (!isExpectedAuthError(error)) {
+        console.error('Error updating user preferences:', error);
+      }
       return {
         data: null,
         error: error instanceof Error ? error.message : 'Network error',
@@ -201,7 +215,9 @@ export class PreferencesService {
         return { data: null, error: 'Failed to update preferences' };
       }
     } catch (error) {
-      console.error('Error patching user preferences:', error);
+      if (!isExpectedAuthError(error)) {
+        console.error('Error patching user preferences:', error);
+      }
       return {
         data: null,
         error: error instanceof Error ? error.message : 'Network error',

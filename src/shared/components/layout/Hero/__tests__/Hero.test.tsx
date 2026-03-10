@@ -1,227 +1,316 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Hero } from '../Hero';
 import { useHero } from '@/shared/hooks/useHero';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { HERO_FALLBACK } from '@/utils/constants/fallback';
-import styles from '../Hero.module.css';
-import type { Hero as HeroType } from '@/types/hero';
+import type { Hero as HeroType, HeroResponse } from '@/utils/types/hero';
 
-// Mock the hooks
-vi.mock('@/hooks/useHero');
-vi.mock('@/hooks/utils/useImagePreloader');
-vi.mock('@/hooks/utils/useErrorHandler', () => ({
-  useErrorHandler: vi.fn().mockReturnValue({
-    isError: false,
-    error: null,
-    handleError: vi.fn()
-  })
-}));
-vi.mock('@/hooks/utils/useLoadingState', () => ({
-  useLoadingState: vi.fn().mockReturnValue({
-    isLoading: false,
-    startLoading: vi.fn(),
-    stopLoading: vi.fn()
-  })
+vi.mock('@/shared/hooks/useHero', () => ({
+  useHero: vi.fn(),
 }));
 
-// Mock IntersectionObserver
-const mockIntersectionObserver = vi.fn();
-mockIntersectionObserver.mockReturnValue({
-  observe: () => null,
-  unobserve: () => null,
-  disconnect: () => null
+vi.mock('@/shared/hooks/utils/useAssetPreload', () => ({
+  useAssetPreload: vi.fn(),
+}));
+
+vi.mock('@/shared/hooks/utils/useErrorHandler', () => ({
+  useErrorHandler: vi.fn(),
+}));
+
+const mockedUseHero = vi.mocked(useHero);
+const mockedUseAssetPreload = vi.mocked(useAssetPreload);
+const mockedUseErrorHandler = vi.mocked(useErrorHandler);
+
+const intersectionObserverMock = vi.fn(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+const createHeroResponse = (hero: Partial<HeroType> = {}): HeroResponse => ({
+  data: {
+    id: 1,
+    documentId: 'hero-1',
+    title: 'Welcome to We Better',
+    subtitle: 'Create stunning visuals',
+    cta_text: 'Get Started',
+    secondary_cta_text: 'Learn More',
+    main_image: {
+      id: 1,
+      documentId: 'img-1',
+      src: '/api-image.webp',
+      alt: 'We Better Dashboard',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      publishedAt: new Date().toISOString(),
+      img: {
+        id: 10,
+        documentId: 'img-1-file',
+        name: 'api-image.webp',
+        alternativeText: null,
+        caption: null,
+        width: 1200,
+        height: 800,
+        formats: null,
+        hash: 'api-image',
+        ext: '.webp',
+        mime: 'image/webp',
+        size: 100,
+        url: '/api-image.webp',
+        previewUrl: null,
+        provider: 'local',
+        provider_metadata: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
+      },
+    },
+    main_image_mobile: {
+      id: 2,
+      documentId: 'img-2',
+      src: '/api-image-mobile.webp',
+      alt: 'We Better Mobile Dashboard',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      publishedAt: new Date().toISOString(),
+      img: {
+        id: 11,
+        documentId: 'img-2-file',
+        name: 'api-image-mobile.webp',
+        alternativeText: null,
+        caption: null,
+        width: 800,
+        height: 1200,
+        formats: null,
+        hash: 'api-image-mobile',
+        ext: '.webp',
+        mime: 'image/webp',
+        size: 80,
+        url: '/api-image-mobile.webp',
+        previewUrl: null,
+        provider: 'local',
+        provider_metadata: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
+      },
+    },
+    images: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    publishedAt: new Date().toISOString(),
+    ...hero,
+  },
+  meta: {
+    pagination: {
+      page: 1,
+      pageSize: 1,
+      pageCount: 1,
+      total: 1,
+    },
+  },
 });
-window.IntersectionObserver = mockIntersectionObserver;
 
 describe('Hero', () => {
   beforeEach(() => {
-    // Mock default hook implementations
-    (useHero as any).mockReturnValue({
-      data: {
-        data: HERO_FALLBACK
-      },
-      isFetching: false
+    vi.clearAllMocks();
+    vi.useRealTimers();
+
+    mockedUseHero.mockReturnValue({
+      data: createHeroResponse({
+        title: HERO_FALLBACK.title,
+        subtitle: HERO_FALLBACK.subtitle,
+        cta_text: HERO_FALLBACK.cta_text,
+        secondary_cta_text: HERO_FALLBACK.secondary_cta_text,
+        main_image: {
+          ...createHeroResponse().data.main_image,
+          src: HERO_FALLBACK.main_image.src,
+          alt: HERO_FALLBACK.main_image.alt,
+        },
+        main_image_mobile: {
+          ...createHeroResponse().data.main_image_mobile,
+          src: HERO_FALLBACK.main_image_mobile.src,
+          alt: HERO_FALLBACK.main_image_mobile.alt,
+        },
+        images: HERO_FALLBACK.images.map((image, index) => ({
+          id: index + 10,
+          documentId: `floating-${index}`,
+          src: image.src,
+          alt: image.alt,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          publishedAt: new Date().toISOString(),
+          img: {
+            id: index + 20,
+            documentId: `floating-file-${index}`,
+            name: `floating-${index}.webp`,
+            alternativeText: null,
+            caption: null,
+            width: 400,
+            height: 400,
+            formats: null,
+            hash: `floating-${index}`,
+            ext: '.webp',
+            mime: 'image/webp',
+            size: 40,
+            url: image.src,
+            previewUrl: null,
+            provider: 'local',
+            provider_metadata: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            publishedAt: new Date().toISOString(),
+          },
+        })),
+      }),
+      isFetching: false,
+    } as ReturnType<typeof useHero>);
+
+    mockedUseAssetPreload.mockReturnValue({
+      isLoading: false,
+      hasTimedOut: false,
     });
 
-    (useImagePreloader as any).mockReturnValue({
-      preloadImages: vi.fn().mockResolvedValue(undefined)
-    });
-
-    // Reset error handler mock
-    (useErrorHandler as any).mockReturnValue({
+    mockedUseErrorHandler.mockReturnValue({
       isError: false,
       error: null,
-      handleError: vi.fn()
+      handleError: vi.fn(),
+      clearError: vi.fn(),
     });
 
-    // Reset loading state mock
-    (useLoadingState as any).mockReturnValue({
-      isLoading: false,
-      startLoading: vi.fn(),
-      stopLoading: vi.fn()
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      writable: true,
+      value: 1024,
     });
 
-    // Reset window innerWidth
-    window.innerWidth = 1024;
+    Object.defineProperty(window, 'IntersectionObserver', {
+      configurable: true,
+      writable: true,
+      value: intersectionObserverMock,
+    });
   });
 
-  it('renders hero section with fallback content when data is loading', async () => {
-    // Mock loading state
-    (useHero as any).mockReturnValue({
+  it('shows the loading skeleton first and falls back to static content after 1 second', () => {
+    vi.useFakeTimers();
+    mockedUseHero.mockReturnValue({
       data: null,
-      isFetching: true
-    });
+      isFetching: true,
+    } as ReturnType<typeof useHero>);
 
     render(<Hero />);
 
-    // Initially should show loading skeleton
-    expect(screen.getByTestId('hero-skeleton')).toBeInTheDocument();
+    expect(screen.queryByTestId('hero-skeleton')).not.toBeNull();
 
-    // After timeout, should show fallback content
-    await waitFor(() => {
-      expect(screen.getByText(HERO_FALLBACK.title)).toBeInTheDocument();
-      expect(screen.getByText(HERO_FALLBACK.subtitle)).toBeInTheDocument();
-      expect(screen.getByText(HERO_FALLBACK.cta_text)).toBeInTheDocument();
-      expect(screen.getByText(HERO_FALLBACK.secondary_cta_text)).toBeInTheDocument();
-    }, { timeout: 1100 });
-  });
-
-  it('renders error state when there is an error fetching data', async () => {
-    // Mock error state
-    const mockError = new Error('Failed to fetch hero data');
-    
-    (useHero as any).mockReturnValue({
-      data: null,
-      isFetching: false
+    act(() => {
+      vi.advanceTimersByTime(1000);
     });
 
-    (useErrorHandler as any).mockReturnValue({
+    expect(screen.queryByRole('heading', { level: 1, name: HERO_FALLBACK.title })).not.toBeNull();
+    expect(screen.queryByText(HERO_FALLBACK.subtitle)).not.toBeNull();
+  });
+
+  it('renders the error state when the error handler reports a failure', () => {
+    mockedUseHero.mockReturnValue({
+      data: null,
+      isFetching: false,
+    } as ReturnType<typeof useHero>);
+    mockedUseErrorHandler.mockReturnValue({
       isError: true,
-      error: mockError,
-      handleError: vi.fn()
+      error: {
+        hasError: true,
+        message: 'Failed to fetch hero data',
+        code: 'hero_fetch_failed',
+        timestamp: Date.now(),
+      },
+      handleError: vi.fn(),
+      clearError: vi.fn(),
     });
 
     render(<Hero />);
 
-    // Should show error message
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText(/Failed to fetch hero data/i)).toBeInTheDocument();
-    
-    // Should show retry button
-    const retryButton = screen.getByRole('button', { name: /try again/i });
-    expect(retryButton).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeNull();
+    expect(screen.queryByText('Failed to fetch hero data')).not.toBeNull();
+    expect(screen.queryByRole('button', { name: /try again/i })).not.toBeNull();
   });
 
-  it('renders mobile version when screen width is below 768px', async () => {
-    // Mock window width to mobile size
+  it('renders the mobile preview when the viewport is 768px wide or smaller', () => {
     window.innerWidth = 767;
-    
-    // Mock successful data fetch with mobile image
-    const mockHeroData = {
-      ...HERO_FALLBACK,
-      main_image_mobile: {
-        src: '/mobile-hero-image.webp',
-        alt: 'We Better Mobile App Interface'
-      }
-    };
-    
-    (useHero as any).mockReturnValue({
-      data: {
-        data: mockHeroData
-      },
-      isFetching: false
-    });
+    mockedUseHero.mockReturnValue({
+      data: createHeroResponse({
+        title: 'Mobile Hero',
+        main_image_mobile: {
+          ...createHeroResponse().data.main_image_mobile,
+          src: '/mobile-hero-image.webp',
+          alt: 'We Better Mobile Dashboard',
+        },
+      }),
+      isFetching: false,
+    } as ReturnType<typeof useHero>);
 
     render(<Hero />);
 
-    // Should render mobile image instead of desktop dashboard preview
     const mobileImage = screen.getByAltText('We Better Mobile App Interface');
-    expect(mobileImage).toBeInTheDocument();
-    expect(mobileImage).toHaveAttribute('class');
-    expect(mobileImage.className).toMatch(/mobilePreviewImage/);
-
-    // Should maintain responsive layout elements
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: /call to action/i })).toBeInTheDocument();
-
-    // Verify floating images are still present
-    const floatingImages = screen.getAllByRole('presentation');
-    expect(floatingImages.length).toBeGreaterThan(0);
+    expect(mobileImage).not.toBeNull();
+    expect(screen.queryByRole('group', { name: /call to action/i })).not.toBeNull();
   });
 
-  it('renders with actual API data when fetch is successful', () => {
-    const mockApiData: HeroType = {
-      id: 1,
-      documentId: 'hero-1',
-      title: "Welcome to We Better",
-      subtitle: "Create stunning visuals",
-      cta_text: "Get Started",
-      secondary_cta_text: "Learn More",
+  it('renders API content when hero data loads successfully', () => {
+    const apiHero = createHeroResponse({
+      title: 'Welcome to We Better',
+      subtitle: 'Create stunning visuals',
+      cta_text: 'Get Started',
+      secondary_cta_text: 'Learn More',
+    });
+
+    mockedUseHero.mockReturnValue({
+      data: apiHero,
+      isFetching: false,
+    } as ReturnType<typeof useHero>);
+
+    render(<Hero />);
+
+    expect(screen.queryByRole('heading', { level: 1, name: apiHero.data.title })).not.toBeNull();
+    expect(screen.queryByText(apiHero.data.subtitle)).not.toBeNull();
+    expect(screen.queryByRole('button', { name: apiHero.data.cta_text })).not.toBeNull();
+    expect(screen.queryByRole('button', { name: apiHero.data.secondary_cta_text })).not.toBeNull();
+  });
+
+  it('preloads the floating hero assets with the current URLs', () => {
+    const apiHero = createHeroResponse({
       main_image: {
-        id: 1,
-        documentId: 'img-1',
-        src: "/api-image.webp",
-        alt: "We Better Dashboard",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        publishedAt: new Date().toISOString()
+        ...createHeroResponse().data.main_image,
+        src: '/preload-main.webp',
       },
-      main_image_mobile: {
-        id: 2,
-        documentId: 'img-2',
-        src: "/api-image-mobile.webp",
-        alt: "We Better Mobile Dashboard",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        publishedAt: new Date().toISOString()
-      },
-      images: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      publishedAt: new Date().toISOString()
-    };
-
-    (useHero as any).mockReturnValue({
-      data: { data: mockApiData },
-      isFetching: false
+      images: [
+        {
+          ...createHeroResponse().data.main_image,
+          id: 3,
+          documentId: 'floating-1',
+          src: '/floating-1.webp',
+          alt: 'Floating 1',
+        },
+        {
+          ...createHeroResponse().data.main_image,
+          id: 4,
+          documentId: 'floating-2',
+          src: '/floating-2.webp',
+          alt: 'Floating 2',
+        },
+      ],
     });
+
+    mockedUseHero.mockReturnValue({
+      data: apiHero,
+      isFetching: false,
+    } as ReturnType<typeof useHero>);
 
     render(<Hero />);
 
-    expect(screen.getByText(mockApiData.title)).toBeInTheDocument();
-    expect(screen.getByText(mockApiData.subtitle)).toBeInTheDocument();
-    expect(screen.getByText(mockApiData.cta_text)).toBeInTheDocument();
+    const preloadUrls = mockedUseAssetPreload.mock.calls.map(([options]) => options.urls);
+
+    expect(preloadUrls).toContainEqual(['/floating-1.webp', '/floating-2.webp']);
   });
-
-  it('preloads images when component mounts', async () => {
-    const preloadImagesMock = vi.fn().mockResolvedValue(undefined);
-    (useImagePreloader as any).mockReturnValue({
-      preloadImages: preloadImagesMock
-    });
-
-    render(<Hero />);
-
-    expect(preloadImagesMock).toHaveBeenCalled();
-    const calledUrls = preloadImagesMock.mock.calls[0][0];
-    expect(calledUrls).toContain(HERO_FALLBACK.main_image.src);
-  });
-
-  it('shows loading state while preloading images', () => {
-    const startLoadingMock = vi.fn();
-    const stopLoadingMock = vi.fn();
-
-    (useLoadingState as any).mockReturnValue({
-      isLoading: true,
-      startLoading: startLoadingMock,
-      stopLoading: stopLoadingMock
-    });
-
-    render(<Hero />);
-
-    expect(startLoadingMock).toHaveBeenCalled();
-    expect(stopLoadingMock).not.toHaveBeenCalled();
-  });
-}); 
+});

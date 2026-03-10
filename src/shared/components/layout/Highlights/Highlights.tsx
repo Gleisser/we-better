@@ -2,10 +2,24 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import styles from './Highlights.module.css';
 import { HIGHLIGHTS_FALLBACK } from '@/utils/constants/fallback';
 import { useHighlight } from '@/shared/hooks/useHighlight';
-import { API_CONFIG } from '@/core/config/api-config';
 import HighlightsSkeleton from './HighlightsSkeleton';
 import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { resolveContentImageUrl } from '@/utils/helpers/resolveContentImageUrl';
+
+const resolveHighlightImageUrl = (
+  highlight:
+    | (typeof HIGHLIGHTS_FALLBACK)[number]
+    | NonNullable<ReturnType<typeof useHighlight>['data']>['data']['slides'][number]
+): string | undefined => {
+  const image = highlight.image;
+
+  if ('url' in image) {
+    return resolveContentImageUrl(image.img.formats.large?.url ?? image.url);
+  }
+
+  return resolveContentImageUrl(image.img.formats.large?.url ?? image.img.url);
+};
 
 const Highlights = (): JSX.Element => {
   // Initialize hooks
@@ -28,15 +42,8 @@ const Highlights = (): JSX.Element => {
     error || showFallback || !data?.data?.slides ? HIGHLIGHTS_FALLBACK : data.data.slides;
 
   const imageUrls = useMemo(
-    () =>
-      highlights
-        .map(highlight => {
-          return data?.data?.slides
-            ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url
-            : highlight?.image?.img?.formats?.large?.url;
-        })
-        .filter((url): url is string => typeof url === 'string' && url.length > 0),
-    [highlights, data?.data?.slides]
+    () => highlights.map(resolveHighlightImageUrl).filter((url): url is string => Boolean(url)),
+    [highlights]
   );
 
   useAssetPreload({
@@ -136,9 +143,7 @@ const Highlights = (): JSX.Element => {
         </h2>
         <div className={styles.sliderContainer} role="region" aria-label="Highlights slider">
           {highlights.map((highlight, index: number) => {
-            const imageSrc = data?.data?.slides
-              ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url
-              : highlight?.image?.img?.formats?.large?.url;
+            const imageSrc = resolveHighlightImageUrl(highlight);
 
             return (
               <div

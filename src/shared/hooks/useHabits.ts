@@ -1,7 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useMemo, useState } from 'react';
+import { AUTH_SCOPED_QUERY_META } from '@/core/config/react-query';
 import { useAuth } from './useAuth';
 import * as habitsService from '@/core/services/habitsService';
-import { Habit, HabitStatus, HabitLog, HabitStats } from '@/core/services/habitsService';
+import {
+  Habit,
+  HabitLog,
+  HabitLogsResponse,
+  HabitStats,
+  HabitStatus,
+} from '@/core/services/habitsService';
+
+interface UseHabitsOptions {
+  category?: string;
+  showArchived?: boolean;
+}
 
 interface UseHabitsReturn {
   habits: Habit[];
@@ -22,139 +35,283 @@ interface UseHabitsReturn {
     habitId: string,
     startDate?: string,
     endDate?: string
-  ) => Promise<habitsService.HabitLogsResponse | null>;
+  ) => Promise<HabitLogsResponse | null>;
   deleteHabitLog: (logId: string) => Promise<boolean>;
   refreshStats: () => Promise<void>;
 }
 
-export const useHabits = (): UseHabitsReturn => {
-  const { isAuthenticated } = useAuth();
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [stats, setStats] = useState<HabitStats | null>(null);
+interface UseHabitLogsMapReturn {
+  logsByHabit: Record<string, HabitLog[]>;
+  isLoading: boolean;
+  error: Error | null;
+  refetchHabitLogs: (habitId: string) => Promise<void>;
+}
 
-  // Fetch habits from the API
+const habitsQueryKeyPrefix = (userId: string | null) => ['habits', userId ?? 'anonymous'] as const;
+
+const habitsListQueryKey = (userId: string | null, category?: string, showArchived = false) =>
+  [
+    ...habitsQueryKeyPrefix(userId),
+    'list',
+    category ?? 'all',
+    showArchived ? 'withArchived' : 'activeOnly',
+  ] as const;
+
+const habitLogsQueryKeyPrefix = (userId: string | null, habitId: string) =>
+  ['habitLogs', userId ?? 'anonymous', habitId] as const;
+
+const habitLogsQueryKey = (
+  userId: string | null,
+  habitId: string,
+  startDate?: string,
+  endDate?: string
+) => [...habitLogsQueryKeyPrefix(userId, habitId), startDate ?? 'any', endDate ?? 'any'] as const;
+
+const habitStatsQueryKey = (userId: string | null) =>
+  [...habitsQueryKeyPrefix(userId), 'stats'] as const;
+
+const loadHabits = async (category?: string, showArchived = false): Promise<Habit[]> => {
+  const response = await habitsService.getHabits(category, true, showArchived);
+  return response?.habits ?? [];
+};
+
+const loadHabitLogs = async (
+  habitId: string,
+  startDate?: string,
+  endDate?: string
+): Promise<HabitLogsResponse> => {
+  const response = await habitsService.getHabitLogs(habitId, startDate, endDate);
+
+  if (!response) {
+    throw new Error('Failed to fetch habit logs');
+  }
+
+  return response;
+};
+
+const updateHabitAcrossCaches = (
+  habits: Habit[] | undefined,
+  habitId: string,
+  updater: (habit: Habit) => Habit
+): Habit[] | undefined => {
+  if (!habits) {
+    return habits;
+  }
+
+  return habits.map(habit => (habit.id === habitId ? updater(habit) : habit));
+};
+
+export const useHabitLogsMap = (
+  habitIds: string[],
+  startDate?: string,
+  endDate?: string
+): UseHabitLogsMapReturn => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
+  const stableHabitIds = useMemo(() => Array.from(new Set(habitIds)).sort(), [habitIds]);
+
+  const logQueries = useQueries({
+    queries: stableHabitIds.map(habitId => ({
+      queryKey: habitLogsQueryKey(userId, habitId, startDate, endDate),
+      queryFn: async () => {
+        const response = await loadHabitLogs(habitId, startDate, endDate);
+        return response.logs;
+      },
+      enabled: Boolean(userId),
+      meta: AUTH_SCOPED_QUERY_META,
+    })),
+  });
+
+  const logsByHabit = useMemo<Record<string, HabitLog[]>>(
+    () =>
+      stableHabitIds.reduce<Record<string, HabitLog[]>>((accumulator, habitId, index) => {
+        accumulator[habitId] = logQueries[index]?.data ?? [];
+        return accumulator;
+      }, {}),
+    [logQueries, stableHabitIds]
+  );
+
+  const firstError = logQueries.find(query => query.error instanceof Error)?.error ?? null;
+
+  const refetchHabitLogs = useCallback(
+    async (habitId: string): Promise<void> => {
+      if (!userId) {
+        return;
+      }
+
+      await queryClient.fetchQuery({
+        queryKey: habitLogsQueryKey(userId, habitId, startDate, endDate),
+        queryFn: async () => {
+          const response = await loadHabitLogs(habitId, startDate, endDate);
+          return response.logs;
+        },
+        meta: AUTH_SCOPED_QUERY_META,
+      });
+    },
+    [endDate, queryClient, startDate, userId]
+  );
+
+  return {
+    logsByHabit,
+    isLoading: logQueries.some(query => query.isLoading),
+    error: firstError instanceof Error ? firstError : null,
+    refetchHabitLogs,
+  };
+};
+
+export const useHabits = (options: UseHabitsOptions = {}): UseHabitsReturn => {
+  const queryClient = useQueryClient();
+  const { user, isAuthenticated } = useAuth();
+  const userId = user?.id ?? null;
+  const category = options.category;
+  const showArchived = options.showArchived ?? false;
+  const [manualError, setManualError] = useState<Error | null>(null);
+
+  const habitsQuery = useQuery({
+    queryKey: habitsListQueryKey(userId, category, showArchived),
+    queryFn: async () => loadHabits(category, showArchived),
+    enabled: Boolean(userId) && isAuthenticated,
+    meta: AUTH_SCOPED_QUERY_META,
+  });
+
+  const statsQuery = useQuery({
+    queryKey: habitStatsQueryKey(userId),
+    queryFn: async () => habitsService.getHabitStats(),
+    enabled: false,
+    meta: AUTH_SCOPED_QUERY_META,
+  });
+
+  const createHabitMutation = useMutation({
+    mutationFn: async ({
+      name,
+      habitCategory,
+      startDate,
+    }: {
+      name: string;
+      habitCategory: string;
+      startDate?: string;
+    }) => habitsService.createHabit(name, habitCategory, startDate),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: habitsQueryKeyPrefix(userId) });
+    },
+  });
+
+  const updateHabitMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Habit> }) => {
+      const habit = await habitsService.updateHabit(id, data);
+
+      if (!habit) {
+        throw new Error('Failed to update habit');
+      }
+
+      return habit;
+    },
+    onSuccess: updatedHabit => {
+      queryClient.setQueriesData<Habit[]>({ queryKey: habitsQueryKeyPrefix(userId) }, habits =>
+        updateHabitAcrossCaches(habits, updatedHabit.id, () => ({
+          ...updatedHabit,
+        }))
+      );
+    },
+  });
+
+  const archiveHabitMutation = useMutation({
+    mutationFn: async (habitId: string) => {
+      const success = await habitsService.archiveHabit(habitId);
+
+      if (!success) {
+        throw new Error('Failed to archive habit');
+      }
+
+      return habitId;
+    },
+    onSuccess: habitId => {
+      queryClient.setQueriesData<Habit[]>(
+        { queryKey: habitsQueryKeyPrefix(userId) },
+        habits => habits?.filter(habit => habit.id !== habitId) ?? []
+      );
+    },
+  });
+
   const fetchHabits = useCallback(
-    async (category?: string, showArchived = false) => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
+    async (nextCategory?: string, nextShowArchived = false): Promise<void> => {
+      if (!userId) {
+        setManualError(new Error('User not authenticated'));
         return;
       }
 
       try {
-        setIsLoading(true);
-        setError(null);
-
-        const response = await habitsService.getHabits(category, true, showArchived);
-
-        if (response) {
-          setHabits(response.habits);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to fetch habits'));
-        console.error('Error fetching habits:', err);
-      } finally {
-        setIsLoading(false);
+        await queryClient.fetchQuery({
+          queryKey: habitsListQueryKey(userId, nextCategory, nextShowArchived),
+          queryFn: async () => loadHabits(nextCategory, nextShowArchived),
+          meta: AUTH_SCOPED_QUERY_META,
+        });
+        setManualError(null);
+      } catch (error) {
+        setManualError(error instanceof Error ? error : new Error('Failed to fetch habits'));
       }
     },
-    [isAuthenticated]
+    [queryClient, userId]
   );
 
-  // Create a new habit
   const createHabit = useCallback(
-    async (name: string, category: string, startDate?: string): Promise<Habit | null> => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
+    async (name: string, habitCategory: string, startDate?: string): Promise<Habit | null> => {
+      if (!userId) {
+        setManualError(new Error('User not authenticated'));
         return null;
       }
 
       try {
-        setIsLoading(true);
-        setError(null);
-
-        const newHabit = await habitsService.createHabit(name, category, startDate);
-
-        if (newHabit) {
-          setHabits(prevHabits => [...prevHabits, newHabit]);
-          return newHabit;
-        }
+        const habit = await createHabitMutation.mutateAsync({ name, habitCategory, startDate });
+        setManualError(null);
+        return habit;
+      } catch (error) {
+        setManualError(error instanceof Error ? error : new Error('Failed to create habit'));
         return null;
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to create habit'));
-        console.error('Error creating habit:', err);
-        return null;
-      } finally {
-        setIsLoading(false);
       }
     },
-    [isAuthenticated]
+    [createHabitMutation, userId]
   );
 
-  // Update an existing habit
   const updateHabit = useCallback(
     async (id: string, data: Partial<Habit>): Promise<Habit | null> => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
+      if (!userId) {
+        setManualError(new Error('User not authenticated'));
         return null;
       }
 
       try {
-        setIsLoading(true);
-        setError(null);
-
-        const updatedHabit = await habitsService.updateHabit(id, data);
-
-        if (updatedHabit) {
-          setHabits(prevHabits =>
-            prevHabits.map(habit => (habit.id === id ? updatedHabit : habit))
-          );
-          return updatedHabit;
-        }
+        const habit = await updateHabitMutation.mutateAsync({ id, data });
+        setManualError(null);
+        return habit;
+      } catch (error) {
+        setManualError(error instanceof Error ? error : new Error('Failed to update habit'));
         return null;
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to update habit'));
-        console.error('Error updating habit:', err);
-        return null;
-      } finally {
-        setIsLoading(false);
       }
     },
-    [isAuthenticated]
+    [updateHabitMutation, userId]
   );
 
-  // Archive a habit (soft delete)
   const archiveHabit = useCallback(
     async (id: string): Promise<boolean> => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
+      if (!userId) {
+        setManualError(new Error('User not authenticated'));
         return false;
       }
 
       try {
-        setIsLoading(true);
-        setError(null);
-
-        const success = await habitsService.archiveHabit(id);
-
-        if (success) {
-          // Remove habit from local state or mark as archived
-          setHabits(prevHabits => prevHabits.filter(habit => habit.id !== id));
-          return true;
-        }
+        await archiveHabitMutation.mutateAsync(id);
+        setManualError(null);
+        return true;
+      } catch (error) {
+        setManualError(error instanceof Error ? error : new Error('Failed to archive habit'));
         return false;
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to archive habit'));
-        console.error('Error archiving habit:', err);
-        return false;
-      } finally {
-        setIsLoading(false);
       }
     },
-    [isAuthenticated]
+    [archiveHabitMutation, userId]
   );
 
-  // Log a habit completion or update an existing log
   const logHabitCompletion = useCallback(
     async (
       habitId: string,
@@ -162,116 +319,117 @@ export const useHabits = (): UseHabitsReturn => {
       status: HabitStatus,
       notes?: string
     ): Promise<HabitLog | null> => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
+      if (!userId) {
+        setManualError(new Error('User not authenticated'));
         return null;
       }
 
       try {
-        setError(null);
-
         const log = await habitsService.logHabitStatus(habitId, date, status, notes);
 
-        if (log) {
-          // After logging, fetch the updated habit to get the new streak
-          const updatedHabit = await habitsService.getHabitById(habitId);
-          if (updatedHabit) {
-            setHabits(prevHabits =>
-              prevHabits.map(habit => (habit.id === habitId ? updatedHabit : habit))
-            );
-          }
-          return log;
+        if (!log) {
+          throw new Error('Failed to log habit completion');
         }
-        return null;
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to log habit completion'));
-        console.error('Error logging habit completion:', err);
+
+        queryClient.setQueriesData<HabitLog[]>(
+          { queryKey: habitLogsQueryKeyPrefix(userId, habitId) },
+          logs => {
+            if (!logs) {
+              return logs;
+            }
+
+            const nextLogs = [...logs];
+            const existingIndex = nextLogs.findIndex(entry => entry.date === log.date);
+
+            if (existingIndex >= 0) {
+              nextLogs[existingIndex] = log;
+              return nextLogs;
+            }
+
+            return [...nextLogs, log];
+          }
+        );
+        await queryClient.invalidateQueries({ queryKey: habitsQueryKeyPrefix(userId) });
+        setManualError(null);
+        return log;
+      } catch (error) {
+        setManualError(
+          error instanceof Error ? error : new Error('Failed to log habit completion')
+        );
         return null;
       }
     },
-    [isAuthenticated]
+    [queryClient, userId]
   );
 
-  // Get logs for a specific habit
   const getHabitLogs = useCallback(
     async (
       habitId: string,
       startDate?: string,
       endDate?: string
-    ): Promise<habitsService.HabitLogsResponse | null> => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
+    ): Promise<HabitLogsResponse | null> => {
+      if (!userId) {
+        setManualError(new Error('User not authenticated'));
         return null;
       }
 
       try {
-        setError(null);
-        return await habitsService.getHabitLogs(habitId, startDate, endDate);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to get habit logs'));
-        console.error('Error getting habit logs:', err);
+        const response = await queryClient.fetchQuery({
+          queryKey: habitLogsQueryKey(userId, habitId, startDate, endDate),
+          queryFn: async () => loadHabitLogs(habitId, startDate, endDate),
+          meta: AUTH_SCOPED_QUERY_META,
+        });
+        setManualError(null);
+        return response;
+      } catch (error) {
+        setManualError(error instanceof Error ? error : new Error('Failed to get habit logs'));
         return null;
       }
     },
-    [isAuthenticated]
+    [queryClient, userId]
   );
 
-  // Delete a habit log
   const deleteHabitLog = useCallback(
     async (logId: string): Promise<boolean> => {
-      if (!isAuthenticated) {
-        setError(new Error('User not authenticated'));
+      if (!userId) {
+        setManualError(new Error('User not authenticated'));
         return false;
       }
 
       try {
-        setError(null);
-        return await habitsService.deleteHabitLog(logId);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to delete habit log'));
-        console.error('Error deleting habit log:', err);
+        const success = await habitsService.deleteHabitLog(logId);
+
+        if (!success) {
+          throw new Error('Failed to delete habit log');
+        }
+
+        await queryClient.invalidateQueries({ queryKey: ['habitLogs', userId] });
+        setManualError(null);
+        return true;
+      } catch (error) {
+        setManualError(error instanceof Error ? error : new Error('Failed to delete habit log'));
         return false;
       }
     },
-    [isAuthenticated]
+    [queryClient, userId]
   );
 
-  // Refresh habit statistics
   const refreshStats = useCallback(async (): Promise<void> => {
-    if (!isAuthenticated) {
-      setError(new Error('User not authenticated'));
-      return;
-    }
-
-    try {
-      setError(null);
-      const habitStats = await habitsService.getHabitStats();
-      if (habitStats) {
-        setStats(habitStats);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to fetch habit stats'));
-      console.error('Error fetching habit stats:', err);
-    }
-  }, [isAuthenticated]);
-
-  // Initialize data on component mount or when user auth changes
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchHabits();
-      refreshStats();
-    } else {
-      setHabits([]);
-      setStats(null);
-      setIsLoading(false); // Fix: Ensure loading state is reset when not authenticated
-    }
-  }, [isAuthenticated, fetchHabits, refreshStats]);
+    await statsQuery.refetch();
+  }, [statsQuery]);
 
   return {
-    habits,
-    isLoading,
-    error,
-    stats,
+    habits: habitsQuery.data ?? [],
+    isLoading:
+      habitsQuery.isLoading ||
+      createHabitMutation.isPending ||
+      updateHabitMutation.isPending ||
+      archiveHabitMutation.isPending,
+    error:
+      manualError ||
+      (habitsQuery.error instanceof Error ? habitsQuery.error : null) ||
+      (statsQuery.error instanceof Error ? statsQuery.error : null),
+    stats: statsQuery.data ?? null,
     fetchHabits,
     createHabit,
     updateHabit,
