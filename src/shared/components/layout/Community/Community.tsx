@@ -1,11 +1,10 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import styles from './Community.module.css';
 import { useCommunity } from '@/shared/hooks/useCommunity';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { DiscordIcon } from '@/shared/components/common/icons';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
 const INITIAL_PROFILES = [
   {
@@ -45,12 +44,8 @@ const Community = (): JSX.Element => {
 
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useCommunity();
-  const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load community content',
-  });
-  const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500,
   });
 
   const defaultTitle = (
@@ -62,25 +57,12 @@ const Community = (): JSX.Element => {
     </>
   );
 
-  // Collect profile image URLs
-  const getProfileUrls = useCallback(() => {
-    return INITIAL_PROFILES.map(profile => profile.src);
-  }, []);
+  const profileUrls = useMemo(() => INITIAL_PROFILES.map(profile => profile.src), []);
 
-  // Handle image preloading
-  const loadImages = useCallback(async () => {
-    const profileUrls = getProfileUrls();
-    if (profileUrls.length === 0 || isLoading) return;
-
-    try {
-      startLoading();
-      await preloadImages(profileUrls);
-    } catch (err) {
-      handleError(err);
-    } finally {
-      stopLoading();
-    }
-  }, [getProfileUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+  useAssetPreload({
+    urls: profileUrls,
+    onError: handleError,
+  });
 
   // Handle scroll animation
   useEffect(() => {
@@ -118,11 +100,6 @@ const Community = (): JSX.Element => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Handle image preloading
-  useEffect(() => {
-    loadImages();
-  }, [loadImages]);
 
   // Show loading state only during initial data fetch
   if (isDataLoading) {

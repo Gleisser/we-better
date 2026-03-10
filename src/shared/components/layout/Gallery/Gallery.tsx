@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import styles from './Gallery.module.css';
 import { useGallery } from '@/shared/hooks/useGallery';
 import { API_CONFIG } from '@/core/config/api-config';
 import { GalleryIcon, MobileNavIcon, MobileNavNextIcon } from '@/shared/components/common/icons';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { TopLevelImage } from '@/utils/types/common/image';
 
 const INITIAL_LOAD = 12;
@@ -106,12 +105,8 @@ const Gallery = (): JSX.Element => {
 
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useGallery();
-  const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load gallery content',
-  });
-  const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500,
   });
 
   // Process images data
@@ -144,27 +139,20 @@ const Gallery = (): JSX.Element => {
   const galleryImages = orderedImages?.length > 0 ? orderedImages : GALLERY_IMAGES;
   const visibleImages = galleryImages.slice(0, visibleCount);
 
-  // Collect visible image URLs for preloading
-  const getVisibleImageUrls = useCallback(() => {
-    return visibleImages
-      .filter((image): image is NonNullable<typeof image> => image !== undefined && image !== null)
-      .map(image => image.src);
-  }, [visibleImages]);
+  const visibleImageUrls = useMemo(
+    () =>
+      visibleImages
+        .filter(
+          (image): image is NonNullable<typeof image> => image !== undefined && image !== null
+        )
+        .map(image => image.src),
+    [visibleImages]
+  );
 
-  // Handle image preloading
-  const loadImages = useCallback(async () => {
-    const imageUrls = getVisibleImageUrls();
-    if (imageUrls.length === 0 || isLoading) return;
-
-    try {
-      startLoading();
-      await preloadImages(imageUrls);
-    } catch (err) {
-      handleError(err);
-    } finally {
-      stopLoading();
-    }
-  }, [getVisibleImageUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+  useAssetPreload({
+    urls: visibleImageUrls,
+    onError: handleError,
+  });
 
   // Intersection Observer setup
   useEffect(() => {
@@ -209,11 +197,6 @@ const Gallery = (): JSX.Element => {
 
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
-
-  // Image preloading effect
-  useEffect(() => {
-    loadImages();
-  }, [loadImages]);
 
   // Navigation handlers
   const hasMore = visibleCount < galleryImages.length;

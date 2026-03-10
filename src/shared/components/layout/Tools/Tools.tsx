@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import styles from './Tools.module.css';
 import { TOOLS_FALLBACK } from '@/utils/constants/fallback';
 import { useTool } from '@/shared/hooks/useTool';
@@ -6,19 +6,14 @@ import { ToolTab } from '@/utils/types/tool';
 import { API_CONFIG } from '@/core/config/api-config';
 import { ToolIcon } from '@/shared/components/common/icons';
 import ToolsSkeleton from './ToolsSkeleton';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
 const Tools = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useTool();
-  const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load tools content',
-  });
-  const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500,
   });
 
   const tabs = data?.data?.tabs || TOOLS_FALLBACK;
@@ -43,25 +38,15 @@ const Tools = (): JSX.Element => {
     }
   }, [data?.data?.tabs]);
 
-  // Collect poster images for preloading
-  const getPosterUrls = useCallback(() => {
-    return tabs.map((tab: ToolTab) => `/assets/images/tools/${tab.id}-poster.webp`);
-  }, [tabs]);
+  const posterUrls = useMemo(
+    () => tabs.map((tab: ToolTab) => `/assets/images/tools/${tab.id}-poster.webp`),
+    [tabs]
+  );
 
-  // Handle image preloading
-  const loadImages = useCallback(async () => {
-    const posterUrls = getPosterUrls();
-    if (posterUrls.length === 0 || isLoading) return;
-
-    try {
-      startLoading();
-      await preloadImages(posterUrls);
-    } catch (err) {
-      handleError(err);
-    } finally {
-      stopLoading();
-    }
-  }, [getPosterUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+  useAssetPreload({
+    urls: posterUrls,
+    onError: handleError,
+  });
 
   // Video playback handling
   const handleVideoPlayback = useCallback((video: HTMLVideoElement, shouldPlay: boolean) => {
@@ -141,12 +126,6 @@ const Tools = (): JSX.Element => {
       video.removeAttribute('src');
     };
   }, [activeTab, tabs, setupVideo]);
-
-  // Load poster images
-  useEffect(() => {
-    loadImages();
-  }, [loadImages]);
-
   // Show loading state
   if (isDataLoading) {
     return <ToolsSkeleton />;

@@ -10,9 +10,8 @@ import {
   ShowcaseMobileArrowRightIcon,
 } from '@/shared/components/common/icons';
 import ShowcaseSkeleton from './ShowcaseSkeleton';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
 const Showcase = (): JSX.Element => {
   // State management
@@ -26,12 +25,8 @@ const Showcase = (): JSX.Element => {
 
   // Initialize hooks
   const { data: showcase, isLoading: isDataLoading } = useShowcase();
-  const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load showcase content',
-  });
-  const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500,
   });
 
   // Memoize belts and derived values
@@ -46,32 +41,16 @@ const Showcase = (): JSX.Element => {
     [belts, currentPage, itemsPerPage]
   );
 
-  // Memoize current page URLs calculation
-  const getCurrentPageUrls = useCallback(() => {
-    if (!currentItems.length) return [];
+  const currentPageUrls = useMemo(
+    () => currentItems.flatMap(item => item.images.map(image => image.src)),
+    [currentItems]
+  );
 
-    return currentItems.reduce((urls: string[], item) => {
-      const itemUrls = item.images.map(image => (showcase ? image.src : image.src));
-      return [...urls, ...itemUrls];
-    }, []);
-  }, [currentItems, showcase]);
-
-  // Memoize load images function
-  const loadImages = useCallback(async () => {
-    const imageUrls = getCurrentPageUrls();
-    if (imageUrls.length === 0 || isLoading) return;
-
-    try {
-      startLoading();
-      await preloadImages(imageUrls);
-    } catch (err) {
-      handleError(err);
-    } finally {
-      if (isLoading) {
-        stopLoading();
-      }
-    }
-  }, [getCurrentPageUrls, preloadImages, handleError, startLoading, stopLoading, isLoading]);
+  useAssetPreload({
+    urls: currentPageUrls,
+    enabled: !isDataLoading && currentPageUrls.length > 0,
+    onError: handleError,
+  });
 
   // Initialize image refs
   useEffect(() => {
@@ -138,19 +117,6 @@ const Showcase = (): JSX.Element => {
     window.addEventListener('resize', checkIfMobile);
     return () => window.removeEventListener('resize', checkIfMobile);
   }, [checkIfMobile]);
-
-  // Load images on page change
-  useEffect(() => {
-    let mounted = true;
-
-    if (!isDataLoading && currentItems.length > 0 && mounted) {
-      loadImages();
-    }
-
-    return () => {
-      mounted = false;
-    };
-  }, [loadImages, currentPage, isDataLoading, currentItems.length]);
 
   // Navigation handlers
   const nextPage = (): void => {

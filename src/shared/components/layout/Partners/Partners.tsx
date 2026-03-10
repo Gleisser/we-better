@@ -3,10 +3,9 @@ import styles from './Partners.module.css';
 import { API_CONFIG } from '@/core/config/api-config';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { PARTNERS_FALLBACK } from '@/utils/constants/fallback';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { useCallback, useEffect } from 'react';
+import { useMemo } from 'react';
 import { Brand } from '@/utils/types/features-response';
 
 const defaultTitle = (
@@ -18,20 +17,15 @@ const defaultTitle = (
 const Partners = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = usePartner();
-  const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load partners content',
-  });
-  const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500,
   });
 
   // Determine content source
   const partners = data?.data || PARTNERS_FALLBACK;
   const isAPI = data !== undefined;
 
-  // Collect all brand logo URLs
-  const getLogoUrls = useCallback(() => {
+  const logoUrls = useMemo(() => {
     if (!partners?.brands) return [];
 
     return partners.brands.map((brand: Brand) =>
@@ -39,24 +33,10 @@ const Partners = (): JSX.Element => {
     );
   }, [partners, isAPI]);
 
-  // Handle image preloading
-  const loadImages = useCallback(async () => {
-    const logoUrls = getLogoUrls();
-    if (logoUrls.length === 0 || isLoading) return;
-
-    try {
-      startLoading();
-      await preloadImages(logoUrls);
-    } catch (err) {
-      handleError(err);
-    } finally {
-      stopLoading();
-    }
-  }, [getLogoUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
-
-  useEffect(() => {
-    loadImages();
-  }, [loadImages]);
+  useAssetPreload({
+    urls: logoUrls,
+    onError: handleError,
+  });
 
   // Show loading state only during initial data fetch
   if (isDataLoading) {
