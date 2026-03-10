@@ -4,20 +4,14 @@ import { PREFOOTER_FALLBACK } from '@/utils/constants/fallback';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { API_CONFIG } from '@/core/config/api-config';
 import { ButtonArrowIcon } from '@/shared/components/common/icons';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { useEffect, useCallback } from 'react';
 
 const PreFooter = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = usePrefooter();
-  const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load pre-footer content',
-  });
-  const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500,
   });
 
   // Determine content source
@@ -27,26 +21,11 @@ const PreFooter = (): JSX.Element => {
   // Prepare image URL
   const imageUrl = isAPI ? API_CONFIG.imageBaseURL + prefooter?.image.url : prefooter?.image.url;
 
-  // Memoize the image loading function
-  const loadImage = useCallback(async () => {
-    if (!imageUrl || isLoading) return;
-
-    try {
-      startLoading();
-      await preloadImages([imageUrl]);
-    } catch (err) {
-      handleError(err);
-    } finally {
-      stopLoading();
-    }
-  }, [imageUrl, isLoading, startLoading, preloadImages, handleError, stopLoading]);
-
-  // Handle image preloading
-  useEffect(() => {
-    if (imageUrl) {
-      loadImage();
-    }
-  }, [imageUrl, loadImage]);
+  useAssetPreload({
+    urls: imageUrl ? [imageUrl] : [],
+    enabled: Boolean(imageUrl),
+    onError: handleError,
+  });
 
   // Prepare title with fallback
   const defaultTitle = (

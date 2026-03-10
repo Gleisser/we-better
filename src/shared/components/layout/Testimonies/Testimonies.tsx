@@ -4,20 +4,15 @@ import { TESTIMONY_FALLBACK } from '@/utils/constants/fallback';
 import { API_CONFIG } from '@/core/config/api-config';
 import { TestimonyItem } from '@/utils/types/testimony';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { useCallback, useEffect } from 'react';
+import { useMemo } from 'react';
 
 const Testimonies = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useTestimony();
-  const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load testimonials',
-  });
-  const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500,
   });
 
   // Determine content source
@@ -29,8 +24,7 @@ const Testimonies = (): JSX.Element => {
     </>
   );
 
-  // Collect all profile picture URLs
-  const getProfilePicUrls = useCallback(() => {
+  const profileUrls = useMemo(() => {
     if (!testimony?.testimonies) return [];
 
     return testimony.testimonies.map((item: TestimonyItem) =>
@@ -38,24 +32,10 @@ const Testimonies = (): JSX.Element => {
     );
   }, [testimony, isAPI]);
 
-  // Handle image preloading
-  const loadImages = useCallback(async (): Promise<void> => {
-    const profileUrls = getProfilePicUrls();
-    if (profileUrls.length === 0 || isLoading) return;
-
-    try {
-      startLoading();
-      await preloadImages(profileUrls);
-    } catch (err) {
-      handleError(err);
-    } finally {
-      stopLoading();
-    }
-  }, [getProfilePicUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
-
-  useEffect(() => {
-    loadImages();
-  }, [loadImages]);
+  useAssetPreload({
+    urls: profileUrls,
+    onError: handleError,
+  });
 
   // Show loading state only during initial data fetch
   if (isDataLoading) {

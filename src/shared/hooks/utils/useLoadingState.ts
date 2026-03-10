@@ -16,90 +16,99 @@ export function useLoadingState({
   timeout = 30000,
   minimumLoadingTime = 500,
 }: UseLoadingStateOptions = {}): UseLoadingStateResult {
-  const [loadingCount, setLoadingCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasTimedOut, setHasTimedOut] = useState(false);
-  const loadingStartTime = useRef<number | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const isMountedRef = useRef(true);
+  const loadingCountRef = useRef(0);
+  const loadingStartTimeRef = useRef<number | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stopDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stopDelayResolveRef = useRef<(() => void) | null>(null);
 
-  const isLoading = loadingCount > 0;
-
-  const startLoading = useCallback(() => {
-    setLoadingCount(prev => prev + 1);
-    setHasTimedOut(false);
-
-    // Only set start time if it's the first loading request
-    if (!loadingStartTime.current) {
-      loadingStartTime.current = Date.now();
-    }
-
-    // Clear existing timeout if any
+  const clearLoadingTimeout = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, []);
+
+  const clearStopDelay = useCallback(() => {
+    if (stopDelayRef.current) {
+      clearTimeout(stopDelayRef.current);
+      stopDelayRef.current = null;
     }
 
-    // Set new timeout that clears everything if hit
+    if (stopDelayResolveRef.current) {
+      stopDelayResolveRef.current();
+      stopDelayResolveRef.current = null;
+    }
+  }, []);
+
+  const startLoading = useCallback(() => {
+    clearStopDelay();
+    loadingCountRef.current += 1;
+    setHasTimedOut(false);
+
+    if (loadingCountRef.current === 1) {
+      loadingStartTimeRef.current = Date.now();
+      setIsLoading(true);
+    }
+
+    clearLoadingTimeout();
     timeoutRef.current = setTimeout(() => {
-      setHasTimedOut(true);
-      setLoadingCount(0);
-      loadingStartTime.current = null;
+      loadingCountRef.current = 0;
+      loadingStartTimeRef.current = null;
+      clearStopDelay();
+
+      if (isMountedRef.current) {
+        setIsLoading(false);
+        setHasTimedOut(true);
+      }
     }, timeout);
-  }, [timeout]);
+  }, [clearLoadingTimeout, clearStopDelay, timeout]);
 
   const stopLoading = useCallback(async () => {
-    setLoadingCount(prev => {
-      const newCount = Math.max(0, prev - 1);
+    if (loadingCountRef.current === 0) {
+      return;
+    }
 
-      // If we've reached 0, clean up
-      if (newCount === 0 && loadingStartTime.current) {
-        // Clear timeout
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
+    loadingCountRef.current = Math.max(0, loadingCountRef.current - 1);
+    if (loadingCountRef.current > 0) {
+      return;
+    }
+
+    clearLoadingTimeout();
+
+    const loadingTime = loadingStartTimeRef.current
+      ? Date.now() - loadingStartTimeRef.current
+      : minimumLoadingTime;
+    const remainingTime = Math.max(0, minimumLoadingTime - loadingTime);
+
+    await new Promise<void>(resolve => {
+      stopDelayResolveRef.current = resolve;
+      stopDelayRef.current = setTimeout(() => {
+        stopDelayRef.current = null;
+        stopDelayResolveRef.current = null;
+        loadingStartTimeRef.current = null;
+
+        if (isMountedRef.current) {
+          setIsLoading(false);
+          setHasTimedOut(false);
         }
 
-        // Delay returning if minimumTime hasn't been reached
-        const checkMinimumTime = async (): Promise<void> => {
-          const loadingTime = Date.now() - (loadingStartTime.current ?? Date.now());
-          const remainingTime = Math.max(0, minimumLoadingTime - loadingTime);
-
-          if (remainingTime > 0) {
-            await new Promise(resolve => setTimeout(resolve, remainingTime));
-          }
-
-          loadingStartTime.current = null;
-          setHasTimedOut(false);
-        };
-
-        checkMinimumTime();
-
-        // This won't block the state update (which is immediate), but ensures
-        // the external caller waits if they await stopLoading()
-        return newCount;
-      }
-
-      return newCount;
+        resolve();
+      }, remainingTime);
     });
-
-    // Perform the actual wait to satisfy the return promise
-    if (loadingStartTime.current && loadingCount === 1) {
-      const loadingTime = Date.now() - loadingStartTime.current;
-      const remainingTime = Math.max(0, minimumLoadingTime - loadingTime);
-
-      if (remainingTime > 0) {
-        await new Promise(resolve => setTimeout(resolve, remainingTime));
-      }
-
-      loadingStartTime.current = null;
-    }
-  }, [minimumLoadingTime, loadingCount]);
+  }, [clearLoadingTimeout, minimumLoadingTime]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      isMountedRef.current = false;
+      clearLoadingTimeout();
+      clearStopDelay();
     };
-  }, []);
+  }, [clearLoadingTimeout, clearStopDelay]);
 
   return {
     isLoading,

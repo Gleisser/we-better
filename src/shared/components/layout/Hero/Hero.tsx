@@ -6,21 +6,16 @@ import HeroBackground from './HeroBackground';
 import CtaButton from './Buttons/CtaButton';
 import SecondaryCtaButton from './Buttons/SecondaryCtaButton';
 import { motion } from 'framer-motion';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useHero } from '@/shared/hooks/useHero';
 import HeroSkeleton from './HeroSkeleton';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
 export const Hero = (): JSX.Element => {
   const { data, isFetching: isDataLoading } = useHero();
-  const { preloadImages } = useImagePreloader();
   const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load hero content',
-  });
-  const { startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500,
   });
   const [isMobile, setIsMobile] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
@@ -81,53 +76,39 @@ export const Hero = (): JSX.Element => {
 
   const heroData = isError || showFallback || !data?.data ? HERO_FALLBACK : data.data;
 
-  const getMainImageUrl = useCallback(() => {
+  const mainImageUrl = useMemo(() => {
     if (data?.data) {
       return isMobile ? data.data.main_image_mobile?.src : data.data.main_image?.src;
     }
+
     return isMobile ? HERO_FALLBACK.main_image_mobile.src : HERO_FALLBACK.main_image.src;
   }, [data?.data, isMobile]);
 
-  const getFloatingImageUrls = useCallback(() => {
+  const floatingImageUrls = useMemo(() => {
     if (data?.data) {
       return data.data.images.map((img: { src: string }) => img.src);
     }
+
     return HERO_FALLBACK.images.map(img => img.src);
   }, [data?.data]);
 
-  useEffect(() => {
-    const loadMainImage = async (): Promise<void> => {
-      const mainImageUrl = getMainImageUrl();
-      if (!mainImageUrl) return;
+  const handleMainImagePreloadError = useCallback((err: unknown) => {
+    console.warn('Failed to preload main image:', err);
+  }, []);
 
-      try {
-        startLoading();
-        await preloadImages([mainImageUrl]);
-      } catch (err) {
-        console.warn('Failed to preload main image:', err);
-      } finally {
-        stopLoading();
-      }
-    };
+  const handleFloatingImagePreloadError = useCallback((err: unknown) => {
+    console.warn('Failed to preload floating images:', err);
+  }, []);
 
-    loadMainImage();
-  }, [getMainImageUrl, preloadImages, startLoading, stopLoading]);
+  useAssetPreload({
+    urls: mainImageUrl ? [mainImageUrl] : [],
+    onError: handleMainImagePreloadError,
+  });
 
-  useEffect(() => {
-    const loadFloatingImages = async (): Promise<void> => {
-      const imageUrls = getFloatingImageUrls();
-      if (imageUrls.length === 0) return;
-
-      try {
-        await preloadImages(imageUrls);
-      } catch (err) {
-        console.warn('Failed to preload floating images:', err);
-      }
-    };
-
-    const timer = setTimeout(loadFloatingImages, 100);
-    return () => clearTimeout(timer);
-  }, [getFloatingImageUrls, preloadImages]);
+  useAssetPreload({
+    urls: floatingImageUrls,
+    onError: handleFloatingImagePreloadError,
+  });
 
   if (isDataLoading && !showFallback) {
     return <HeroSkeleton />;

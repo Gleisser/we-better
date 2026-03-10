@@ -4,45 +4,36 @@ import { API_CONFIG } from '@/core/config/api-config';
 import { FOOTER_FALLBACK } from '@/utils/constants/fallback';
 import { AppStore, MenuList } from '@/utils/types/footer';
 import { TopLevelImage } from '@/utils/types/common/image';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { useEffect, useCallback } from 'react';
+import { useMemo } from 'react';
 
 const Footer = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useFooter();
-  const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load footer content',
-  });
-  const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500,
   });
 
   // Determine content source
   const footer = data?.data || FOOTER_FALLBACK;
   const isAPI = data !== undefined;
 
-  // Collect all images that need to be preloaded
-  const getImageUrls = useCallback(() => {
+  const imageUrls = useMemo(() => {
     if (!footer) return [];
 
     const urls: string[] = [];
 
-    // Logo
     if (footer.logo) {
       urls.push(isAPI ? API_CONFIG.imageBaseURL + footer.logo.url : footer.logo.src);
     }
 
-    // App store images
     footer.app_stores.forEach((store: AppStore) => {
       store.images.forEach(image => {
         urls.push(isAPI ? API_CONFIG.imageBaseURL + image.url : image.src);
       });
     });
 
-    // Social media logos
     footer.social_medias[0].logos.forEach((social: TopLevelImage) => {
       urls.push(isAPI ? API_CONFIG.imageBaseURL + social.url : social.src);
     });
@@ -50,25 +41,10 @@ const Footer = (): JSX.Element => {
     return urls;
   }, [footer, isAPI]);
 
-  // Memoize the image loading function
-  const loadImages = useCallback(async () => {
-    const imageUrls = getImageUrls();
-    if (imageUrls.length === 0 || isLoading) return;
-
-    try {
-      startLoading();
-      await preloadImages(imageUrls);
-    } catch (err) {
-      handleError(err);
-    } finally {
-      stopLoading();
-    }
-  }, [getImageUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
-
-  // Handle image preloading
-  useEffect(() => {
-    loadImages();
-  }, [loadImages]);
+  useAssetPreload({
+    urls: imageUrls,
+    onError: handleError,
+  });
 
   // Show loading state only during initial data fetch
   if (isDataLoading) {

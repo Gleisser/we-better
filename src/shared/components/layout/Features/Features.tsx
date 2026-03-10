@@ -3,22 +3,17 @@ import styles from './Features.module.css';
 import FeaturesCard from './Card/FeaturesCard';
 import { useFeature } from '@/shared/hooks/useFeature';
 import { FEATURES_CONSTANTS } from '@/utils/constants/fallback';
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import FeaturesSkeleton from './FeaturesSkeleton';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 import { Brand } from '@/utils/types/features-response';
 
 const Features = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useFeature();
-  const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load features content',
-  });
-  const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500,
   });
 
   const [showFallback, setShowFallback] = useState(false);
@@ -29,25 +24,15 @@ const Features = (): JSX.Element => {
   const brands = useMemo(() => data?.data?.brands || [], [data?.data?.brands]);
   const title = data?.data?.subtext;
 
-  // Collect brand logo URLs for preloading
-  const getBrandUrls = useCallback(() => {
-    return brands.map((brand: Brand) => brand.logo?.img?.url || '').filter(Boolean);
-  }, [brands]);
+  const brandUrls = useMemo(
+    () => brands.map((brand: Brand) => brand.logo?.img?.url || '').filter(Boolean),
+    [brands]
+  );
 
-  // Handle image preloading
-  const loadImages = useCallback(async () => {
-    const brandUrls = getBrandUrls();
-    if (brandUrls.length === 0 || isLoading) return;
-
-    try {
-      startLoading();
-      await preloadImages(brandUrls);
-    } catch (err) {
-      handleError(err);
-    } finally {
-      stopLoading();
-    }
-  }, [getBrandUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+  const { isLoading } = useAssetPreload({
+    urls: brandUrls,
+    onError: handleError,
+  });
 
   // Fallback strategy
   useEffect(() => {
@@ -63,12 +48,6 @@ const Features = (): JSX.Element => {
 
     return () => clearTimeout(timer);
   }, [isDataLoading, error, data]);
-
-  // Load brand images
-  useEffect(() => {
-    loadImages();
-  }, [loadImages]);
-
   // Show loading state
   if (isDataLoading && !showFallback) {
     return <FeaturesSkeleton />;

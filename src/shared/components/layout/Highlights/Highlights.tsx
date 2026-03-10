@@ -1,22 +1,17 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import styles from './Highlights.module.css';
 import { HIGHLIGHTS_FALLBACK } from '@/utils/constants/fallback';
 import { useHighlight } from '@/shared/hooks/useHighlight';
 import { API_CONFIG } from '@/core/config/api-config';
 import HighlightsSkeleton from './HighlightsSkeleton';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
 
 const Highlights = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useHighlight();
-  const { preloadImages } = useImagePreloader();
   const { handleError, isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load highlights content',
-  });
-  const { isLoading, startLoading, stopLoading } = useLoadingState({
-    minimumLoadingTime: 500,
   });
 
   // State management
@@ -32,31 +27,22 @@ const Highlights = (): JSX.Element => {
   const highlights =
     error || showFallback || !data?.data?.slides ? HIGHLIGHTS_FALLBACK : data.data.slides;
 
-  // Collect image URLs for preloading
-  const getImageUrls = useCallback(() => {
-    return highlights
-      .map(highlight => {
-        return data?.data?.slides
-          ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url
-          : highlight?.image?.img?.formats?.large?.url;
-      })
-      .filter((url): url is string => typeof url === 'string' && url.length > 0);
-  }, [highlights, data?.data?.slides]);
+  const imageUrls = useMemo(
+    () =>
+      highlights
+        .map(highlight => {
+          return data?.data?.slides
+            ? API_CONFIG.imageBaseURL + highlight?.image?.img?.formats?.large?.url
+            : highlight?.image?.img?.formats?.large?.url;
+        })
+        .filter((url): url is string => typeof url === 'string' && url.length > 0),
+    [highlights, data?.data?.slides]
+  );
 
-  // Handle image preloading
-  const loadImages = useCallback(async () => {
-    const imageUrls = getImageUrls();
-    if (imageUrls.length === 0 || isLoading) return;
-
-    try {
-      startLoading();
-      await preloadImages(imageUrls);
-    } catch (err) {
-      handleError(err);
-    } finally {
-      stopLoading();
-    }
-  }, [getImageUrls, isLoading, startLoading, preloadImages, handleError, stopLoading]);
+  useAssetPreload({
+    urls: imageUrls,
+    onError: handleError,
+  });
 
   // Faster fallback strategy
   useEffect(() => {
@@ -120,12 +106,6 @@ const Highlights = (): JSX.Element => {
 
     return () => clearInterval(interval);
   }, [highlights.length]);
-
-  // Load initial images
-  useEffect(() => {
-    loadImages();
-  }, [loadImages]);
-
   // Show loading state
   if (isDataLoading && !showFallback) {
     return <HighlightsSkeleton />;
