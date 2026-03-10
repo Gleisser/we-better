@@ -14,6 +14,13 @@ const bannedFrontendEnvVars = [
   ['VITE', 'API', 'URL'].join('_'),
 ];
 const bannedLegacyOrigins = ['localhost:1337', 'strapiapp.com'];
+const bannedCspPatterns = [
+  "default-src *",
+  "script-src *",
+  "connect-src *",
+  "frame-src *",
+  "'unsafe-eval'",
+];
 
 function runGitGrep(pattern, pathspec = ['.']) {
   const result = spawnSync('git', ['grep', '-n', '-I', '--', pattern, '--', ...pathspec], {
@@ -96,12 +103,27 @@ function checkNoLegacyStrapiOriginsInFrontendRuntimeConfig() {
   return valid;
 }
 
+function checkIndexHtmlHasNoPermissiveMetaCsp() {
+  const indexHtml = readFileSync(join(process.cwd(), 'index.html'), 'utf8');
+  let valid = true;
+
+  for (const pattern of bannedCspPatterns) {
+    if (indexHtml.includes(pattern)) {
+      console.error(`\n[guardrails] Permissive CSP pattern detected in index.html: ${pattern}`);
+      valid = false;
+    }
+  }
+
+  return valid;
+}
+
 function main() {
   const checks = [
     checkTokenVarIsAbsentInTrackedFiles(),
     checkApiClientHasNoAuthorizationHeader(),
     checkBannedFrontendEnvVars(),
     checkNoLegacyStrapiOriginsInFrontendRuntimeConfig(),
+    checkIndexHtmlHasNoPermissiveMetaCsp(),
   ];
 
   if (checks.every(Boolean)) {

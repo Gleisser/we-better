@@ -54,19 +54,7 @@
       type="image/webp"
     >
 
-    <!-- Temporarily allow all content during development -->
-    <meta 
-      http-equiv="Content-Security-Policy" 
-      content="
-        default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
-        worker-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
-        script-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
-        connect-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
-        img-src * data: blob: 'unsafe-inline';
-        frame-src *;
-        style-src * 'unsafe-inline';
-      "
-    >
+    <!-- CSP is delivered via deployment headers (see vercel.json). -->
   </head>
   <body>
     <div id="root"></div>
