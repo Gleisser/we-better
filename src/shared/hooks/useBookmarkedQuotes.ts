@@ -1,7 +1,4 @@
-import { useState } from 'react';
-import { MOCK_QUOTES } from '@/utils/mockData/bookmarks';
-
-const STORAGE_KEY = 'bookmarked_quotes';
+import { useBookmarksByType } from './useBookmarks';
 
 export interface BookmarkedQuote {
   id: string;
@@ -13,46 +10,61 @@ export interface BookmarkedQuote {
 
 interface UseBookmarkedQuotesResult {
   bookmarkedQuotes: BookmarkedQuote[];
-  addBookmark: (quote: BookmarkedQuote) => void;
-  removeBookmark: (id: string) => void;
+  addBookmark: (quote: BookmarkedQuote) => Promise<void>;
+  removeBookmark: (id: string) => Promise<void>;
   isBookmarked: (id: string) => boolean;
+  isBookmarkActionPending: (id: string) => boolean;
+  isLoading: boolean;
+  error: Error | null;
 }
 
+const getMetadataString = (metadata: Record<string, unknown>, key: string): string => {
+  const value = metadata[key];
+  return typeof value === 'string' ? value : '';
+};
+
+const toTimestamp = (value: string): number => {
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? Date.now() : parsed;
+};
+
 export const useBookmarkedQuotes = (): UseBookmarkedQuotesResult => {
-  const [bookmarkedQuotes, setBookmarkedQuotes] = useState<BookmarkedQuote[]>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-    // Initialize with mock data for development
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_QUOTES));
-    return MOCK_QUOTES;
-  });
-
-  const addBookmark = (quote: BookmarkedQuote): void => {
-    setBookmarkedQuotes(prev => {
-      const newBookmarks = [...prev, { ...quote, timestamp: Date.now() }];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newBookmarks));
-      return newBookmarks;
-    });
-  };
-
-  const removeBookmark = (id: string): void => {
-    setBookmarkedQuotes(prev => {
-      const newBookmarks = prev.filter(q => q.id !== id);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newBookmarks));
-      return newBookmarks;
-    });
-  };
-
-  const isBookmarked = (id: string): boolean => {
-    return bookmarkedQuotes.some(q => q.id === id);
-  };
-
-  return {
-    bookmarkedQuotes,
+  const {
+    bookmarks,
     addBookmark,
     removeBookmark,
     isBookmarked,
+    isBookmarkActionPending,
+    isLoading,
+    error,
+  } = useBookmarksByType<BookmarkedQuote>({
+    itemType: 'quote',
+    fromRecord: bookmark => ({
+      id: bookmark.itemId,
+      text: getMetadataString(bookmark.metadata, 'text') || bookmark.title,
+      author: getMetadataString(bookmark.metadata, 'author'),
+      theme: getMetadataString(bookmark.metadata, 'theme') || 'wisdom',
+      timestamp: toTimestamp(bookmark.createdAt),
+    }),
+    toCreateInput: quote => ({
+      itemId: quote.id,
+      itemType: 'quote',
+      title: quote.text,
+      metadata: {
+        text: quote.text,
+        author: quote.author,
+        theme: quote.theme,
+      },
+    }),
+  });
+
+  return {
+    bookmarkedQuotes: bookmarks,
+    addBookmark,
+    removeBookmark,
+    isBookmarked,
+    isBookmarkActionPending,
+    isLoading,
+    error,
   };
 };

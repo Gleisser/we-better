@@ -14,6 +14,7 @@ import bookmarkAnimation from './icons/bookmark.json';
 import refreshAnimation from './icons/refresh.json';
 import clipboardAnimation from './icons/clipboard.json';
 import likeAnimation from './icons/like.json';
+import { useBookmarkedQuotes } from '@/shared/hooks/useBookmarkedQuotes';
 
 type QuoteTheme = 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom';
 
@@ -182,7 +183,6 @@ const QuoteWidget = (): JSX.Element => {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [collapsedHeight, setCollapsedHeight] = useState<number | null>(null);
 
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [showSuccess, setShowSuccess] = useState<{
     show: boolean;
@@ -232,6 +232,12 @@ const QuoteWidget = (): JSX.Element => {
     error: quotePoolError,
     refetch: refetchQuotePool,
   } = useQuotePool();
+  const {
+    addBookmark,
+    removeBookmark,
+    isBookmarked: isQuoteBookmarked,
+    isBookmarkActionPending,
+  } = useBookmarkedQuotes();
 
   useEffect(() => {
     if (Array.isArray(fetchedQuotes) && fetchedQuotes.length > 0) {
@@ -265,6 +271,13 @@ const QuoteWidget = (): JSX.Element => {
   }, [isNextQuoteBusy, playRefreshAnimation, stopRefreshAnimation]);
 
   const resolvedTheme = quote ? quoteService.determineQuoteTheme(quote.categories) : QUOTE.theme;
+  const activeQuoteText = quote?.text ?? QUOTE.text;
+  const activeQuoteAuthor = quote?.author ?? QUOTE.author;
+  const currentQuoteId = quote?.documentId;
+  const isCurrentQuoteBookmarked = currentQuoteId ? isQuoteBookmarked(currentQuoteId) : false;
+  const isCurrentQuoteBookmarkPending = currentQuoteId
+    ? isBookmarkActionPending(currentQuoteId)
+    : false;
   const themeConfig = THEME_CONFIG[resolvedTheme];
   const themeBackgrounds = BACKGROUND_IMAGES[resolvedTheme] ?? BACKGROUND_IMAGES.success;
   const backgroundIndex = backgroundIndices[resolvedTheme] ?? 0;
@@ -375,25 +388,44 @@ const QuoteWidget = (): JSX.Element => {
     };
   }, [quote?.text, resolvedTheme]);
 
-  const handleBookmark = (e: React.MouseEvent): void => {
+  const handleBookmark = async (e: React.MouseEvent<HTMLButtonElement>): Promise<void> => {
     e.preventDefault();
     e.stopPropagation();
-    playBookmarkAnimation();
-    setIsBookmarked(prev => !prev);
 
-    if (!isBookmarked) {
+    if (!quote?.documentId || isCurrentQuoteBookmarkPending) {
+      return;
+    }
+
+    playBookmarkAnimation();
+
+    try {
+      if (isCurrentQuoteBookmarked) {
+        await removeBookmark(quote.documentId);
+        return;
+      }
+
+      await addBookmark({
+        id: quote.documentId,
+        text: quote.text,
+        author: quote.author,
+        theme: resolvedTheme,
+        timestamp: Date.now(),
+      });
+
       setShowSuccess({
         show: true,
         message: t('widgets.quote.quoteBookmarked'),
         type: 'bookmark',
       });
       setTimeout(() => setShowSuccess(prev => ({ ...prev, show: false })), 2000);
+    } catch (error) {
+      console.error('Failed to update quote bookmark:', error);
     }
   };
 
   const handleShare = (platform: 'facebook' | 'twitter' | 'instagram'): void => {
-    const quote = `"${QUOTE.text}" - ${QUOTE.author}`;
-    const encodedQuote = encodeURIComponent(quote);
+    const shareText = `"${activeQuoteText}" - ${activeQuoteAuthor}`;
+    const encodedQuote = encodeURIComponent(shareText);
 
     const urls = {
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&quote=${encodedQuote}`,
@@ -402,7 +434,7 @@ const QuoteWidget = (): JSX.Element => {
     };
 
     if (platform === 'instagram') {
-      navigator.clipboard.writeText(quote);
+      navigator.clipboard.writeText(shareText);
       setShowSuccess({
         show: true,
         message: t('widgets.quote.quoteCopied'),
@@ -418,8 +450,8 @@ const QuoteWidget = (): JSX.Element => {
 
   const handleCopyQuote = (): void => {
     playClipboardAnimation();
-    const quote = `"${QUOTE.text}" - ${QUOTE.author}`;
-    navigator.clipboard.writeText(quote);
+    const shareText = `"${activeQuoteText}" - ${activeQuoteAuthor}`;
+    navigator.clipboard.writeText(shareText);
     setShowSuccess({
       show: true,
       message: t('widgets.quote.quoteCopied') as string,
@@ -622,8 +654,12 @@ const QuoteWidget = (): JSX.Element => {
             <div className={styles.bookmarkWrapper}>
               <button
                 type="button"
-                className={`${styles.bookmarkButton} ${isBookmarked ? styles.bookmarked : ''}`}
-                onClick={handleBookmark}
+                className={`${styles.bookmarkButton} ${
+                  isCurrentQuoteBookmarked ? styles.bookmarked : ''
+                }`}
+                onClick={event => {
+                  void handleBookmark(event);
+                }}
                 onMouseEnter={e => {
                   e.stopPropagation();
                   setShowTooltip(true);
@@ -639,10 +675,12 @@ const QuoteWidget = (): JSX.Element => {
                   setShowTooltip(false);
                 }}
                 aria-label={
-                  isBookmarked
+                  isCurrentQuoteBookmarked
                     ? t('widgets.quote.removeBookmark')
                     : t('widgets.quote.bookmarkQuote')
                 }
+                aria-pressed={isCurrentQuoteBookmarked}
+                disabled={!currentQuoteId || isCurrentQuoteBookmarkPending}
                 style={{ position: 'relative', zIndex: 2 }}
               >
                 <Lottie
@@ -662,7 +700,7 @@ const QuoteWidget = (): JSX.Element => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                   >
-                    {isBookmarked
+                    {isCurrentQuoteBookmarked
                       ? t('widgets.quote.removeBookmark')
                       : t('widgets.quote.bookmarkQuote')}
                   </motion.div>
