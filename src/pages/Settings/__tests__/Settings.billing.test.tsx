@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import Settings from '../Settings';
 import { billingService } from '@/core/services/billingService';
 import { sessionsService } from '@/core/services/sessionsService';
+import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
 
 vi.mock('@/shared/hooks/useTranslation', () => ({
   useCommonTranslation: () => ({
@@ -36,6 +37,10 @@ vi.mock('@/shared/components/billing/PricingModal/PricingModal', () => ({
     isOpen ? <div data-testid="pricing-modal">pricing-modal-open</div> : null,
 }));
 
+vi.mock('@/shared/hooks/useBillingSummary', () => ({
+  useBillingSummary: vi.fn(),
+}));
+
 vi.mock('@/core/services/billingService', () => ({
   billingService: {
     getBillingSummary: vi.fn(),
@@ -65,6 +70,7 @@ const mockedSessionsService = sessionsService as unknown as {
   getHistory: ReturnType<typeof vi.fn>;
   logoutOtherSessions: ReturnType<typeof vi.fn>;
 };
+const mockedUseBillingSummary = vi.mocked(useBillingSummary);
 
 const makeBillingSummary = (
   plan: 'free' | 'premium' | 'pro'
@@ -165,12 +171,20 @@ describe('Settings billing flow', () => {
       data: null,
       error: 'Portal blocked in test',
     });
+    mockedUseBillingSummary.mockReturnValue({
+      data: makeBillingSummary('free'),
+      error: null,
+      isLoading: false,
+      refetch: vi.fn(),
+    });
   });
 
   it('opens pricing modal for free users when clicking Manage Plan', async () => {
-    mockedBillingService.getBillingSummary.mockResolvedValue({
+    mockedUseBillingSummary.mockReturnValue({
       data: makeBillingSummary('free'),
       error: null,
+      isLoading: false,
+      refetch: vi.fn(),
     });
 
     render(
@@ -189,9 +203,11 @@ describe('Settings billing flow', () => {
   });
 
   it('uses portal flow for paid users when clicking Manage Plan', async () => {
-    mockedBillingService.getBillingSummary.mockResolvedValue({
+    mockedUseBillingSummary.mockReturnValue({
       data: makeBillingSummary('premium'),
       error: null,
+      isLoading: false,
+      refetch: vi.fn(),
     });
 
     render(

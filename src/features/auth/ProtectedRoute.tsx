@@ -1,14 +1,9 @@
-import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const { user, isLoading, checkAuth } = useAuth();
+  const { user, isLoading } = useAuth();
   const location = useLocation();
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
 
   if (isLoading) {
     // Return a loading spinner or placeholder while checking authentication

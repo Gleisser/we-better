@@ -1,11 +1,14 @@
-import React, { forwardRef, useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface Props {
   src: string;
   alt: string;
-  observerRef?: React.RefObject<IntersectionObserver>;
 }
+
+const highPriorityImageProps = {
+  fetchpriority: 'high',
+} as const;
 
 const DashboardPreview = forwardRef<HTMLImageElement, Props>(({ src, alt }, ref) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -39,6 +42,7 @@ const DashboardPreview = forwardRef<HTMLImageElement, Props>(({ src, alt }, ref)
             isLoaded ? 'opacity-90' : 'opacity-0'
           } transition-opacity duration-500`}
           loading="eager"
+          {...highPriorityImageProps}
           decoding="async"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2 }}

@@ -2,7 +2,10 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
-import { useNotificationsFeed } from '@/shared/hooks/useNotificationsFeed';
+import {
+  useNotificationsFeed,
+  useUnreadNotificationsCount,
+} from '@/shared/hooks/useNotificationsFeed';
 import type { NotificationFeedItemDto } from '@/core/services/notificationsService';
 import styles from './Notifications.module.css';
 
@@ -42,10 +45,10 @@ const toDateKey = (value: string): string => {
 const Notifications = (): JSX.Element => {
   const { t, currentLanguage } = useCommonTranslation();
   const navigate = useNavigate();
+  const { unreadCount } = useUnreadNotificationsCount();
   const {
     notifications,
     total,
-    unreadCount,
     hasMore,
     isLoading,
     isLoadingMore,
@@ -54,7 +57,7 @@ const Notifications = (): JSX.Element => {
     loadMore,
   } = useNotificationsFeed({
     pageSize: 20,
-    unreadRefreshIntervalMs: 20_000,
+    enabled: true,
   });
 
   const groupedNotifications = useMemo<TimeGroup[]>(() => {

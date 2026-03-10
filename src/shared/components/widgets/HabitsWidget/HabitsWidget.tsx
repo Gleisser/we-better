@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import styles from './HabitsWidget.module.css';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
@@ -16,7 +16,7 @@ import {
 import { StatusMenu } from './StatusMenu';
 import { HabitStatus, Habit as LocalHabit, HabitCategory } from './types';
 import { STATUS_CONFIG, CATEGORY_CONFIG } from './config';
-import { useHabits } from '@/shared/hooks/useHabits';
+import { useHabitLogsMap, useHabits } from '@/shared/hooks/useHabits';
 import {
   Habit as ApiHabit,
   HabitLog,
@@ -61,64 +61,39 @@ const HabitsWidget = (): JSX.Element => {
     return window.innerWidth <= 768;
   });
   const [collapsedHabits, setCollapsedHabits] = useState<Set<string>>(new Set());
-  const [habitLogs, setHabitLogs] = useState<Record<string, HabitLog[]>>({});
+  const selectedApiCategory = selectedCategory === 'all' ? undefined : selectedCategory;
+  const habitLogDateRange = useMemo(() => {
+    const endDate = new Date();
+    const startDate = addDays(endDate, -30);
+
+    return {
+      startDate: format(startDate, 'yyyy-MM-dd'),
+      endDate: format(endDate, 'yyyy-MM-dd'),
+    };
+  }, []);
 
   // Use the habits hook for API integration
   const {
     habits: apiHabits,
     isLoading,
     error,
-    fetchHabits,
     createHabit: apiCreateHabit,
     updateHabit: apiUpdateHabit,
     archiveHabit: apiArchiveHabit,
     logHabitCompletion,
-    getHabitLogs,
-  } = useHabits();
-
-  // Fetch logs for each habit
-  const fetchLogsForHabit = useCallback(
-    async (habitId: string) => {
-      try {
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 30); // Get logs for last 30 days
-
-        const logsResponse = await getHabitLogs(
-          habitId,
-          format(startDate, 'yyyy-MM-dd'),
-          format(new Date(), 'yyyy-MM-dd')
-        );
-
-        if (logsResponse) {
-          setHabitLogs(prev => ({
-            ...prev,
-            [habitId]: logsResponse.logs,
-          }));
-        }
-      } catch (err) {
-        console.error(`Failed to fetch logs for habit ${habitId}:`, err);
-      }
-    },
-    [getHabitLogs]
+  } = useHabits({
+    category: selectedApiCategory,
+  });
+  const { logsByHabit, refetchHabitLogs } = useHabitLogsMap(
+    apiHabits.map(habit => habit.id),
+    habitLogDateRange.startDate,
+    habitLogDateRange.endDate
   );
 
   // Transform API habits to local format
   const habits: LocalHabit[] = apiHabits.map(apiHabit =>
-    transformApiHabit(apiHabit, habitLogs[apiHabit.id] || [])
+    transformApiHabit(apiHabit, logsByHabit[apiHabit.id] || [])
   );
-
-  // Fetch logs for all habits when habits change
-  useEffect(() => {
-    const fetchAllLogs = async (): Promise<void> => {
-      for (const habit of apiHabits) {
-        await fetchLogsForHabit(habit.id);
-      }
-    };
-
-    if (apiHabits.length > 0) {
-      fetchAllLogs();
-    }
-  }, [apiHabits, fetchLogsForHabit]);
 
   useEffect(() => {
     const isMobile = window.innerWidth <= 768;
@@ -127,11 +102,6 @@ const HabitsWidget = (): JSX.Element => {
       setIsCollapsed(true);
     }
   }, [habits]);
-
-  // Initialize based on selected category
-  useEffect(() => {
-    fetchHabits(selectedCategory === 'all' ? undefined : selectedCategory);
-  }, [fetchHabits, selectedCategory]);
 
   const filteredHabits =
     selectedCategory === 'all'
@@ -179,45 +149,12 @@ const HabitsWidget = (): JSX.Element => {
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
       const apiStatus: ApiHabitStatus = status === null ? 'missed' : status;
 
-      // Optimistic UI update
-      setHabitLogs(prevLogs => {
-        const habitId = selectedHabit.id;
-        const currentLogs = [...(prevLogs[habitId] || [])];
-        const existingLogIndex = currentLogs.findIndex(log => log.date === dateStr);
-
-        if (existingLogIndex >= 0) {
-          currentLogs[existingLogIndex] = {
-            ...currentLogs[existingLogIndex],
-            status: apiStatus,
-            updated_at: new Date().toISOString(),
-          };
-        } else {
-          currentLogs.push({
-            id: `temp_${Date.now()}`,
-            habit_id: habitId,
-            user_id: '', // Will be set by the server
-            date: dateStr,
-            status: apiStatus,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          });
-        }
-
-        return {
-          ...prevLogs,
-          [habitId]: currentLogs,
-        };
-      });
-
       // Call the API
       try {
         await logHabitCompletion(selectedHabit.id, dateStr, apiStatus, undefined);
-        // The habit will be updated automatically by the useHabits hook
-        // after successful log submission
       } catch (error) {
         console.error('Failed to log habit status:', error);
-        // Revert the optimistic update on error
-        fetchLogsForHabit(selectedHabit.id);
+        void refetchHabitLogs(selectedHabit.id);
       }
     }
   };

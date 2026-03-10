@@ -22,7 +22,6 @@ export const Hero = (): JSX.Element => {
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
   const observerRef = useRef<IntersectionObserver | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
-  const mainImageRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
@@ -76,14 +75,6 @@ export const Hero = (): JSX.Element => {
 
   const heroData = isError || showFallback || !data?.data ? HERO_FALLBACK : data.data;
 
-  const mainImageUrl = useMemo(() => {
-    if (data?.data) {
-      return isMobile ? data.data.main_image_mobile?.src : data.data.main_image?.src;
-    }
-
-    return isMobile ? HERO_FALLBACK.main_image_mobile.src : HERO_FALLBACK.main_image.src;
-  }, [data?.data, isMobile]);
-
   const floatingImageUrls = useMemo(() => {
     if (data?.data) {
       return data.data.images.map((img: { src: string }) => img.src);
@@ -92,18 +83,17 @@ export const Hero = (): JSX.Element => {
     return HERO_FALLBACK.images.map(img => img.src);
   }, [data?.data]);
 
-  const handleMainImagePreloadError = useCallback((err: unknown) => {
-    console.warn('Failed to preload main image:', err);
-  }, []);
-
   const handleFloatingImagePreloadError = useCallback((err: unknown) => {
     console.warn('Failed to preload floating images:', err);
   }, []);
 
-  useAssetPreload({
-    urls: mainImageUrl ? [mainImageUrl] : [],
-    onError: handleMainImagePreloadError,
-  });
+  const highPriorityImageProps = useMemo(
+    () =>
+      ({
+        fetchpriority: 'high',
+      }) as const,
+    []
+  );
 
   useAssetPreload({
     urls: floatingImageUrls,
@@ -153,15 +143,11 @@ export const Hero = (): JSX.Element => {
         <div className={styles.mainPreview}>
           {isMobile ? (
             <motion.img
-              ref={el => {
-                mainImageRef.current = el;
-                if (el) observerRef.current?.observe(el);
-              }}
-              src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-              data-src={heroData?.main_image_mobile?.src}
+              src={heroData?.main_image_mobile?.src}
               alt="We Better Mobile App Interface"
               className={styles.mobilePreviewImage}
-              loading="lazy"
+              loading="eager"
+              {...highPriorityImageProps}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -170,8 +156,6 @@ export const Hero = (): JSX.Element => {
             <DashboardPreview
               src={heroData?.main_image?.src}
               alt={heroData?.main_image?.alt || 'We Better Dashboard Interface'}
-              ref={mainImageRef}
-              observerRef={observerRef}
             />
           )}
         </div>

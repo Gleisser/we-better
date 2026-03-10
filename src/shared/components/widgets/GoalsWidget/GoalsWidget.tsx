@@ -121,6 +121,7 @@ const GoalsWidget = (): JSX.Element => {
   const [goalToDelete, setGoalToDelete] = useState<Goal | null>(null);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [visibleGoals, setVisibleGoals] = useState(INITIAL_GOALS_TO_SHOW);
+  const queryCategory = selectedCategory === 'all' ? undefined : selectedCategory;
 
   // Use the goals hook for API integration
   const {
@@ -128,16 +129,18 @@ const GoalsWidget = (): JSX.Element => {
     reviewSettings: apiReviewSettings,
     isLoading,
     error,
-    fetchGoals,
     createGoal: apiCreateGoal,
     updateGoal: apiUpdateGoal,
     deleteGoal: apiDeleteGoal,
     increaseGoalProgress,
     decreaseGoalProgress,
     saveReviewSettings,
-    fetchReviewSettings,
     completeReview,
-  } = useGoals();
+    refetch,
+  } = useGoals({
+    category: queryCategory,
+    includeMilestones: true,
+  });
 
   // Transform API goals to local format
   const goals: Goal[] = apiGoals.map(transformApiGoal);
@@ -151,16 +154,6 @@ const GoalsWidget = (): JSX.Element => {
         nextReviewDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Default to 1 week from now
         reminderDays: 3,
       };
-
-  // Initialize based on selected category
-  useEffect(() => {
-    fetchGoals(selectedCategory === 'all' ? undefined : selectedCategory, true);
-  }, [fetchGoals, selectedCategory]);
-
-  // Fetch review settings on mount
-  useEffect(() => {
-    fetchReviewSettings();
-  }, [fetchReviewSettings]);
 
   const filteredGoals =
     selectedCategory === 'all' ? goals : goals.filter(goal => goal.category === selectedCategory);
@@ -270,7 +263,7 @@ const GoalsWidget = (): JSX.Element => {
         );
 
         // Refetch goals to get updated milestones
-        await fetchGoals(selectedCategory === 'all' ? undefined : selectedCategory, true);
+        await refetch();
 
         toast.success('Goal updated successfully!', {
           duration: 4000,
@@ -292,7 +285,7 @@ const GoalsWidget = (): JSX.Element => {
         toast.error('Failed to update goal');
       }
     },
-    [apiUpdateGoal, editingGoal, fetchGoals, selectedCategory]
+    [apiUpdateGoal, editingGoal, refetch]
   );
 
   const handleCreateGoal = useCallback(
@@ -369,7 +362,7 @@ const GoalsWidget = (): JSX.Element => {
             <button
               className={styles.settingsButton}
               onClick={() => setShowSettings(true)}
-              aria-label={t('widgets.goals.reviewSettings') as string}
+              aria-label={t('widgets.goals.reviewSettings.title') as string}
             >
               <SettingsIcon className={styles.actionIcon} />
             </button>

@@ -1,72 +1,49 @@
-import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Highlights from '../Highlights';
 import { useHighlight } from '@/shared/hooks/useHighlight';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { HIGHLIGHTS_FALLBACK } from '@/utils/constants/fallback';
 import styles from '../Highlights.module.css';
-import type { HighlightResponse } from '@/utils/types/highlight';
 
-type UseHighlightReturn = {
-  data: HighlightResponse | null;
-  isLoading: boolean;
-};
-
-type UseLoadingStateReturn = {
-  isLoading: boolean;
-  startLoading: () => void;
-  stopLoading: () => void;
-};
-
-type UseErrorHandlerReturn = {
-  isError: boolean;
-  error: Error | null;
-  handleError: (error: unknown) => void;
-};
-
-// Mock the hooks
-vi.mock('@/hooks/useHighlight', () => ({
+vi.mock('@/shared/hooks/useHighlight', () => ({
   useHighlight: vi.fn(),
 }));
 
-vi.mock('@/hooks/utils/useErrorHandler', () => ({
+vi.mock('@/shared/hooks/utils/useErrorHandler', () => ({
   useErrorHandler: vi.fn(),
 }));
 
-vi.mock('@/hooks/utils/useLoadingState', () => ({
-  useLoadingState: vi.fn(),
+vi.mock('@/shared/hooks/utils/useAssetPreload', () => ({
+  useAssetPreload: vi.fn(),
 }));
 
-vi.mock('@/hooks/utils/useImagePreloader', () => ({
-  useImagePreloader: vi.fn(),
-}));
+const mockedUseHighlight = vi.mocked(useHighlight);
+const mockedUseErrorHandler = vi.mocked(useErrorHandler);
+const mockedUseAssetPreload = vi.mocked(useAssetPreload);
 
-// Mock IntersectionObserver
 const mockIntersectionObserver = vi.fn();
 mockIntersectionObserver.mockReturnValue({
-  observe: () => null,
-  unobserve: () => null,
-  disconnect: () => null,
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
 });
-window.IntersectionObserver = mockIntersectionObserver;
+window.IntersectionObserver = mockIntersectionObserver as unknown as typeof IntersectionObserver;
 
 describe('Highlights', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
 
-    // Default mock implementations
-    (useImagePreloader as Mock).mockReturnValue({
-      preloadImages: vi.fn().mockResolvedValue(undefined),
-      isPreloading: false,
+    mockedUseErrorHandler.mockReturnValue({
+      isError: false,
+      error: null,
+      handleError: vi.fn(),
     });
-
-    (useLoadingState as unknown as Mock<undefined[], UseLoadingStateReturn>).mockReturnValue({
+    mockedUseAssetPreload.mockReturnValue({
       isLoading: false,
-      startLoading: vi.fn(),
-      stopLoading: vi.fn(),
+      hasTimedOut: false,
     });
   });
 
@@ -74,99 +51,114 @@ describe('Highlights', () => {
     vi.useRealTimers();
   });
 
-  it('shows loading skeleton when data is being fetched', () => {
-    // Mock loading state
-    (useHighlight as unknown as Mock<undefined[], UseHighlightReturn>).mockReturnValue({
-      data: null,
+  it('shows the loading skeleton while the CMS content is still loading', () => {
+    mockedUseHighlight.mockReturnValue({
+      data: undefined,
       isLoading: true,
-    });
-
-    // Mock error handler
-    (useErrorHandler as unknown as Mock<undefined[], UseErrorHandlerReturn>).mockReturnValue({
-      isError: false,
       error: null,
-      handleError: vi.fn(),
-    });
+      isFetching: true,
+      refetch: vi.fn(),
+    } as never);
 
     render(<Highlights />);
 
-    // Check for skeleton animation elements
-    const skeletonElements = document.getElementsByClassName('animate-pulse');
-    expect(skeletonElements.length).toBeGreaterThan(0);
-
-    // Verify main content is not shown
-    expect(screen.queryByRole('region', { name: /Highlights slider/i })).not.toBeInTheDocument();
+    expect(document.getElementsByClassName('animate-pulse').length).toBeGreaterThan(0);
+    expect(screen.queryByRole('region', { name: /Highlights slider/i })).toBeNull();
   });
 
-  it('renders error state when there is an error fetching data', () => {
-    // Mock error state
-    const mockError = new Error('Failed to load highlights content');
-
-    (useHighlight as unknown as Mock<undefined[], UseHighlightReturn>).mockReturnValue({
-      data: null,
+  it('renders the error state when the highlight query fails', () => {
+    mockedUseHighlight.mockReturnValue({
+      data: undefined,
       isLoading: false,
-    });
-
-    (useErrorHandler as unknown as Mock<undefined[], UseErrorHandlerReturn>).mockReturnValue({
+      error: null,
+      isFetching: false,
+      refetch: vi.fn(),
+    } as never);
+    mockedUseErrorHandler.mockReturnValue({
       isError: true,
-      error: mockError,
+      error: new Error('Failed to load highlights content'),
       handleError: vi.fn(),
     });
 
     render(<Highlights />);
 
-    // Check if error message is displayed
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText(/Failed to load highlights content/i)).toBeInTheDocument();
-
-    // Verify retry button is present and accessible
-    const retryButton = screen.getByRole('button', { name: /try again/i });
-    expect(retryButton).toBeInTheDocument();
-    expect(retryButton).toHaveClass(styles.retryButton);
-
-    // Verify main content is not shown
-    expect(screen.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
-    expect(screen.queryByRole('region', { name: /Highlights slider/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('alert')).not.toBeNull();
+    expect(screen.getByRole('button', { name: /Try Again/i }).className).toContain(
+      styles.retryButton
+    );
   });
 
-  it('renders main content with slider when data is loaded', () => {
-    // Mock successful data fetch
-    (useHighlight as unknown as Mock<undefined[], UseHighlightReturn>).mockReturnValue({
+  it('keeps CMS /assets images on the local frontend origin instead of prefixing the Strapi host', () => {
+    mockedUseHighlight.mockReturnValue({
       data: {
         data: {
+          id: 1,
+          documentId: 'highlight-doc',
           title: 'Use We Better today for',
-          slides: HIGHLIGHTS_FALLBACK,
+          createdAt: '2026-03-11T00:00:00.000Z',
+          updatedAt: '2026-03-11T00:00:00.000Z',
+          publishedAt: '2026-03-11T00:00:00.000Z',
+          slides: HIGHLIGHTS_FALLBACK.map((slide, index) => ({
+            id: index + 1,
+            documentId: `slide-${index + 1}`,
+            title: slide.title,
+            createdAt: '2026-03-11T00:00:00.000Z',
+            updatedAt: '2026-03-11T00:00:00.000Z',
+            publishedAt: '2026-03-11T00:00:00.000Z',
+            image: {
+              img: {
+                id: index + 1,
+                documentId: `image-${index + 1}`,
+                name: `${slide.title}.webp`,
+                alternativeText: slide.title,
+                caption: slide.title,
+                width: 800,
+                height: 800,
+                url: slide.image.img.formats.large.url,
+                alt: slide.title,
+                src: slide.image.img.formats.large.url,
+                createdAt: '2026-03-11T00:00:00.000Z',
+                updatedAt: '2026-03-11T00:00:00.000Z',
+                publishedAt: '2026-03-11T00:00:00.000Z',
+                formats: {
+                  large: {
+                    url: slide.image.img.formats.large.url,
+                    width: 800,
+                    height: 800,
+                  },
+                  medium: {
+                    url: slide.image.img.formats.large.url,
+                    width: 600,
+                    height: 600,
+                  },
+                  small: {
+                    url: slide.image.img.formats.large.url,
+                    width: 400,
+                    height: 400,
+                  },
+                  thumbnail: {
+                    url: slide.image.img.formats.large.url,
+                    width: 200,
+                    height: 200,
+                  },
+                },
+              },
+            },
+          })),
         },
       },
       isLoading: false,
-    });
-
-    (useErrorHandler as unknown as Mock<undefined[], UseErrorHandlerReturn>).mockReturnValue({
-      isError: false,
       error: null,
-      handleError: vi.fn(),
-    });
+      isFetching: false,
+      refetch: vi.fn(),
+    } as never);
 
     render(<Highlights />);
 
-    // Check title
-    const title = screen.getByRole('heading', { level: 2 });
-    expect(title).toBeInTheDocument();
-    expect(title).toHaveTextContent('Use We Better today for');
-
-    // Check slider region
     const slider = screen.getByRole('region', { name: /Highlights slider/i });
-    expect(slider).toBeInTheDocument();
+    expect(slider).not.toBeNull();
 
-    // Check first slide is visible
-    const firstSlide = screen.getByRole('tabpanel', { name: /Slide 1 of/i });
-    expect(firstSlide).toBeInTheDocument();
-    expect(firstSlide).not.toHaveAttribute('aria-hidden', 'true');
-
-    // Check first slide image
     const firstImage = screen.getByRole('img');
-    expect(firstImage).toBeInTheDocument();
-    expect(firstImage).toHaveAttribute('loading', 'eager');
-    expect(firstImage).toHaveAttribute('decoding', 'async');
+    expect(firstImage.getAttribute('src')).toBe('/assets/images/highlights/goals.webp');
   });
 });

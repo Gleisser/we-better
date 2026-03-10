@@ -1,6 +1,10 @@
 import { QueryClient } from '@tanstack/react-query';
 import { isRateLimitError, shouldRetry, getRetryDelay } from '@/utils/helpers/error-handling';
 
+export const AUTH_SCOPED_QUERY_META = {
+  authScoped: true,
+} as const;
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -26,4 +30,10 @@ export const queryClient = new QueryClient({
       retryDelay: (attemptIndex, error) => getRetryDelay(error, attemptIndex),
     },
   },
-}); 
+});
+
+export const clearAuthScopedQueries = (): void => {
+  queryClient.removeQueries({
+    predicate: query => query.meta?.authScoped === true,
+  });
+};

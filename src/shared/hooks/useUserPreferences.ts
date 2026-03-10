@@ -1,9 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AUTH_SCOPED_QUERY_META } from '@/core/config/react-query';
 import {
   preferencesService,
   UserPreferences,
   UserPreferencesUpdateRequest,
 } from '@/core/services/preferencesService';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 interface UseUserPreferencesReturn {
   preferences: UserPreferences | null;
@@ -17,188 +20,141 @@ interface UseUserPreferencesReturn {
   clearError: () => void;
 }
 
-/**
- * Hook for managing user preferences with API integration
- */
+const userPreferencesQueryKey = (userId: string | null) =>
+  ['userPreferences', userId ?? 'anonymous'] as const;
+
+const USER_PREFERENCES_OFFLINE_CACHE_KEY = 'user-preferences-cache';
+
+const loadOfflinePreferences = (): UserPreferences | null => {
+  if (typeof window === 'undefined' || navigator.onLine) {
+    return null;
+  }
+
+  try {
+    const cached = localStorage.getItem(USER_PREFERENCES_OFFLINE_CACHE_KEY);
+    return cached ? (JSON.parse(cached) as UserPreferences) : null;
+  } catch (error) {
+    console.error('Failed to load cached preferences from localStorage:', error);
+    return null;
+  }
+};
+
 export function useUserPreferences(): UseUserPreferencesReturn {
-  const [preferences, setPreferences] = useState<UserPreferences | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { user, isLoading: authLoading } = useAuth();
+  const userId = user?.id ?? null;
+  const [manualError, setManualError] = useState<string | null>(null);
 
-  // Track in-flight request to prevent concurrent loads
-  const loadPromiseRef = useRef<Promise<void> | null>(null);
+  useEffect(() => {
+    preferencesService.clearCache();
+    setManualError(null);
+  }, [userId]);
 
-  /**
-   * Load preferences from API
-   */
-  const loadPreferences = useCallback(async () => {
-    // Return existing promise if already in-flight
-    if (loadPromiseRef.current) {
-      return loadPromiseRef.current;
+  const query = useQuery({
+    queryKey: userPreferencesQueryKey(userId),
+    queryFn: async (): Promise<UserPreferences | null> => {
+      const result = await preferencesService.getUserPreferences();
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      return result.data;
+    },
+    enabled: !authLoading && Boolean(userId),
+    meta: AUTH_SCOPED_QUERY_META,
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (updates: UserPreferencesUpdateRequest): Promise<UserPreferences | null> => {
+      const result = await preferencesService.patchUserPreferences(updates);
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      return result.data;
+    },
+    onSuccess: data => {
+      queryClient.setQueryData(userPreferencesQueryKey(userId), data);
+      setManualError(null);
+    },
+  });
+
+  const offlinePreferences = useMemo(
+    () => (!query.data && !query.isLoading ? loadOfflinePreferences() : null),
+    [query.data, query.isLoading]
+  );
+
+  const preferences = query.data ?? offlinePreferences ?? null;
+
+  useEffect(() => {
+    if (!preferences || typeof window === 'undefined' || navigator.onLine) {
+      return;
     }
 
-    const loadTask = async (): Promise<void> => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const { data, error: apiError } = await preferencesService.getUserPreferences();
-
-        if (apiError) {
-          setError(apiError);
-        } else {
-          setPreferences(data);
-        }
-      } catch (err) {
-        setError('Failed to load preferences');
-        console.error('Error loading preferences:', err);
-      } finally {
-        setIsLoading(false);
-        loadPromiseRef.current = null; // Clear ref when done
-      }
-    };
-
-    loadPromiseRef.current = loadTask();
-    return loadPromiseRef.current;
-  }, []);
-
-  /**
-   * Update preferences via API
-   */
-  const updatePreferences = useCallback(
-    async (updates: UserPreferencesUpdateRequest): Promise<boolean> => {
-      try {
-        setError(null);
-
-        const { data, error: apiError } = await preferencesService.patchUserPreferences(updates);
-
-        if (apiError) {
-          setError(apiError);
-          return false;
-        }
-
-        if (data) {
-          setPreferences(data);
-        }
-
-        return true;
-      } catch (err) {
-        setError('Failed to update preferences');
-        console.error('Error updating preferences:', err);
-        return false;
-      }
-    },
-    []
-  );
-
-  /**
-   * Update theme mode specifically
-   */
-  const updateThemeMode = useCallback(
-    async (mode: UserPreferences['theme_mode']): Promise<boolean> => {
-      return updatePreferences({ theme_mode: mode });
-    },
-    [updatePreferences]
-  );
-
-  /**
-   * Update time-based theme preference
-   */
-  const updateTimeBasedTheme = useCallback(
-    async (enabled: boolean): Promise<boolean> => {
-      return updatePreferences({ time_based_theme: enabled });
-    },
-    [updatePreferences]
-  );
-
-  /**
-   * Update language preference
-   */
-  const updateLanguage = useCallback(
-    async (language: string): Promise<boolean> => {
-      return updatePreferences({ language });
-    },
-    [updatePreferences]
-  );
-
-  /**
-   * Refresh preferences from API
-   */
-  const refreshPreferences = useCallback(async () => {
-    await loadPreferences();
-  }, [loadPreferences]);
-
-  /**
-   * Clear error state
-   */
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
-
-  /**
-   * Handle online/offline sync
-   */
-  useEffect(() => {
-    const handleOnline = (): void => {
-      // When coming back online, refresh preferences
-      loadPreferences();
-    };
-
-    const handleOffline = (): void => {
-      // When going offline, we'll rely on cached data
-      console.info('Going offline - using cached preferences');
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [loadPreferences]);
-
-  /**
-   * Load preferences on mount
-   */
-  useEffect(() => {
-    loadPreferences();
-  }, [loadPreferences]);
-
-  /**
-   * Sync with localStorage as fallback when offline
-   */
-  useEffect(() => {
-    if (preferences && !navigator.onLine) {
-      try {
-        localStorage.setItem('user-preferences-cache', JSON.stringify(preferences));
-      } catch (err) {
-        console.error('Failed to cache preferences to localStorage:', err);
-      }
+    try {
+      localStorage.setItem(USER_PREFERENCES_OFFLINE_CACHE_KEY, JSON.stringify(preferences));
+    } catch (error) {
+      console.error('Failed to cache preferences to localStorage:', error);
     }
   }, [preferences]);
 
-  /**
-   * Load from localStorage when offline and no preferences loaded
-   */
-  useEffect(() => {
-    if (!preferences && !navigator.onLine && !isLoading) {
-      try {
-        const cached = localStorage.getItem('user-preferences-cache');
-        if (cached) {
-          const cachedPreferences = JSON.parse(cached);
-          setPreferences(cachedPreferences);
-        }
-      } catch (err) {
-        console.error('Failed to load cached preferences from localStorage:', err);
+  const updatePreferences = useCallback(
+    async (updates: UserPreferencesUpdateRequest): Promise<boolean> => {
+      if (!userId) {
+        setManualError('Not authenticated');
+        return false;
       }
+
+      try {
+        await updateMutation.mutateAsync(updates);
+        return true;
+      } catch (error) {
+        setManualError(error instanceof Error ? error.message : 'Failed to update preferences');
+        return false;
+      }
+    },
+    [updateMutation, userId]
+  );
+
+  const updateThemeMode = useCallback(
+    async (mode: UserPreferences['theme_mode']): Promise<boolean> =>
+      updatePreferences({ theme_mode: mode }),
+    [updatePreferences]
+  );
+
+  const updateTimeBasedTheme = useCallback(
+    async (enabled: boolean): Promise<boolean> => updatePreferences({ time_based_theme: enabled }),
+    [updatePreferences]
+  );
+
+  const updateLanguage = useCallback(
+    async (language: string): Promise<boolean> => updatePreferences({ language }),
+    [updatePreferences]
+  );
+
+  const refreshPreferences = useCallback(async (): Promise<void> => {
+    if (!userId) {
+      preferencesService.clearCache();
+      queryClient.setQueryData(userPreferencesQueryKey(userId), null);
+      return;
     }
-  }, [preferences, isLoading]);
+
+    preferencesService.clearCache();
+    await query.refetch();
+  }, [query, queryClient, userId]);
+
+  const clearError = useCallback(() => {
+    setManualError(null);
+  }, []);
 
   return {
     preferences,
-    isLoading,
-    error,
+    isLoading: authLoading || query.isLoading || updateMutation.isPending,
+    error:
+      manualError ||
+      (updateMutation.error instanceof Error ? updateMutation.error.message : null) ||
+      (query.error instanceof Error ? query.error.message : null),
     updatePreferences,
     updateThemeMode,
     updateTimeBasedTheme,

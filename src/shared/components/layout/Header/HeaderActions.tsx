@@ -10,7 +10,10 @@ import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useThemeToggle } from '@/shared/hooks/useTheme';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
 import { useAuth } from '@/shared/hooks/useAuth';
-import { useNotificationsFeed } from '@/shared/hooks/useNotificationsFeed';
+import {
+  useNotificationsFeed,
+  useUnreadNotificationsCount,
+} from '@/shared/hooks/useNotificationsFeed';
 import { getInitials } from '@/shared/utils/string/getInitials';
 import styles from './HeaderActions.module.css';
 
@@ -20,15 +23,16 @@ const HeaderActions = (): JSX.Element => {
   const { activePopup, setActivePopup } = useHeader();
   const [isMobile, setIsMobile] = useState(false);
   const [avatarLoadError, setAvatarLoadError] = useState(false);
+  const notificationsEnabled = activePopup === 'notifications';
+  const { unreadCount, refetch: refetchUnreadCount } = useUnreadNotificationsCount();
   const {
     notifications,
-    unreadCount,
     isLoading: notificationsLoading,
     markAsRead,
     markAllAsRead,
   } = useNotificationsFeed({
     pageSize: 8,
-    unreadRefreshIntervalMs: 15_000,
+    enabled: notificationsEnabled,
   });
 
   // Theme functionality
@@ -88,6 +92,14 @@ const HeaderActions = (): JSX.Element => {
   useEffect(() => {
     setAvatarLoadError(false);
   }, [userAvatarUrl]);
+
+  useEffect(() => {
+    if (!notificationsEnabled) {
+      return;
+    }
+
+    void refetchUnreadCount();
+  }, [notificationsEnabled, refetchUnreadCount]);
 
   // Close popups when clicking outside
   useEffect(() => {

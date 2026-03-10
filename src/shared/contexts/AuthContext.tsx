@@ -1,7 +1,8 @@
-import { createContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useEffect, useState, useCallback, useRef } from 'react';
 import { authService } from '@/core/services/authService';
 import { supabase } from '@/core/services/supabaseClient';
 import { sessionsService } from '@/core/services/sessionsService';
+import { clearAuthScopedQueries } from '@/core/config/react-query';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 /**
@@ -79,6 +80,9 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: React.ReactNode }): React.ReactNode => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [sessionAccessToken, setSessionAccessToken] = useState<string | null>(null);
+  const previousUserIdRef = useRef<string | null>(null);
+  const trackedSessionKeyRef = useRef<string | null>(null);
 
   const getMetadataString = (
     metadata: SupabaseUser['user_metadata'] | undefined,
@@ -102,13 +106,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
   const checkAuth = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { user: currentUser, error } = await authService.getCurrentUser();
+      const { user: currentUser, session, error } = await authService.getCurrentUser();
 
       if (error) {
         console.error('Auth check error:', error);
+        setSessionAccessToken(null);
         setUser(null);
         return;
       }
+
+      setSessionAccessToken(session?.access_token ?? null);
 
       if (currentUser) {
         const supabaseUser = currentUser as SupabaseUser;
@@ -146,18 +153,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
         };
 
         setUser(userWithDisplayName);
-        void trackCurrentSessionSilently();
       } else {
-        console.warn('No valid user session found');
+        setSessionAccessToken(null);
         setUser(null);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      setSessionAccessToken(null);
       setUser(null);
     } finally {
       setIsLoading(false);
     }
-  }, [trackCurrentSessionSilently]);
+  }, []);
 
   /**
    * Signs out the current user and redirects to the login page.
@@ -188,10 +195,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
     // Set up auth state listener
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
+        setSessionAccessToken(session.access_token ?? null);
         checkAuth();
       } else if (event === 'USER_UPDATED' && session) {
+        setSessionAccessToken(session.access_token ?? null);
         checkAuth();
       } else if (event === 'SIGNED_OUT') {
+        setSessionAccessToken(null);
         setUser(null);
       }
     });
@@ -202,7 +212,38 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
   }, [checkAuth]);
 
   useEffect(() => {
-    if (!user) return;
+    const nextUserId = user?.id ?? null;
+    const previousUserId = previousUserIdRef.current;
+
+    if (previousUserId && previousUserId !== nextUserId) {
+      clearAuthScopedQueries();
+    }
+
+    if (!nextUserId) {
+      clearAuthScopedQueries();
+      trackedSessionKeyRef.current = null;
+    }
+
+    previousUserIdRef.current = nextUserId;
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!user?.id || !sessionAccessToken) {
+      trackedSessionKeyRef.current = null;
+      return;
+    }
+
+    const sessionKey = `${user.id}:${sessionAccessToken}`;
+    if (trackedSessionKeyRef.current === sessionKey) {
+      return;
+    }
+
+    trackedSessionKeyRef.current = sessionKey;
+    void trackCurrentSessionSilently();
+  }, [sessionAccessToken, trackCurrentSessionSilently, user?.id]);
+
+  useEffect(() => {
+    if (!user || !sessionAccessToken) return;
 
     const HEARTBEAT_INTERVAL_MS = 5 * 60 * 1000;
     const intervalId = window.setInterval(() => {
@@ -212,7 +253,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [user, trackCurrentSessionSilently]);
+  }, [sessionAccessToken, trackCurrentSessionSilently, user]);
 
   return (
     <AuthContext.Provider

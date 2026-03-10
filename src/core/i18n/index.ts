@@ -3451,6 +3451,8 @@ const resources = {
   },
 };
 
+const isI18nDebugEnabled = import.meta.env.DEV && import.meta.env.VITE_I18N_DEBUG === 'true';
+
 // Initialize i18next
 i18n
   .use(LanguageDetector)
@@ -3459,7 +3461,7 @@ i18n
     // Default language settings
     fallbackLng: 'en',
     defaultNS: 'common',
-    debug: process.env.NODE_ENV === 'development', // Enable debug in development mode
+    debug: isI18nDebugEnabled,
 
     // Interpolation settings
     interpolation: {
@@ -3493,13 +3495,12 @@ i18n
     cleanCode: false, // Keep full language codes including regions
 
     // Translation missing key behavior
-    saveMissing: process.env.NODE_ENV === 'development', // Save missing keys in development
-    missingKeyHandler:
-      process.env.NODE_ENV === 'development'
-        ? (lng, ns, key) => {
-            console.warn(`Missing translation key: ${lng}.${ns}.${key}`);
-          }
-        : undefined,
+    saveMissing: isI18nDebugEnabled,
+    missingKeyHandler: isI18nDebugEnabled
+      ? (lng, ns, key) => {
+          console.warn(`Missing translation key: ${lng}.${ns}.${key}`);
+        }
+      : undefined,
   });
 
 export default i18n;

@@ -208,9 +208,6 @@ const describeArc = (
 const MoodWidget = (): JSX.Element => {
   const { t, currentLanguage } = useCommonTranslation();
   const {
-    fetchMoodEntries,
-    fetchWeeklyPulse,
-    fetchMonthlyPulse,
     saveMoodEntry,
     getMoodForDate,
     todayMood,
@@ -234,16 +231,6 @@ const MoodWidget = (): JSX.Element => {
     getMoodIndexFromId(FALLBACK_MOOD_ID)
   );
   const [viewMode, setViewMode] = useState<ViewMode>('week');
-
-  useEffect(() => {
-    const today = getLocalDateString();
-    const startDate = getLocalDateString(
-      new Date(Date.now() - (HISTORY_DAYS - 1) * 24 * 60 * 60 * 1000)
-    );
-    void fetchMoodEntries(startDate, today, HISTORY_DAYS + 7, 0);
-    void fetchWeeklyPulse(today);
-    void fetchMonthlyPulse(today);
-  }, [fetchMoodEntries, fetchWeeklyPulse, fetchMonthlyPulse]);
 
   useEffect(() => {
     if (todayMood) {
@@ -593,6 +580,7 @@ const MoodWidget = (): JSX.Element => {
                 strokeLinecap="round"
                 fill="none"
                 strokeDasharray={1}
+                initial={{ strokeDashoffset: 1 }}
                 animate={{ strokeDashoffset: 1 - progress }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
               />

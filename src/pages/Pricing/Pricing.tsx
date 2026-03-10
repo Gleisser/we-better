@@ -4,55 +4,51 @@ import {
   billingService,
   type BillingCycle,
   type BillingPlanCatalogItem,
-  type BillingSummary,
   type PlanCode,
 } from '@/core/services/billingService';
+import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
 import styles from './Pricing.module.css';
 
 type PaidPlanCode = Exclude<PlanCode, 'free'>;
 
 const Pricing = (): JSX.Element => {
-  const [billingInfo, setBillingInfo] = useState<BillingSummary | null>(null);
   const [planCatalog, setPlanCatalog] = useState<BillingPlanCatalogItem[]>([]);
   const [selectedCycle, setSelectedCycle] = useState<BillingCycle>('monthly');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isCatalogLoading, setIsCatalogLoading] = useState(true);
   const [isActionLoading, setIsActionLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const {
+    data: billingInfo,
+    error: billingError,
+    isLoading: isBillingLoading,
+  } = useBillingSummary();
 
-  const loadPricingData = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
-    setError(null);
+  const loadPlanCatalog = useCallback(async (): Promise<void> => {
+    setIsCatalogLoading(true);
+    setCatalogError(null);
 
-    const [summaryResult, catalogResult] = await Promise.all([
-      billingService.getBillingSummary(),
-      billingService.getPlanCatalog(),
-    ]);
-
-    if (summaryResult.error) {
-      setError(summaryResult.error);
-    }
-
+    const catalogResult = await billingService.getPlanCatalog();
     if (catalogResult.error) {
-      setError(prev => prev || catalogResult.error);
-    }
-
-    if (summaryResult.data) {
-      setBillingInfo(summaryResult.data);
-      if (summaryResult.data.billingCycle) {
-        setSelectedCycle(summaryResult.data.billingCycle);
-      }
+      setCatalogError(catalogResult.error);
     }
 
     if (catalogResult.data) {
       setPlanCatalog(catalogResult.data);
     }
 
-    setIsLoading(false);
+    setIsCatalogLoading(false);
   }, []);
 
   useEffect(() => {
-    void loadPricingData();
-  }, [loadPricingData]);
+    void loadPlanCatalog();
+  }, [loadPlanCatalog]);
+
+  useEffect(() => {
+    if (billingInfo?.billingCycle) {
+      setSelectedCycle(billingInfo.billingCycle);
+    }
+  }, [billingInfo?.billingCycle]);
 
   const buildReturnUrl = (): string => {
     return window.location.href;
@@ -60,7 +56,7 @@ const Pricing = (): JSX.Element => {
 
   const openPortalSession = async (): Promise<void> => {
     setIsActionLoading(true);
-    setError(null);
+    setActionError(null);
 
     const { data, error: portalError } = await billingService.createPortalSession(
       'manage',
@@ -68,7 +64,7 @@ const Pricing = (): JSX.Element => {
     );
 
     if (portalError || !data?.url) {
-      setError(portalError || 'Failed to open billing portal');
+      setActionError(portalError || 'Failed to open billing portal');
       setIsActionLoading(false);
       return;
     }
@@ -83,7 +79,7 @@ const Pricing = (): JSX.Element => {
     }
 
     setIsActionLoading(true);
-    setError(null);
+    setActionError(null);
 
     const successUrl = new URL(window.location.href);
     successUrl.searchParams.set('billing', 'success');
@@ -98,7 +94,7 @@ const Pricing = (): JSX.Element => {
     );
 
     if (checkoutError || !data?.url) {
-      setError(checkoutError || 'Failed to start checkout');
+      setActionError(checkoutError || 'Failed to start checkout');
       setIsActionLoading(false);
       return;
     }
@@ -120,9 +116,9 @@ const Pricing = (): JSX.Element => {
           void openPortalSession();
         }}
         surface="page"
-        isLoading={isLoading}
+        isLoading={isCatalogLoading || isBillingLoading}
         isBusy={isActionLoading}
-        error={error}
+        error={actionError || catalogError || billingError}
       />
     </section>
   );

@@ -11,16 +11,13 @@ import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
 import styles from './CardsWidget.module.css';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { affirmationService, type Affirmation } from '@/core/services/affirmationService';
-import {
-  checkTodayStatus,
-  logAffirmation as logAffirmationEntry,
-} from '@/core/services/affirmationsService';
 import { Tooltip } from '@/shared/components/common/Tooltip';
 import { ReminderSettings } from '@/shared/components/widgets/AffirmationWidget/ReminderSettings';
 import { CreateAffirmationModal } from '@/shared/components/widgets/AffirmationWidget/CreateAffirmationModal';
 import { useVoiceRecorder } from '@/shared/hooks/useVoiceRecorder';
 import { useAffirmations } from '@/shared/hooks/useAffirmations';
 import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
+import { useDashboardAffirmationDeck } from '@/features/affirmations/hooks/useDashboardAffirmationDeck';
 import { XIcon } from '@/shared/components/common/icons';
 import recordAnimation from './icons/record.json';
 import reminderAnimation from './icons/reminder.json';
@@ -242,10 +239,8 @@ const CardsWidget = (): JSX.Element => {
   const [cards, setCards] = useState<AffirmationCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [outIndex, setOutIndex] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAffirming, setIsAffirming] = useState(false);
-  const [hasAffirmedToday, setHasAffirmedToday] = useState(false);
   const [isCelebrating, setIsCelebrating] = useState(false);
   const {
     isRecording,
@@ -263,7 +258,14 @@ const CardsWidget = (): JSX.Element => {
     personalAffirmation,
     createPersonalAffirmation,
     updatePersonalAffirmation,
+    hasAffirmedToday,
+    logAffirmation,
   } = useAffirmations();
+  const {
+    data: affirmationDeck,
+    isLoading: isDeckLoading,
+    error: deckError,
+  } = useDashboardAffirmationDeck();
   const [showReminderSettings, setShowReminderSettings] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
@@ -279,139 +281,98 @@ const CardsWidget = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
+    if (!affirmationDeck) {
+      return;
+    }
 
-    const loadAffirmations = async (): Promise<void> => {
-      try {
-        setLoading(true);
-        setError(null);
+    try {
+      setError(null);
 
-        const categories = Object.keys(categoryTheme) as AffirmationCategory[];
+      const categories = Object.keys(categoryTheme) as AffirmationCategory[];
+      const affirmationsByCategory = affirmationDeck.reduce<
+        Partial<Record<AffirmationCategory, Affirmation[]>>
+      >((accumulator, affirmation) => {
+        const category = affirmationService.determineAffirmationType(affirmation.categories);
 
-        const response = await affirmationService.getAffirmationsForCategories(categories, {
-          sort: 'publishedAt:desc',
-          pagination: {
-            page: 1,
-            pageSize: 5,
-          },
-          populate: ['categories'],
-        });
-
-        if (!isMounted) {
-          return;
-        }
-
-        const mappedAffirmations = affirmationService.mapAffirmationResponse(response);
-
-        const affirmationsByCategory = mappedAffirmations.reduce<
-          Partial<Record<AffirmationCategory, Affirmation[]>>
-        >((accumulator, affirmation) => {
-          const category = affirmationService.determineAffirmationType(affirmation.categories);
-
-          if (!categoryTheme[category]) {
-            return accumulator;
-          }
-
-          if (!accumulator[category]) {
-            accumulator[category] = [];
-          }
-
-          accumulator[category]?.push(affirmation);
+        if (!categoryTheme[category]) {
           return accumulator;
-        }, {});
-
-        const cardsByCategory = categories.map(category => {
-          const theme = categoryTheme[category];
-          const pool = affirmationsByCategory[category];
-
-          if (!theme || !pool?.length) {
-            return null;
-          }
-
-          const selectedAffirmation = pool[Math.floor(Math.random() * pool.length)];
-
-          return {
-            id: selectedAffirmation.documentId ?? `affirmation-${selectedAffirmation.id}`,
-            text: selectedAffirmation.text,
-            category,
-            label: theme.label,
-            icon: theme.icon,
-            accent: theme.accent,
-          } satisfies AffirmationCard;
-        });
-
-        const validCards = cardsByCategory.filter((card): card is AffirmationCard => card !== null);
-
-        if (validCards.length === 0) {
-          setCards([]);
-          setError('No affirmations available right now.');
-          return;
         }
 
-        const cardsWithPersonal = [...validCards];
-
-        if (personalAffirmation) {
-          const personalTheme = categoryTheme.personal;
-          const personalCard: AffirmationCard = {
-            id: personalAffirmation.id,
-            text: personalAffirmation.text,
-            category: 'personal',
-            label: personalTheme.label,
-            icon: personalTheme.icon,
-            accent: personalTheme.accent,
-          };
-
-          const existingIndex = cardsWithPersonal.findIndex(card => card.id === personalCard.id);
-          if (existingIndex !== -1) {
-            cardsWithPersonal.splice(existingIndex, 1);
-          }
-          cardsWithPersonal.unshift(personalCard);
+        if (!accumulator[category]) {
+          accumulator[category] = [];
         }
 
-        setCards(cardsWithPersonal);
-        setCurrentIndex(0);
-        setOutIndex(null);
-      } catch (err) {
-        if (!isMounted) {
-          return;
+        accumulator[category]?.push(affirmation);
+        return accumulator;
+      }, {});
+
+      const cardsByCategory = categories.map(category => {
+        const theme = categoryTheme[category];
+        const pool = affirmationsByCategory[category];
+
+        if (!theme || !pool?.length) {
+          return null;
         }
-        console.error('Failed to load affirmations for CardsWidget:', err);
+
+        const selectedAffirmation = pool[Math.floor(Math.random() * pool.length)];
+
+        return {
+          id: selectedAffirmation.documentId ?? `affirmation-${selectedAffirmation.id}`,
+          text: selectedAffirmation.text,
+          category,
+          label: theme.label,
+          icon: theme.icon,
+          accent: theme.accent,
+        } satisfies AffirmationCard;
+      });
+
+      const validCards = cardsByCategory.filter((card): card is AffirmationCard => card !== null);
+
+      if (validCards.length === 0) {
         setCards([]);
-        setError(DEFAULT_ERROR_MESSAGE);
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        setError('No affirmations available right now.');
+        return;
       }
-    };
 
-    void loadAffirmations();
+      const cardsWithPersonal = [...validCards];
 
-    return () => {
-      isMounted = false;
-    };
-  }, [categoryTheme, personalAffirmation]);
+      if (personalAffirmation) {
+        const personalTheme = categoryTheme.personal;
+        const personalCard: AffirmationCard = {
+          id: personalAffirmation.id,
+          text: personalAffirmation.text,
+          category: 'personal',
+          label: personalTheme.label,
+          icon: personalTheme.icon,
+          accent: personalTheme.accent,
+        };
+
+        const existingIndex = cardsWithPersonal.findIndex(card => card.id === personalCard.id);
+        if (existingIndex !== -1) {
+          cardsWithPersonal.splice(existingIndex, 1);
+        }
+        cardsWithPersonal.unshift(personalCard);
+      }
+
+      setCards(cardsWithPersonal);
+      setCurrentIndex(0);
+      setOutIndex(null);
+    } catch (err) {
+      console.error('Failed to build affirmations for CardsWidget:', err);
+      setCards([]);
+      setError(DEFAULT_ERROR_MESSAGE);
+    }
+  }, [affirmationDeck, categoryTheme, personalAffirmation]);
 
   useEffect(() => {
-    let isMounted = true;
+    if (!deckError) {
+      return;
+    }
 
-    const verifyAffirmationStatus = async (): Promise<void> => {
-      try {
-        const status = await checkTodayStatus();
-        if (isMounted) {
-          setHasAffirmedToday(status);
-        }
-      } catch (statusError) {
-        console.error('Unable to verify daily affirmation status:', statusError);
-      }
-    };
-
-    void verifyAffirmationStatus();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    console.error('Failed to load affirmations for CardsWidget:', deckError);
+    setCards([]);
+    setError(DEFAULT_ERROR_MESSAGE);
+  }, [deckError]);
 
   const reminderSettings = useMemo(
     () =>
@@ -582,6 +543,7 @@ const CardsWidget = (): JSX.Element => {
 
   const nextIndex = cards.length > 0 ? (currentIndex + 1) % cards.length : -1;
   const activeCardId = cards.length > 0 ? cards[currentIndex]?.id : undefined;
+  const loading = isDeckLoading;
   const isRotateDisabled = loading || cards.length <= 1;
   const isAffirmDisabled = loading || !activeCard || isAffirming || hasAffirmedToday;
   const accentColor = activeCard?.accent;
@@ -674,17 +636,13 @@ const CardsWidget = (): JSX.Element => {
     try {
       setIsAffirming(true);
       setIsCelebrating(true);
-      const logEntry = await logAffirmationEntry(activeCard.text);
-
-      if (logEntry) {
-        setHasAffirmedToday(true);
-      }
+      await logAffirmation(activeCard.text);
     } catch (affirmError) {
       console.error('Failed to register affirmation from CardsWidget:', affirmError);
     } finally {
       setIsAffirming(false);
     }
-  }, [activeCard, hasAffirmedToday, isAffirming]);
+  }, [activeCard, hasAffirmedToday, isAffirming, logAffirmation]);
 
   const buttonClassNames = [styles.affirmButton];
   if (isAffirming) {

@@ -4,19 +4,13 @@ import HabitsWidget from '@/shared/components/widgets/HabitsWidget/HabitsWidget'
 import GoalsWidget from '@/shared/components/widgets/GoalsWidget/GoalsWidget';
 //import CutoutWidget from '@/shared/components/widgets/CutoutWidget/CutoutWidget';
 import CardsWidget from '@/shared/components/widgets/CardsWidget/CardsWidget';
-import { Article } from '@/core/services/articleService';
 import styles from './DashboardGrid.module.css';
 //import LifeWheelWidget from '../../widgets/LifeWheelWidget/LifeWheelWidget';
 import RadialLifeChartWidget from '../../widgets/RadialLifeChartWidget/RadialLifeChartWidget';
 import MoodWidget from '../../widgets/MoodWidget/MoodWidget';
 import DreamBoardTimelineWidget from '../../widgets/DreamBoardTimelineWidget';
 
-interface DashboardGridProps {
-  featuredArticle: Article | null;
-  isLoading?: boolean;
-}
-
-const DashboardGrid: React.FC<DashboardGridProps> = () => {
+const DashboardGrid: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.bentoGrid}>
