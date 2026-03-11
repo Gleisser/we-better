@@ -255,6 +255,8 @@ const Bookmarks = (): JSX.Element => {
         <div className={styles.searchContainer}>
           <SearchIcon className={styles.searchIcon} />
           <input
+            id="bookmarks-search"
+            name="bookmarksSearch"
             type="text"
             placeholder={translations.search.placeholder}
             value={searchTerm}

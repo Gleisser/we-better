@@ -756,7 +756,7 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
     if (currentStepData.key === 'category') {
       return (
         <div className={styles.uploadStepSection}>
-          <label>{t('dreamBoard.timelineGallery.form.categoryLabel')}</label>
+          <div>{t('dreamBoard.timelineGallery.form.categoryLabel')}</div>
           <div className={styles.categorySelectionGrid}>
             {availableCategories.map(category => {
               const categoryVisualDetails = getCategoryVisualDetails(category);
@@ -816,12 +816,16 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
         {milestonesDraft.map(milestone => (
           <div key={milestone.id} className={styles.milestoneRow}>
             <input
+              id={`dream-upload-milestone-title-${milestone.id}`}
+              name={`dreamUploadMilestoneTitle-${milestone.id}`}
               value={milestone.title}
               onChange={event => updateMilestoneDraft(milestone.id, 'title', event.target.value)}
               placeholder={t('dreamBoard.timelineGallery.form.milestoneTitlePlaceholder') as string}
             />
             <div className={styles.milestoneDateField}>
               <input
+                id={`dream-upload-milestone-date-${milestone.id}`}
+                name={`dreamUploadMilestoneDate-${milestone.id}`}
                 ref={element => {
                   milestoneDateInputRefs.current[milestone.id] = element;
                 }}

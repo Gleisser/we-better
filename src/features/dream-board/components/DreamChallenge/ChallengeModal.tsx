@@ -202,6 +202,8 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
                   />
                   <div className={styles.unitSelectionWrapper}>
                     <select
+                      id="duration-unit"
+                      name="durationUnit"
                       value={durationUnit}
                       onChange={e => setDurationUnit(e.target.value as 'days' | 'weeks' | 'months')}
                       className={styles.unitSelect}
@@ -220,7 +222,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
               </div>
 
               <div className={styles.formGroup}>
-                <label>{t('dreamBoard.challenge.modal.form.difficultyLevel')}</label>
+                <span>{t('dreamBoard.challenge.modal.form.difficultyLevel')}</span>
                 <div className={styles.difficultyInputs}>
                   <button
                     type="button"
@@ -286,8 +288,12 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
 
               {frequency === 'custom' && (
                 <div className={styles.formGroup}>
-                  <label>{t('dreamBoard.challenge.modal.form.selectDays')}</label>
-                  <div className={styles.daySelector}>
+                  <span>{t('dreamBoard.challenge.modal.form.selectDays')}</span>
+                  <div
+                    className={styles.daySelector}
+                    role="group"
+                    aria-label={t('dreamBoard.challenge.modal.form.selectDays') as string}
+                  >
                     {[
                       t('dreamBoard.challenge.modal.weekDays.mon'),
                       t('dreamBoard.challenge.modal.weekDays.tue'),
@@ -368,6 +374,8 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
 
                   {enableReminders && (
                     <input
+                      id="challenge-reminder-time"
+                      name="challengeReminderTime"
                       type="time"
                       value={reminderTime}
                       onChange={e => setReminderTime(e.target.value)}

@@ -1,4 +1,10 @@
-@import url('https://fonts.bunny.net/css?family=just-me-again-down-here:400');
+@font-face {
+  font-family: 'Just Me Again Down Here';
+  src: url('/fonts/dreamboard/just-me-again-down-here-latin-400-normal.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
 
 .timelineSection {
   margin-bottom: 1.5rem;

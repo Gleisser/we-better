@@ -406,6 +406,7 @@ const LifeWheel = ({
                   <h3 className={styles.categoryName}>{category.name}</h3>
                 </div>
                 <input
+                  name={`lifeWheelCategory-${category.id}`}
                   type="range"
                   min={MIN_CATEGORY_VALUE}
                   max={MAX_CATEGORY_VALUE}

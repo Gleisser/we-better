@@ -1359,6 +1359,8 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
             <div className={styles.categorySelector}>
               <span className={styles.categoryLabel}>{translations.category.label}</span>
               <select
+                id="dreamboard-category-filter"
+                name="dreamboardCategoryFilter"
                 className={styles.categoryDropdown}
                 value={selectedCategory}
                 onChange={handleCategorySelect}

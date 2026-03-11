@@ -159,7 +159,7 @@ export const HabitForm = ({
               </div>
 
               <div className={styles.field}>
-                <label className={styles.label}>{t('widgets.habits.form.category')}</label>
+                <div className={styles.label}>{t('widgets.habits.form.category')}</div>
                 <div className={styles.categories}>
                   {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
                     <button

@@ -61,6 +61,8 @@ const AIChatBox = ({ onClose }: AIChatBoxProps): JSX.Element | null => {
         {/* Input Area */}
         <div className={styles.inputArea}>
           <input
+            id="ai-chat-input"
+            name="aiChatInput"
             type="text"
             placeholder={t('aiChat.placeholder')}
             className={styles.input}

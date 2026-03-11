@@ -316,6 +316,8 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
           </div>
 
           <input
+            id="profile-avatar-upload"
+            name="profileAvatar"
             ref={fileInputRef}
             type="file"
             accept="image/*"
@@ -337,8 +339,12 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
         {/* Profile Information Fields */}
         <div className={styles.fieldsSection}>
           <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel}>{t('settings.profile.fullName')}</label>
+            <label className={styles.fieldLabel} htmlFor="profile-full-name">
+              {t('settings.profile.fullName')}
+            </label>
             <input
+              id="profile-full-name"
+              name="fullName"
               type="text"
               className={styles.fieldInput}
               value={formData.fullName}
@@ -349,8 +355,12 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
           </div>
 
           <div className={styles.fieldGroup}>
-            <label className={styles.fieldLabel}>{t('settings.profile.emailAddress')}</label>
+            <label className={styles.fieldLabel} htmlFor="profile-email">
+              {t('settings.profile.emailAddress')}
+            </label>
             <input
+              id="profile-email"
+              name="email"
               type="email"
               className={styles.fieldInput}
               value={formData.email}
@@ -370,11 +380,13 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
 
               <div className={styles.passwordFields}>
                 <div className={styles.fieldGroup}>
-                  <label className={styles.fieldLabel}>
+                  <label className={styles.fieldLabel} htmlFor="profile-current-password">
                     {t('settings.profile.currentPassword')}
                   </label>
                   <div className={styles.passwordInputContainer}>
                     <input
+                      id="profile-current-password"
+                      name="currentPassword"
                       type={showCurrentPassword ? 'text' : 'password'}
                       className={styles.fieldInput}
                       value={formData.currentPassword}
@@ -396,9 +408,13 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
                 </div>
 
                 <div className={styles.fieldGroup}>
-                  <label className={styles.fieldLabel}>{t('settings.profile.newPassword')}</label>
+                  <label className={styles.fieldLabel} htmlFor="profile-new-password">
+                    {t('settings.profile.newPassword')}
+                  </label>
                   <div className={styles.passwordInputContainer}>
                     <input
+                      id="profile-new-password"
+                      name="newPassword"
                       type={showNewPassword ? 'text' : 'password'}
                       className={styles.fieldInput}
                       value={formData.newPassword}
@@ -420,11 +436,13 @@ const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
                 </div>
 
                 <div className={styles.fieldGroup}>
-                  <label className={styles.fieldLabel}>
+                  <label className={styles.fieldLabel} htmlFor="profile-confirm-password">
                     {t('settings.profile.confirmNewPassword')}
                   </label>
                   <div className={styles.passwordInputContainer}>
                     <input
+                      id="profile-confirm-password"
+                      name="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
                       className={styles.fieldInput}
                       value={formData.confirmPassword}

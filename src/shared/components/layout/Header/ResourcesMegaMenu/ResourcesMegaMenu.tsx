@@ -6,7 +6,7 @@ import { RESOURCES_MEGA_MENU_FALLBACK } from '@/utils/constants/fallback/megamen
 const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps): JSX.Element => {
   const menuItems = menuData?.menu_links || RESOURCES_MEGA_MENU_FALLBACK;
 
-  const latestPost = menuData?.menu_blog_post;
+  const spotlight = menuData?.menu_blog_post;
 
   return (
     <AnimatePresence>
@@ -26,39 +26,35 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
               {/* Latest Post Section */}
               <div className="space-y-3">
                 <div className="text-white/60 text-xs font-medium font-plus-jakarta uppercase tracking-wider mb-4">
-                  Latest post
+                  Spotlight
                 </div>
                 <div className="space-y-3">
                   <div className="aspect-[16/10] rounded-lg overflow-hidden">
                     <img
                       src={
-                        (latestPost && API_CONFIG.imageBaseURL + latestPost?.cover?.url) ||
+                        (spotlight && API_CONFIG.imageBaseURL + spotlight.cover?.url) ||
                         '/assets/images/hero/Newslatter.png'
                       }
                       alt={
-                        latestPost?.title
-                          ? `Latest blog post: ${latestPost.title} - Stay updated with We Better`
-                          : 'Latest blog post: AI Statistics and Marketing Insights for 2024'
+                        spotlight?.title
+                          ? `Featured We Better spotlight: ${spotlight.title}`
+                          : 'Featured We Better spotlight preview'
                       }
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="space-y-2">
                     <div className="text-white text-base font-semibold font-plus-jakarta">
-                      {latestPost?.title || 'Subscribe to our Newsletter'}
+                      {spotlight?.title || 'Build routines that actually stick'}
                     </div>
                     <p className="text-[#6366F1] text-xs font-plus-jakarta">
-                      {latestPost?.post_date
-                        ? new Date(latestPost.post_date).toLocaleDateString('en-US', {
+                      {spotlight?.post_date
+                        ? new Date(spotlight.post_date).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
                           })
-                        : new Date().toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })}
+                        : 'Getting started'}
                     </p>
                   </div>
                 </div>

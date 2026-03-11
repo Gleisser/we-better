@@ -690,6 +690,7 @@ const EnhancedLifeWheel = ({
                       <h3 className={styles.categoryName}>{category.name}</h3>
                     </div>
                     <input
+                      name={`lifeWheelScore-${category.id}`}
                       type="range"
                       min={1}
                       max={10}
@@ -780,6 +781,7 @@ const EnhancedLifeWheel = ({
                         <span className={styles.timelineDate}>{formatDate(entry.date)}</span>
                         <div className={styles.compareCheckbox}>
                           <input
+                            name={`lifeWheelCompare-${entry.id}`}
                             type="checkbox"
                             checked={comparisonEntry === entry.id}
                             onChange={() => handleToggleComparison(entry.id)}
@@ -850,6 +852,7 @@ const EnhancedLifeWheel = ({
                         {formatDate(historyEntries[0]?.date || '')}
                       </div>
                       <input
+                        name="lifeWheelHistoryScrubber"
                         type="range"
                         min={0}
                         max={historyEntries.length - 1}

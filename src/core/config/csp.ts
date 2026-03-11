@@ -18,22 +18,8 @@ const imageOrigin = resolveOrigin(import.meta.env.VITE_IMAGE_BASE_URL, backendOr
 
 export const CSP_POLICY = {
   'default-src': ["'self'"],
-  'script-src': [
-    "'self'",
-    "'unsafe-inline'",
-    "'unsafe-eval'",
-    'https://sdk.scdn.co',
-    'https://www.youtube.com',
-    'https://*.youtube.com',
-  ],
-  'script-src-elem': [
-    "'self'",
-    "'unsafe-inline'",
-    "'unsafe-eval'",
-    'https://sdk.scdn.co',
-    'https://www.youtube.com',
-    'https://*.youtube.com',
-  ],
+  'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://sdk.scdn.co'],
+  'script-src-elem': ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://sdk.scdn.co'],
   'style-src': [
     "'self'",
     "'unsafe-inline'",
@@ -51,20 +37,11 @@ export const CSP_POLICY = {
     'data:',
     'blob:',
     'https://images.unsplash.com',
-    'https://img.youtube.com',
-    'https://*.ytimg.com',
     backendOrigin,
     imageOrigin,
   ],
-  'media-src': ["'self'", 'https://*.youtube.com', backendOrigin, imageOrigin],
-  'connect-src': [
-    "'self'",
-    backendOrigin,
-    'https://accounts.spotify.com',
-    'https://api.spotify.com',
-    'https://www.youtube.com',
-    'https://*.youtube.com',
-  ],
+  'media-src': ["'self'", backendOrigin, imageOrigin],
+  'connect-src': ["'self'", backendOrigin],
   'font-src': [
     "'self'",
     'data:',
@@ -73,12 +50,6 @@ export const CSP_POLICY = {
     'https://fonts.googleapis.com',
     'https://*.googleapis.com',
   ],
-  'frame-src': [
-    "'self'",
-    'https://open.spotify.com',
-    'https://sdk.scdn.co',
-    'https://www.youtube.com',
-    'https://youtube.com',
-  ],
+  'frame-src': ["'self'", 'https://sdk.scdn.co'],
   'worker-src': ["'self'", 'blob:'],
 };

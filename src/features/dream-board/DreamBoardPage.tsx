@@ -11,7 +11,7 @@ import {
   DreamBoardContentType,
 } from './types';
 import { saveDreamBoardData, getLatestDreamBoardData } from './api/dreamBoardApi';
-import { mockCategories, mockResources, mockInsights, mockNotifications } from './mock-data';
+import { mockCategories, mockInsights, mockNotifications } from './mock-data';
 import { useDreamWeather } from './hooks/useDreamWeather';
 import { CosmicDreamExperience } from './components/CosmicDreamExperience/CosmicDreamExperience';
 import categoryDetails from './components/constants/dreamboard';
@@ -829,6 +829,8 @@ const DreamBoardPage: React.FC = () => {
           {t('dreamBoard.emptyState.firstImage.cta')}
         </button>
         <input
+          id="dream-board-first-image-upload"
+          name="firstDreamBoardImage"
           ref={firstImageInputRef}
           type="file"
           accept="image/jpeg,image/png,image/webp"
@@ -955,9 +957,7 @@ const DreamBoardPage: React.FC = () => {
               </div>
             )}
 
-            {activeTab === 'insights' && (
-              <DreamInsights dreams={dreams} insights={mockInsights} resources={mockResources} />
-            )}
+            {activeTab === 'insights' && <DreamInsights dreams={dreams} insights={mockInsights} />}
           </>
         )}
       </main>

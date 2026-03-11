@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import styles from './FeedSettingsModal.module.css';
-import { 
-  SettingsIcon, 
-  TagIcon, 
-  UsersIcon, 
-  SparklesIcon, 
-  BlockIcon 
+import {
+  SettingsIcon,
+  TagIcon,
+  UsersIcon,
+  SparklesIcon,
+  BlockIcon,
 } from '@/shared/components/common/icons';
 
 interface FeedSettingsModalProps {
@@ -39,7 +39,7 @@ const FeedSettingsModal: React.FC<FeedSettingsModalProps> = ({ isOpen, onClose }
         <div className={styles.modalLayout}>
           {/* Side Menu */}
           <div className={styles.sideMenu}>
-            <button 
+            <button
               className={`${styles.menuItem} ${activeSection === 'general' ? styles.active : ''}`}
               onClick={() => setActiveSection('general')}
             >
@@ -47,7 +47,7 @@ const FeedSettingsModal: React.FC<FeedSettingsModalProps> = ({ isOpen, onClose }
               <span>General</span>
             </button>
 
-            <button 
+            <button
               className={`${styles.menuItem} ${activeSection === 'tags' ? styles.active : ''}`}
               onClick={() => setActiveSection('tags')}
             >
@@ -55,7 +55,7 @@ const FeedSettingsModal: React.FC<FeedSettingsModalProps> = ({ isOpen, onClose }
               <span>Tags</span>
             </button>
 
-            <button 
+            <button
               className={`${styles.menuItem} ${activeSection === 'sources' ? styles.active : ''}`}
               onClick={() => setActiveSection('sources')}
             >
@@ -63,7 +63,7 @@ const FeedSettingsModal: React.FC<FeedSettingsModalProps> = ({ isOpen, onClose }
               <span>Content sources</span>
             </button>
 
-            <button 
+            <button
               className={`${styles.menuItem} ${activeSection === 'preferences' ? styles.active : ''}`}
               onClick={() => setActiveSection('preferences')}
             >
@@ -71,7 +71,7 @@ const FeedSettingsModal: React.FC<FeedSettingsModalProps> = ({ isOpen, onClose }
               <span>Content preferences</span>
             </button>
 
-            <button 
+            <button
               className={`${styles.menuItem} ${activeSection === 'blocked' ? styles.active : ''}`}
               onClick={() => setActiveSection('blocked')}
             >
@@ -88,9 +88,11 @@ const FeedSettingsModal: React.FC<FeedSettingsModalProps> = ({ isOpen, onClose }
                 <p className={styles.sectionDescription}>
                   Choose a name that reflects the focus of your feed.
                 </p>
-                <input 
-                  type="text" 
-                  className={styles.feedNameInput} 
+                <input
+                  id="feed-name"
+                  name="feedName"
+                  type="text"
+                  className={styles.feedNameInput}
                   placeholder="My feed"
                 />
               </div>
@@ -103,4 +105,4 @@ const FeedSettingsModal: React.FC<FeedSettingsModalProps> = ({ isOpen, onClose }
   );
 };
 
-export default FeedSettingsModal; 
+export default FeedSettingsModal;

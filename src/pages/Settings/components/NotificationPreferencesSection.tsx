@@ -342,6 +342,8 @@ const NotificationPreferencesSection = (): JSX.Element => {
             </div>
             <div className={styles.settingControl}>
               <input
+                id="notification-timezone"
+                name="notificationTimezone"
                 list="notification-timezones"
                 defaultValue={settings.timezone}
                 onBlur={event => {
@@ -391,6 +393,8 @@ const NotificationPreferencesSection = (): JSX.Element => {
             </div>
             <div className={styles.settingControl}>
               <input
+                id="notification-quiet-hours-start"
+                name="quietHoursStart"
                 type="time"
                 defaultValue={normalizeTimeForInput(settings.quiet_hours_start)}
                 onBlur={event => {
@@ -413,6 +417,8 @@ const NotificationPreferencesSection = (): JSX.Element => {
             </div>
             <div className={styles.settingControl}>
               <input
+                id="notification-quiet-hours-end"
+                name="quietHoursEnd"
                 type="time"
                 defaultValue={normalizeTimeForInput(settings.quiet_hours_end)}
                 onBlur={event => {
@@ -435,6 +441,8 @@ const NotificationPreferencesSection = (): JSX.Element => {
             </div>
             <div className={styles.settingControl}>
               <input
+                id="notification-habit-reminder-time"
+                name="habitReminderTime"
                 type="time"
                 defaultValue={normalizeTimeForInput(settings.habit_reminder_time)}
                 onBlur={event => {
@@ -457,6 +465,8 @@ const NotificationPreferencesSection = (): JSX.Element => {
             </div>
             <div className={styles.settingControl}>
               <input
+                id="notification-goal-reminder-time"
+                name="goalReminderTime"
                 type="time"
                 defaultValue={normalizeTimeForInput(settings.goal_review_reminder_time)}
                 onBlur={event => {

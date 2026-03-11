@@ -141,6 +141,8 @@ export const ReviewSettingsModal = ({
                 <label className={styles.label}>
                   {t('widgets.goals.reviewSettings.reminderText')}
                   <select
+                    id="goal-review-reminder-days"
+                    name="goalReviewReminderDays"
                     className={styles.select}
                     value={localSettings.reminderDays}
                     onChange={e =>

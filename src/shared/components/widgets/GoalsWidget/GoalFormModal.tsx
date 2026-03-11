@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { motion } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
 import { Portal } from '@/shared/components/common/Portal/Portal';
@@ -81,6 +81,7 @@ export const GoalFormModal = ({
   initialGoal,
 }: GoalFormModalProps): JSX.Element => {
   const { t } = useCommonTranslation();
+  const formId = useId();
 
   /**
    * Form state containing all goal data except the ID.
@@ -252,7 +253,7 @@ export const GoalFormModal = ({
             </div>
 
             <div className={styles.section}>
-              <label className={styles.label}>{t('widgets.goals.form.category')}</label>
+              <div className={styles.label}>{t('widgets.goals.form.category')}</div>
               <div className={styles.categoryOptions}>
                 {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
                   <button
@@ -298,6 +299,8 @@ export const GoalFormModal = ({
 
               <div className={styles.milestoneInput}>
                 <input
+                  id={`${formId}-new-milestone`}
+                  name="newMilestone"
                   type="text"
                   value={newMilestone}
                   onChange={e => setNewMilestone(e.target.value)}
@@ -317,6 +320,8 @@ export const GoalFormModal = ({
                     {editingMilestoneId === milestone.id ? (
                       <div className={styles.editingMilestone}>
                         <input
+                          id={`${formId}-edit-milestone-${milestone.id}`}
+                          name={`editMilestone-${milestone.id}`}
                           type="text"
                           value={editingMilestoneTitle}
                           onChange={e => setEditingMilestoneTitle(e.target.value)}

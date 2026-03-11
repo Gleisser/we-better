@@ -4,16 +4,13 @@
 
 .bentoGrid {
   @apply grid gap-4 w-full;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-areas:
-    'quote cards radial'
-    'mood mood mood'
-    'dreamBoard dreamBoard dreamBoard'
-    'habits habits habits'
-    'goals goals goals'
-    'cutout videos videos'
-    'podcast course book'
-    'article article article';
+    'quote quote quote quote cards cards cards cards radial radial radial radial'
+    'mood mood mood mood mood mood mood mood mood mood mood mood'
+    'dreamBoard dreamBoard dreamBoard dreamBoard dreamBoard dreamBoard dreamBoard dreamBoard dreamBoard dreamBoard dreamBoard dreamBoard'
+    'habits habits habits habits habits habits habits habits habits habits habits habits'
+    'goals goals goals goals goals goals goals goals goals goals goals goals';
 }
 
 .widget {
@@ -22,20 +19,13 @@
          hover:-translate-y-1
          bg-black/40 backdrop-blur-xl
          border border-white/10;
+  min-width: 0;
   z-index: 0;
 }
 
 /* Widget areas */
 .quote {
   grid-area: quote;
-}
-
-.affirmation {
-  grid-area: affirmation;
-}
-
-.lifeWheel {
-  grid-area: lifeWheel;
 }
 
 .mood {
@@ -46,16 +36,14 @@
   grid-area: dreamBoard;
 }
 
-.article {
-  grid-area: article;
-}
-
 .habits {
   grid-area: habits;
+  align-self: start;
 }
 
 .goals {
   grid-area: goals;
+  align-self: start;
 }
 
 .radial {
@@ -66,47 +54,17 @@
   grid-area: cards;
 }
 
-.cutout {
-  grid-area: cutout;
-  background: transparent;
-  border: none;
-  overflow: visible;
-  box-shadow: none;
-  padding: 0;
-}
-
-.videos {
-  grid-area: videos;
-}
-
-.podcast {
-  grid-area: podcast;
-}
-
-.course {
-  grid-area: course;
-}
-
-.book {
-  grid-area: book;
-}
-
 /* Responsive adjustments */
 @media (max-width: 1024px) {
   .bentoGrid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
-      'quote affirmation'
-      'lifeWheel lifeWheel'
+      'quote cards'
+      'radial radial'
       'mood mood'
       'dreamBoard dreamBoard'
       'habits habits'
-      'goals cards'
-      'radial radial'
-      'cutout videos'
-      'podcast course'
-      'book book'
-      'article article';
+      'goals goals';
   }
 }
 
@@ -115,20 +73,12 @@
     grid-template-columns: 1fr;
     grid-template-areas:
       'quote'
-      'affirmation'
-      'lifeWheel'
+      'cards'
+      'radial'
       'mood'
       'dreamBoard'
       'habits'
-      'goals'
-      'radial'
-      'cards'
-      'cutout'
-      'videos'
-      'podcast'
-      'course'
-      'book'
-      'article';
+      'goals';
   }
 }
 
@@ -148,8 +98,4 @@
 .widget > * {
   position: relative;
   z-index: 2;
-}
-
-.cutout::after {
-  display: none;
 }
