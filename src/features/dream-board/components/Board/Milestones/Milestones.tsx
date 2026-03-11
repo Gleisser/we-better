@@ -143,6 +143,8 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
       {/* Add new milestone form */}
       <div className={styles.addMilestoneForm}>
         <input
+          id="new-dream-milestone-title"
+          name="newDreamMilestoneTitle"
           type="text"
           value={newMilestoneTitle}
           onChange={e => setNewMilestoneTitle(e.target.value)}
@@ -150,6 +152,8 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
           className={styles.milestoneInput}
         />
         <input
+          id="new-dream-milestone-date"
+          name="newDreamMilestoneDate"
           type="date"
           value={newMilestoneDueDate}
           onChange={e => setNewMilestoneDueDate(e.target.value)}
@@ -184,6 +188,8 @@ export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUp
                 >
                   {editingMilestoneId === milestone.id ? (
                     <input
+                      id={`dream-milestone-title-${milestone.id}`}
+                      name={`dreamMilestoneTitle-${milestone.id}`}
                       type="text"
                       value={milestone.title}
                       onChange={e => {

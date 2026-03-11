@@ -5,7 +5,6 @@ import ErrorBoundary from './shared/components/common/ErrorBoundary/ErrorBoundar
 import { Header, Hero, Footer } from './shared/components/layout';
 import Features from './shared/components/layout/Features/Features';
 import Highlights from './shared/components/layout/Highlights/Highlights';
-import { Tools } from './shared/components/layout/Tools';
 import { Showcase } from './shared/components/layout/Showcase';
 import { Gallery } from './shared/components/layout/Gallery';
 import { Community } from './shared/components/layout/Community';
@@ -14,7 +13,6 @@ import { Partners } from './shared/components/layout/Partners';
 import PreFooter from './shared/components/layout/PreFooter/PreFooter';
 import { FeaturesErrorFallback } from './shared/components/layout/Features/FeaturesErrorFallback';
 import { HighlightsErrorFallback } from './shared/components/layout/Highlights/HighlightsErrorFallback';
-import { ToolsErrorFallback } from './shared/components/layout/Tools/ToolsErrorFallback';
 import { ShowcaseErrorFallback } from './shared/components/layout/Showcase/ShowcaseErrorFallback';
 import { GalleryErrorFallback } from './shared/components/layout/Gallery/GalleryErrorFallback';
 import { CommunityErrorFallback } from './shared/components/layout/Community/CommunityErrorFallback';
@@ -46,10 +44,6 @@ function App(): JSX.Element {
 
           <ErrorBoundary section="Highlights" fallback={<HighlightsErrorFallback />}>
             <Highlights />
-          </ErrorBoundary>
-
-          <ErrorBoundary section="Tools" fallback={<ToolsErrorFallback />}>
-            <Tools />
           </ErrorBoundary>
 
           <ErrorBoundary section="Showcase" fallback={<ShowcaseErrorFallback />}>

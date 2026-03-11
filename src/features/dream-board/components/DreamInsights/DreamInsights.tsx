@@ -11,17 +11,9 @@ interface Insight {
   relatedCategories?: string[];
 }
 
-interface Resource {
-  id: string;
-  title: string;
-  type: string;
-  relevantDreamIds: string[];
-}
-
 interface DreamInsightsProps {
   dreams: Dream[];
   insights: Insight[];
-  resources: Resource[];
 }
 
 const InsightTypeIcons: Record<string, string> = {

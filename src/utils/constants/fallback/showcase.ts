@@ -10,28 +10,28 @@ export type ShowcaseItem = {
 export const SHOWCASE_ITEMS: ShowcaseItem[] = [
   {
     id: 1,
-    title: 'Courses',
+    title: 'Tracking',
     description: '',
     images: [
       {
         id: 1,
         documentId: '1',
-        name: 'Courses',
-        alternativeText: 'Courses',
-        caption: 'Courses',
+        name: 'Tracking',
+        alternativeText: 'Tracking',
+        caption: 'Tracking',
         width: 100,
         height: 100,
-        url: '/assets/images/showcase/belt/courses.png',
-        src: '/assets/images/showcase/belt/courses.png',
+        url: '/assets/images/showcase/belt/tracking.png',
+        src: '/assets/images/showcase/belt/tracking.png',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         publishedAt: new Date().toISOString(),
-        alt: 'Courses',
+        alt: 'Tracking',
 
         img: {
           formats: {
             thumbnail: {
-              url: '/assets/images/showcase/belt/courses.png',
+              url: '/assets/images/showcase/belt/tracking.png',
               width: 100,
               height: 100,
             },

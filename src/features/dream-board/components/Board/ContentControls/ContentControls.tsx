@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, useId } from 'react';
 import { DreamBoardContent, DreamBoardContentType } from '../../../types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
@@ -33,6 +33,12 @@ interface InputFieldProps<T> {
   className?: string;
 }
 
+const toFieldKey = (value: string): string =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '') || 'field';
+
 // Caption Input component to handle its own state
 const CaptionInput: React.FC<{
   value: string;
@@ -40,7 +46,9 @@ const CaptionInput: React.FC<{
   placeholder?: string;
   disabled?: boolean;
   className?: string;
-}> = ({ value, onChange, placeholder, disabled = false, className = '' }) => {
+  fieldId?: string;
+  fieldName?: string;
+}> = ({ value, onChange, placeholder, disabled = false, className = '', fieldId, fieldName }) => {
   const [localValue, setLocalValue] = useState(value);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -58,6 +66,8 @@ const CaptionInput: React.FC<{
 
   return (
     <textarea
+      id={fieldId}
+      name={fieldName}
       ref={inputRef}
       value={localValue}
       onChange={e => setLocalValue(e.target.value)}
@@ -77,6 +87,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   lifeWheelCategories = [],
 }) => {
   const { t } = useCommonTranslation();
+  const controlsId = useId();
 
   // Memoize translated values to prevent infinite re-renders
   const translations = useMemo(
@@ -211,6 +222,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
     className = '',
   }: InputFieldProps<T>): JSX.Element => {
     const [localValue, setLocalValue] = useState<T>(value);
+    const fieldKey = `${controlsId}-${toFieldKey(label)}`;
 
     // Update local value when prop changes
     useEffect(() => {
@@ -239,6 +251,8 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         case 'number':
           return (
             <input
+              id={fieldKey}
+              name={fieldKey}
               type="number"
               value={value as unknown as number}
               onChange={e => {
@@ -257,6 +271,8 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
           return (
             <div className={styles.colorPickerWrapper}>
               <input
+                id={fieldKey}
+                name={fieldKey}
                 type="color"
                 value={value as unknown as string}
                 onChange={e => onChange(e.target.value as unknown as T)}
@@ -269,6 +285,8 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         case 'textarea':
           return (
             <textarea
+              id={fieldKey}
+              name={fieldKey}
               value={localValue as unknown as string}
               onChange={e => {
                 const newValue = e.target.value as unknown as T;
@@ -283,6 +301,8 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         case 'select':
           return (
             <select
+              id={fieldKey}
+              name={fieldKey}
               value={value as unknown as string}
               onChange={e => onChange(e.target.value as unknown as T)}
               disabled={disabled}
@@ -299,6 +319,8 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
           return (
             <div className={styles.rangeContainer}>
               <input
+                id={fieldKey}
+                name={fieldKey}
                 type="range"
                 value={value as unknown as number}
                 onChange={e => onChange(parseInt(e.target.value) as unknown as T)}
@@ -314,6 +336,8 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         default:
           return (
             <input
+              id={fieldKey}
+              name={fieldKey}
               type={type}
               value={value as unknown as string}
               onChange={e => onChange(e.target.value as unknown as T)}
@@ -327,7 +351,9 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
 
     return (
       <div className={styles.field}>
-        <label className={styles.label}>{label}</label>
+        <label className={styles.label} htmlFor={fieldKey}>
+          {label}
+        </label>
         {getInput()}
       </div>
     );
@@ -422,8 +448,15 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         {translations.buttons.replaceImage}
       </button>
       <div className={styles.field}>
-        <label className={styles.label}>{translations.fields.title}</label>
+        <label
+          className={styles.label}
+          htmlFor={`${controlsId}-${toFieldKey(translations.fields.title)}`}
+        >
+          {translations.fields.title}
+        </label>
         <CaptionInput
+          fieldId={`${controlsId}-${toFieldKey(translations.fields.title)}`}
+          fieldName={`${controlsId}-${toFieldKey(translations.fields.title)}`}
           value={localContent.caption || ''}
           onChange={value => handleChange({ caption: value })}
           placeholder={translations.fields.captionPlaceholder}
@@ -502,9 +535,16 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
         return (
           <div className={styles.tabContent}>
             <div className={styles.controlGroup}>
-              <label className={styles.controlLabel}>{translations.fields.category}</label>
+              <label
+                className={styles.controlLabel}
+                htmlFor={`${controlsId}-${toFieldKey(translations.fields.category)}`}
+              >
+                {translations.fields.category}
+              </label>
               <div className={styles.categoryDropdown}>
                 <select
+                  id={`${controlsId}-${toFieldKey(translations.fields.category)}`}
+                  name={`${controlsId}-${toFieldKey(translations.fields.category)}`}
                   value={localContent.categoryId || ''}
                   onChange={e => handleChange({ categoryId: e.target.value })}
                   className={styles.select}

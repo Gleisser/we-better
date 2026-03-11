@@ -70,6 +70,8 @@ export const CreateAffirmationModal = ({
             <div className={styles.content}>
               <div className={styles.inputWrapper}>
                 <textarea
+                  id="affirmation-text"
+                  name="affirmationText"
                   value={text}
                   onChange={e => setText(e.target.value.slice(0, MAX_LENGTH))}
                   placeholder={t('widgets.affirmation.modal.placeholder') as string}

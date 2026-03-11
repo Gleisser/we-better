@@ -179,19 +179,14 @@ VITE_SUPABASE_ANON_KEY=your_supabase_key
 
 #### 2. Content Management (Strapi)
 
-A Strapi-based CMS handling all content-related operations.
+A Strapi-based CMS handling the shared landing-page and wellness content that still sits outside the user-service.
 
 **Key Features**:
 
-- Content management for articles, videos, and podcasts
-- Category management
+- Content management for affirmations and quotes
+- Shared marketing and landing-page content
 - Media handling
-- Content curation and scheduling
-- Integration with external content providers:
-  - YouTube videos
-  - Spotify podcasts
-  - Udemy courses
-  - Various article sources (Better Humans, Tiny Buddha, etc.)
+- Quote and affirmation curation
 
 **Tech Stack**:
 
@@ -199,8 +194,6 @@ A Strapi-based CMS handling all content-related operations.
 - PostgreSQL
 - Node.js
 - Express
-- Google AI for content processing
-- Various content fetching scripts
 
 **Required Environment Variables**:
 

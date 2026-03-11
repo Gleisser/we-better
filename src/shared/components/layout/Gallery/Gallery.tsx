@@ -75,7 +75,7 @@ const GALLERY_IMAGES = [
   {
     id: 10,
     src: '/assets/images/gallery/gallery_3_small.webp',
-    alt: 'A woman watching videos',
+    alt: 'A woman reflecting in a gallery setting',
     size: 'small',
   },
   {

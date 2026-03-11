@@ -2,12 +2,12 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import styles from './MobileMenu.module.css';
 import {
-  ArticlesIcon,
-  CoursesIcon,
-  VideosIcon,
-  NewsletterIcon,
-  AINewsIcon,
-  WikiIcon,
+  SparklesIcon,
+  BookmarkIcon,
+  CheckmarkIcon,
+  ChartIcon,
+  InfoIcon,
+  UsersIcon,
   FAQIcon,
   MobileMenuArrowIcon,
 } from '@/shared/components/common/icons';
@@ -23,41 +23,41 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps): JSX
 
   const solutionsItems = [
     {
-      icon: <ArticlesIcon className={styles.menuIcon} />,
-      title: 'Articles',
-      description: 'Articles from our community',
-      iconAlt: 'Articles icon showing a document with text lines',
+      icon: <SparklesIcon className={styles.menuIcon} />,
+      title: 'Affirmations',
+      description: 'Build a steady daily mindset practice.',
+      iconAlt: 'Sparkles icon for daily affirmations',
     },
     {
-      icon: <CoursesIcon className={styles.menuIcon} />,
-      title: 'Courses',
-      description: 'Courses from our community',
-      iconAlt: 'Courses icon showing stacked books',
+      icon: <BookmarkIcon className={styles.menuIcon} />,
+      title: 'Quotes',
+      description: 'Save the short reflections that resonate most.',
+      iconAlt: 'Bookmark icon for saved quotes',
     },
     {
-      icon: <VideosIcon className={styles.menuIcon} />,
-      title: 'Videos',
-      description: 'Videos from our community',
-      iconAlt: 'Video player icon with play button',
+      icon: <CheckmarkIcon className={styles.menuIcon} />,
+      title: 'Habits',
+      description: 'Track routines with streaks, reminders, and consistency.',
+      iconAlt: 'Checkmark icon for habits',
     },
     {
-      icon: <NewsletterIcon className={styles.menuIcon} />,
-      title: 'Newsletter',
-      description: 'Newsletter from our community',
-      iconAlt: 'Newsletter icon showing an envelope',
+      icon: <ChartIcon className={styles.menuIcon} />,
+      title: 'Goals',
+      description: 'Break long-term plans into clear milestones.',
+      iconAlt: 'Chart icon for goals',
     },
   ];
 
   const resourcesItems = [
     {
-      icon: <AINewsIcon className={styles.menuIcon} />,
-      title: 'News',
-      description: 'Your Source for Creativity and Industry Insights.',
+      icon: <InfoIcon className={styles.menuIcon} />,
+      title: 'Getting Started',
+      description: 'Quick guidance for setting up your routine.',
     },
     {
-      icon: <WikiIcon className={styles.menuIcon} />,
-      title: 'Webinar',
-      description: 'Community Mentors.',
+      icon: <UsersIcon className={styles.menuIcon} />,
+      title: 'Community',
+      description: 'Stay connected with people building similar habits.',
     },
     {
       icon: <FAQIcon className={styles.menuIcon} />,
@@ -148,18 +148,18 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps): JSX
                 role="region"
                 aria-label="Resources submenu"
               >
-                {/* Latest post section */}
+                {/* Getting started section */}
                 <div className={styles.latestPost}>
-                  <div className={styles.latestPostLabel}>Latest post</div>
+                  <div className={styles.latestPostLabel}>Start here</div>
                   <div className={styles.postImage}>
                     <img
                       src="/assets/images/hero/blog_post.webp"
-                      alt="Latest Post"
+                      alt="We Better getting started preview"
                       className={styles.postImg}
                     />
                   </div>
-                  <div className={styles.postTitle}>15 Principles to be successful in Business</div>
-                  <span className={styles.postDate}>Published Today</span>
+                  <div className={styles.postTitle}>Build routines that actually stick</div>
+                  <span className={styles.postDate}>Guided walkthrough</span>
                 </div>
 
                 <div className={styles.submenuDivider} aria-hidden="true" />

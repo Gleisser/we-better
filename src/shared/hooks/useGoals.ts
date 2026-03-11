@@ -83,10 +83,12 @@ export interface UseGoalsReturn {
 
 const goalsQueryKeyPrefix = (userId: string | null) => ['goals', userId ?? 'anonymous'] as const;
 
+const goalListsQueryKeyPrefix = (userId: string | null) =>
+  [...goalsQueryKeyPrefix(userId), 'list'] as const;
+
 const goalsQueryKey = (userId: string | null, category?: GoalCategory, includeMilestones = true) =>
   [
-    ...goalsQueryKeyPrefix(userId),
-    'list',
+    ...goalListsQueryKeyPrefix(userId),
     category ?? 'all',
     includeMilestones ? 'full' : 'base',
   ] as const;
@@ -118,7 +120,7 @@ const updateGoalAcrossCaches = (
   goalId: string,
   updater: (goal: GoalWithMilestones) => GoalWithMilestones
 ): GoalWithMilestones[] | undefined => {
-  if (!goals) {
+  if (!Array.isArray(goals)) {
     return goals;
   }
 
@@ -173,7 +175,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
       return goal;
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: goalsQueryKeyPrefix(userId) });
+      await queryClient.invalidateQueries({ queryKey: goalListsQueryKeyPrefix(userId) });
     },
   });
 
@@ -200,7 +202,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
     },
     onSuccess: updatedGoal => {
       queryClient.setQueriesData<GoalWithMilestones[]>(
-        { queryKey: goalsQueryKeyPrefix(userId) },
+        { queryKey: goalListsQueryKeyPrefix(userId) },
         goals =>
           updateGoalAcrossCaches(goals, updatedGoal.id, goal => ({
             ...goal,
@@ -222,7 +224,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
     },
     onSuccess: goalId => {
       queryClient.setQueriesData<GoalWithMilestones[]>(
-        { queryKey: goalsQueryKeyPrefix(userId) },
+        { queryKey: goalListsQueryKeyPrefix(userId) },
         goals => goals?.filter(goal => goal.id !== goalId) ?? []
       );
     },
@@ -238,7 +240,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
         }
 
         queryClient.setQueriesData<GoalWithMilestones[]>(
-          { queryKey: goalsQueryKeyPrefix(userId) },
+          { queryKey: goalListsQueryKeyPrefix(userId) },
           goals =>
             updateGoalAcrossCaches(goals, goalId, existingGoal => ({
               ...existingGoal,
@@ -266,7 +268,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
     },
     onSuccess: ({ goalId, milestone }) => {
       queryClient.setQueriesData<GoalWithMilestones[]>(
-        { queryKey: goalsQueryKeyPrefix(userId) },
+        { queryKey: goalListsQueryKeyPrefix(userId) },
         goals =>
           updateGoalAcrossCaches(goals, goalId, goal => ({
             ...goal,
@@ -296,7 +298,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
     },
     onSuccess: ({ goalId, milestone }) => {
       queryClient.setQueriesData<GoalWithMilestones[]>(
-        { queryKey: goalsQueryKeyPrefix(userId) },
+        { queryKey: goalListsQueryKeyPrefix(userId) },
         goals =>
           updateGoalAcrossCaches(goals, goalId, goal => ({
             ...goal,
@@ -320,7 +322,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
     },
     onSuccess: ({ goalId, milestoneId }) => {
       queryClient.setQueriesData<GoalWithMilestones[]>(
-        { queryKey: goalsQueryKeyPrefix(userId) },
+        { queryKey: goalListsQueryKeyPrefix(userId) },
         goals =>
           updateGoalAcrossCaches(goals, goalId, goal => ({
             ...goal,
@@ -468,7 +470,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
         }
 
         queryClient.setQueriesData<GoalWithMilestones[]>(
-          { queryKey: goalsQueryKeyPrefix(userId) },
+          { queryKey: goalListsQueryKeyPrefix(userId) },
           goals =>
             updateGoalAcrossCaches(goals, goalId, existingGoal => ({
               ...existingGoal,
@@ -496,7 +498,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
         }
 
         queryClient.setQueriesData<GoalWithMilestones[]>(
-          { queryKey: goalsQueryKeyPrefix(userId) },
+          { queryKey: goalListsQueryKeyPrefix(userId) },
           goals =>
             updateGoalAcrossCaches(goals, goalId, existingGoal => ({
               ...existingGoal,
@@ -572,7 +574,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
         }
 
         queryClient.setQueriesData<GoalWithMilestones[]>(
-          { queryKey: goalsQueryKeyPrefix(userId) },
+          { queryKey: goalListsQueryKeyPrefix(userId) },
           goals =>
             updateGoalAcrossCaches(goals, goalId, goal => ({
               ...goal,

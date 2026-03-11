@@ -2,7 +2,6 @@ import {
   Challenge,
   Dream,
   JournalEntry,
-  Resource,
   AI_Insight,
   WeatherStatus,
   NotificationItem,
@@ -255,38 +254,6 @@ export const mockJournalEntries: JournalEntry[] = [
     content: 'Reached my savings goal for Japan! Now I need to start planning the actual trip.',
     date: '2023-05-10T21:00:00Z',
     emotion: 'excited',
-  },
-];
-
-// Mock resources
-export const mockResources: Resource[] = [
-  {
-    id: 'r1',
-    title: 'Marathon Training for Beginners',
-    type: 'article',
-    link: '/articles/marathon-training-beginners',
-    relevantDreamIds: ['4'],
-  },
-  {
-    id: 'r2',
-    title: 'Financial Planning for Homebuyers',
-    type: 'course',
-    link: '/courses/financial-planning-homebuyers',
-    relevantDreamIds: ['3'],
-  },
-  {
-    id: 'r3',
-    title: 'Learn Piano: Complete Beginner Course',
-    type: 'course',
-    link: '/courses/piano-beginners',
-    relevantDreamIds: ['2'],
-  },
-  {
-    id: 'r4',
-    title: 'Japan Travel Guide 2023',
-    type: 'article',
-    link: '/articles/japan-travel-guide',
-    relevantDreamIds: ['1'],
   },
 ];
 

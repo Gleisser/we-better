@@ -22,14 +22,6 @@ export interface DreamImageUploadInput {
   milestones: DreamImageMilestoneInput[];
 }
 
-export interface Resource {
-  id: string;
-  title: string;
-  type: 'article' | 'course' | 'video' | 'podcast' | 'tool' | 'book';
-  link: string;
-  relevantDreamIds: string[];
-}
-
 export interface JournalEntry {
   id: string;
   dreamId: string;
@@ -81,7 +73,6 @@ export interface Dream {
 export interface DreamboardState {
   dreams: Dream[];
   challenges: Challenge[];
-  resources: Resource[];
   categories: string[];
 }
 

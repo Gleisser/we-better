@@ -1,85 +1,64 @@
-// const MEGA_MENU_FALLBACK = [
-//   {
-//     id: 1,
-//     title: 'AI Art Generator',
-//     description: 'Generate art, illustrations and more with prompts.',
-//     href: '#',
-//   },
-//   {
-//     id: 2,
-//     title: 'AI Video Generator',
-//     description: 'Turn your images into stunning animations and explore a new dimension of video storytelling.',
-//     href: '#',
-//   },
-//   {
-//     id: 3,
-//     title: 'Transparent PNG Generator',
-//     description: 'Instantly generate true background-free visual elements.',
-//     href: '#',
-//   },
-// ];
-
 export const RESOURCES_MEGA_MENU_FALLBACK = [
-    {
-      title: "News",
-      description: "Your Source for Creativity and Industry Insights.",
-      image: {
-        url: "/assets/images/header/svg/news.svg"
-      }
+  {
+    title: 'Getting Started',
+    description: 'Learn the core routines and workflows inside We Better.',
+    image: {
+      url: '/assets/images/header/svg/news.svg',
     },
-    {
-      title: "Webinars",
-      description: "Live and recorded sessions with our team.",
-      image: {
-        url: "/assets/images/header/svg/webinars.svg"
-      }
+  },
+  {
+    title: 'Community',
+    description: 'Connect with people building habits, goals, and momentum.',
+    image: {
+      url: '/assets/images/header/svg/webinars.svg',
     },
-    {
-      title: "FAQ",
-      description: "Get answers to frequently asked questions.",
-      image: {
-        url: "/assets/images/header/svg/faq.svg"
-      }
-    }
-  ];
+  },
+  {
+    title: 'FAQ',
+    description: 'Get answers to frequently asked questions.',
+    image: {
+      url: '/assets/images/header/svg/faq.svg',
+    },
+  },
+];
 
-  export const SOLUTIONS_MEGA_MENU_FALLBACK = [
-    {
-      id: 1,
-      title: "Articles",
-      description: "Articles from our community.",
-      image: {
-        url: "/assets/images/header/svg/marketing.svg"
-      },
-      href: "#articles"
+export const SOLUTIONS_MEGA_MENU_FALLBACK = [
+  {
+    id: 1,
+    title: 'Affirmations',
+    description: 'Create a steady daily practice around the words you need most.',
+    image: {
+      url: '/assets/images/header/svg/marketing.svg',
     },
-    {
-      id: 2,
-      title: "Courses",
-      description: "Courses from our community.",
-      image: {
-        url: "/assets/images/header/svg/design.svg"
-      },
-      href: "#courses"
+    href: '#affirmations',
+  },
+  {
+    id: 2,
+    title: 'Quotes',
+    description: 'Save short reflections that keep your attention on what matters.',
+    image: {
+      url: '/assets/images/header/svg/design.svg',
     },
-    {
-      id: 3,
-      title: "Videos",
-      description: "Videos from our community.",
-      image: {
-        url: "/assets/images/header/svg/print.svg"
-      },
-      href: "#videos"
+    href: '#quotes',
+  },
+  {
+    id: 3,
+    title: 'Habits',
+    description: 'Track routines, streaks, and reminders in one place.',
+    image: {
+      url: '/assets/images/header/svg/print.svg',
     },
-    {
-      id: 4,
-      title: "Newsletter",
-      description: "Newsletter from our community.",
-      image: {
-        url: "/assets/images/header/svg/photo.svg"
-      },
-      href: "#newsletter"
+    href: '#habits',
+  },
+  {
+    id: 4,
+    title: 'Goals',
+    description: 'Turn long-term plans into milestones you can actually complete.',
+    image: {
+      url: '/assets/images/header/svg/photo.svg',
     },
-  ];
+    href: '#goals',
+  },
+];
 
 export default SOLUTIONS_MEGA_MENU_FALLBACK;

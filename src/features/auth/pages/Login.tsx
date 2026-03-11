@@ -113,7 +113,7 @@ const Login = (): JSX.Element => {
 
               <div className={styles.options}>
                 <label className={styles.rememberMe}>
-                  <input type="checkbox" />
+                  <input id="remember-me" name="rememberMe" type="checkbox" />
                   <span>Remember me</span>
                 </label>
                 <Link to="/auth/forgot-password" className={styles.forgotPassword}>

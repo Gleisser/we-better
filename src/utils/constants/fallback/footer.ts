@@ -1,8 +1,8 @@
 import { Footer } from '@/utils/types/footer';
 
 const FOOTER_LINKS = {
-  Solutions: ['Courses', 'Articles', 'Newsletter', 'Videos'],
-  About: ['FAQ', 'Blog', 'Support', 'Contact us'],
+  Solutions: ['Affirmations', 'Quotes', 'Habit Tracking', 'Goal Planning'],
+  About: ['FAQ', 'Support', 'Privacy', 'Contact us'],
 };
 
 const FOOTER_FALLBACK: Footer = {
@@ -259,28 +259,6 @@ const FOOTER_FALLBACK: Footer = {
         },
         {
           id: 4,
-          documentId: '',
-          url: '/assets/images/footer/youtube-icon.svg',
-          alternativeText: 'YouTube',
-          name: 'YouTube',
-          width: 0,
-          height: 0,
-          caption: '',
-          src: '/assets/images/footer/youtube-icon.svg',
-          alt: 'YouTube',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          publishedAt: new Date().toISOString(),
-          formats: {
-            thumbnail: {
-              url: '/assets/images/footer/youtube-icon.svg',
-              width: 100,
-              height: 100,
-            },
-          },
-        },
-        {
-          id: 5,
           documentId: '',
           url: '/assets/images/footer/fanbook-icon.svg',
           alternativeText: 'Fanbook',

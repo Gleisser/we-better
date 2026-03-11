@@ -21,23 +21,6 @@ export const PaintIcon = ({
   </svg>
 );
 
-export const ToolIcon = ({
-  className,
-  width = 24,
-  height = 24,
-  color = 'currentColor',
-}: IconProps): JSX.Element => (
-  <svg className={className} width={width} height={height} viewBox="0 0 24 24" fill="none">
-    <path
-      d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
 export const DiscordIcon = ({
   className,
   width = 24,
@@ -528,74 +511,6 @@ export const LifeWheelIcon = ({
   </svg>
 );
 
-export const VideoIcon = ({
-  className,
-  width = 24,
-  height = 24,
-  color = 'currentColor',
-}: IconProps): JSX.Element => (
-  <svg viewBox="0 0 24 24" width={width} height={height} fill="none" className={className}>
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      stroke={color}
-      d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-    />
-  </svg>
-);
-
-export const ArticleIcon = ({
-  className,
-  width = 24,
-  height = 24,
-  color = 'currentColor',
-}: IconProps): JSX.Element => (
-  <svg viewBox="0 0 24 24" width={width} height={height} fill="none" className={className}>
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      stroke={color}
-      d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15"
-    />
-  </svg>
-);
-
-export const CourseIcon = ({
-  className,
-  width = 24,
-  height = 24,
-  color = 'currentColor',
-}: IconProps): JSX.Element => (
-  <svg viewBox="0 0 24 24" width={width} height={height} fill="none" className={className}>
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      stroke={color}
-      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-    />
-  </svg>
-);
-
-export const PodcastIcon = ({
-  className,
-  width = 24,
-  height = 24,
-  color = 'currentColor',
-}: IconProps): JSX.Element => (
-  <svg viewBox="0 0 24 24" width={width} height={height} fill="none" className={className}>
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      stroke={color}
-      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-    />
-  </svg>
-);
-
 export const SettingsIcon = ({
   className,
   width = 24,
@@ -892,12 +807,6 @@ export const VolumeIcon = ({
   );
 };
 
-export const SpotifyIcon = ({ className }: { className?: string }): JSX.Element => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
-  </svg>
-);
-
 export const SkipBackward15Icon = ({ className = '' }: { className?: string }): JSX.Element => (
   <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
@@ -937,127 +846,6 @@ export const SkipForward15Icon = ({ className = '' }: { className?: string }): J
     >
       15
     </text>
-  </svg>
-);
-
-export const ArticlesIcon = ({ className }: IconProps): JSX.Element => (
-  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M19 5v14H5V5h14zm0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
-      stroke="url(#articles-gradient)"
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <path
-      d="M8 7h8M8 11h8M8 15h5"
-      stroke="url(#articles-gradient)"
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-    <defs>
-      <linearGradient
-        id="articles-gradient"
-        x1="3"
-        y1="3"
-        x2="21"
-        y2="21"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop stopColor="#8B5CF6" />
-        <stop offset="1" stopColor="#D946EF" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
-
-export const CoursesIcon = ({ className }: IconProps): JSX.Element => (
-  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M12 3L3 8l9 5 9-5-9-5z"
-      stroke="url(#courses-gradient)"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M3 16l9 5 9-5M3 12l9 5 9-5"
-      stroke="url(#courses-gradient)"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <defs>
-      <linearGradient
-        id="courses-gradient"
-        x1="3"
-        y1="3"
-        x2="21"
-        y2="21"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop stopColor="#8B5CF6" />
-        <stop offset="1" stopColor="#D946EF" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
-
-export const VideosIcon = ({ className }: IconProps): JSX.Element => (
-  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <rect
-      x="3"
-      y="6"
-      width="18"
-      height="12"
-      rx="2"
-      stroke="url(#videos-gradient)"
-      strokeWidth="2"
-    />
-    <path
-      d="M10 9l5 3-5 3V9z"
-      stroke="url(#videos-gradient)"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <defs>
-      <linearGradient
-        id="videos-gradient"
-        x1="3"
-        y1="6"
-        x2="21"
-        y2="18"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop stopColor="#8B5CF6" />
-        <stop offset="1" stopColor="#D946EF" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
-
-export const NewsletterIcon = ({ className }: IconProps): JSX.Element => (
-  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-      stroke="url(#newsletter-gradient)"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <defs>
-      <linearGradient
-        id="newsletter-gradient"
-        x1="3"
-        y1="5"
-        x2="21"
-        y2="19"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop stopColor="#8B5CF6" />
-        <stop offset="1" stopColor="#D946EF" />
-      </linearGradient>
-    </defs>
   </svg>
 );
 
@@ -1352,22 +1140,6 @@ export const RefreshIcon = ({ className }: { className?: string }): JSX.Element 
     <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16" />
   </svg>
 );
-
-// Add these if they don't exist
-export const UdemyIcon = ({ className }: { className?: string }): JSX.Element => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 0L1.815 6v12L12 24l10.185-6V6L12 0zm0 2.77l7.588 4.47L12 11.709 4.412 7.24 12 2.77zm-8.185 5.234l7.588 4.47v8.937l-7.588-4.47V8.004zm16.37 0v8.937l-7.588 4.47v-8.937l7.588-4.47z" />
-  </svg>
-);
-
-export const CourseraIcon = ({ className }: { className?: string }): JSX.Element => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm0 22.5C6.21 22.5 1.5 17.79 1.5 12S6.21 1.5 12 1.5 22.5 6.21 22.5 12 17.79 22.5 12 22.5z" />
-    <path d="M16.5 7.5h-9v9h9v-9zm-7.5 1.5h6v6h-6v-6z" />
-  </svg>
-);
-
-// Add other platform icons similarly...
 
 export const DreamBoardIcon = ({
   className,

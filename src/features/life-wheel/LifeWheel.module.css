@@ -1113,7 +1113,7 @@
   display: block;
 }
 
-/* Life Wheel Page Layout Styles - similar to Videos and Podcasts pages */
+/* Life Wheel page layout styles */
 .lifeWheelPageContainer {
   @apply w-full min-h-screen p-6 flex flex-col;
   background: linear-gradient(to bottom right, #0f172a, #581c87);

@@ -146,16 +146,35 @@ export const authService = {
 
   async getCurrentUser(): Promise<AuthResponse> {
     try {
-      const { data, error } = await supabase.auth.getSession();
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-      // Extract user from session if it exists
-      const user = data.session?.user || null;
+      if (sessionError) throw new Error(sessionError.message);
 
-      if (error) throw new Error(error.message);
+      if (!sessionData.session) {
+        return {
+          user: null,
+          session: null,
+          error: null,
+        };
+      }
+
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+
+      if (userError) {
+        if (userError.name === 'AuthSessionMissingError') {
+          return {
+            user: null,
+            session: null,
+            error: null,
+          };
+        }
+
+        throw new Error(userError.message);
+      }
 
       return {
-        user,
-        session: data.session,
+        user: userData.user ?? null,
+        session: sessionData.session,
         error: null,
       };
     } catch (error) {

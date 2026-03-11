@@ -127,6 +127,8 @@ export const ReminderSettings = ({
               <div className={styles.enableSwitch}>
                 <label className={styles.switch}>
                   <input
+                    id="affirmation-reminders-enabled"
+                    name="affirmationRemindersEnabled"
                     type="checkbox"
                     checked={localSettings.enabled}
                     onChange={handleToggleEnabled}
@@ -137,8 +139,10 @@ export const ReminderSettings = ({
               </div>
 
               <div className={styles.timeSection}>
-                <label>Reminder Time</label>
+                <label htmlFor="affirmation-reminder-time">Reminder Time</label>
                 <input
+                  id="affirmation-reminder-time"
+                  name="affirmationReminderTime"
                   type="time"
                   value={localSettings.time}
                   onChange={e => handleTimeChange(e.target.value)}
@@ -147,8 +151,8 @@ export const ReminderSettings = ({
               </div>
 
               <div className={styles.daysSection}>
-                <label>Repeat on</label>
-                <div className={styles.dayButtons}>
+                <span>Repeat on</span>
+                <div className={styles.dayButtons} role="group" aria-label="Repeat on">
                   {DAYS.map((day, index) => (
                     <button
                       key={day}
