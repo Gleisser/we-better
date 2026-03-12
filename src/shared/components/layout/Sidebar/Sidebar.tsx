@@ -1,47 +1,34 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
+import { LottieLightIcon } from '@/shared/components/common/LottieLightIcon';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
-import { CollapseIcon, LifeWheelIcon, SparkleIcon } from '@/shared/components/common/icons';
+import {
+  CollapseIcon,
+  DreamBoardIcon,
+  HomeIcon,
+  LifeWheelIcon,
+  LogoutIcon,
+  SettingsIcon,
+  SparkleIcon,
+} from '@/shared/components/common/icons';
+import homeLottie from './icons/home.json';
+import dreamboardLottie from './icons/dreamboard.json';
+import settingsLottie from './icons/settings.json';
+import logoutLottie from './icons/logout.json';
 import styles from './Sidebar.module.css';
-import homeAnimation from './icons/home.json';
-import dreamboardAnimation from './icons/dreamboard.json';
-import settingsAnimation from './icons/settings.json';
-import logoutAnimation from './icons/logout.json';
-
-const SidebarLottieIcon = ({ animationData }: { animationData: object }): JSX.Element => {
-  const lottieRef = useRef<LottieRefCurrentProps>(null);
-
-  const play = (): void => {
-    lottieRef.current?.stop?.();
-    lottieRef.current?.goToAndPlay?.(0, true);
-  };
-
-  const stop = (): void => {
-    lottieRef.current?.stop?.();
-    lottieRef.current?.goToAndStop?.(0, true);
-  };
-
-  return (
-    <motion.span onHoverStart={play} onHoverEnd={stop} className={styles.lottieWrapper}>
-      <Lottie
-        lottieRef={lottieRef}
-        animationData={animationData}
-        autoplay={false}
-        loop={false}
-        className={styles.lottieIcon}
-        onDOMLoaded={stop}
-      />
-    </motion.span>
-  );
-};
 
 const Sidebar = (): JSX.Element => {
   const { t } = useCommonTranslation();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [iconReplayKeys, setIconReplayKeys] = useState({
+    home: 0,
+    dreamboard: 0,
+    settings: 0,
+    logout: 0,
+  });
   const location = useLocation();
   const { logout } = useAuth();
   const { data: billingSummary } = useBillingSummary();
@@ -69,17 +56,39 @@ const Sidebar = (): JSX.Element => {
   }, [isCollapsed]);
 
   type MenuItem = {
+    iconKey?: keyof typeof iconReplayKeys;
     path: string;
     label: string;
-    icon?: ReactNode;
-    animation?: object;
+    icon: ReactNode;
   };
+
+  const triggerIconAnimation = (iconKey: keyof typeof iconReplayKeys): void => {
+    setIconReplayKeys(previous => ({
+      ...previous,
+      [iconKey]: previous[iconKey] + 1,
+    }));
+  };
+
+  const renderAnimatedIcon = (
+    iconKey: keyof typeof iconReplayKeys,
+    animationData: object,
+    fallback: ReactNode
+  ): JSX.Element => (
+    <LottieLightIcon
+      animationData={animationData}
+      className={styles.lottieLightIcon}
+      colorOverride="currentColor"
+      replayKey={iconReplayKeys[iconKey]}
+      fallback={fallback}
+    />
+  );
 
   const menuItems: MenuItem[] = [
     {
+      iconKey: 'home',
       path: '/app/dashboard',
       label: t('navigation.dashboard'),
-      animation: homeAnimation,
+      icon: renderAnimatedIcon('home', homeLottie, <HomeIcon className={styles.iconFallback} />),
     },
     {
       path: '/app/life-wheel',
@@ -87,9 +96,14 @@ const Sidebar = (): JSX.Element => {
       icon: <LifeWheelIcon className={styles.icon} />,
     },
     {
+      iconKey: 'dreamboard',
       path: '/app/dream-board',
       label: t('navigation.dreamBoard'),
-      animation: dreamboardAnimation,
+      icon: renderAnimatedIcon(
+        'dreamboard',
+        dreamboardLottie,
+        <DreamBoardIcon className={styles.iconFallback} />
+      ),
     },
     {
       path: '/app/missions',
@@ -186,28 +200,36 @@ const Sidebar = (): JSX.Element => {
               </Link>
             ))}
 
-          {menuItems.map(item => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={styles.navItem}
-              data-active={isActiveRoute(item.path)}
-            >
-              <span className={styles.icon}>
-                {item.animation ? <SidebarLottieIcon animationData={item.animation} /> : item.icon}
-              </span>
-              {!isCollapsed && (
-                <motion.span
-                  className={styles.label}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+          {menuItems.map(item =>
+            (() => {
+              const replayIcon = item.iconKey
+                ? () => triggerIconAnimation(item.iconKey as keyof typeof iconReplayKeys)
+                : undefined;
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={styles.navItem}
+                  data-active={isActiveRoute(item.path)}
+                  onMouseEnter={replayIcon}
+                  onFocus={replayIcon}
                 >
-                  {item.label}
-                </motion.span>
-              )}
-            </Link>
-          ))}
+                  <span className={styles.icon}>{item.icon}</span>
+                  {!isCollapsed && (
+                    <motion.span
+                      className={styles.label}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      {item.label}
+                    </motion.span>
+                  )}
+                </Link>
+              );
+            })()
+          )}
         </nav>
 
         {/* Bottom Navigation */}
@@ -216,15 +238,30 @@ const Sidebar = (): JSX.Element => {
             to="/app/settings"
             className={styles.navItem}
             data-active={isActiveRoute('/app/settings')}
+            onMouseEnter={() => triggerIconAnimation('settings')}
+            onFocus={() => triggerIconAnimation('settings')}
           >
             <span className={styles.icon}>
-              <SidebarLottieIcon animationData={settingsAnimation} />
+              {renderAnimatedIcon(
+                'settings',
+                settingsLottie,
+                <SettingsIcon className={styles.iconFallback} />
+              )}
             </span>
             {!isCollapsed && <span className={styles.label}>{t('navigation.settings')}</span>}
           </Link>
-          <button className={styles.navItem} onClick={handleSignOut}>
+          <button
+            className={styles.navItem}
+            onClick={handleSignOut}
+            onMouseEnter={() => triggerIconAnimation('logout')}
+            onFocus={() => triggerIconAnimation('logout')}
+          >
             <span className={styles.icon}>
-              <SidebarLottieIcon animationData={logoutAnimation} />
+              {renderAnimatedIcon(
+                'logout',
+                logoutLottie,
+                <LogoutIcon className={styles.iconFallback} />
+              )}
             </span>
             {!isCollapsed && <span className={styles.label}>{t('navigation.logout')}</span>}
           </button>

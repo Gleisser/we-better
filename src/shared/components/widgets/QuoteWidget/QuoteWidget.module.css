@@ -137,30 +137,25 @@
 .bookmarkIcon {
   width: 20px;
   height: 20px;
-  transition: color 0.2s ease;
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.95);
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
-.actionIcon :global(svg),
-.bookmarkIcon :global(svg) {
+.actionIcon svg,
+.bookmarkIcon svg {
   width: 100%;
   height: 100%;
+  stroke-width: 1.9;
 }
 
-.actionIcon :global(path),
-.actionIcon :global(g),
-.bookmarkIcon :global(path),
-.bookmarkIcon :global(g) {
-  fill: rgba(255, 255, 255, 0.95) !important;
-  stroke: rgba(255, 255, 255, 0.95) !important;
-}
-
-[data-theme='light'] .actionIcon :global(path),
-[data-theme='light'] .actionIcon :global(g),
-[data-theme='light'] .bookmarkIcon :global(path),
-[data-theme='light'] .bookmarkIcon :global(g) {
-  fill: rgba(17, 24, 39, 0.85) !important;
-  stroke: rgba(17, 24, 39, 0.85) !important;
+[data-theme='light'] .actionIcon,
+[data-theme='light'] .bookmarkIcon {
+  color: rgba(17, 24, 39, 0.85);
 }
 
 .refreshIcon {
@@ -168,10 +163,191 @@
   height: 22px;
 }
 
+.safeShareWrapper {
+  width: 22px;
+  height: 22px;
+}
+
+.lottieLightIcon {
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.lottieLightIcon > span {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.lottieLightIcon :global(svg) {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.iconLift,
+.iconPop,
+.iconPulse,
+.iconRotate,
+.iconSlide {
+  transform-origin: center;
+}
+
+.actionButton:hover .iconLift,
+.actionButton:focus-visible .iconLift {
+  animation: iconLift 0.28s ease-out;
+}
+
+.bookmarkButton:hover .iconPop,
+.bookmarkButton:focus-visible .iconPop {
+  animation: iconPop 0.3s ease-out;
+}
+
+.gradientButton:hover .iconPulse,
+.gradientButton:focus-visible .iconPulse {
+  animation: iconPulse 0.34s ease-out;
+}
+
+.gradientButton:hover .iconRotate,
+.gradientButton:focus-visible .iconRotate {
+  animation: iconRotate 0.55s ease-out;
+}
+
+.gradientButton:hover .iconSlide,
+.gradientButton:focus-visible .iconSlide {
+  animation: iconSlide 0.32s ease-out;
+}
+
+.iconSpinning {
+  animation: iconSpin 0.8s linear infinite;
+}
+
 .bookmarkIcon {
   color: inherit;
   width: 22px;
   height: 22px;
+}
+
+.safeShareIcon,
+.safeBookmarkIcon {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.safeShareReplay,
+.safeBookmarkReplay {
+  transform-box: view-box;
+  transform-origin: center;
+}
+
+.safeShareLine {
+  stroke-dasharray: 16 24;
+  stroke-dashoffset: 0;
+  opacity: 1;
+}
+
+.safeShareCore {
+  fill: color-mix(in srgb, currentColor 18%, transparent);
+  transform-origin: center;
+}
+
+.safeShareGlow {
+  fill: currentColor;
+  opacity: 0;
+  transform-origin: center;
+}
+
+.safeShareHub,
+.safeShareTopArm,
+.safeShareBottomArm,
+.safeBookmarkBody {
+  transform-box: view-box;
+}
+
+.safeShareHub {
+  transform-origin: 13.5px 24px;
+}
+
+.safeShareTopArm,
+.safeShareBottomArm {
+  transform-origin: 13.5px 24px;
+}
+
+.safeShareSweep {
+  stroke-dasharray: 30 38;
+  stroke-dashoffset: 30;
+  opacity: 0;
+}
+
+.safeShareReplay .safeShareHub {
+  animation: safeShareHubShift 1.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.safeShareReplay .safeShareTopArm {
+  animation: safeShareTopArc 1.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.safeShareReplay .safeShareBottomArm {
+  animation: safeShareBottomArc 1.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.safeShareReplay .safeShareLine {
+  animation: safeShareArmTrim 1.5s linear;
+}
+
+.safeShareReplay .safeShareSweep {
+  animation: safeShareSweepDraw 1.5s linear;
+}
+
+.safeShareReplay .safeShareGlow {
+  animation: safeShareGlow 1.5s linear;
+}
+
+.safeShareReplay .safeShareCore {
+  animation: safeShareCorePulse 1.5s linear;
+}
+
+.safeBookmarkPaper {
+  opacity: 0.02;
+  transform-origin: 24px 23px;
+  transform: translateY(5px) scaleY(0.2);
+}
+
+.safeBookmarkOutline,
+.safeBookmarkStitch {
+  transform-origin: 24px 23px;
+}
+
+.safeBookmarkReplay {
+  transform-origin: 24px 24px;
+  animation: safeBookmarkTilt 1.667s linear;
+}
+
+.safeBookmarkReplay .safeBookmarkBody {
+  animation: safeBookmarkBounce 1.667s linear;
+}
+
+.safeBookmarkReplay .safeBookmarkPaper {
+  animation: safeBookmarkReveal 1.667s linear;
+}
+
+.bookmarked .safeBookmarkPaper,
+.safeBookmarkIcon[data-filled='true'] .safeBookmarkPaper {
+  opacity: 0.9;
+  transform: translateY(0) scaleY(1);
+}
+
+.bookmarked .safeBookmarkOutline,
+.safeBookmarkIcon[data-filled='true'] .safeBookmarkOutline,
+.bookmarked .safeBookmarkStitch,
+.safeBookmarkIcon[data-filled='true'] .safeBookmarkStitch {
+  stroke: currentColor;
 }
 
 .bookmarked {
@@ -553,6 +729,7 @@
 .reactionIcon {
   width: 20px;
   height: 20px;
+  color: inherit;
 }
 
 .hasReaction {
@@ -645,6 +822,329 @@
 .tagText {
   display: inline-block;
   text-transform: uppercase;
+}
+
+@keyframes iconLift {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.08);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes iconPop {
+  0% {
+    transform: scale(1);
+  }
+  55% {
+    transform: scale(1.16);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes iconPulse {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.94);
+  }
+  70% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes iconRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes iconSlide {
+  0% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(2px);
+  }
+  70% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes iconSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes safeShareTopArc {
+  0% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  38.78% {
+    transform: rotate(34deg) translate(-0.2px, -0.8px);
+  }
+  73.47% {
+    transform: rotate(34deg) translate(-0.2px, -0.8px);
+  }
+  91.84% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  100% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+}
+
+@keyframes safeShareBottomArc {
+  0% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  38.78% {
+    transform: rotate(-34deg) translate(-0.2px, 0.8px);
+  }
+  73.47% {
+    transform: rotate(-34deg) translate(-0.2px, 0.8px);
+  }
+  91.84% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  100% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+}
+
+@keyframes safeShareGlow {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  12.24% {
+    opacity: 0.08;
+    transform: scale(1);
+  }
+  38.78% {
+    opacity: 0.14;
+    transform: scale(1.12);
+  }
+  73.47% {
+    opacity: 0.12;
+    transform: scale(1.12);
+  }
+  91.84% {
+    opacity: 0;
+    transform: scale(1.22);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}
+
+@keyframes safeShareHubShift {
+  0% {
+    transform: translateX(0);
+  }
+  12.24% {
+    transform: translateX(-0.8px);
+  }
+  38.78% {
+    transform: translateX(-2.6px);
+  }
+  73.47% {
+    transform: translateX(-2.6px);
+  }
+  91.84% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes safeShareArmTrim {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  12.24% {
+    stroke-dashoffset: 6;
+    opacity: 0.78;
+  }
+  38.78% {
+    stroke-dashoffset: 16;
+    opacity: 0.28;
+  }
+  73.47% {
+    stroke-dashoffset: 16;
+    opacity: 0.2;
+  }
+  91.84% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes safeShareSweepDraw {
+  0%,
+  12.24% {
+    opacity: 0;
+    stroke-dashoffset: 30;
+  }
+  38.78% {
+    opacity: 0.9;
+    stroke-dashoffset: 0;
+  }
+  73.47% {
+    opacity: 0.86;
+    stroke-dashoffset: 0;
+  }
+  91.84% {
+    opacity: 0;
+    stroke-dashoffset: -10;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -18;
+  }
+}
+
+@keyframes safeShareCorePulse {
+  0% {
+    fill-opacity: 0.18;
+  }
+  12.24% {
+    fill-opacity: 0.08;
+  }
+  38.78%,
+  73.47% {
+    fill-opacity: 0.24;
+  }
+  91.84% {
+    fill-opacity: 0.18;
+  }
+  100% {
+    fill-opacity: 0.18;
+  }
+}
+
+@keyframes safeBookmarkTilt {
+  0%,
+  8.33% {
+    transform: rotate(0deg);
+  }
+  26.67% {
+    transform: rotate(-6deg);
+  }
+  43.33% {
+    transform: rotate(4deg);
+  }
+  53.33% {
+    transform: rotate(-3deg);
+  }
+  63.33% {
+    transform: rotate(2deg);
+  }
+  73.33% {
+    transform: rotate(-1deg);
+  }
+  83.33% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes safeBookmarkBounce {
+  0%,
+  8.33% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-9px);
+  }
+  38.33% {
+    transform: translateY(6px);
+  }
+  48.33% {
+    transform: translateY(-4.5px);
+  }
+  56.67% {
+    transform: translateY(2.8px);
+  }
+  66.92% {
+    transform: translateY(-2px);
+  }
+  75% {
+    transform: translateY(1.2px);
+  }
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes safeBookmarkReveal {
+  0%,
+  24.99% {
+    opacity: 0.02;
+    transform: translateY(5px) scaleY(0.2);
+  }
+  25% {
+    opacity: 0.72;
+    transform: translateY(-2.8px) scaleY(1.06);
+  }
+  38.33% {
+    opacity: 0.95;
+    transform: translateY(1.4px) scaleY(0.92);
+  }
+  48.33% {
+    opacity: 0.88;
+    transform: translateY(-0.9px) scaleY(1.04);
+  }
+  56.67% {
+    opacity: 0.94;
+    transform: translateY(0.65px) scaleY(0.97);
+  }
+  66.92% {
+    opacity: 0.9;
+    transform: translateY(-0.45px) scaleY(1.02);
+  }
+  75% {
+    opacity: 0.9;
+    transform: translateY(0.25px) scaleY(0.99);
+  }
+  80% {
+    opacity: 0.9;
+    transform: translateY(0) scaleY(1);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateY(0) scaleY(1);
+  }
 }
 
 /* Light theme overrides */

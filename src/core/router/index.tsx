@@ -18,6 +18,7 @@ import Settings from '@/pages/Settings';
 import Bookmarks from '@/pages/Bookmarks';
 import Notifications from '@/pages/Notifications';
 import Pricing from '@/pages/Pricing';
+import QuoteIconSpike from '@/pages/QuoteIconSpike';
 
 export const router = createBrowserRouter([
   {
@@ -102,6 +103,10 @@ export const router = createBrowserRouter([
   {
     path: '/auth/confirm',
     element: <EmailConfirmation />,
+  },
+  {
+    path: '/spikes/quote-icons',
+    element: <QuoteIconSpike />,
   },
   {
     path: '/auth/forgot-password',

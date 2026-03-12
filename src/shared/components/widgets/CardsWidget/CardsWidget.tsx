@@ -2,12 +2,11 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type CSSProperties,
   type KeyboardEvent,
+  type ReactNode,
 } from 'react';
-import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
 import styles from './CardsWidget.module.css';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { affirmationService, type Affirmation } from '@/core/services/affirmationService';
@@ -18,12 +17,24 @@ import { useVoiceRecorder } from '@/shared/hooks/useVoiceRecorder';
 import { useAffirmations } from '@/shared/hooks/useAffirmations';
 import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
 import { useDashboardAffirmationDeck } from '@/features/affirmations/hooks/useDashboardAffirmationDeck';
-import { XIcon } from '@/shared/components/common/icons';
-import recordAnimation from './icons/record.json';
-import reminderAnimation from './icons/reminder.json';
-import favoriteAnimation from './icons/favorite.json';
-import streakAnimation from './icons/streak.json';
-import sparklesAnimation from './icons/sparkles.json';
+import {
+  BellIcon,
+  MicrophoneIcon,
+  SparklesIcon,
+  StopIcon,
+  XIcon,
+} from '@/shared/components/common/icons';
+import { LottieLightIcon } from '@/shared/components/common/LottieLightIcon';
+import { AnimatedWebPIcon } from '@/shared/components/common/AnimatedWebPIcon';
+import sparklesLottie from './icons/sparkles.json';
+import favoriteWebP from './icons/favorite.webp';
+import favoriteIdleWebP from './icons/favorite-idle.webp';
+import reminderWebP from './icons/reminder.webp';
+import reminderIdleWebP from './icons/reminder-idle.webp';
+import recordWebP from './icons/record.webp';
+import recordIdleWebP from './icons/record-idle.webp';
+import streakWebP from './icons/streak.webp';
+import streakIdleWebP from './icons/streak-idle.webp';
 
 type AffirmationCategory =
   | 'personal'
@@ -55,66 +66,43 @@ interface AffirmationCard {
 }
 
 interface ActionButtonProps {
-  animationData: Record<string, unknown>;
+  icon: ReactNode;
   label: string;
   tooltip: string;
   onClick?: () => void;
+  onPreview?: () => void;
   disabled?: boolean;
   active?: boolean;
   metric?: string;
   accentColor?: string;
-  loop?: boolean;
 }
 
 const ActionButton = ({
-  animationData,
+  icon,
   label,
   tooltip,
   onClick,
+  onPreview,
   disabled = false,
   active = false,
   metric,
   accentColor,
-  loop = false,
 }: ActionButtonProps): JSX.Element => {
-  const lottieRef = useRef<LottieRefCurrentProps>(null);
-  const previousActive = useRef(active);
-
-  const playAnimation = useCallback(() => {
-    if (disabled) {
-      return;
-    }
-
-    if (lottieRef.current?.goToAndPlay) {
-      lottieRef.current.goToAndPlay(0, true);
-    }
-  }, [disabled]);
-
-  useEffect(() => {
-    if (lottieRef.current?.goToAndStop) {
-      lottieRef.current.goToAndStop(0, true);
-    }
-  }, [animationData]);
-
-  useEffect(() => {
-    if (active && !previousActive.current) {
-      playAnimation();
-    }
-    previousActive.current = active;
-  }, [active, playAnimation]);
-
   const handleClick = useCallback(() => {
     if (disabled) {
       return;
     }
 
-    playAnimation();
     onClick?.();
-  }, [disabled, onClick, playAnimation]);
+  }, [disabled, onClick]);
 
-  const handleHover = useCallback(() => {
-    playAnimation();
-  }, [playAnimation]);
+  const handlePreview = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+
+    onPreview?.();
+  }, [disabled, onPreview]);
 
   return (
     <Tooltip content={tooltip} className={styles.actionItem}>
@@ -122,19 +110,13 @@ const ActionButton = ({
         type="button"
         className={`${styles.microButton} ${active ? styles.microButtonActive : ''}`}
         onClick={handleClick}
-        onMouseEnter={handleHover}
-        onFocus={handleHover}
+        onMouseEnter={handlePreview}
+        onFocus={handlePreview}
         disabled={disabled}
         style={accentColor ? { ['--action-accent' as const]: accentColor } : undefined}
       >
-        <span className={styles.microIcon}>
-          <Lottie
-            lottieRef={lottieRef}
-            animationData={animationData}
-            autoplay={false}
-            loop={loop}
-            onDOMLoaded={() => lottieRef.current?.goToAndStop?.(0, true)}
-          />
+        <span className={`${styles.microIcon} ${active ? styles.microIconActive : ''}`}>
+          {icon}
         </span>
         <span className={styles.microContent}>
           <span className={styles.microLabel}>{label}</span>
@@ -269,7 +251,11 @@ const CardsWidget = (): JSX.Element => {
   const [showReminderSettings, setShowReminderSettings] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
-  const createSparkRef = useRef<LottieRefCurrentProps>(null);
+  const [recordAnimationTick, setRecordAnimationTick] = useState(0);
+  const [reminderAnimationTick, setReminderAnimationTick] = useState(0);
+  const [favoriteAnimationTick, setFavoriteAnimationTick] = useState(0);
+  const [streakAnimationTick, setStreakAnimationTick] = useState(0);
+  const [createSparklesAnimationTick, setCreateSparklesAnimationTick] = useState(0);
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof Notification === 'undefined') {
@@ -422,6 +408,7 @@ const CardsWidget = (): JSX.Element => {
       if (isRecording) {
         await stopRecording();
       } else {
+        setRecordAnimationTick(previous => previous + 1);
         await startRecording();
       }
     } catch (recordError) {
@@ -430,12 +417,29 @@ const CardsWidget = (): JSX.Element => {
   }, [isRecording, startRecording, stopRecording]);
 
   const handleReminderClick = useCallback(() => {
+    setReminderAnimationTick(previous => previous + 1);
     setShowReminderSettings(true);
   }, []);
 
   const handleCreateAffirmation = useCallback(() => {
     setShowCreateModal(true);
     setIsCelebrating(true);
+  }, []);
+
+  const triggerStreakAnimation = useCallback(() => {
+    setStreakAnimationTick(previous => previous + 1);
+  }, []);
+
+  const triggerRecordAnimation = useCallback(() => {
+    setRecordAnimationTick(previous => previous + 1);
+  }, []);
+
+  const triggerReminderAnimation = useCallback(() => {
+    setReminderAnimationTick(previous => previous + 1);
+  }, []);
+
+  const triggerCreateSparklesAnimation = useCallback(() => {
+    setCreateSparklesAnimationTick(previous => previous + 1);
   }, []);
 
   useEffect(() => {
@@ -555,6 +559,8 @@ const CardsWidget = (): JSX.Element => {
       return;
     }
 
+    setFavoriteAnimationTick(previous => previous + 1);
+
     if (isBookmarked(activeCard.id)) {
       removeBookmark(activeCard.id);
     } else {
@@ -599,18 +605,11 @@ const CardsWidget = (): JSX.Element => {
   const streakAccent = '#facc15';
 
   const handleStreakClick = useCallback(() => {
+    triggerStreakAnimation();
     if (streakCount > 0) {
       setIsCelebrating(true);
     }
-  }, [streakCount]);
-
-  const handleCreateHover = useCallback(() => {
-    createSparkRef.current?.goToAndPlay?.(0, true);
-  }, []);
-
-  const handleCreateLeave = useCallback(() => {
-    createSparkRef.current?.goToAndStop?.(0, true);
-  }, []);
+  }, [streakCount, triggerStreakAnimation]);
 
   const handleSavePersonalAffirmation = useCallback(
     async (text: string) => {
@@ -809,39 +808,78 @@ const CardsWidget = (): JSX.Element => {
 
       <div className={styles.actionBar}>
         <ActionButton
-          animationData={recordAnimation}
+          icon={
+            isRecording ? (
+              <StopIcon className={styles.microIconGlyph} />
+            ) : (
+              <AnimatedWebPIcon
+                className={`${styles.lottieLightIcon} ${styles.microIconGlyph}`}
+                replayKey={recordAnimationTick}
+                posterSrc={recordIdleWebP}
+                src={recordWebP}
+                fallback={<MicrophoneIcon className={styles.microIconGlyph} />}
+              />
+            )
+          }
           label={recordLabel}
           tooltip={recordTooltip}
           onClick={handleToggleRecording}
+          onPreview={isRecording ? undefined : triggerRecordAnimation}
           disabled={loading || !activeCard}
           active={isRecording}
           metric={recordMetric}
           accentColor={recordAccent}
         />
         <ActionButton
-          animationData={reminderAnimation}
+          icon={
+            <AnimatedWebPIcon
+              className={`${styles.lottieLightIcon} ${styles.microIconGlyph}`}
+              replayKey={reminderAnimationTick}
+              posterSrc={reminderIdleWebP}
+              src={reminderWebP}
+              fallback={<BellIcon className={styles.microIconGlyph} />}
+            />
+          }
           label={reminderLabel}
           tooltip={reminderTooltip}
           onClick={handleReminderClick}
+          onPreview={triggerReminderAnimation}
           active={reminderSettings.enabled}
           metric={reminderMetric}
           accentColor={reminderAccent}
         />
         <ActionButton
-          animationData={favoriteAnimation}
+          icon={
+            <AnimatedWebPIcon
+              className={styles.lottieLightIcon}
+              replayKey={favoriteAnimationTick}
+              posterSrc={favoriteIdleWebP}
+              src={favoriteWebP}
+            />
+          }
           label={favoriteLabel}
           tooltip={favoriteTooltip}
           onClick={handleToggleBookmark}
+          onPreview={() => setFavoriteAnimationTick(previous => previous + 1)}
           disabled={!activeCard}
           active={isCardBookmarked}
           metric={favoriteMetric}
           accentColor={favoriteAccent}
         />
         <ActionButton
-          animationData={streakAnimation}
+          icon={
+            <AnimatedWebPIcon
+              className={`${styles.lottieLightIcon} ${styles.microIconGlyph}`}
+              replayKey={streakAnimationTick}
+              posterSrc={streakIdleWebP}
+              src={streakWebP}
+              fallback={<SparklesIcon className={styles.microIconGlyph} />}
+            />
+          }
           label={streakLabel}
           tooltip={streakTooltip}
           onClick={handleStreakClick}
+          onPreview={triggerStreakAnimation}
           active={streakCount > 0}
           metric={streakMetric}
           accentColor={streakAccent}
@@ -851,21 +889,22 @@ const CardsWidget = (): JSX.Element => {
       <button
         type="button"
         className={styles.createButton}
-        onClick={handleCreateAffirmation}
+        onClick={() => {
+          triggerCreateSparklesAnimation();
+          handleCreateAffirmation();
+        }}
+        onMouseEnter={triggerCreateSparklesAnimation}
+        onFocus={triggerCreateSparklesAnimation}
         aria-label={t('widgets.cardsWidget.craftAffirmation') as string}
-        onMouseEnter={handleCreateHover}
-        onFocus={handleCreateHover}
-        onMouseLeave={handleCreateLeave}
-        onBlur={handleCreateLeave}
       >
         <span className={styles.createGlow} aria-hidden="true" />
         <span className={styles.createSparkIcon}>
-          <Lottie
-            lottieRef={createSparkRef}
-            animationData={sparklesAnimation}
-            autoplay={false}
-            loop
+          <LottieLightIcon
+            animationData={sparklesLottie}
             className={styles.createSparkLottie}
+            colorOverride="currentColor"
+            replayKey={createSparklesAnimationTick}
+            fallback={<SparklesIcon className={styles.createSparkGlyph} />}
           />
         </span>
         <span className={styles.createText}>
