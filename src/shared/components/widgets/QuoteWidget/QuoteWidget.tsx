@@ -1,20 +1,23 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef, useEffect, useCallback, type MutableRefObject } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './QuoteWidget.module.css';
-import { MoreVerticalIcon } from '../../common/icons';
+import { MoreVerticalIcon, RefreshIcon } from '../../common/icons';
+import { LottieLightIcon } from '@/shared/components/common/LottieLightIcon';
+import { AnimatedWebPIcon } from '@/shared/components/common/AnimatedWebPIcon';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/shared/hooks/useTiltEffect';
 import { quoteService, type Quote } from '@/core/services/quoteService';
 import { QuoteMoreOptionsMenu } from './QuoteMoreOptionsMenu';
+import { SafeBookmarkIcon, SafeShareIcon } from './SafeAnimatedIcons';
 import { useQuotePool } from '@/features/quotes/hooks/useQuotePool';
-import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
-import shareAnimation from './icons/share.json';
-import bookmarkAnimation from './icons/bookmark.json';
-import refreshAnimation from './icons/refresh.json';
-import clipboardAnimation from './icons/clipboard.json';
-import likeAnimation from './icons/like.json';
 import { useBookmarkedQuotes } from '@/shared/hooks/useBookmarkedQuotes';
+import shareLottie from './icons/share.json';
+import bookmarkLottie from './icons/bookmark.json';
+import refreshLottie from './icons/refresh.json';
+import clipboardLottie from './icons/clipboard.json';
+import likeWebP from './icons/like.webp';
+import likeIdleWebP from './icons/like-idle.webp';
 
 type QuoteTheme = 'success' | 'motivation' | 'leadership' | 'growth' | 'wisdom';
 
@@ -123,31 +126,21 @@ const InstagramIcon = ({ className }: { className?: string }): JSX.Element => (
   </svg>
 );
 
+const CopyIcon = ({ className }: { className?: string }): JSX.Element => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M9 9V6.75A2.75 2.75 0 0 1 11.75 4h6.5A2.75 2.75 0 0 1 21 6.75v6.5A2.75 2.75 0 0 1 18.25 16H16"
+    />
+    <rect x="3" y="8" width="13" height="13" rx="2.75" strokeWidth={2} />
+  </svg>
+);
+
 type Reaction = '❤️' | '👏' | '💡' | '💪' | '🙏';
 
 const REACTIONS: Reaction[] = ['❤️', '👏', '💡', '💪', '🙏'];
-
-const useMicroAnimation = (): {
-  lottieRef: MutableRefObject<LottieRefCurrentProps | null>;
-  play: () => void;
-  stop: () => void;
-} => {
-  const lottieRef = useRef<LottieRefCurrentProps>(null);
-
-  const play = useCallback(() => {
-    lottieRef.current?.goToAndPlay?.(0, true);
-  }, []);
-
-  const stop = useCallback(() => {
-    lottieRef.current?.goToAndStop?.(0, true);
-  }, []);
-
-  useEffect(() => {
-    stop();
-  }, [stop]);
-
-  return { lottieRef, play, stop };
-};
 
 const LoadingSkeleton = (): JSX.Element => (
   <div className={styles.skeletonContent}>
@@ -205,25 +198,16 @@ const QuoteWidget = (): JSX.Element => {
   const [userReaction, setUserReaction] = useState<Reaction | null>(null);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [moreMenuPosition, setMoreMenuPosition] = useState({ x: 0, y: 0 });
+  const [likeAnimationTick, setLikeAnimationTick] = useState(0);
+  const [shareAnimationTick, setShareAnimationTick] = useState(0);
+  const [bookmarkAnimationTick, setBookmarkAnimationTick] = useState(0);
+  const [refreshAnimationTick, setRefreshAnimationTick] = useState(0);
+  const [clipboardAnimationTick, setClipboardAnimationTick] = useState(0);
 
   const shareMenuRef = useRef<HTMLDivElement>(null);
   const shareButtonRef = useRef<HTMLButtonElement>(null);
   const moreButtonRef = useRef<HTMLButtonElement>(null);
   const quoteTextRef = useRef<HTMLDivElement>(null);
-
-  const { lottieRef: shareLottieRef, play: playShareAnimation } = useMicroAnimation();
-  const { lottieRef: bookmarkLottieRef, play: playBookmarkAnimation } = useMicroAnimation();
-  const {
-    lottieRef: refreshLottieRef,
-    play: playRefreshAnimation,
-    stop: stopRefreshAnimation,
-  } = useMicroAnimation();
-  const { lottieRef: clipboardLottieRef, play: playClipboardAnimation } = useMicroAnimation();
-  const {
-    lottieRef: reactionLottieRef,
-    play: playReactionAnimation,
-    stop: stopReactionAnimation,
-  } = useMicroAnimation();
 
   const {
     data: fetchedQuotes,
@@ -262,14 +246,6 @@ const QuoteWidget = (): JSX.Element => {
   const showLoadingSkeleton = isInitialLoading && !fetchError;
   const isNextQuoteBusy = isFetchingNextQuote || isInitialLoading;
 
-  useEffect(() => {
-    if (isNextQuoteBusy) {
-      playRefreshAnimation();
-    } else {
-      stopRefreshAnimation();
-    }
-  }, [isNextQuoteBusy, playRefreshAnimation, stopRefreshAnimation]);
-
   const resolvedTheme = quote ? quoteService.determineQuoteTheme(quote.categories) : QUOTE.theme;
   const activeQuoteText = quote?.text ?? QUOTE.text;
   const activeQuoteAuthor = quote?.author ?? QUOTE.author;
@@ -304,18 +280,30 @@ const QuoteWidget = (): JSX.Element => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const triggerShareAnimation = useCallback(() => {
-    playShareAnimation();
-  }, [playShareAnimation]);
+  const triggerShareAnimation = (): void => {
+    setShareAnimationTick(previous => previous + 1);
+  };
+
+  const triggerLikeAnimation = (): void => {
+    setLikeAnimationTick(previous => previous + 1);
+  };
+
+  const triggerBookmarkAnimation = (): void => {
+    setBookmarkAnimationTick(previous => previous + 1);
+  };
+
+  const triggerRefreshAnimation = (): void => {
+    setRefreshAnimationTick(previous => previous + 1);
+  };
+
+  const triggerClipboardAnimation = (): void => {
+    setClipboardAnimationTick(previous => previous + 1);
+  };
 
   const handleShareButtonClick = (): void => {
     triggerShareAnimation();
     setShowShareMenu(prev => !prev);
   };
-
-  const triggerReactionAnimation = useCallback(() => {
-    playReactionAnimation();
-  }, [playReactionAnimation]);
 
   useEffect(() => {
     if (!showMoreOptions) {
@@ -396,7 +384,7 @@ const QuoteWidget = (): JSX.Element => {
       return;
     }
 
-    playBookmarkAnimation();
+    triggerBookmarkAnimation();
 
     try {
       if (isCurrentQuoteBookmarked) {
@@ -449,7 +437,7 @@ const QuoteWidget = (): JSX.Element => {
   };
 
   const handleCopyQuote = (): void => {
-    playClipboardAnimation();
+    triggerClipboardAnimation();
     const shareText = `"${activeQuoteText}" - ${activeQuoteAuthor}`;
     navigator.clipboard.writeText(shareText);
     setShowSuccess({
@@ -461,13 +449,14 @@ const QuoteWidget = (): JSX.Element => {
   };
 
   const handleReaction = (reaction: Reaction): void => {
+    triggerLikeAnimation();
+
     if (userReaction === reaction) {
       setReactions(prev => ({
         ...prev,
         [reaction]: prev[reaction] - 1,
       }));
       setUserReaction(null);
-      stopReactionAnimation();
     } else {
       if (userReaction) {
         setReactions(prev => ({
@@ -480,7 +469,6 @@ const QuoteWidget = (): JSX.Element => {
         [reaction]: prev[reaction] + 1,
       }));
       setUserReaction(reaction);
-      playReactionAnimation();
     }
     setShowReactions(false);
   };
@@ -531,8 +519,6 @@ const QuoteWidget = (): JSX.Element => {
     if (isFetchingNextQuote) {
       return;
     }
-
-    playRefreshAnimation();
 
     setIsFetchingNextQuote(true);
 
@@ -616,13 +602,15 @@ const QuoteWidget = (): JSX.Element => {
                 onFocus={triggerShareAnimation}
                 aria-label={t('widgets.quote.shareQuote')}
               >
-                <Lottie
-                  lottieRef={shareLottieRef}
-                  animationData={shareAnimation}
-                  autoplay={false}
-                  loop={false}
-                  className={styles.actionIcon}
-                />
+                <span className={`${styles.actionIcon} ${styles.safeShareWrapper}`}>
+                  <LottieLightIcon
+                    animationData={shareLottie}
+                    className={styles.lottieLightIcon}
+                    colorOverride="currentColor"
+                    replayKey={shareAnimationTick}
+                    fallback={<SafeShareIcon className={styles.safeShareReplay} />}
+                  />
+                </span>
               </button>
 
               <AnimatePresence>
@@ -663,12 +651,12 @@ const QuoteWidget = (): JSX.Element => {
                 onMouseEnter={e => {
                   e.stopPropagation();
                   setShowTooltip(true);
-                  playBookmarkAnimation();
+                  triggerBookmarkAnimation();
                 }}
                 onFocus={e => {
                   e.stopPropagation();
                   setShowTooltip(true);
-                  playBookmarkAnimation();
+                  triggerBookmarkAnimation();
                 }}
                 onMouseLeave={e => {
                   e.stopPropagation();
@@ -683,13 +671,21 @@ const QuoteWidget = (): JSX.Element => {
                 disabled={!currentQuoteId || isCurrentQuoteBookmarkPending}
                 style={{ position: 'relative', zIndex: 2 }}
               >
-                <Lottie
-                  lottieRef={bookmarkLottieRef}
-                  animationData={bookmarkAnimation}
-                  autoplay={false}
-                  loop={false}
-                  className={`${styles.actionIcon} ${styles.bookmarkIcon}`}
-                />
+                <span className={`${styles.actionIcon} ${styles.bookmarkIcon}`}>
+                  <LottieLightIcon
+                    animationData={bookmarkLottie}
+                    className={styles.lottieLightIcon}
+                    colorOverride="currentColor"
+                    replayKey={`${bookmarkAnimationTick}-${isCurrentQuoteBookmarked ? 'filled' : 'idle'}`}
+                    settleTo={isCurrentQuoteBookmarked ? 'end' : 'start'}
+                    fallback={
+                      <SafeBookmarkIcon
+                        className={styles.safeBookmarkReplay}
+                        filled={isCurrentQuoteBookmarked}
+                      />
+                    }
+                  />
+                </span>
               </button>
 
               <AnimatePresence>
@@ -835,18 +831,24 @@ const QuoteWidget = (): JSX.Element => {
                         className={`${styles.actionButton} ${styles.gradientButton} ${
                           userReaction ? styles.hasReaction : ''
                         }`}
-                        onClick={() => setShowReactions(!showReactions)}
-                        onMouseEnter={triggerReactionAnimation}
-                        onFocus={triggerReactionAnimation}
+                        onClick={() => {
+                          triggerLikeAnimation();
+                          setShowReactions(!showReactions);
+                        }}
+                        onMouseEnter={triggerLikeAnimation}
+                        onFocus={triggerLikeAnimation}
                         aria-label="React to quote"
                       >
-                        <Lottie
-                          lottieRef={reactionLottieRef}
-                          animationData={likeAnimation}
-                          autoplay={false}
-                          loop={false}
-                          className={`${styles.actionIcon} ${styles.reactionIcon}`}
-                        />
+                        <span
+                          className={`${styles.actionIcon} ${styles.reactionIcon} ${styles.iconPulse}`}
+                        >
+                          <AnimatedWebPIcon
+                            className={styles.lottieLightIcon}
+                            replayKey={likeAnimationTick}
+                            posterSrc={likeIdleWebP}
+                            src={likeWebP}
+                          />
+                        </span>
                       </button>
 
                       <AnimatePresence>
@@ -878,37 +880,46 @@ const QuoteWidget = (): JSX.Element => {
                       type="button"
                       className={`${styles.actionButton} ${styles.gradientButton} ${styles.newQuoteButton}`}
                       onClick={() => {
+                        triggerRefreshAnimation();
                         void handleNewQuote();
                       }}
-                      onMouseEnter={playRefreshAnimation}
-                      onFocus={playRefreshAnimation}
+                      onMouseEnter={triggerRefreshAnimation}
+                      onFocus={triggerRefreshAnimation}
                       aria-label="Get new quote"
                       disabled={isNextQuoteBusy}
                     >
-                      <Lottie
-                        lottieRef={refreshLottieRef}
-                        animationData={refreshAnimation}
-                        autoplay={false}
-                        loop={isNextQuoteBusy}
-                        className={`${styles.actionIcon} ${styles.refreshIcon}`}
-                      />
+                      <span
+                        className={`${styles.actionIcon} ${styles.refreshIcon} ${styles.iconRotate} ${
+                          isNextQuoteBusy ? styles.iconSpinning : ''
+                        }`}
+                      >
+                        <LottieLightIcon
+                          animationData={refreshLottie}
+                          className={styles.lottieLightIcon}
+                          colorOverride="currentColor"
+                          replayKey={refreshAnimationTick}
+                          fallback={<RefreshIcon />}
+                        />
+                      </span>
                     </button>
 
                     <button
                       type="button"
                       className={`${styles.actionButton} ${styles.gradientButton}`}
                       onClick={handleCopyQuote}
-                      onMouseEnter={playClipboardAnimation}
-                      onFocus={playClipboardAnimation}
+                      onMouseEnter={triggerClipboardAnimation}
+                      onFocus={triggerClipboardAnimation}
                       aria-label="Copy quote"
                     >
-                      <Lottie
-                        lottieRef={clipboardLottieRef}
-                        animationData={clipboardAnimation}
-                        autoplay={false}
-                        loop={false}
-                        className={styles.actionIcon}
-                      />
+                      <span className={`${styles.actionIcon} ${styles.iconSlide}`}>
+                        <LottieLightIcon
+                          animationData={clipboardLottie}
+                          className={styles.lottieLightIcon}
+                          colorOverride="currentColor"
+                          replayKey={clipboardAnimationTick}
+                          fallback={<CopyIcon />}
+                        />
+                      </span>
                     </button>
                   </div>
                 </div>

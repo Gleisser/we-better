@@ -195,11 +195,60 @@
 
 .microIcon {
   @apply relative flex h-9 w-9 items-center justify-center rounded-full bg-white/10;
+  transition:
+    transform 0.24s ease,
+    background-color 0.24s ease;
 }
 
-.microIcon :global(svg) {
+.microIconGlyph {
   width: 28px;
   height: 28px;
+  stroke-width: 1.9;
+}
+
+.lottieLightIcon,
+.createSparkLottie {
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.lottieLightIcon > span,
+.createSparkLottie > span {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.lottieLightIcon :global(svg),
+.createSparkLottie :global(svg) {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.microButton:hover:not(:disabled) .microIcon,
+.microButton:focus-visible:not(:disabled) .microIcon {
+  transform: translateY(-1px) scale(1.08);
+}
+
+.microButton:hover:not(:disabled) .microIconGlyph,
+.microButton:focus-visible:not(:disabled) .microIconGlyph,
+.microButton:hover:not(:disabled) .lottieLightIcon,
+.microButton:focus-visible:not(:disabled) .lottieLightIcon {
+  animation: microIconPulse 0.28s ease-out;
+}
+
+.microIconActive {
+  background: color-mix(in srgb, var(--action-accent, rgba(59, 130, 246, 0.75)) 18%, transparent);
+}
+
+.microButtonActive .microIconGlyph {
+  animation: microIconPulse 0.32s ease-out;
 }
 
 .microContent {
@@ -255,9 +304,10 @@
     transform 0.35s ease;
 }
 
-.createSparkLottie {
+.createSparkGlyph {
   @apply w-12 h-12;
   pointer-events: none;
+  stroke-width: 1.7;
 }
 
 .createButton:hover .createSparkIcon,
@@ -266,9 +316,11 @@
   transform: translate(0, -50%) scale(1);
 }
 
-.createSparkIcon :global(svg) {
-  width: 48px;
-  height: 48px;
+.createButton:hover .createSparkGlyph,
+.createButton:focus-visible .createSparkGlyph,
+.createButton:hover .createSparkLottie,
+.createButton:focus-visible .createSparkLottie {
+  animation: microIconPulse 0.34s ease-out;
 }
 
 .createText {
@@ -325,6 +377,21 @@
 
 .createButton:active .createSparkIcon {
   transform: scale(0.96);
+}
+
+@keyframes microIconPulse {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(0.92);
+  }
+  75% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .affirmButton {

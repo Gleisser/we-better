@@ -1,9 +1,3 @@
-import { CSP_POLICY } from '../config/csp';
+import { CSP_HEADER_VALUE } from '../config/csp';
 
-export const generateCSP = (): string => {
-  const policy = CSP_POLICY;
-
-  return Object.entries(policy)
-    .map(([key, values]) => `${key} ${values.join(' ')}`)
-    .join('; ');
-};
+export const generateCSP = (): string => CSP_HEADER_VALUE;
