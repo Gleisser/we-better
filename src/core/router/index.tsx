@@ -6,11 +6,11 @@ import {
   type ReactNode,
 } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
-import { BottomSheetProvider } from '@/shared/contexts/BottomSheetContext';
-import { ProtectedRoute } from '@/features/auth/ProtectedRoute';
-import { PublicRoute } from '@/features/auth/PublicRoute';
 import RouteLoader from './RouteLoader';
 
+const publicRouteShellComponent = lazy(() => import('./PublicRouteShell'));
+const authRouteShellComponent = lazy(() => import('./AuthRouteShell'));
+const appRouteShellComponent = lazy(() => import('./AppRouteShell'));
 const appRouteComponent = lazy(() => import('@/App'));
 const authLayoutRouteComponent = lazy(() => import('@/features/auth/pages/AuthLayout'));
 const loginRouteComponent = lazy(() => import('@/features/auth/pages/Login'));
@@ -20,7 +20,6 @@ const resetPasswordRouteComponent = lazy(() => import('@/features/auth/pages/Res
 const emailConfirmationRouteComponent = lazy(
   () => import('@/features/auth/pages/EmailConfirmation')
 );
-const appShellRouteComponent = lazy(() => import('@/shared/components/layout/WeBetterApp'));
 const dashboardRouteComponent = lazy(() => import('@/features/dashboard/Dashboard'));
 const lifeWheelRouteComponent = lazy(() => import('@/features/life-wheel/EnhancedLifeWheelPage'));
 const dreamBoardRouteComponent = lazy(() => import('@/features/dream-board/DreamBoardPage'));
@@ -58,15 +57,17 @@ const renderLazyLayoutRoute = (
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: renderLazyRoute(appRouteComponent, { label: 'Loading We Better...' }),
+    element: renderLazyRoute(publicRouteShellComponent, { label: 'Loading We Better...' }),
+    children: [
+      {
+        index: true,
+        element: renderLazyRoute(appRouteComponent, { label: 'Loading We Better...' }),
+      },
+    ],
   },
   {
     path: '/auth',
-    element: (
-      <PublicRoute>
-        {renderLazyRoute(authLayoutRouteComponent, { label: 'Loading authentication...' })}
-      </PublicRoute>
-    ),
+    element: renderLazyRoute(authRouteShellComponent, { label: 'Loading authentication...' }),
     children: [
       {
         path: 'login',
@@ -100,14 +101,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/app',
-    element: (
-      <ProtectedRoute>
-        {/* <AuthDebugger /> */}
-        <BottomSheetProvider>
-          {renderLazyRoute(appShellRouteComponent, { label: 'Loading workspace...' })}
-        </BottomSheetProvider>
-      </ProtectedRoute>
-    ),
+    element: renderLazyRoute(appRouteShellComponent, { label: 'Loading workspace...' }),
     children: [
       {
         index: true,

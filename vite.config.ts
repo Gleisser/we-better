@@ -35,20 +35,6 @@ export default defineConfig(({ mode }) => {
               return 'query-vendor';
             }
 
-            if (id.includes('/@supabase/supabase-js/') || id.includes('/axios/')) {
-              return 'supabase-vendor';
-            }
-
-            if (
-              id.includes('/framer-motion/') ||
-              id.includes('/gsap/') ||
-              id.includes('/lottie-web/') ||
-              id.includes('/three/') ||
-              id.includes('/@react-three/')
-            ) {
-              return 'animation-vendor';
-            }
-
             return undefined;
           },
         },
