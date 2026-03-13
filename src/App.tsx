@@ -1,6 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { prefetchHero } from '@/shared/hooks/useHero';
 import ErrorBoundary from './shared/components/common/ErrorBoundary/ErrorBoundary';
 import { Header, Hero, Footer } from './shared/components/layout';
 import Features from './shared/components/layout/Features/Features';
@@ -20,12 +17,6 @@ import { TestimoniesErrorFallback } from './shared/components/layout/Testimonies
 import { PartnersErrorFallback } from './shared/components/layout/Partners/PartnersErrorFallback';
 
 function App(): JSX.Element {
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    prefetchHero(queryClient);
-  }, [queryClient]);
-
   return (
     <ErrorBoundary section="Application">
       <div className="h-full w-full max-w-[100%] overflow-x-hidden bg-black">

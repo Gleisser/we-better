@@ -9,13 +9,10 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { useHero } from '@/shared/hooks/useHero';
 import HeroSkeleton from './HeroSkeleton';
-import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 
 export const Hero = (): JSX.Element => {
-  const { data, isFetching: isDataLoading } = useHero();
-  const { isError, error } = useErrorHandler({
-    fallbackMessage: 'Failed to load hero content',
-  });
+  const { data, error, isFetching: isDataLoading } = useHero();
+  const isError = Boolean(error);
   const [isMobile, setIsMobile] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
 

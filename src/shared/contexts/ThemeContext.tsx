@@ -8,6 +8,7 @@ import {
 } from '@/types/theme';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
+import type { UserPreferences } from '@/core/services/preferencesService';
 
 /**
  * Theme Context for managing application theme state
@@ -18,15 +19,23 @@ interface ThemeProviderProps {
   children: ReactNode;
   initialThemeMode?: ThemeMode;
   initialTimeBasedTheme?: boolean;
+  syncWithUserPreferences?: boolean;
+}
+
+interface ThemeProviderImplProps extends Omit<ThemeProviderProps, 'syncWithUserPreferences'> {
+  preferences?: Pick<UserPreferences, 'theme_mode' | 'time_based_theme'> | null;
+  preferencesLoading?: boolean;
 }
 
 /**
  * ThemeProvider component that manages theme state and provides theme context
  */
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({
+const ThemeProviderImpl: React.FC<ThemeProviderImplProps> = ({
   children,
   initialThemeMode = 'auto',
   initialTimeBasedTheme = true,
+  preferences = null,
+  preferencesLoading = false,
 }) => {
   // State management
   const [themeMode, setThemeModeState] = useState<ThemeMode>(initialThemeMode);
@@ -37,9 +46,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
   // Integration with existing time-based theme hook
   const { timeOfDay, theme: timeThemeColors } = useTimeBasedTheme();
-
-  // User preferences integration
-  const { preferences, isLoading: preferencesLoading } = useUserPreferences();
 
   /**
    * Get effective theme mode considering auto mode and time-based preferences
@@ -271,6 +277,25 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   };
 
   return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
+};
+
+const SyncedThemeProvider: React.FC<
+  Omit<ThemeProviderProps, 'syncWithUserPreferences'>
+> = props => {
+  const { preferences, isLoading } = useUserPreferences();
+
+  return <ThemeProviderImpl {...props} preferences={preferences} preferencesLoading={isLoading} />;
+};
+
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({
+  syncWithUserPreferences = true,
+  ...props
+}) => {
+  if (!syncWithUserPreferences) {
+    return <ThemeProviderImpl {...props} />;
+  }
+
+  return <SyncedThemeProvider {...props} />;
 };
 
 export default ThemeProvider;

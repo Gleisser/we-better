@@ -1,16 +1,43 @@
-import { createQueryHook } from '@/shared/hooks/utils/createQueryHook';
+import { useCallback, useEffect, useState } from 'react';
 import { heroService } from '@/core/services/hero.service';
 import { HeroResponse } from '@/utils/types/hero';
 
-export const HERO_QUERY_KEY = ['hero'] as const;
+interface UseHeroResult {
+  data: HeroResponse | null;
+  error: Error | null;
+  isFetching: boolean;
+  refetch: () => Promise<void>;
+}
 
-const {
-  useQueryHook: useHero,
-  prefetchData: prefetchHero,
-  invalidateCache: invalidateHeroCache,
-} = createQueryHook<HeroResponse>({
-  queryKey: HERO_QUERY_KEY,
-  queryFn: () => heroService.getHero(),
-});
+export function useHero(): UseHeroResult {
+  const [data, setData] = useState<HeroResponse | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [isFetching, setIsFetching] = useState(true);
 
-export { useHero, prefetchHero, invalidateHeroCache };
+  const fetchHero = useCallback(async () => {
+    setIsFetching(true);
+    setError(null);
+
+    try {
+      const response = await heroService.getHero();
+      setData(response);
+    } catch (fetchError) {
+      setError(fetchError instanceof Error ? fetchError : new Error('Failed to load hero data'));
+    } finally {
+      setIsFetching(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void fetchHero();
+  }, [fetchHero]);
+
+  return {
+    data,
+    error,
+    isFetching,
+    refetch: fetchHero,
+  };
+}
+
+export default useHero;
