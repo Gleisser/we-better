@@ -14,6 +14,46 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (!id.includes('node_modules')) {
+              return undefined;
+            }
+
+            if (
+              id.includes('/react/') ||
+              id.includes('/react-dom/') ||
+              id.includes('/react-router/') ||
+              id.includes('/react-router-dom/')
+            ) {
+              return 'react-vendor';
+            }
+
+            if (id.includes('/@tanstack/react-query')) {
+              return 'query-vendor';
+            }
+
+            if (id.includes('/@supabase/supabase-js/') || id.includes('/axios/')) {
+              return 'supabase-vendor';
+            }
+
+            if (
+              id.includes('/framer-motion/') ||
+              id.includes('/gsap/') ||
+              id.includes('/lottie-web/') ||
+              id.includes('/three/') ||
+              id.includes('/@react-three/')
+            ) {
+              return 'animation-vendor';
+            }
+
+            return undefined;
+          },
+        },
+      },
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
