@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "media:export-lottie-webp": "node scripts/export-lottie-to-webp.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:staged": "eslint . --max-warnings=0",
@@ -16,7 +15,6 @@
     "type-check": "tsc -p tsconfig.app.json --noEmit",
     "prepare": "husky",
     "preview": "vite preview",
-    "lab:quote-icons": "node scripts/serve-quote-icon-lab.mjs",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
