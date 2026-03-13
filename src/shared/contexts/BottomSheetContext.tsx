@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode } from 'react';
+import { createContext, useCallback, useMemo, useState, ReactNode } from 'react';
 
 /**
  * Defines the available types of bottom sheets in the application.
@@ -53,11 +53,11 @@ export function BottomSheetProvider({ children }: { children: ReactNode }): Reac
    * Closes the currently active bottom sheet.
    * Sets the activeSheet state to null.
    */
-  const closeSheet = (): void => setActiveSheet(null);
-
-  return (
-    <BottomSheetContext.Provider value={{ activeSheet, setActiveSheet, closeSheet }}>
-      {children}
-    </BottomSheetContext.Provider>
+  const closeSheet = useCallback((): void => setActiveSheet(null), []);
+  const contextValue = useMemo(
+    () => ({ activeSheet, setActiveSheet, closeSheet }),
+    [activeSheet, closeSheet]
   );
+
+  return <BottomSheetContext.Provider value={contextValue}>{children}</BottomSheetContext.Provider>;
 }

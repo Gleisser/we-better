@@ -1,5 +1,5 @@
 import { HERO_FALLBACK } from '@/utils/constants/fallback';
-import styles from './Hero.module.css';
+import { cn } from '@/utils/classnames';
 import DashboardPreview from './DashboardPreview';
 import FloatingImage from './FloatingImage';
 import HeroBackground from './HeroBackground';
@@ -106,10 +106,16 @@ export const Hero = (): JSX.Element => {
 
   if (isError && !showFallback) {
     return (
-      <section className={styles.heroContainer}>
-        <div className={styles.errorState} role="alert">
+      <section className="relative isolate z-[1] flex min-h-screen w-full flex-col items-center justify-center overflow-visible overflow-x-hidden bg-black pb-16 md:px-4 md:pb-[20rem]">
+        <div
+          className="flex min-h-[400px] flex-col items-center justify-center text-white/70"
+          role="alert"
+        >
           <p>{error?.message}</p>
-          <button onClick={() => window.location.reload()} className={styles.retryButton}>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 rounded-full bg-primary-purple px-6 py-2 text-white transition-all duration-200 hover:bg-primary-purple/80"
+          >
             Try Again
           </button>
         </div>
@@ -118,19 +124,31 @@ export const Hero = (): JSX.Element => {
   }
 
   return (
-    <section className={styles.heroContainer} aria-labelledby="hero-title">
+    <section
+      className="relative isolate z-[1] flex min-h-screen w-full max-w-full flex-col items-center justify-center overflow-visible overflow-x-hidden bg-black pb-16 md:px-4 md:pb-[20rem]"
+      aria-labelledby="hero-title"
+    >
       <HeroBackground aria-hidden="true" />
       <motion.div
-        className={styles.contentWrapper}
+        className="relative z-[2] mt-20 flex w-full flex-col items-center justify-center gap-4 px-4 text-center md:mx-auto md:max-w-7xl md:px-0"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className={styles.title} id="hero-title">
+        <h1
+          className="flex flex-col gap-1 font-plus-jakarta text-[2.5rem] font-bold text-white md:mb-6 md:text-6xl"
+          id="hero-title"
+        >
           <span>{heroData?.title}</span>
         </h1>
-        <p className={styles.subtitle}>{heroData?.subtitle}</p>
-        <div className={styles.ctaContainer} role="group" aria-label="Call to action">
+        <p className="mb-10 max-w-2xl px-6 font-plus-jakarta text-lg text-white/80 md:mb-8 md:px-0 md:text-2xl">
+          {heroData?.subtitle}
+        </p>
+        <div
+          className="mb-16 flex flex-col justify-center gap-5 md:mb-24 md:flex-row md:gap-4"
+          role="group"
+          aria-label="Call to action"
+        >
           <CtaButton text={heroData?.cta_text} aria-label={heroData?.cta_text} />
           <SecondaryCtaButton
             text={heroData?.secondary_cta_text}
@@ -139,13 +157,13 @@ export const Hero = (): JSX.Element => {
         </div>
       </motion.div>
 
-      <div className={styles.previewContainer} role="presentation">
-        <div className={styles.mainPreview}>
+      <div className="relative z-[3] mt-8 w-full max-w-6xl" role="presentation">
+        <div className="relative z-[3] mb-4 w-full px-4 md:mb-0 md:px-0">
           {isMobile ? (
             <motion.img
               src={heroData?.main_image_mobile?.src}
               alt="We Better Mobile App Interface"
-              className={styles.mobilePreviewImage}
+              className="h-auto w-full max-h-[60vh] rounded-xl object-contain"
               loading="eager"
               {...highPriorityImageProps}
               initial={{ opacity: 0 }}
@@ -166,7 +184,11 @@ export const Hero = (): JSX.Element => {
               key={`floating-image-${index}`}
               src={image.src}
               alt=""
-              className={`${styles.floatingImage} ${HERO_FALLBACK.images[index].className} z-40`}
+              className={cn(
+                'hidden h-auto w-auto max-w-[300px] md:block md:max-w-[400px]',
+                HERO_FALLBACK.images[index].className,
+                'z-40'
+              )}
               ref={el => {
                 imageRefs.current[index] = el;
                 if (el && !loadedImages.has(index)) {

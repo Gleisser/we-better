@@ -7,19 +7,14 @@ test.describe('Header', () => {
 
   test.beforeEach(async ({ page }) => {
     homePage = new HomePage(page);
-    await homePage.goto(5);
+    await homePage.goto();
   });
 
   test('should display logo with correct text and link', async () => {
     const logo = await homePage.getLogo();
-    
-    // Verify logo is visible
+
     await expect(logo).toBeVisible();
-    
-    // Verify logo text
-    await expect(logo).toHaveText(TEST_DATA.header.logo.text);
-    
-    // Verify logo href
+    await expect(logo).toHaveAccessibleName(TEST_DATA.header.logo.ariaLabel);
     await expect(logo).toHaveAttribute('href', TEST_DATA.header.logo.href);
   });
-}); 
+});

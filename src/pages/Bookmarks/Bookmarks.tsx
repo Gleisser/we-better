@@ -4,13 +4,24 @@ import { useBookmarkedQuotes } from '@/shared/hooks/useBookmarkedQuotes';
 import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { BookmarkIcon, SearchIcon, ChevronDownIcon } from '@/shared/components/common/icons';
+import { cn } from '@/utils/classnames';
 import QuoteCard from './components/QuoteCard/QuoteCard';
 import AffirmationCard from './components/AffirmationCard/AffirmationCard';
-import styles from './Bookmarks.module.css';
 
 type BookmarkType = 'all' | 'quotes' | 'affirmations';
 type SortOption = 'newest' | 'oldest' | 'alphabetical';
 type ViewMode = 'grid' | 'list';
+
+const PANEL_CLASS_NAME =
+  'rounded-2xl border border-theme-primary bg-theme-elevated shadow-theme-sm transition-colors';
+const ACTIVE_BUTTON_CLASS_NAME =
+  'border-[var(--theme-interactive-primary)] bg-[var(--theme-interactive-primary)] text-white';
+const INACTIVE_BUTTON_CLASS_NAME =
+  'border-theme-primary bg-theme-elevated text-theme-primary hover:border-theme-secondary hover:bg-theme-secondary';
+const VIEW_MODE_BUTTON_CLASS_NAME =
+  'flex h-10 w-10 items-center justify-center rounded-lg text-theme-secondary transition-colors';
+const FILTER_BUTTON_CLASS_NAME =
+  'rounded-full border px-4 py-2 text-sm font-medium transition-colors';
 
 // Temporary inline icons until we add them to the main icons file
 const FilterIcon = ({ className }: { className?: string }): JSX.Element => (
@@ -121,7 +132,6 @@ const Bookmarks = (): JSX.Element => {
   const filteredBookmarks = useMemo(() => {
     let filtered = [...allBookmarks];
 
-    // Filter by type
     if (selectedType !== 'all') {
       filtered = filtered.filter(bookmark => {
         if (selectedType === 'quotes') return bookmark.type === 'quote';
@@ -130,7 +140,6 @@ const Bookmarks = (): JSX.Element => {
       });
     }
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(bookmark => {
         const searchLower = searchTerm.toLowerCase();
@@ -140,16 +149,15 @@ const Bookmarks = (): JSX.Element => {
             bookmark.author.toLowerCase().includes(searchLower) ||
             bookmark.theme.toLowerCase().includes(searchLower)
           );
-        } else {
-          return (
-            bookmark.text.toLowerCase().includes(searchLower) ||
-            bookmark.category.toLowerCase().includes(searchLower)
-          );
         }
+
+        return (
+          bookmark.text.toLowerCase().includes(searchLower) ||
+          bookmark.category.toLowerCase().includes(searchLower)
+        );
       });
     }
 
-    // Sort bookmarks
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'newest':
@@ -222,38 +230,49 @@ const Bookmarks = (): JSX.Element => {
   );
 
   return (
-    <div className={styles.bookmarksPage}>
-      {/* Header */}
-      <div className={styles.header}>
-        <div className={styles.titleSection}>
-          <div className={styles.iconTitle}>
-            <BookmarkIcon className={styles.headerIcon} filled />
-            <h1 className={styles.title}>{translations.title}</h1>
+    <div className="mx-auto min-h-[calc(100vh-120px)] max-w-[1400px] px-3 py-3 sm:p-4 lg:p-8">
+      <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
+        <div className="flex-1">
+          <div className="mb-2 flex items-center gap-3">
+            <BookmarkIcon className="h-8 w-8 text-[var(--theme-interactive-primary)]" filled />
+            <h1 className="font-plus-jakarta text-2xl font-bold text-theme-primary sm:text-[28px] lg:text-[32px]">
+              {translations.title}
+            </h1>
           </div>
-          <p className={styles.subtitle}>
+          <p className="text-sm font-medium text-theme-secondary sm:text-base">
             {translations.subtitle} • {translations.itemCount}
           </p>
         </div>
 
-        {/* Stats */}
-        <div className={styles.stats}>
-          <div className={styles.statItem}>
-            <span className={styles.statNumber}>{quotesCount}</span>
-            <span className={styles.statLabel}>{translations.stats.quotes}</span>
+        <div
+          className={cn(
+            PANEL_CLASS_NAME,
+            'flex items-center gap-4 self-start px-5 py-4 lg:gap-6 lg:px-6 lg:py-5'
+          )}
+        >
+          <div className="flex flex-col items-center gap-1">
+            <span className="font-plus-jakarta text-xl font-bold text-theme-primary lg:text-2xl">
+              {quotesCount}
+            </span>
+            <span className="text-[12px] font-semibold uppercase tracking-[0.5px] text-theme-secondary">
+              {translations.stats.quotes}
+            </span>
           </div>
-          <div className={styles.statDivider} />
-          <div className={styles.statItem}>
-            <span className={styles.statNumber}>{affirmationsCount}</span>
-            <span className={styles.statLabel}>{translations.stats.affirmations}</span>
+          <div className="h-8 w-px bg-[var(--theme-border-primary)]" />
+          <div className="flex flex-col items-center gap-1">
+            <span className="font-plus-jakarta text-xl font-bold text-theme-primary lg:text-2xl">
+              {affirmationsCount}
+            </span>
+            <span className="text-[12px] font-semibold uppercase tracking-[0.5px] text-theme-secondary">
+              {translations.stats.affirmations}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Search and Controls */}
-      <div className={styles.controls}>
-        {/* Search Bar */}
-        <div className={styles.searchContainer}>
-          <SearchIcon className={styles.searchIcon} />
+      <div className="mb-6 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-4">
+        <div className="relative min-w-0 flex-1 md:min-w-[280px]">
+          <SearchIcon className="pointer-events-none absolute left-4 top-1/2 z-[1] h-5 w-5 -translate-y-1/2 text-[var(--theme-text-tertiary)]" />
           <input
             id="bookmarks-search"
             name="bookmarksSearch"
@@ -261,60 +280,77 @@ const Bookmarks = (): JSX.Element => {
             placeholder={translations.search.placeholder}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className={styles.searchInput}
+            className="h-12 w-full rounded-xl border border-theme-primary bg-theme-elevated pl-12 pr-4 text-sm font-medium text-theme-primary shadow-theme-sm transition-colors placeholder:text-[var(--theme-text-tertiary)] focus:border-[var(--theme-border-focus)] focus:outline-none"
           />
         </div>
 
-        {/* Action Buttons */}
-        <div className={styles.actionButtons}>
-          {/* View Mode Toggle */}
-          <div className={styles.viewModeToggle}>
+        <div className="flex items-center justify-between gap-3 md:justify-start">
+          <div className={cn(PANEL_CLASS_NAME, 'flex rounded-[10px] p-1')}>
             <button
-              className={`${styles.viewModeButton} ${viewMode === 'grid' ? styles.active : ''}`}
+              className={cn(
+                VIEW_MODE_BUTTON_CLASS_NAME,
+                viewMode === 'grid'
+                  ? 'bg-[var(--theme-interactive-primary)] text-white'
+                  : 'hover:bg-theme-secondary hover:text-theme-primary'
+              )}
               onClick={() => setViewMode('grid')}
               aria-label={translations.controls.gridView}
             >
-              <GridIcon className={styles.viewIcon} />
+              <GridIcon className="h-[18px] w-[18px]" />
             </button>
             <button
-              className={`${styles.viewModeButton} ${viewMode === 'list' ? styles.active : ''}`}
+              className={cn(
+                VIEW_MODE_BUTTON_CLASS_NAME,
+                viewMode === 'list'
+                  ? 'bg-[var(--theme-interactive-primary)] text-white'
+                  : 'hover:bg-theme-secondary hover:text-theme-primary'
+              )}
               onClick={() => setViewMode('list')}
               aria-label={translations.controls.listView}
             >
-              <ListIcon className={styles.viewIcon} />
+              <ListIcon className="h-[18px] w-[18px]" />
             </button>
           </div>
 
-          {/* Filter Button */}
           <button
-            className={`${styles.controlButton} ${showFilters ? styles.active : ''}`}
+            className={cn(
+              'flex h-12 items-center gap-2 rounded-xl border px-4 text-sm font-semibold shadow-theme-sm transition-colors',
+              showFilters ? ACTIVE_BUTTON_CLASS_NAME : INACTIVE_BUTTON_CLASS_NAME
+            )}
             onClick={() => setShowFilters(!showFilters)}
           >
-            <FilterIcon className={styles.controlIcon} />
+            <FilterIcon className="h-[18px] w-[18px]" />
             {translations.controls.filter}
           </button>
 
-          {/* Sort Button */}
-          <div className={styles.sortContainer}>
+          <div className="relative">
             <button
-              className={`${styles.controlButton} ${showSortMenu ? styles.active : ''}`}
+              className={cn(
+                'flex h-12 items-center gap-2 rounded-xl border px-4 text-sm font-semibold shadow-theme-sm transition-colors',
+                showSortMenu ? ACTIVE_BUTTON_CLASS_NAME : INACTIVE_BUTTON_CLASS_NAME
+              )}
               onClick={() => setShowSortMenu(!showSortMenu)}
             >
-              <SortIcon className={styles.controlIcon} />
+              <SortIcon className="h-[18px] w-[18px]" />
               {translations.controls.sort}
-              <ChevronDownIcon className={styles.chevronIcon} />
+              <ChevronDownIcon className="h-4 w-4" />
             </button>
 
             {showSortMenu && (
               <motion.div
-                className={styles.sortMenu}
+                className="absolute right-0 top-full z-10 mt-2 min-w-[160px] rounded-xl border border-theme-primary bg-theme-elevated p-2 shadow-[0_8px_32px_rgba(0,0,0,0.16)]"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
               >
                 <button
-                  className={`${styles.sortMenuItem} ${sortBy === 'newest' ? styles.active : ''}`}
+                  className={cn(
+                    'block w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors',
+                    sortBy === 'newest'
+                      ? 'bg-[var(--theme-interactive-primary)] text-white'
+                      : 'text-theme-primary hover:bg-theme-secondary'
+                  )}
                   onClick={() => {
                     setSortBy('newest');
                     setShowSortMenu(false);
@@ -323,7 +359,12 @@ const Bookmarks = (): JSX.Element => {
                   {translations.sorting.newest}
                 </button>
                 <button
-                  className={`${styles.sortMenuItem} ${sortBy === 'oldest' ? styles.active : ''}`}
+                  className={cn(
+                    'block w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors',
+                    sortBy === 'oldest'
+                      ? 'bg-[var(--theme-interactive-primary)] text-white'
+                      : 'text-theme-primary hover:bg-theme-secondary'
+                  )}
                   onClick={() => {
                     setSortBy('oldest');
                     setShowSortMenu(false);
@@ -332,7 +373,12 @@ const Bookmarks = (): JSX.Element => {
                   {translations.sorting.oldest}
                 </button>
                 <button
-                  className={`${styles.sortMenuItem} ${sortBy === 'alphabetical' ? styles.active : ''}`}
+                  className={cn(
+                    'block w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors',
+                    sortBy === 'alphabetical'
+                      ? 'bg-[var(--theme-interactive-primary)] text-white'
+                      : 'text-theme-primary hover:bg-theme-secondary'
+                  )}
                   onClick={() => {
                     setSortBy('alphabetical');
                     setShowSortMenu(false);
@@ -346,33 +392,47 @@ const Bookmarks = (): JSX.Element => {
         </div>
       </div>
 
-      {/* Filters */}
       <AnimatePresence>
         {showFilters && (
           <motion.div
-            className={styles.filtersPanel}
+            className={cn(PANEL_CLASS_NAME, 'mb-6 overflow-hidden rounded-xl p-5')}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className={styles.filterGroup}>
-              <span className={styles.filterLabel}>{translations.filters.typeLabel}</span>
-              <div className={styles.filterButtons}>
+            <div className="flex flex-wrap items-center gap-4">
+              <span className="min-w-[60px] text-sm font-semibold text-theme-secondary">
+                {translations.filters.typeLabel}
+              </span>
+              <div className="flex flex-wrap gap-2">
                 <button
-                  className={`${styles.filterButton} ${selectedType === 'all' ? styles.active : ''}`}
+                  className={cn(
+                    FILTER_BUTTON_CLASS_NAME,
+                    selectedType === 'all' ? ACTIVE_BUTTON_CLASS_NAME : INACTIVE_BUTTON_CLASS_NAME
+                  )}
                   onClick={() => setSelectedType('all')}
                 >
                   {translations.filters.all}
                 </button>
                 <button
-                  className={`${styles.filterButton} ${selectedType === 'quotes' ? styles.active : ''}`}
+                  className={cn(
+                    FILTER_BUTTON_CLASS_NAME,
+                    selectedType === 'quotes'
+                      ? ACTIVE_BUTTON_CLASS_NAME
+                      : INACTIVE_BUTTON_CLASS_NAME
+                  )}
                   onClick={() => setSelectedType('quotes')}
                 >
                   {translations.filters.quotes}
                 </button>
                 <button
-                  className={`${styles.filterButton} ${selectedType === 'affirmations' ? styles.active : ''}`}
+                  className={cn(
+                    FILTER_BUTTON_CLASS_NAME,
+                    selectedType === 'affirmations'
+                      ? ACTIVE_BUTTON_CLASS_NAME
+                      : INACTIVE_BUTTON_CLASS_NAME
+                  )}
                   onClick={() => setSelectedType('affirmations')}
                 >
                   {translations.filters.affirmations}
@@ -383,22 +443,23 @@ const Bookmarks = (): JSX.Element => {
         )}
       </AnimatePresence>
 
-      {/* Content */}
-      <div className={styles.content}>
+      <div className="min-h-[400px]">
         {isLoadingBookmarks ? (
-          <div className={styles.emptyState}>
-            <BookmarkIcon className={styles.emptyIcon} />
-            <h3 className={styles.emptyTitle}>{translations.loading}</h3>
+          <div className="px-5 py-[60px] text-center text-theme-secondary md:px-5 md:py-[80px]">
+            <BookmarkIcon className="mx-auto mb-6 h-16 w-16 text-[var(--theme-text-tertiary)]" />
+            <h3 className="mb-3 font-plus-jakarta text-xl font-semibold text-theme-primary md:text-2xl">
+              {translations.loading}
+            </h3>
           </div>
         ) : filteredBookmarks.length === 0 ? (
-          <div className={styles.emptyState}>
-            <BookmarkIcon className={styles.emptyIcon} />
-            <h3 className={styles.emptyTitle}>
+          <div className="px-5 py-[60px] text-center text-theme-secondary md:px-5 md:py-[80px]">
+            <BookmarkIcon className="mx-auto mb-6 h-16 w-16 text-[var(--theme-text-tertiary)]" />
+            <h3 className="mb-3 font-plus-jakarta text-xl font-semibold text-theme-primary md:text-2xl">
               {totalBookmarks === 0
                 ? translations.emptyState.noBookmarks.title
                 : translations.emptyState.noResults.title}
             </h3>
-            <p className={styles.emptyDescription}>
+            <p className="mx-auto max-w-[480px] text-sm leading-6 text-theme-secondary md:text-base">
               {totalBookmarks === 0
                 ? translations.emptyState.noBookmarks.description
                 : translations.emptyState.noResults.description}
@@ -406,7 +467,10 @@ const Bookmarks = (): JSX.Element => {
           </div>
         ) : (
           <motion.div
-            className={`${styles.bookmarksGrid} ${viewMode === 'list' ? styles.listView : ''}`}
+            className={cn(
+              'mb-10 grid grid-cols-1 gap-4 md:gap-5 md:[grid-template-columns:repeat(auto-fill,minmax(320px,1fr))] xl:gap-6 xl:[grid-template-columns:repeat(auto-fill,minmax(380px,1fr))]',
+              viewMode === 'list' && '[grid-template-columns:1fr]'
+            )}
             layout
           >
             <AnimatePresence>

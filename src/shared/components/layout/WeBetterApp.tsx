@@ -15,7 +15,6 @@ const WeBetterApp = (): JSX.Element => {
   const { currentTheme, themeMode } = useTheme();
   const isThemeLoading = useThemeLoading();
 
-  // Function to get greeting based on time of day
   const getGreeting = (): string => {
     const hour = new Date().getHours();
 
@@ -28,7 +27,6 @@ const WeBetterApp = (): JSX.Element => {
     }
   };
 
-  // Get user's display name with fallback
   const getUserDisplayName = (): string | null => {
     if (user?.display_name?.trim()) {
       return user.display_name.trim();
@@ -38,7 +36,6 @@ const WeBetterApp = (): JSX.Element => {
     }
     if (user?.email) {
       const emailName = user.email.split('@')[0];
-      // Only use email name if it's not just numbers/generic
       if (emailName && emailName.length > 2 && !/^\d+$/.test(emailName)) {
         return emailName;
       }
@@ -46,19 +43,17 @@ const WeBetterApp = (): JSX.Element => {
     return null;
   };
 
-  // Get the greeting message parts
   const getGreetingParts = (): { greeting: string; userPart: string } => {
     const greeting = getGreeting();
     const displayName = getUserDisplayName();
 
     if (displayName) {
       return { greeting, userPart: displayName };
-    } else {
-      return { greeting, userPart: t('greetings.howAreYou') as string };
     }
+
+    return { greeting, userPart: t('greetings.howAreYou') as string };
   };
 
-  // Generate theme-aware toast styles
   const getToastStyles = (): React.CSSProperties => {
     const isDark =
       currentTheme.mode === 'dark' ||
@@ -76,58 +71,59 @@ const WeBetterApp = (): JSX.Element => {
     };
   };
 
-  // Check if we're in development mode
-  // const isDev = process.env.NODE_ENV === 'development';
-
   if (isThemeLoading) {
-    // Show a minimal loading state while theme initializes
     return (
-      <div className="flex items-center justify-center min-h-screen bg-black">
+      <div className="flex min-h-screen items-center justify-center bg-black">
         <div className="text-white">Loading...</div>
       </div>
     );
   }
 
+  const greetingParts = getGreetingParts();
+
   return (
     <HeaderProvider>
-      {/* Only include debug tools in development */}
-      {/* {isDev && <RepaintDetector />} */}
-
-      <div className={styles.appContainer} data-theme={themeMode}>
-        {/* Sidebar */}
+      <div
+        className="flex min-h-screen text-[var(--theme-text-primary)] transition-[background-color,color,box-shadow] duration-300 motion-reduce:transition-none [background:var(--theme-gradient-background)] data-[theme=light]:[background:linear-gradient(to_bottom_right,#f8f9fa,#f1f3f4,#e9ecef)]"
+        data-theme={themeMode}
+      >
         <Sidebar />
 
-        {/* Main Content */}
-        <main className={styles.mainContent}>
-          {/* Header Section */}
-          <header className={styles.header}>
-            <div className={styles.headerContent}>
-              <h1 className={styles.greeting}>
-                {getGreetingParts().greeting},{' '}
-                <span className={styles.userName}>{getGreetingParts().userPart}</span>
+        <main
+          className={`${styles.mainContentOffset} relative ml-0 flex-1 transition-all duration-300 motion-reduce:transition-none md:ml-[240px]`}
+        >
+          <header
+            className={`${styles.headerGlass} relative z-40 border-b border-[var(--theme-border-primary)] shadow-[var(--theme-shadow-medium)] md:sticky md:top-0`}
+            data-theme={themeMode}
+          >
+            <div className="mx-auto flex max-w-[1920px] items-center justify-between px-4 py-4 md:px-8 md:py-6">
+              <h1 className="font-plus-jakarta text-lg text-[var(--theme-text-primary)] transition-colors duration-300 motion-reduce:transition-none md:text-2xl">
+                {greetingParts.greeting},{' '}
+                <span className={`${styles.userName} font-bold`}>{greetingParts.userPart}</span>
               </h1>
 
-              <div className={styles.headerRight}>
+              <div className="flex items-center gap-6">
                 <HeaderActions />
               </div>
             </div>
           </header>
 
-          {/* Content Area */}
-          <div className={styles.contentArea} data-theme={themeMode}>
+          <div
+            className="relative overflow-hidden p-4 pb-20 transition-[background-color,border-color,color,box-shadow] duration-300 motion-reduce:transition-none md:p-8 data-[theme=light]:[background:linear-gradient(135deg,rgba(248,249,250,0.6),rgba(241,243,244,0.8))]"
+            data-theme={themeMode}
+          >
             <div className={styles.contentBackground} aria-hidden="true" />
-            <div className={styles.contentInner}>
+            <div className="relative z-10">
               <Outlet />
             </div>
           </div>
         </main>
 
-        {/* Theme-aware Toast Container */}
         <Toaster
           position="top-right"
           reverseOrder={false}
           containerStyle={{
-            top: 100, // Position below the header
+            top: 100,
             right: 20,
           }}
           toastOptions={{
@@ -136,7 +132,6 @@ const WeBetterApp = (): JSX.Element => {
           }}
         />
 
-        {/* Mobile Navigation */}
         <MobileNav />
       </div>
     </HeaderProvider>

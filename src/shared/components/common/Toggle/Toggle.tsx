@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from '@/utils/classnames';
 import { motion } from 'framer-motion';
 import styles from './Toggle.module.css';
 
@@ -49,7 +50,7 @@ const Toggle = ({
   const positions = getPositionValue(size);
 
   return (
-    <div className={`${styles.toggleContainer} ${className || ''}`}>
+    <div className={cn(styles.toggleContainer, className)}>
       {label && (
         <label className={styles.label} htmlFor={`toggle-${label}`}>
           {label}
@@ -57,9 +58,12 @@ const Toggle = ({
       )}
       <button
         id={label ? `toggle-${label}` : undefined}
-        className={`${styles.toggle} ${styles[size]} ${enabled ? styles.enabled : styles.disabled} ${
-          disabled ? styles.disabledState : ''
-        }`}
+        className={cn(
+          styles.toggle,
+          styles[size],
+          enabled ? styles.enabled : styles.disabled,
+          disabled && styles.disabledState
+        )}
         onClick={handleToggle}
         onKeyDown={handleKeyDown}
         disabled={disabled}
@@ -87,7 +91,7 @@ const Toggle = ({
           {/* ON/OFF Text */}
           <div className={styles.toggleText}>
             <motion.span
-              className={`${styles.textOn} ${enabled ? styles.textVisible : styles.textHidden}`}
+              className={cn(styles.textOn, enabled ? styles.textVisible : styles.textHidden)}
               animate={{
                 opacity: enabled ? 1 : 0,
                 x: enabled ? 0 : -10,
@@ -97,7 +101,7 @@ const Toggle = ({
               ON
             </motion.span>
             <motion.span
-              className={`${styles.textOff} ${!enabled ? styles.textVisible : styles.textHidden}`}
+              className={cn(styles.textOff, !enabled ? styles.textVisible : styles.textHidden)}
               animate={{
                 opacity: !enabled ? 1 : 0,
                 x: !enabled ? 0 : 10,

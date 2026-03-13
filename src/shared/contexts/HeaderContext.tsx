@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode } from 'react';
+import { createContext, useMemo, useState, ReactNode } from 'react';
 
 /**
  * Defines the available types of header popups in the application.
@@ -48,10 +48,7 @@ export const HeaderContext = createContext<HeaderContextType | undefined>(undefi
  */
 export const HeaderProvider = ({ children }: { children: ReactNode }): React.ReactNode => {
   const [activePopup, setActivePopup] = useState<PopupType>(null);
+  const contextValue = useMemo(() => ({ activePopup, setActivePopup }), [activePopup]);
 
-  return (
-    <HeaderContext.Provider value={{ activePopup, setActivePopup }}>
-      {children}
-    </HeaderContext.Provider>
-  );
+  return <HeaderContext.Provider value={contextValue}>{children}</HeaderContext.Provider>;
 };

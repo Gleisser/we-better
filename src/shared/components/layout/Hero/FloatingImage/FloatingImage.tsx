@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { forwardRef, useState } from 'react';
+import { cn } from '@/utils/classnames';
 import { FloatingImageProps } from './types';
 
 const FloatingImage = forwardRef<HTMLImageElement, FloatingImageProps>(
@@ -37,7 +38,7 @@ const FloatingImage = forwardRef<HTMLImageElement, FloatingImageProps>(
 
     return (
       <motion.div
-        className={`absolute ${className} z-10`}
+        className={cn('absolute z-10', className)}
         style={{ x: translateX, y: translateY, rotate }}
         initial={{ opacity: 0, x: x[0], y: y[0], scale: 0.8 }}
         animate={{ opacity: 1, x: x[0], y: y[0], scale: 1 }}
@@ -63,9 +64,10 @@ const FloatingImage = forwardRef<HTMLImageElement, FloatingImageProps>(
               ref={ref}
               src={src}
               alt={alt}
-              className={`relative w-full h-full object-cover rounded-3xl shadow-2xl ${
+              className={cn(
+                'relative h-full w-full rounded-3xl object-cover shadow-2xl transition-opacity duration-300',
                 isLoaded ? 'opacity-100' : 'opacity-0'
-              } transition-opacity duration-300`}
+              )}
               loading="lazy"
               decoding="async"
               whileHover={{ scale: 1.05 }}
