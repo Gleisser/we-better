@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { cn } from '@/utils/classnames';
 import styles from './SafeHeartIcon.module.css';
 
 export interface SafeHeartIconProps {
@@ -31,9 +32,7 @@ export const SafeHeartIcon = ({
     <svg
       key={`${variant}-${filled ? 'filled' : 'idle'}-${normalizedReplayKey}`}
       viewBox="0 0 48 48"
-      className={[styles.heartIcon, shouldReplay ? styles.replay : '', className]
-        .filter(Boolean)
-        .join(' ')}
+      className={cn(styles.heartIcon, shouldReplay && styles.replay, className)}
       data-filled={filled ? 'true' : 'false'}
       data-variant={variant}
       fill="none"
@@ -103,9 +102,9 @@ export const SafeHeartIcon = ({
       />
 
       <g>
-        <circle className={`${styles.spark} ${styles.sparkTop}`} cx="24" cy="8.5" r="1.5" />
-        <circle className={`${styles.spark} ${styles.sparkLeft}`} cx="11.5" cy="18" r="1.25" />
-        <circle className={`${styles.spark} ${styles.sparkRight}`} cx="36.5" cy="18" r="1.25" />
+        <circle className={cn(styles.spark, styles.sparkTop)} cx="24" cy="8.5" r="1.5" />
+        <circle className={cn(styles.spark, styles.sparkLeft)} cx="11.5" cy="18" r="1.25" />
+        <circle className={cn(styles.spark, styles.sparkRight)} cx="36.5" cy="18" r="1.25" />
       </g>
 
       <g className={styles.heartFillGroup}>

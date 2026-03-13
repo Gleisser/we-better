@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { cn } from '@/utils/classnames';
 import styles from './MissionCategories.module.css';
 import type {
   MissionCategoryId,
@@ -35,18 +36,21 @@ const MissionCategories = ({
         {categories.map((category: MissionCategory) => (
           <motion.button
             key={category.id}
-            className={`${styles.categoryItem} ${
-              selectedCategoryId === category.id ? styles.activeItem : ''
-            }`}
+            className={cn(
+              styles.categoryItem,
+              selectedCategoryId === category.id && styles.activeItem
+            )}
             onClick={() => onCategorySelect(category.id)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             aria-pressed={selectedCategoryId === category.id}
           >
             <div
-              className={`${styles.categoryRing} ${
-                category.hasUpdate ? styles.hasUpdate : ''
-              } ${selectedCategoryId === category.id ? styles.selected : ''}`}
+              className={cn(
+                styles.categoryRing,
+                category.hasUpdate && styles.hasUpdate,
+                selectedCategoryId === category.id && styles.selected
+              )}
               style={{
                 background: `linear-gradient(45deg, ${category.color.from}, ${category.color.to})`,
               }}
