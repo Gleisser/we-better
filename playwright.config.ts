@@ -1,10 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { waitForServer } from './tests/e2e/utils/server-utils';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const isCI = !!process.env.CI;
+const serverHost = '127.0.0.1';
+const defaultServerPort = isCI ? 4173 : 5173;
+const serverPort = Number(process.env.PLAYWRIGHT_SERVER_PORT ?? defaultServerPort);
+const baseURL = `http://${serverHost}:${serverPort}`;
+const webServerCommand = isCI
+  ? `npm run build && npm run preview -- --host ${serverHost} --port ${serverPort}`
+  : `npm run dev -- --host ${serverHost} --port ${serverPort}`;
 
 /**
  * Read environment variables from file.
@@ -21,17 +24,18 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
+  forbidOnly: isCI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: isCI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: isCI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:5173',
+    baseURL,
+    navigationTimeout: isCI ? 15000 : 10000,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -63,13 +67,11 @@ export default defineConfig({
     },
   ],
 
-  globalSetup: './global-setup.ts',
-
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
-    reuseExistingServer: true,
+    command: webServerCommand,
+    url: baseURL,
+    reuseExistingServer: !isCI,
     timeout: 120000,
     stdout: 'pipe',
     stderr: 'pipe',
@@ -78,14 +80,9 @@ export default defineConfig({
       VITE_DISABLE_HMR: 'true',
       NODE_ENV: 'test',
     },
-    async setup() {
-      console.info('Waiting for Vite server to be ready...');
-      await waitForServer('http://localhost:5173');
-      console.info('Vite server is ready');
-    },
   },
 
-  timeout: 30000,
+  timeout: isCI ? 45000 : 30000,
   expect: {
     timeout: 10000,
   },

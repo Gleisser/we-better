@@ -1,37 +1,51 @@
 import { Locator, Page } from '@playwright/test';
 import { TEST_DATA } from '../fixtures/test-data';
 
+const NAVIGATION_TIMEOUT_MS = 15000;
+const ROOT_VISIBLE_TIMEOUT_MS = 10000;
+const RETRY_DELAY_MS = 500;
+
 export class HomePage {
   constructor(private page: Page) {}
 
-  async goto(maxRetries = 3): Promise<void> {
+  async goto(maxRetries = 2): Promise<void> {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
-      if (attempt > 0) {
-        // Add a delay between retries
-        await this.page.waitForTimeout(2000); // 2 second delay
-      }
-      await this.page.goto('/');
-
       try {
-        // Check for upgrade required message
-        const upgradeMessage = await this.page.getByText('Upgrade Required').isVisible();
+        await this.page.goto('/', {
+          waitUntil: 'domcontentloaded',
+          timeout: NAVIGATION_TIMEOUT_MS,
+        });
+
+        const upgradeMessage = await this.page
+          .getByText('Upgrade Required')
+          .isVisible()
+          .catch(() => false);
+
         if (upgradeMessage) {
-          console.info(`Attempt ${attempt + 1}: Detected "Upgrade Required", refreshing...`);
-          // Clear browser cache and reload
-          await this.page.context().clearCookies();
-          await this.page.reload();
-          continue;
+          throw new Error('Detected "Upgrade Required" page');
         }
 
-        // Wait for root element to be visible
-        await this.page.locator('#root').waitFor({ state: 'visible', timeout: 5000 });
-        return; // Success, exit the retry loop
-      } catch (error) {
-        if (attempt === maxRetries - 1) {
-          throw new Error(`Failed to load page after ${maxRetries} attempts: ${error.message}`);
+        await this.page.locator('#root').waitFor({
+          state: 'visible',
+          timeout: ROOT_VISIBLE_TIMEOUT_MS,
+        });
+        return;
+      } catch (error: unknown) {
+        if (this.page.isClosed()) {
+          throw error;
         }
+
+        if (attempt === maxRetries - 1) {
+          const message = error instanceof Error ? error.message : String(error);
+          throw new Error(`Failed to load page after ${maxRetries} attempts: ${message}`);
+        }
+
         console.info(`Attempt ${attempt + 1} failed, retrying...`);
-        await this.page.waitForTimeout(1000); // Wait a bit before retrying
+        await this.page.context().clearCookies();
+
+        if (!this.page.isClosed()) {
+          await this.page.waitForTimeout(RETRY_DELAY_MS);
+        }
       }
     }
   }
@@ -50,6 +64,6 @@ export class HomePage {
   }
 
   async getLogo(): Promise<Locator> {
-    return this.page.getByRole('link', { name: TEST_DATA.header.logo.text });
+    return this.page.getByRole('link', { name: TEST_DATA.header.logo.ariaLabel });
   }
 }
