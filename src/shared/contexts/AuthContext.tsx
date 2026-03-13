@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, useCallback, useRef } from 'react';
+import { createContext, useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { authService } from '@/core/services/authService';
 import { supabase } from '@/core/services/supabaseClient';
 import { sessionsService } from '@/core/services/sessionsService';
@@ -172,7 +172,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
    *
    * @throws {Error} If the sign-out operation fails
    */
-  const logout = async (): Promise<void> => {
+  const logout = useCallback(async (): Promise<void> => {
     try {
       setIsLoading(true);
       await authService.signOut();
@@ -183,7 +183,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      user,
+      isLoading,
+      isAuthenticated: !!user,
+      checkAuth,
+      logout,
+    }),
+    [user, isLoading, checkAuth, logout]
+  );
 
   /**
    * Effect hook to initialize auth state and set up real-time auth listeners.
@@ -255,17 +266,5 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
     };
   }, [sessionAccessToken, trackCurrentSessionSilently, user]);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        isAuthenticated: !!user,
-        checkAuth,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };

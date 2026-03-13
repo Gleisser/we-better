@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import styles from './Showcase.module.css';
 import { SHOWCASE_FALLBACK } from '@/utils/constants/fallback';
@@ -13,15 +13,72 @@ import ShowcaseSkeleton from './ShowcaseSkeleton';
 import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 
+interface ShowcaseCardProps {
+  item: {
+    id: number;
+    title: string;
+    description: string;
+    images: Array<{
+      src: string;
+      alt: string;
+    }>;
+  };
+  eager: boolean;
+}
+
+const ShowcaseCard = ({ item, eager }: ShowcaseCardProps): JSX.Element => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [imageIndex, setImageIndex] = useState(0);
+  const imageCount = item.images.length;
+
+  useEffect(() => {
+    if (!isHovered || imageCount <= 1) {
+      setImageIndex(0);
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setImageIndex(prev => (prev + 1) % imageCount);
+    }, 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [imageCount, isHovered]);
+
+  const activeImage = item.images[imageIndex] ?? item.images[0];
+
+  return (
+    <div
+      className={styles.item}
+      role="article"
+      aria-label={item.title}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className={styles.imageContainer}>
+        <img
+          src={activeImage?.src ?? ''}
+          alt={activeImage?.alt ?? item.title}
+          className={styles.image}
+          loading={eager ? 'eager' : 'lazy'}
+          decoding="async"
+          width="600"
+          height="450"
+          sizes="(max-width: 768px) 100vw, 25vw"
+        />
+      </div>
+      <h3 className={styles.itemTitle}>{item.title}</h3>
+      <p className={styles.itemDescription}>{item.description}</p>
+    </div>
+  );
+};
+
 const Showcase = (): JSX.Element => {
   // State management
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
-  const [hoveredItem, setHoveredItem] = useState<number | null>(null);
-  const [imageIndex, setImageIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-
-  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
 
   // Initialize hooks
   const { data: showcase, isLoading: isDataLoading } = useShowcase();
@@ -30,7 +87,8 @@ const Showcase = (): JSX.Element => {
   });
 
   // Memoize belts and derived values
-  const belts = showcase?.data.belts || SHOWCASE_FALLBACK.belts;
+  const showcaseData = showcase?.data ?? SHOWCASE_FALLBACK;
+  const belts = showcaseData.belts;
   const totalPages = useMemo(
     () => (isMobile ? belts.length : Math.ceil(belts.length / 4)),
     [isMobile, belts.length]
@@ -51,59 +109,6 @@ const Showcase = (): JSX.Element => {
     enabled: !isDataLoading && currentPageUrls.length > 0,
     onError: handleError,
   });
-
-  // Initialize image refs
-  useEffect(() => {
-    imageRefs.current = new Array(itemsPerPage).fill(null);
-  }, [itemsPerPage]);
-
-  // Memoize image reset function
-  const resetImages = useCallback(() => {
-    if (!currentItems.length) return;
-
-    imageRefs.current.forEach((ref, index) => {
-      if (ref && currentItems[index]) {
-        const item = currentItems[index];
-        const initialSrc = showcase ? item.images[0].src : item.images[0].src;
-        ref.src = initialSrc;
-      }
-    });
-  }, [currentItems, showcase]);
-
-  // Handle image rotation
-  useEffect(() => {
-    let interval: NodeJS.Timeout | undefined;
-
-    if (hoveredItem && currentItems.length) {
-      const hoveredBelt = currentItems.find(item => item.id === hoveredItem);
-      // Only set up interval if there are multiple images
-      if (hoveredBelt && hoveredBelt.images.length > 1) {
-        interval = setInterval(() => {
-          setImageIndex(prev => {
-            const currentItemRef = imageRefs.current.find(
-              (_, i) => currentItems[i]?.id === hoveredItem
-            );
-
-            if (currentItemRef && hoveredBelt) {
-              // Use modulo with actual number of images
-              const nextIndex = (prev + 1) % hoveredBelt.images.length;
-              currentItemRef.src = hoveredBelt.images[nextIndex].src;
-              return nextIndex;
-            }
-
-            return prev;
-          });
-        }, 1000);
-      }
-    } else {
-      setImageIndex(0);
-      resetImages();
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [hoveredItem, currentItems, resetImages]);
 
   // Handle mobile detection
   const checkIfMobile = useCallback(() => {
@@ -196,8 +201,8 @@ const Showcase = (): JSX.Element => {
       <div className={styles.showcaseContent}>
         <div className={styles.header}>
           <h2 className={styles.title} id="showcase-title">
-            <span>{showcase?.data.title}</span>
-            <span className={styles.gradientText}>{showcase?.data.subtitle}</span>
+            <span>{showcaseData.title}</span>
+            <span className={styles.gradientText}>{showcaseData.subtitle}</span>
           </h2>
           {!isMobile && (
             <div className={styles.navigation} role="navigation" aria-label="Showcase navigation">
@@ -237,33 +242,7 @@ const Showcase = (): JSX.Element => {
             aria-label="Showcase items"
           >
             {currentItems.map((item, index: number) => (
-              <div
-                key={item.id}
-                className={styles.item}
-                role="article"
-                aria-label={item.title}
-                onMouseEnter={() => setHoveredItem(item.id)}
-                onMouseLeave={() => {
-                  setHoveredItem(null);
-                  setImageIndex(0);
-                }}
-              >
-                <div className={styles.imageContainer}>
-                  <img
-                    ref={el => (imageRefs.current[index] = el)}
-                    src={showcase ? item.images[0].src : item.images[0].src}
-                    alt={item.images[hoveredItem === item.id ? imageIndex : 0].alt}
-                    className={styles.image}
-                    loading={index === 0 ? 'eager' : 'lazy'}
-                    decoding="async"
-                    width="600"
-                    height="450"
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                  />
-                </div>
-                <h3 className={styles.itemTitle}>{item.title}</h3>
-                <p className={styles.itemDescription}>{item.description}</p>
-              </div>
+              <ShowcaseCard key={item.id} item={item} eager={index === 0} />
             ))}
           </motion.div>
         </AnimatePresence>

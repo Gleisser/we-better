@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { LifeWheel } from './index';
 import { LifeCategory } from './types';
 import { getLocalizedCategories } from './constants/categories';
@@ -50,18 +50,25 @@ const LifeWheelPage = (): JSX.Element => {
     setCategories(localizedDefaults);
   }, [mergedCategories, localizedDefaults]);
 
-  const handleCategoryUpdate = (categoryId: string, newValue: number): void => {
+  const handleCategoryUpdate = useCallback((categoryId: string, newValue: number): void => {
     setCategories(prev =>
       prev.map(cat => (cat.id === categoryId ? { ...cat, value: newValue } : cat))
     );
-  };
+  }, []);
 
-  const fetchError =
-    isError && error
-      ? error instanceof Error
-        ? error.message
-        : 'Failed to load your life wheel data'
-      : null;
+  const fetchError = useMemo(
+    () =>
+      isError && error
+        ? error instanceof Error
+          ? error.message
+          : 'Failed to load your life wheel data'
+        : null,
+    [error, isError]
+  );
+
+  const lifeWheelData = useMemo(() => ({ categories }), [categories]);
+  const lifeWheelError = useMemo(() => (fetchError ? new Error(fetchError) : null), [fetchError]);
+  const handleComplete = useCallback((): void => {}, []);
 
   return (
     <div className="w-full h-full p-6 bg-gradient-to-br from-gray-900 to-gray-800">
@@ -72,11 +79,11 @@ const LifeWheelPage = (): JSX.Element => {
 
       <div className={`${styles.lifeWheelContainer} mx-auto`}>
         <LifeWheel
-          data={{ categories }}
+          data={lifeWheelData}
           isLoading={isLoading}
-          error={fetchError ? new Error(fetchError) : null}
+          error={lifeWheelError}
           onCategoryUpdate={handleCategoryUpdate}
-          onComplete={() => {}}
+          onComplete={handleComplete}
         />
 
         {fetchError ? (
