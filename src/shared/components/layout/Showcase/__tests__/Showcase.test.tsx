@@ -1,55 +1,150 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Showcase from '../Showcase';
 import { useShowcase } from '@/shared/hooks/useShowcase';
+import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useLoadingState } from '@/shared/hooks/utils/useLoadingState';
-import { useImagePreloader } from '@/shared/hooks/utils/useImagePreloader';
 import styles from '../Showcase.module.css';
+import type { ThumbnailImage } from '@/utils/types/common/image';
+import type { ShowcaseResponse } from '@/utils/types/showcase';
 
-// Mock the hooks
-vi.mock('@/hooks/useShowcase', () => ({
-  useShowcase: vi.fn()
+vi.mock('@/shared/hooks/useShowcase', () => ({
+  useShowcase: vi.fn(),
 }));
 
-vi.mock('@/hooks/utils/useErrorHandler', () => ({
-  useErrorHandler: vi.fn()
+vi.mock('@/shared/hooks/utils/useAssetPreload', () => ({
+  useAssetPreload: vi.fn(),
 }));
 
-vi.mock('@/hooks/utils/useLoadingState', () => ({
-  useLoadingState: vi.fn()
+vi.mock('@/shared/hooks/utils/useErrorHandler', () => ({
+  useErrorHandler: vi.fn(),
 }));
 
-vi.mock('@/hooks/utils/useImagePreloader', () => ({
-  useImagePreloader: vi.fn()
-}));
-
-// Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>
+    div: ({
+      children,
+      animate,
+      custom,
+      drag,
+      dragConstraints,
+      dragElastic,
+      exit,
+      initial,
+      onDragEnd,
+      transition,
+      variants,
+      whileDrag,
+      ...props
+    }: any) => <div {...props}>{children}</div>,
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>
+  AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
+
+const mockedUseShowcase = vi.mocked(useShowcase);
+const mockedUseAssetPreload = vi.mocked(useAssetPreload);
+const mockedUseErrorHandler = vi.mocked(useErrorHandler);
+
+const createImage = (id: number, src: string, alt: string): ThumbnailImage => ({
+  id,
+  documentId: `image-${id}`,
+  name: alt,
+  alternativeText: alt,
+  caption: alt,
+  width: 600,
+  height: 450,
+  url: src,
+  src,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  publishedAt: new Date().toISOString(),
+  alt,
+  img: {
+    formats: {
+      thumbnail: {
+        url: src,
+        width: 600,
+        height: 450,
+      },
+    },
+  },
+});
+
+const createShowcaseResponse = (): ShowcaseResponse => ({
+  data: {
+    id: 1,
+    documentId: 'showcase-1',
+    title: 'Unlock Your Growth Journey with',
+    subtitle: 'Tailored Resources',
+    belts: [
+      {
+        id: 1,
+        documentId: 'belt-1',
+        title: 'Belt One',
+        description: 'Description for belt one',
+        images: [
+          createImage(101, '/belt-one-1.jpg', 'Belt One Image 1'),
+          createImage(102, '/belt-one-2.jpg', 'Belt One Image 2'),
+        ],
+      },
+      {
+        id: 2,
+        documentId: 'belt-2',
+        title: 'Belt Two',
+        description: 'Description for belt two',
+        images: [
+          createImage(201, '/belt-two-1.jpg', 'Belt Two Image 1'),
+          createImage(202, '/belt-two-2.jpg', 'Belt Two Image 2'),
+        ],
+      },
+    ],
+  },
+  meta: {
+    pagination: {
+      page: 1,
+      pageCount: 1,
+      pageSize: 1,
+      total: 1,
+    },
+  },
+});
 
 describe('Showcase', () => {
   beforeEach(() => {
-    // Reset all mocks before each test
     vi.clearAllMocks();
-
-    // Set up fake timers
     vi.useFakeTimers();
 
-    // Default mock implementations
-    (useImagePreloader as any).mockReturnValue({
-      preloadImages: vi.fn().mockResolvedValue(undefined),
-      isPreloading: false
+    mockedUseShowcase.mockReturnValue({
+      data: createShowcaseResponse(),
+      isLoading: false,
+    } as ReturnType<typeof useShowcase>);
+
+    mockedUseAssetPreload.mockReturnValue({
+      isLoading: false,
+      hasTimedOut: false,
     });
 
-    (useLoadingState as any).mockReturnValue({
-      isLoading: false,
-      startLoading: vi.fn(),
-      stopLoading: vi.fn()
+    mockedUseErrorHandler.mockReturnValue({
+      isError: false,
+      error: null,
+      handleError: vi.fn(),
+      clearError: vi.fn(),
+    });
+
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      writable: true,
+      value: 1024,
+    });
+
+    Object.defineProperty(window, 'requestAnimationFrame', {
+      configurable: true,
+      writable: true,
+      value: vi.fn((callback: FrameRequestCallback) => {
+        callback(0);
+        return 1;
+      }),
     });
   });
 
@@ -58,192 +153,79 @@ describe('Showcase', () => {
   });
 
   it('shows loading skeleton when data is being fetched', () => {
-    // Mock loading state
-    (useShowcase as any).mockReturnValue({
+    mockedUseShowcase.mockReturnValue({
       data: null,
-      isLoading: true
-    });
-
-    // Mock other required hooks
-    (useErrorHandler as any).mockReturnValue({
-      isError: false,
-      error: null,
-      handleError: vi.fn()
-    });
-
-    (useLoadingState as any).mockReturnValue({
       isLoading: true,
-      startLoading: vi.fn(),
-      stopLoading: vi.fn()
-    });
+    } as ReturnType<typeof useShowcase>);
 
     render(<Showcase />);
 
-    // Check for the showcase container
-    const container = screen.getByTestId('showcase-skeleton');
-    expect(container).toBeInTheDocument();
-
-    // Check for skeleton title placeholders
-    const titleSkeletons = screen.getAllByTestId('title-skeleton');
-    expect(titleSkeletons.length).toBeGreaterThan(0);
-
-    // Check for belt items skeleton (4 items)
-    const beltItems = screen.getAllByTestId('belt-item-skeleton');
-    expect(beltItems.length).toBe(4);
+    expect(screen.getByTestId('showcase-skeleton')).toBeInTheDocument();
+    expect(screen.getAllByTestId('belt-item-skeleton')).toHaveLength(4);
   });
 
-  it('renders error state when there is an error fetching data', () => {
-    // Mock error state
-    const mockError = new Error('Failed to load showcase content');
-    
-    (useShowcase as any).mockReturnValue({
+  it('renders the error state when the error handler reports a failure', () => {
+    mockedUseShowcase.mockReturnValue({
       data: null,
-      isLoading: false
-    });
-
-    (useErrorHandler as any).mockReturnValue({
+      isLoading: false,
+    } as ReturnType<typeof useShowcase>);
+    mockedUseErrorHandler.mockReturnValue({
       isError: true,
-      error: mockError,
-      handleError: vi.fn()
-    });
-
-    (useLoadingState as any).mockReturnValue({
-      isLoading: false,
-      startLoading: vi.fn(),
-      stopLoading: vi.fn()
+      error: {
+        hasError: true,
+        message: 'Failed to load showcase content',
+        code: 'showcase_failed',
+        timestamp: Date.now(),
+      },
+      handleError: vi.fn(),
+      clearError: vi.fn(),
     });
 
     render(<Showcase />);
 
-    // Check if error message is displayed
     expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText(/Failed to load showcase content/i)).toBeInTheDocument();
-    
-    // Verify retry button is present and accessible
-    const retryButton = screen.getByRole('button', { name: /try again/i });
-    expect(retryButton).toBeInTheDocument();
-    expect(retryButton).toHaveClass(styles.retryButton);
+    expect(screen.getByText('Failed to load showcase content')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /try again/i })).toHaveClass(styles.retryButton);
   });
 
-  it('renders main content correctly when data is loaded', () => {
-    // Mock successful data fetch
-    const mockData = {
-      data: {
-        belts: [
-          {
-            id: 1,
-            title: "Test Belt",
-            description: "Test Description",
-            images: [
-              {
-                id: 1,
-                alt: "Test Image",
-                img: {
-                  formats: {
-                    thumbnail: {
-                      url: "/test-image.jpg"
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    };
-
-    (useShowcase as any).mockReturnValue({
-      data: mockData,
-      isLoading: false
-    });
-
-    (useErrorHandler as any).mockReturnValue({
-      isError: false,
-      error: null,
-      handleError: vi.fn()
-    });
-
-    (useLoadingState as any).mockReturnValue({
-      isLoading: false,
-      startLoading: vi.fn(),
-      stopLoading: vi.fn()
-    });
-
+  it('renders showcase content and preloads the current page assets', () => {
     render(<Showcase />);
 
-    // Check main content elements
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(/Unveil New Creative Horizons/i);
-    
-    // Check navigation buttons
-    const prevButton = screen.getByRole('button', { name: /previous showcase/i });
-    const nextButton = screen.getByRole('button', { name: /next showcase/i });
-    expect(prevButton).toBeInTheDocument();
-    expect(nextButton).toBeInTheDocument();
-
-    // Check belt item content
-    expect(screen.getByText('Test Belt')).toBeInTheDocument();
-    expect(screen.getByText('Test Description')).toBeInTheDocument();
-    
-    // Check image
-    const image = screen.getByAltText('Test Image');
-    expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute('src', expect.stringContaining('/test-image.jpg'));
-  });
-
-  it('preloads images when component mounts', async () => {
-    const preloadImagesMock = vi.fn().mockResolvedValue(undefined);
-    const startLoadingMock = vi.fn();
-    
-    // Mock successful data fetch with multiple images
-    const mockData = {
-      data: {
-        belts: [
-          {
-            id: 1,
-            title: "Test Belt",
-            description: "Test Description",
-            images: [
-              {
-                id: 1,
-                alt: "Test Image 1",
-                img: { formats: { thumbnail: { url: "/image1.jpg" } } }
-              },
-              {
-                id: 2,
-                alt: "Test Image 2",
-                img: { formats: { thumbnail: { url: "/image2.jpg" } } }
-              }
-            ]
-          }
-        ]
-      }
-    };
-
-    (useShowcase as any).mockReturnValue({
-      data: mockData,
-      isLoading: false
-    });
-
-    (useImagePreloader as any).mockReturnValue({
-      preloadImages: preloadImagesMock,
-      isPreloading: false
-    });
-
-    (useLoadingState as any).mockReturnValue({
-      isLoading: false,
-      startLoading: startLoadingMock,
-      stopLoading: vi.fn()
-    });
-
-    render(<Showcase />);
-
-    // Verify preloadImages was called with the correct URLs
-    expect(preloadImagesMock).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.stringContaining('/image1.jpg'),
-        expect.stringContaining('/image2.jpg')
-      ])
+    expect(screen.getByText('Unlock Your Growth Journey with')).toBeInTheDocument();
+    expect(screen.getByText('Tailored Resources')).toBeInTheDocument();
+    expect(screen.getByText('Belt One')).toBeInTheDocument();
+    expect(screen.getByText('Belt Two')).toBeInTheDocument();
+    expect(mockedUseAssetPreload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        enabled: true,
+        urls: ['/belt-one-1.jpg', '/belt-one-2.jpg', '/belt-two-1.jpg', '/belt-two-2.jpg'],
+      })
     );
-    expect(startLoadingMock).toHaveBeenCalled();
   });
-}); 
+
+  it('rotates only the hovered card image and resets it on mouse leave', () => {
+    render(<Showcase />);
+
+    const [firstArticle] = screen.getAllByRole('article');
+    const initialImages = screen.getAllByRole('img');
+
+    expect(initialImages[0]).toHaveAttribute('src', '/belt-one-1.jpg');
+    expect(initialImages[1]).toHaveAttribute('src', '/belt-two-1.jpg');
+
+    fireEvent.mouseEnter(firstArticle);
+
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    const rotatedImages = screen.getAllByRole('img');
+    expect(rotatedImages[0]).toHaveAttribute('src', '/belt-one-2.jpg');
+    expect(rotatedImages[1]).toHaveAttribute('src', '/belt-two-1.jpg');
+
+    fireEvent.mouseLeave(firstArticle);
+
+    const resetImages = screen.getAllByRole('img');
+    expect(resetImages[0]).toHaveAttribute('src', '/belt-one-1.jpg');
+    expect(resetImages[1]).toHaveAttribute('src', '/belt-two-1.jpg');
+  });
+});

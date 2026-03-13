@@ -6,10 +6,9 @@ import HeroBackground from './HeroBackground';
 import CtaButton from './Buttons/CtaButton';
 import SecondaryCtaButton from './Buttons/SecondaryCtaButton';
 import { motion } from 'framer-motion';
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useHero } from '@/shared/hooks/useHero';
 import HeroSkeleton from './HeroSkeleton';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 
 export const Hero = (): JSX.Element => {
@@ -19,34 +18,6 @@ export const Hero = (): JSX.Element => {
   });
   const [isMobile, setIsMobile] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
-  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
-
-  useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const img = entry.target as HTMLImageElement;
-            if (img.dataset.src) {
-              img.src = img.dataset.src;
-              img.removeAttribute('data-src');
-              observerRef.current?.unobserve(img);
-            }
-          }
-        });
-      },
-      {
-        rootMargin: '50px 0px',
-        threshold: 0.1,
-      }
-    );
-
-    return () => {
-      observerRef.current?.disconnect();
-    };
-  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -75,18 +46,6 @@ export const Hero = (): JSX.Element => {
 
   const heroData = isError || showFallback || !data?.data ? HERO_FALLBACK : data.data;
 
-  const floatingImageUrls = useMemo(() => {
-    if (data?.data) {
-      return data.data.images.map((img: { src: string }) => img.src);
-    }
-
-    return HERO_FALLBACK.images.map(img => img.src);
-  }, [data?.data]);
-
-  const handleFloatingImagePreloadError = useCallback((err: unknown) => {
-    console.warn('Failed to preload floating images:', err);
-  }, []);
-
   const highPriorityImageProps = useMemo(
     () =>
       ({
@@ -94,11 +53,6 @@ export const Hero = (): JSX.Element => {
       }) as const,
     []
   );
-
-  useAssetPreload({
-    urls: floatingImageUrls,
-    onError: handleFloatingImagePreloadError,
-  });
 
   if (isDataLoading && !showFallback) {
     return <HeroSkeleton />;
@@ -189,14 +143,6 @@ export const Hero = (): JSX.Element => {
                 HERO_FALLBACK.images[index].className,
                 'z-40'
               )}
-              ref={el => {
-                imageRefs.current[index] = el;
-                if (el && !loadedImages.has(index)) {
-                  observerRef.current?.observe(el);
-                  setLoadedImages(prev => new Set(prev).add(index));
-                }
-              }}
-              observerRef={observerRef}
             />
           ))}
         </div>

@@ -2,7 +2,6 @@ import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Hero } from '../Hero';
 import { useHero } from '@/shared/hooks/useHero';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { HERO_FALLBACK } from '@/utils/constants/fallback';
 import type { Hero as HeroType, HeroResponse } from '@/utils/types/hero';
@@ -11,23 +10,12 @@ vi.mock('@/shared/hooks/useHero', () => ({
   useHero: vi.fn(),
 }));
 
-vi.mock('@/shared/hooks/utils/useAssetPreload', () => ({
-  useAssetPreload: vi.fn(),
-}));
-
 vi.mock('@/shared/hooks/utils/useErrorHandler', () => ({
   useErrorHandler: vi.fn(),
 }));
 
 const mockedUseHero = vi.mocked(useHero);
-const mockedUseAssetPreload = vi.mocked(useAssetPreload);
 const mockedUseErrorHandler = vi.mocked(useErrorHandler);
-
-const intersectionObserverMock = vi.fn(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
 
 const createHeroResponse = (hero: Partial<HeroType> = {}): HeroResponse => ({
   data: {
@@ -167,12 +155,6 @@ describe('Hero', () => {
       }),
       isFetching: false,
     } as ReturnType<typeof useHero>);
-
-    mockedUseAssetPreload.mockReturnValue({
-      isLoading: false,
-      hasTimedOut: false,
-    });
-
     mockedUseErrorHandler.mockReturnValue({
       isError: false,
       error: null,
@@ -184,12 +166,6 @@ describe('Hero', () => {
       configurable: true,
       writable: true,
       value: 1024,
-    });
-
-    Object.defineProperty(window, 'IntersectionObserver', {
-      configurable: true,
-      writable: true,
-      value: intersectionObserverMock,
     });
   });
 
@@ -278,7 +254,7 @@ describe('Hero', () => {
     expect(screen.queryByRole('button', { name: apiHero.data.secondary_cta_text })).not.toBeNull();
   });
 
-  it('preloads the floating hero assets with the current URLs', () => {
+  it('renders floating images with lazy loading on desktop', () => {
     const apiHero = createHeroResponse({
       main_image: {
         ...createHeroResponse().data.main_image,
@@ -307,10 +283,13 @@ describe('Hero', () => {
       isFetching: false,
     } as ReturnType<typeof useHero>);
 
-    render(<Hero />);
+    const { container } = render(<Hero />);
+    const lazyImages = Array.from(container.querySelectorAll('img[loading="lazy"]'));
 
-    const preloadUrls = mockedUseAssetPreload.mock.calls.map(([options]) => options.urls);
-
-    expect(preloadUrls).toContainEqual(['/floating-1.webp', '/floating-2.webp']);
+    expect(lazyImages).toHaveLength(2);
+    expect(lazyImages.map(image => image.getAttribute('src'))).toEqual([
+      '/floating-1.webp',
+      '/floating-2.webp',
+    ]);
   });
 });

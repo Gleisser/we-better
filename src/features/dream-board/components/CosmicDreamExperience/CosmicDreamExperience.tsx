@@ -2,9 +2,16 @@ import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import { Dream, Milestone } from '../../types';
 import styles from './CosmicDreamExperience.module.css';
 import { createPortal } from 'react-dom';
-import { useDreamProgress } from '../../hooks/useDreamProgress';
-import { getDreamMilestonesForContent } from '../../api/dreamMilestonesApi';
+import { getDreamMilestonesForContents } from '../../api/dreamMilestonesApi';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { getLatestDreamProgress } from '@/core/services/dreamProgressService';
+import {
+  buildDreamMilestonesMap,
+  buildDreamProgressMap,
+  buildNodeLookups,
+  computeCategoryCenters,
+  normalizeCategory,
+} from './CosmicDreamExperience.utils';
 
 interface CosmicDreamExperienceProps {
   dreams: Dream[];
@@ -54,11 +61,6 @@ interface Supernova {
   id: string;
   createdAt: number;
 }
-
-// Helper function to normalize category names (capitalize first letter)
-const normalizeCategory = (category: string): string => {
-  return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
-};
 
 // Helper function to get category color (case-insensitive)
 const getCategoryColor = (category: string): string => {
@@ -176,10 +178,11 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   const [viewMode, setViewMode] = useState<'cosmic' | 'constellation'>('cosmic');
 
   // Visualization elements
-  const [dreamNodes, setDreamNodes] = useState<DreamNode[]>([]);
-  const [particles, setParticles] = useState<Particle[]>([]);
-  const [badges, setBadges] = useState<Badge[]>([]);
-  const [supernovas, setSupernovas] = useState<Supernova[]>([]);
+  const dreamNodesRef = useRef<DreamNode[]>([]);
+  const particlesRef = useRef<Particle[]>([]);
+  const badgesRef = useRef<Badge[]>([]);
+  const supernovasRef = useRef<Supernova[]>([]);
+  const nodeLookupsRef = useRef(buildNodeLookups<DreamNode>([]));
 
   // Interaction state
   const [hoveredDream, setHoveredDream] = useState<Dream | null>(null);
@@ -196,7 +199,6 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   const [showPortalCard, setShowPortalCard] = useState(false);
 
   // Backend integration for progress and milestones
-  const { getProgressForDream } = useDreamProgress();
   const [dreamProgresses, setDreamProgresses] = useState<Record<string, number>>({});
   const [dreamMilestones, setDreamMilestones] = useState<Record<string, Milestone[]>>({});
 
@@ -230,15 +232,18 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         depth: Math.random(),
       });
     }
-    setParticles(initialParticles);
+    particlesRef.current = initialParticles;
 
     // Group dreams by category
     const dreamsByCategory: Record<string, Dream[]> = {};
     dreams.forEach(dream => {
-      if (!dreamsByCategory[dream.category]) {
-        dreamsByCategory[dream.category] = [];
+      const categoryKey = normalizeCategory(dream.category);
+
+      if (!dreamsByCategory[categoryKey]) {
+        dreamsByCategory[categoryKey] = [];
       }
-      dreamsByCategory[dream.category].push(dream);
+
+      dreamsByCategory[categoryKey].push(dream);
     });
 
     // Create connections between dreams
@@ -246,7 +251,10 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       const connections: string[] = [];
 
       // Connect dreams with same category
-      const sameCategory = dreams.filter(d => d.id !== dream.id && d.category === dream.category);
+      const sameCategory = dreams.filter(
+        d =>
+          d.id !== dream.id && normalizeCategory(d.category) === normalizeCategory(dream.category)
+      );
       sameCategory.slice(0, 3).forEach(d => connections.push(d.id));
 
       // Connect dreams with similar timeframe
@@ -302,7 +310,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
           connections: createConnections(dream),
           brightness,
           pulsePhase: Math.random() * Math.PI * 2,
-          category: dream.category,
+          category: normalizeCategory(dream.category),
         });
       });
 
@@ -329,8 +337,10 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       });
     });
 
-    setBadges(initialBadges);
-    setDreamNodes(nodes);
+    dreamNodesRef.current = nodes;
+    badgesRef.current = initialBadges;
+    supernovasRef.current = [];
+    nodeLookupsRef.current = buildNodeLookups(nodes);
     setIsInitialized(true);
   }, [dimensions, dreams]);
 
@@ -363,49 +373,42 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   // Load backend data for progress and milestones
   useEffect(() => {
     const loadBackendData = async (): Promise<void> => {
-      if (dreams.length === 0) return;
+      if (dreams.length === 0) {
+        setDreamProgresses({});
+        setDreamMilestones({});
+        return;
+      }
 
       try {
-        // Load progress data
-        const progressMap: Record<string, number> = {};
-        for (const dream of dreams) {
-          try {
-            const latestProgress = await getProgressForDream(dream.id);
-            progressMap[dream.id] = latestProgress !== undefined ? latestProgress : dream.progress;
-          } catch (error) {
-            console.error(`Error loading progress for dream ${dream.id}:`, error);
-            progressMap[dream.id] = dream.progress;
-          }
-        }
-        setDreamProgresses(progressMap);
+        const dreamIds = dreams.map(dream => dream.id);
+        const [progressResult, milestoneResult] = await Promise.allSettled([
+          getLatestDreamProgress(),
+          getDreamMilestonesForContents(dreamIds),
+        ]);
 
-        // Load milestones data
-        const milestonesMap: Record<string, Milestone[]> = {};
-        for (const dream of dreams) {
-          try {
-            const milestones = await getDreamMilestonesForContent(dream.id);
-            // Convert backend milestones to frontend format
-            milestonesMap[dream.id] = milestones.map(m => ({
-              id: m.id,
-              title: m.title,
-              description: m.description || '',
-              completed: m.completed,
-              date: m.due_date || m.created_at,
-            }));
-          } catch (error) {
-            console.error(`Error loading milestones for dream ${dream.id}:`, error);
-            // Fallback to dream's existing milestones
-            milestonesMap[dream.id] = dream.milestones || [];
-          }
+        if (progressResult.status === 'rejected') {
+          console.error('Error loading dream progress entries:', progressResult.reason);
         }
-        setDreamMilestones(milestonesMap);
+
+        if (milestoneResult.status === 'rejected') {
+          console.error('Error loading dream milestone entries:', milestoneResult.reason);
+        }
+
+        const latestProgressEntries =
+          progressResult.status === 'fulfilled' ? progressResult.value : [];
+        const milestoneGroups = milestoneResult.status === 'fulfilled' ? milestoneResult.value : {};
+
+        setDreamProgresses(buildDreamProgressMap(dreams, latestProgressEntries));
+        setDreamMilestones(buildDreamMilestonesMap(dreams, milestoneGroups));
       } catch (error) {
         console.error('Error loading backend data:', error);
+        setDreamProgresses(buildDreamProgressMap(dreams, []));
+        setDreamMilestones(buildDreamMilestonesMap(dreams, {}));
       }
     };
 
     loadBackendData();
-  }, [dreams, getProgressForDream]);
+  }, [dreams]);
 
   // Handle fullscreen changes
   useEffect(() => {
@@ -440,6 +443,13 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    const dreamNodes = dreamNodesRef.current;
+    const particles = particlesRef.current;
+    const badges = badgesRef.current;
+    const supernovas = supernovasRef.current;
+    const { nodesById, nodesByCategory } = nodeLookupsRef.current;
+    const categoryCenters = computeCategoryCenters(nodesByCategory);
+    const currentTime = Date.now();
 
     // Clear canvas
     ctx.clearRect(0, 0, dimensions.width, dimensions.height);
@@ -460,7 +470,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       particle.y += particle.speed * (1 - particle.depth * 0.5);
 
       // Add subtle horizontal drift
-      particle.x += Math.sin(Date.now() * 0.0001 + particle.y * 0.01) * 0.1 * particle.depth;
+      particle.x += Math.sin(currentTime * 0.0001 + particle.y * 0.01) * 0.1 * particle.depth;
 
       // Reset particles that go out of bounds
       if (particle.y > dimensions.height) {
@@ -471,15 +481,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
     // Draw nebula background for categories
     if (viewMode === 'cosmic') {
-      const uniqueCategories = [...new Set(dreams.map(d => d.category))];
-      uniqueCategories.forEach(category => {
-        const categoryNodes = dreamNodes.filter(n => n.dream.category === category);
-        if (categoryNodes.length === 0) return;
-
-        // Calculate center of this category's dreams
-        const centerX = categoryNodes.reduce((sum, node) => sum + node.x, 0) / categoryNodes.length;
-        const centerY = categoryNodes.reduce((sum, node) => sum + node.y, 0) / categoryNodes.length;
-
+      categoryCenters.forEach(({ x: centerX, y: centerY }, category) => {
         // Skip if off-screen (with buffer)
         const screenX = centerX * zoomLevel + panOffset.x;
         const screenY = centerY * zoomLevel + panOffset.y;
@@ -532,7 +534,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
       // Draw connections between nodes
       node.connections.forEach(targetId => {
-        const target = dreamNodes.find(n => n.dream.id === targetId);
+        const target = nodesById.get(targetId);
         if (!target) return;
 
         // Skip if target is filtered out by category selection
@@ -566,7 +568,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
           ctx.lineTo(target.x, target.y);
 
           // Animate flow along connection
-          const time = Date.now() / 1000;
+          const time = currentTime / 1000;
           const flowOffset = (time % 2) / 2; // 0 to 1 over 2 seconds
 
           // Create animated gradient for the line
@@ -621,16 +623,14 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
       node.y += node.vy;
 
       // Add subtle circular motion to create a more dynamic cosmic feel
-      const time = Date.now() * 0.001;
+      const time = currentTime * 0.001;
       node.x += Math.sin(time * 0.2 + node.y * 0.01) * 0.05;
       node.y += Math.cos(time * 0.2 + node.x * 0.01) * 0.05;
 
       // Ensure nodes stay within their category regions
-      const categoryNodes = dreamNodes.filter(n => n.dream.category === node.dream.category);
-      if (categoryNodes.length > 0) {
-        const centerX = categoryNodes.reduce((sum, n) => sum + n.x, 0) / categoryNodes.length;
-        const centerY = categoryNodes.reduce((sum, n) => sum + n.y, 0) / categoryNodes.length;
-
+      const categoryCenter = categoryCenters.get(node.category);
+      if (categoryCenter) {
+        const { x: centerX, y: centerY } = categoryCenter;
         const dx = node.x - centerX;
         const dy = node.y - centerY;
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -753,7 +753,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
     // Update and draw badges
     badges.forEach(badge => {
-      const parentNode = dreamNodes.find(node => node.dream.id === badge.parentId);
+      const parentNode = nodesById.get(badge.parentId);
       if (!parentNode) return;
 
       // Skip if parent is filtered out by category selection
@@ -790,7 +790,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
     // Draw celebration effects
     supernovas.forEach(supernova => {
-      const age = (Date.now() - supernova.createdAt) / 1000; // Age in seconds
+      const age = (currentTime - supernova.createdAt) / 1000; // Age in seconds
       const maxAge = 2; // Max age in seconds
 
       if (age < maxAge) {
@@ -808,8 +808,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     });
 
     // Clean up old supernovas
-    const currentTime = Date.now();
-    setSupernovas(prev => prev.filter(s => currentTime - s.createdAt < 2000));
+    supernovasRef.current = supernovas.filter(s => currentTime - s.createdAt < 2000);
 
     ctx.restore();
 
@@ -818,17 +817,12 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   }, [
     dimensions,
     isInitialized,
-    dreamNodes,
-    particles,
     hoveredDream,
     activeDream,
-    badges,
-    supernovas,
     zoomLevel,
     panOffset,
     selectedCategory,
     viewMode,
-    dreams,
     dreamProgresses,
   ]);
 
@@ -867,7 +861,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
 
     // Reset view when changing category
     if (category !== 'all') {
-      const categoryNodes = dreamNodes.filter(node => node.dream.category === category);
+      const categoryNodes = nodeLookupsRef.current.nodesByCategory.get(category) ?? [];
 
       if (categoryNodes.length > 0) {
         // Calculate the average position of this category's nodes
@@ -947,8 +941,8 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     }
 
     // Check if mouse is over a dream node
-    let hoveredNode = null;
-    for (const node of dreamNodes) {
+    let hoveredNode: DreamNode | null = null;
+    for (const node of dreamNodesRef.current) {
       // Skip if node is filtered out by category selection
       if (!dreamMatchesCategory(node.dream, selectedCategory)) continue;
 
@@ -1053,8 +1047,8 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     const mouseY = (e.clientY - rect.top) / zoomLevel - panOffset.y / zoomLevel;
 
     // Check if click is on a dream node
-    let clickedNode = null;
-    for (const node of dreamNodes) {
+    let clickedNode: DreamNode | null = null;
+    for (const node of dreamNodesRef.current) {
       // Skip if node is filtered out by category selection
       if (!dreamMatchesCategory(node.dream, selectedCategory)) continue;
 
@@ -1085,7 +1079,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
             createdAt: Date.now(),
           };
 
-          setSupernovas(prev => [...prev, newSupernova]);
+          supernovasRef.current = [...supernovasRef.current, newSupernova];
         }
       }
     } else if (activeDream) {
@@ -1094,7 +1088,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
     }
   };
 
-  const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>): void => {
+  const handleWheel = useCallback((e: WheelEvent): void => {
     e.preventDefault();
 
     // Zoom in or out based on wheel direction
@@ -1120,7 +1114,18 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
         };
       });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    canvas.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleWheel]);
 
   // Create a dream detail card component for portal
   const DreamDetailCard = (): React.ReactNode => {
@@ -1269,7 +1274,6 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
-            onWheel={handleWheel}
           />
 
           {/* Header Controls */}
