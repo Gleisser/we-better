@@ -43,6 +43,31 @@ const loadLottieLight = (): Promise<LottieLightModule> =>
 
 type NormalizedColor = [number, number, number];
 
+const settlePlayerAtBoundary = (player: LottieLightPlayer, settleTo: 'start' | 'end'): void => {
+  const totalFrames = Math.max(Math.round(player.getDuration(true)) - 1, 0);
+  const targetFrame = settleTo === 'end' ? totalFrames : 0;
+  player.goToAndStop(targetFrame, true);
+};
+
+const safelyRemoveCompleteListener = (
+  player: LottieLightPlayer | null,
+  callback: (() => void) | null
+): void => {
+  if (!player || !callback) {
+    return;
+  }
+
+  try {
+    player.removeEventListener('complete', callback);
+  } catch (error) {
+    if (error instanceof TypeError && /complete|null/i.test(error.message)) {
+      return;
+    }
+
+    throw error;
+  }
+};
+
 const cloneAnimationData = <T extends object>(animationData: T): T => {
   if (typeof structuredClone === 'function') {
     return structuredClone(animationData);
@@ -153,6 +178,7 @@ export const LottieLightIcon = ({
   const containerRef = useRef<HTMLSpanElement>(null);
   const playerRef = useRef<LottieLightPlayer | null>(null);
   const settleRef = useRef(settleTo);
+  const completeListenerRef = useRef<(() => void) | null>(null);
   const lastReplayKeyRef = useRef<number | string | null>(null);
   const [hasFailed, setHasFailed] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -163,17 +189,9 @@ export const LottieLightIcon = ({
 
   useEffect(() => {
     let isDisposed = false;
-
-    const settleAnimation = (): void => {
-      const player = playerRef.current;
-      if (!player) {
-        return;
-      }
-
-      const totalFrames = Math.max(Math.round(player.getDuration(true)) - 1, 0);
-      const targetFrame = settleRef.current === 'end' ? totalFrames : 0;
-      player.goToAndStop(targetFrame, true);
-    };
+    setHasFailed(false);
+    setIsReady(false);
+    lastReplayKeyRef.current = null;
 
     const mountAnimation = async (): Promise<void> => {
       const container = containerRef.current;
@@ -215,7 +233,18 @@ export const LottieLightIcon = ({
 
         playerRef.current = player;
         player.setSpeed(speed);
-        settleAnimation();
+
+        const handleComplete = (): void => {
+          if (isDisposed) {
+            return;
+          }
+
+          settlePlayerAtBoundary(player, settleRef.current);
+        };
+
+        completeListenerRef.current = handleComplete;
+        player.addEventListener('complete', handleComplete);
+        settlePlayerAtBoundary(player, settleRef.current);
         setIsReady(true);
       } catch (error) {
         if (!isDisposed) {
@@ -230,8 +259,14 @@ export const LottieLightIcon = ({
     return () => {
       isDisposed = true;
       setIsReady(false);
-      if (playerRef.current) {
-        playerRef.current.destroy();
+      const player = playerRef.current;
+      const completeListener = completeListenerRef.current;
+
+      completeListenerRef.current = null;
+      safelyRemoveCompleteListener(player, completeListener);
+
+      if (player) {
+        player.destroy();
         playerRef.current = null;
       }
     };
@@ -246,29 +281,12 @@ export const LottieLightIcon = ({
     const isFirstReplay = lastReplayKeyRef.current === null;
     lastReplayKeyRef.current = replayKey;
 
-    const settleAnimation = (): void => {
-      const totalFrames = Math.max(Math.round(player.getDuration(true)) - 1, 0);
-      const targetFrame = settleTo === 'end' ? totalFrames : 0;
-      player.goToAndStop(targetFrame, true);
-    };
-
-    const handleComplete = (): void => {
-      settleAnimation();
-      player.removeEventListener('complete', handleComplete);
-    };
-
     if (isFirstReplay) {
-      settleAnimation();
+      settlePlayerAtBoundary(player, settleTo);
       return;
     }
 
-    player.removeEventListener('complete', handleComplete);
-    player.addEventListener('complete', handleComplete);
     player.goToAndPlay(0, true);
-
-    return () => {
-      player.removeEventListener('complete', handleComplete);
-    };
   }, [isReady, replayKey, settleTo]);
 
   if (hasFailed) {
