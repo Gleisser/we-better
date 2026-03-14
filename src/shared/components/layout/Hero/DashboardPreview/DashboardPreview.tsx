@@ -1,16 +1,17 @@
 import { forwardRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
+import type { ResponsiveMediaSource } from '@/utils/types/responsiveMedia';
 
 interface Props {
-  src: string;
-  alt: string;
+  media: ResponsiveMediaSource;
 }
 
 const highPriorityImageProps = {
-  fetchpriority: 'high',
+  fetchPriority: 'high',
 } as const;
 
-const DashboardPreview = forwardRef<HTMLImageElement, Props>(({ src, alt }, ref) => {
+const DashboardPreview = forwardRef<HTMLImageElement, Props>(({ media }, ref) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
@@ -34,18 +35,14 @@ const DashboardPreview = forwardRef<HTMLImageElement, Props>(({ src, alt }, ref)
           }`}
         />
 
-        <motion.img
+        <ResponsiveImage
           ref={ref}
-          src={src}
-          alt={alt}
+          media={media}
           className={`relative w-full h-full object-cover ${
             isLoaded ? 'opacity-90' : 'opacity-0'
           } transition-opacity duration-500`}
           loading="eager"
           {...highPriorityImageProps}
-          decoding="async"
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.2 }}
           onLoad={() => setIsLoaded(true)}
         />
 

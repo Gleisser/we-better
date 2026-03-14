@@ -4,13 +4,15 @@ import { PREFOOTER_FALLBACK } from '@/utils/constants/fallback';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { API_CONFIG } from '@/core/config/api-config';
 import { ButtonArrowIcon } from '@/shared/components/common/icons';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
+import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
+import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
 
 const PreFooter = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = usePrefooter();
-  const { handleError, isError, error } = useErrorHandler({
+  const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load pre-footer content',
   });
 
@@ -20,12 +22,20 @@ const PreFooter = (): JSX.Element => {
 
   // Prepare image URL
   const imageUrl = isAPI ? API_CONFIG.imageBaseURL + prefooter?.image.url : prefooter?.image.url;
-
-  useAssetPreload({
-    urls: imageUrl ? [imageUrl] : [],
-    enabled: Boolean(imageUrl),
-    onError: handleError,
-  });
+  const imageMedia =
+    isAPI && imageUrl
+      ? (createResponsiveMediaFromImage(
+          {
+            ...prefooter.image,
+            src: imageUrl,
+            alt: LANDING_MEDIA.preFooter.alt,
+          },
+          {
+            alt: LANDING_MEDIA.preFooter.alt,
+            sizes: '(max-width: 768px) 100vw, 50vw',
+          }
+        ) ?? LANDING_MEDIA.preFooter)
+      : LANDING_MEDIA.preFooter;
 
   // Prepare title with fallback
   const defaultTitle = (
@@ -95,15 +105,7 @@ const PreFooter = (): JSX.Element => {
 
         {/* Right Column */}
         <div className={styles.rightColumn} role="presentation">
-          {/* <div className={styles.imageContainer}> */}
-          <img
-            src={imageUrl}
-            alt="Interactive preview of We Better platform showcasing creative tools and workspace"
-            className={styles.image}
-            loading="lazy"
-            decoding="async"
-          />
-          {/* </div> */}
+          <ResponsiveImage media={imageMedia} className={styles.image} loading="lazy" />
         </div>
       </div>
     </section>

@@ -3,9 +3,7 @@ import styles from './Partners.module.css';
 import { API_CONFIG } from '@/core/config/api-config';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { PARTNERS_FALLBACK } from '@/utils/constants/fallback';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useMemo } from 'react';
 import { Brand } from '@/utils/types/features-response';
 
 const defaultTitle = (
@@ -17,26 +15,13 @@ const defaultTitle = (
 const Partners = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = usePartner();
-  const { handleError, isError, error } = useErrorHandler({
+  const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load partners content',
   });
 
   // Determine content source
   const partners = data?.data || PARTNERS_FALLBACK;
   const isAPI = data !== undefined;
-
-  const logoUrls = useMemo(() => {
-    if (!partners?.brands) return [];
-
-    return partners.brands.map((brand: Brand) =>
-      isAPI ? API_CONFIG.imageBaseURL + brand.logo.img.url : brand.logo.img.url
-    );
-  }, [partners, isAPI]);
-
-  useAssetPreload({
-    urls: logoUrls,
-    onError: handleError,
-  });
 
   // Show loading state only during initial data fetch
   if (isDataLoading) {

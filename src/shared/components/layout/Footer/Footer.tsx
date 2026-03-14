@@ -1,50 +1,18 @@
 import { useFooter } from '@/shared/hooks/useFooter';
 import styles from './Footer.module.css';
-import { API_CONFIG } from '@/core/config/api-config';
 import { FOOTER_FALLBACK } from '@/utils/constants/fallback';
 import { AppStore, MenuList } from '@/utils/types/footer';
-import { TopLevelImage } from '@/utils/types/common/image';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useMemo } from 'react';
 
 const Footer = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useFooter();
-  const { handleError, isError, error } = useErrorHandler({
+  const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load footer content',
   });
 
   // Determine content source
   const footer = data?.data || FOOTER_FALLBACK;
-  const isAPI = data !== undefined;
-
-  const imageUrls = useMemo(() => {
-    if (!footer) return [];
-
-    const urls: string[] = [];
-
-    if (footer.logo) {
-      urls.push(isAPI ? API_CONFIG.imageBaseURL + footer.logo.url : footer.logo.src);
-    }
-
-    footer.app_stores.forEach((store: AppStore) => {
-      store.images.forEach(image => {
-        urls.push(isAPI ? API_CONFIG.imageBaseURL + image.url : image.src);
-      });
-    });
-
-    footer.social_medias[0].logos.forEach((social: TopLevelImage) => {
-      urls.push(isAPI ? API_CONFIG.imageBaseURL + social.url : social.src);
-    });
-
-    return urls;
-  }, [footer, isAPI]);
-
-  useAssetPreload({
-    urls: imageUrls,
-    onError: handleError,
-  });
 
   // Show loading state only during initial data fetch
   if (isDataLoading) {

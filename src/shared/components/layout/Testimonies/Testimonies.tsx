@@ -4,14 +4,21 @@ import { TESTIMONY_FALLBACK } from '@/utils/constants/fallback';
 import { API_CONFIG } from '@/core/config/api-config';
 import { TestimonyItem } from '@/utils/types/testimony';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useMemo } from 'react';
+import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
+import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
+import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
+
+const FALLBACK_TESTIMONY_MEDIA = [
+  LANDING_MEDIA.testimonies.testimony1,
+  LANDING_MEDIA.testimonies.testimony2,
+  LANDING_MEDIA.testimonies.testimony3,
+];
 
 const Testimonies = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useTestimony();
-  const { handleError, isError, error } = useErrorHandler({
+  const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load testimonials',
   });
 
@@ -23,19 +30,6 @@ const Testimonies = (): JSX.Element => {
       A community of over <span className={styles.highlight}>4 million</span> is waiting for you
     </>
   );
-
-  const profileUrls = useMemo(() => {
-    if (!testimony?.testimonies) return [];
-
-    return testimony.testimonies.map((item: TestimonyItem) =>
-      isAPI ? API_CONFIG.imageBaseURL + item.profilePic.url : item.profilePic.url
-    );
-  }, [testimony, isAPI]);
-
-  useAssetPreload({
-    urls: profileUrls,
-    onError: handleError,
-  });
 
   // Show loading state only during initial data fetch
   if (isDataLoading) {
@@ -85,12 +79,26 @@ const Testimonies = (): JSX.Element => {
             <div key={item.id} className={styles.testimonialCard} role="article">
               <p className={styles.testimonialText}>"{item.testimony}"</p>
               <div className={styles.author}>
-                <img
-                  src={isAPI ? API_CONFIG.imageBaseURL + item.profilePic.url : item.profilePic.url}
-                  alt={item.username}
+                <ResponsiveImage
+                  media={
+                    isAPI
+                      ? (createResponsiveMediaFromImage(
+                          {
+                            ...item.profilePic,
+                            src: API_CONFIG.imageBaseURL + item.profilePic.url,
+                            alt: item.username,
+                          },
+                          {
+                            alt: item.username,
+                            sizes: '(max-width: 768px) 72px, 96px',
+                          }
+                        ) ??
+                        FALLBACK_TESTIMONY_MEDIA[item.id - 1] ??
+                        FALLBACK_TESTIMONY_MEDIA[0])
+                      : (FALLBACK_TESTIMONY_MEDIA[item.id - 1] ?? FALLBACK_TESTIMONY_MEDIA[0])
+                  }
                   className={styles.avatar}
                   loading="lazy"
-                  decoding="async"
                 />
                 <span className={styles.authorName}>{item.username}</span>
               </div>

@@ -47,11 +47,48 @@
   opacity: 0;
 }
 
-.image[src^="data:image"] {
+.image[src^='data:image'] {
   opacity: 0;
 }
 
-.image:not([src^="data:image"]) {
+.image:not([src^='data:image']) {
+  opacity: 1;
+}
+
+.bodyMotionStage {
+  --gallery-body-pan-progress: 0;
+  @apply relative w-full h-full overflow-hidden;
+}
+
+.bodyBackgroundImage {
+  @apply relative z-[1];
+}
+
+.bodyRunnerLayer {
+  @apply absolute inset-0 z-[2];
+  background-image: var(--gallery-body-image);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.08) translate3d(calc((1 - var(--gallery-body-pan-progress)) * -12%), 0, 0);
+  transform-origin: center center;
+  transition: opacity 200ms ease;
+  will-change: transform;
+  -webkit-mask-image: radial-gradient(
+    ellipse 24% 38% at 31% 68%,
+    rgba(0, 0, 0, 1) 42%,
+    rgba(0, 0, 0, 0) 72%
+  );
+  mask-image: radial-gradient(
+    ellipse 24% 38% at 31% 68%,
+    rgba(0, 0, 0, 1) 42%,
+    rgba(0, 0, 0, 0) 72%
+  );
+}
+
+.bodyMotionStage[data-layer-ready='true'] .bodyRunnerLayer {
   opacity: 1;
 }
 
@@ -117,6 +154,12 @@
   }
 
   .masonryGrid {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bodyRunnerLayer {
     display: none;
   }
 }

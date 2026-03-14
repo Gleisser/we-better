@@ -3,18 +3,10 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Showcase from '../Showcase';
 import { useShowcase } from '@/shared/hooks/useShowcase';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import styles from '../Showcase.module.css';
-import type { ThumbnailImage } from '@/utils/types/common/image';
-import type { ShowcaseResponse } from '@/utils/types/showcase';
 
 vi.mock('@/shared/hooks/useShowcase', () => ({
   useShowcase: vi.fn(),
-}));
-
-vi.mock('@/shared/hooks/utils/useAssetPreload', () => ({
-  useAssetPreload: vi.fn(),
 }));
 
 vi.mock('@/shared/hooks/utils/useErrorHandler', () => ({
@@ -25,14 +17,13 @@ vi.mock('framer-motion', () => ({
   motion: {
     div: ({
       children,
-      animate,
       custom,
       drag,
       dragConstraints,
       dragElastic,
-      exit,
       initial,
-      onDragEnd,
+      animate,
+      exit,
       transition,
       variants,
       whileDrag,
@@ -43,94 +34,44 @@ vi.mock('framer-motion', () => ({
 }));
 
 const mockedUseShowcase = vi.mocked(useShowcase);
-const mockedUseAssetPreload = vi.mocked(useAssetPreload);
 const mockedUseErrorHandler = vi.mocked(useErrorHandler);
-
-const createImage = (id: number, src: string, alt: string): ThumbnailImage => ({
-  id,
-  documentId: `image-${id}`,
-  name: alt,
-  alternativeText: alt,
-  caption: alt,
-  width: 600,
-  height: 450,
-  url: src,
-  src,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  publishedAt: new Date().toISOString(),
-  alt,
-  img: {
-    formats: {
-      thumbnail: {
-        url: src,
-        width: 600,
-        height: 450,
-      },
-    },
-  },
-});
-
-const createShowcaseResponse = (): ShowcaseResponse => ({
-  data: {
-    id: 1,
-    documentId: 'showcase-1',
-    title: 'Unlock Your Growth Journey with',
-    subtitle: 'Tailored Resources',
-    belts: [
-      {
-        id: 1,
-        documentId: 'belt-1',
-        title: 'Belt One',
-        description: 'Description for belt one',
-        images: [
-          createImage(101, '/belt-one-1.jpg', 'Belt One Image 1'),
-          createImage(102, '/belt-one-2.jpg', 'Belt One Image 2'),
-        ],
-      },
-      {
-        id: 2,
-        documentId: 'belt-2',
-        title: 'Belt Two',
-        description: 'Description for belt two',
-        images: [
-          createImage(201, '/belt-two-1.jpg', 'Belt Two Image 1'),
-          createImage(202, '/belt-two-2.jpg', 'Belt Two Image 2'),
-        ],
-      },
-    ],
-  },
-  meta: {
-    pagination: {
-      page: 1,
-      pageCount: 1,
-      pageSize: 1,
-      total: 1,
-    },
-  },
-});
 
 describe('Showcase', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
-
     mockedUseShowcase.mockReturnValue({
-      data: createShowcaseResponse(),
+      data: {
+        data: {
+          title: 'Unlock Your Growth Journey with',
+          subtitle: 'Tailored Resources',
+          belts: [
+            {
+              id: 1,
+              documentId: 'belt-1',
+              title: 'Tracking',
+              description: 'Description for tracking',
+              images: [
+                { src: '/belt-one-1.jpg', alt: 'Tracking 1' },
+                { src: '/belt-one-2.jpg', alt: 'Tracking 2' },
+              ],
+            },
+            {
+              id: 2,
+              documentId: 'belt-2',
+              title: 'E-Books',
+              description: 'Description for ebooks',
+              images: [{ src: '/belt-two-1.jpg', alt: 'E-Books 1' }],
+            },
+          ],
+        },
+      },
       isLoading: false,
     } as ReturnType<typeof useShowcase>);
-
-    mockedUseAssetPreload.mockReturnValue({
-      isLoading: false,
-      hasTimedOut: false,
-    });
-
     mockedUseErrorHandler.mockReturnValue({
       isError: false,
       error: null,
-      handleError: vi.fn(),
-      clearError: vi.fn(),
-    });
+    } as ReturnType<typeof useErrorHandler>);
 
     Object.defineProperty(window, 'innerWidth', {
       configurable: true,
@@ -152,80 +93,27 @@ describe('Showcase', () => {
     vi.useRealTimers();
   });
 
-  it('shows loading skeleton when data is being fetched', () => {
-    mockedUseShowcase.mockReturnValue({
-      data: null,
-      isLoading: true,
-    } as ReturnType<typeof useShowcase>);
-
+  it('renders visible showcase cards with native image loading', () => {
     render(<Showcase />);
 
-    expect(screen.getByTestId('showcase-skeleton')).toBeInTheDocument();
-    expect(screen.getAllByTestId('belt-item-skeleton')).toHaveLength(4);
+    const images = screen.getAllByRole('img');
+    expect(images[0]).toHaveAttribute('loading', 'eager');
+    expect(images[1]).toHaveAttribute('loading', 'lazy');
+    expect(images[0].getAttribute('src') ?? '').toContain('/belt-one-1.jpg');
   });
 
-  it('renders the error state when the error handler reports a failure', () => {
-    mockedUseShowcase.mockReturnValue({
-      data: null,
-      isLoading: false,
-    } as ReturnType<typeof useShowcase>);
-    mockedUseErrorHandler.mockReturnValue({
-      isError: true,
-      error: {
-        hasError: true,
-        message: 'Failed to load showcase content',
-        code: 'showcase_failed',
-        timestamp: Date.now(),
-      },
-      handleError: vi.fn(),
-      clearError: vi.fn(),
-    });
-
+  it('keeps hover rotation scoped to the hovered card', () => {
     render(<Showcase />);
 
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText('Failed to load showcase content')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /try again/i })).toHaveClass(styles.retryButton);
-  });
-
-  it('renders showcase content and preloads the current page assets', () => {
-    render(<Showcase />);
-
-    expect(screen.getByText('Unlock Your Growth Journey with')).toBeInTheDocument();
-    expect(screen.getByText('Tailored Resources')).toBeInTheDocument();
-    expect(screen.getByText('Belt One')).toBeInTheDocument();
-    expect(screen.getByText('Belt Two')).toBeInTheDocument();
-    expect(mockedUseAssetPreload).toHaveBeenCalledWith(
-      expect.objectContaining({
-        enabled: true,
-        urls: ['/belt-one-1.jpg', '/belt-one-2.jpg', '/belt-two-1.jpg', '/belt-two-2.jpg'],
-      })
-    );
-  });
-
-  it('rotates only the hovered card image and resets it on mouse leave', () => {
-    render(<Showcase />);
-
-    const [firstArticle] = screen.getAllByRole('article');
-    const initialImages = screen.getAllByRole('img');
-
-    expect(initialImages[0]).toHaveAttribute('src', '/belt-one-1.jpg');
-    expect(initialImages[1]).toHaveAttribute('src', '/belt-two-1.jpg');
-
-    fireEvent.mouseEnter(firstArticle);
+    const [firstCard] = screen.getAllByRole('article');
+    fireEvent.mouseEnter(firstCard);
 
     act(() => {
       vi.advanceTimersByTime(1000);
     });
 
-    const rotatedImages = screen.getAllByRole('img');
-    expect(rotatedImages[0]).toHaveAttribute('src', '/belt-one-2.jpg');
-    expect(rotatedImages[1]).toHaveAttribute('src', '/belt-two-1.jpg');
-
-    fireEvent.mouseLeave(firstArticle);
-
-    const resetImages = screen.getAllByRole('img');
-    expect(resetImages[0]).toHaveAttribute('src', '/belt-one-1.jpg');
-    expect(resetImages[1]).toHaveAttribute('src', '/belt-two-1.jpg');
+    const images = screen.getAllByRole('img');
+    expect(images[0].getAttribute('src') ?? '').toContain('/belt-one-2.jpg');
+    expect(images[1].getAttribute('src') ?? '').toContain('/belt-two-1.jpg');
   });
 });

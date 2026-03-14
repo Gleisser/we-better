@@ -1,11 +1,47 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { forwardRef, useState } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import { cn } from '@/utils/classnames';
 import { FloatingImageProps } from './types';
+import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
+
+type IdleWindow = Window & {
+  requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+  cancelIdleCallback?: (handle: number) => void;
+};
+
+const scheduleIdle = (callback: () => void): number => {
+  if (typeof window === 'undefined') {
+    return 0;
+  }
+
+  const idleWindow = window as IdleWindow;
+
+  if (typeof idleWindow.requestIdleCallback === 'function') {
+    return idleWindow.requestIdleCallback(callback, { timeout: 2000 });
+  }
+
+  return window.setTimeout(callback, 1200);
+};
+
+const cancelIdle = (id: number): void => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const idleWindow = window as IdleWindow;
+
+  if (typeof idleWindow.cancelIdleCallback === 'function') {
+    idleWindow.cancelIdleCallback(id);
+    return;
+  }
+
+  window.clearTimeout(id);
+};
 
 const FloatingImage = forwardRef<HTMLImageElement, FloatingImageProps>(
-  ({ src, alt, className = '' }, ref) => {
+  ({ media, className = '' }, ref) => {
     const [isLoaded, setIsLoaded] = useState(false);
+    const [shouldRenderVideo, setShouldRenderVideo] = useState(false);
     const { scrollY } = useScroll();
 
     // Extract position information from className
@@ -36,6 +72,20 @@ const FloatingImage = forwardRef<HTMLImageElement, FloatingImageProps>(
     const translateY = useTransform(scrollY, [0, 800], y);
     const rotate = useTransform(scrollY, [0, 800], [rotation, rotation * 1.5]);
 
+    useEffect(() => {
+      if (!media.video?.length) {
+        return;
+      }
+
+      const idleId = scheduleIdle(() => {
+        setShouldRenderVideo(true);
+      });
+
+      return () => {
+        cancelIdle(idleId);
+      };
+    }, [media.video]);
+
     return (
       <motion.div
         className={cn('absolute z-10', className)}
@@ -60,20 +110,36 @@ const FloatingImage = forwardRef<HTMLImageElement, FloatingImageProps>(
               transition={{ duration: 0.2 }}
             />
 
-            <motion.img
-              ref={ref}
-              src={src}
-              alt={alt}
-              className={cn(
-                'relative h-full w-full rounded-3xl object-cover shadow-2xl transition-opacity duration-300',
-                isLoaded ? 'opacity-100' : 'opacity-0'
-              )}
-              loading="lazy"
-              decoding="async"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-              onLoad={() => setIsLoaded(true)}
-            />
+            {shouldRenderVideo && media.video?.length ? (
+              <video
+                autoPlay
+                className={cn(
+                  'relative h-full w-full rounded-3xl object-cover shadow-2xl transition-opacity duration-300',
+                  isLoaded ? 'opacity-100' : 'opacity-0'
+                )}
+                loop
+                muted
+                playsInline
+                poster={media.poster}
+                onCanPlay={() => setIsLoaded(true)}
+              >
+                {media.video.map(source => (
+                  <source key={source.src} src={source.src} type={source.type} />
+                ))}
+              </video>
+            ) : (
+              <ResponsiveImage
+                ref={ref}
+                media={media}
+                alt=""
+                className={cn(
+                  'relative h-full w-full rounded-3xl object-cover shadow-2xl transition-opacity duration-300',
+                  isLoaded ? 'opacity-100' : 'opacity-0'
+                )}
+                loading="lazy"
+                onLoad={() => setIsLoaded(true)}
+              />
+            )}
           </div>
         </div>
       </motion.div>

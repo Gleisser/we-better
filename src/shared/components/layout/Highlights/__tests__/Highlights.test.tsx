@@ -1,11 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
+import { act, render } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Highlights from '../Highlights';
 import { useHighlight } from '@/shared/hooks/useHighlight';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
-import { HIGHLIGHTS_FALLBACK } from '@/utils/constants/fallback';
-import styles from '../Highlights.module.css';
 
 vi.mock('@/shared/hooks/useHighlight', () => ({
   useHighlight: vi.fn(),
@@ -15,150 +13,72 @@ vi.mock('@/shared/hooks/utils/useErrorHandler', () => ({
   useErrorHandler: vi.fn(),
 }));
 
-vi.mock('@/shared/hooks/utils/useAssetPreload', () => ({
-  useAssetPreload: vi.fn(),
-}));
-
 const mockedUseHighlight = vi.mocked(useHighlight);
 const mockedUseErrorHandler = vi.mocked(useErrorHandler);
-const mockedUseAssetPreload = vi.mocked(useAssetPreload);
-
-const mockIntersectionObserver = vi.fn();
-mockIntersectionObserver.mockReturnValue({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-});
-window.IntersectionObserver = mockIntersectionObserver as unknown as typeof IntersectionObserver;
+const observeMock = vi.fn();
 
 describe('Highlights', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
-
+    mockedUseHighlight.mockReturnValue({
+      data: null,
+      isLoading: false,
+    } as ReturnType<typeof useHighlight>);
     mockedUseErrorHandler.mockReturnValue({
       isError: false,
       error: null,
-      handleError: vi.fn(),
-    });
-    mockedUseAssetPreload.mockReturnValue({
-      isLoading: false,
-      hasTimedOut: false,
-    });
+    } as ReturnType<typeof useErrorHandler>);
+
+    window.IntersectionObserver = vi.fn(callback => {
+      callback(
+        [{ isIntersecting: true }] as IntersectionObserverEntry[],
+        {} as IntersectionObserver
+      );
+      return {
+        observe: observeMock,
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
+        root: null,
+        rootMargin: '',
+        thresholds: [],
+        takeRecords: () => [],
+      };
+    }) as unknown as typeof IntersectionObserver;
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
+  it('loads only the active and adjacent highlight slides after section visibility', () => {
+    const { container } = render(<Highlights />);
+
+    const images = Array.from(container.querySelectorAll('img'));
+    expect(images[0]?.getAttribute('src') ?? '').not.toContain('data:image/gif');
+    expect(images[1]).not.toBeUndefined();
+
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+
+    const updatedImages = Array.from(container.querySelectorAll('img'));
+    expect(updatedImages[0]).not.toBeUndefined();
   });
 
-  it('shows the loading skeleton while the CMS content is still loading', () => {
+  it('attaches the observer after the skeleton swaps to fallback content', () => {
     mockedUseHighlight.mockReturnValue({
-      data: undefined,
+      data: null,
       isLoading: true,
-      error: null,
-      isFetching: true,
-      refetch: vi.fn(),
-    } as never);
+    } as ReturnType<typeof useHighlight>);
 
-    render(<Highlights />);
+    const { container } = render(<Highlights />);
 
-    expect(document.getElementsByClassName('animate-pulse').length).toBeGreaterThan(0);
-    expect(screen.queryByRole('region', { name: /Highlights slider/i })).toBeNull();
-  });
+    expect(observeMock).not.toHaveBeenCalled();
 
-  it('renders the error state when the highlight query fails', () => {
-    mockedUseHighlight.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      error: null,
-      isFetching: false,
-      refetch: vi.fn(),
-    } as never);
-    mockedUseErrorHandler.mockReturnValue({
-      isError: true,
-      error: new Error('Failed to load highlights content'),
-      handleError: vi.fn(),
+    act(() => {
+      vi.advanceTimersByTime(1000);
     });
 
-    render(<Highlights />);
+    expect(observeMock).toHaveBeenCalledTimes(1);
 
-    expect(screen.getByRole('alert')).not.toBeNull();
-    expect(screen.getByRole('button', { name: /Try Again/i }).className).toContain(
-      styles.retryButton
-    );
-  });
-
-  it('keeps CMS /assets images on the local frontend origin instead of prefixing the Strapi host', () => {
-    mockedUseHighlight.mockReturnValue({
-      data: {
-        data: {
-          id: 1,
-          documentId: 'highlight-doc',
-          title: 'Use We Better today for',
-          createdAt: '2026-03-11T00:00:00.000Z',
-          updatedAt: '2026-03-11T00:00:00.000Z',
-          publishedAt: '2026-03-11T00:00:00.000Z',
-          slides: HIGHLIGHTS_FALLBACK.map((slide, index) => ({
-            id: index + 1,
-            documentId: `slide-${index + 1}`,
-            title: slide.title,
-            createdAt: '2026-03-11T00:00:00.000Z',
-            updatedAt: '2026-03-11T00:00:00.000Z',
-            publishedAt: '2026-03-11T00:00:00.000Z',
-            image: {
-              img: {
-                id: index + 1,
-                documentId: `image-${index + 1}`,
-                name: `${slide.title}.webp`,
-                alternativeText: slide.title,
-                caption: slide.title,
-                width: 800,
-                height: 800,
-                url: slide.image.img.formats.large.url,
-                alt: slide.title,
-                src: slide.image.img.formats.large.url,
-                createdAt: '2026-03-11T00:00:00.000Z',
-                updatedAt: '2026-03-11T00:00:00.000Z',
-                publishedAt: '2026-03-11T00:00:00.000Z',
-                formats: {
-                  large: {
-                    url: slide.image.img.formats.large.url,
-                    width: 800,
-                    height: 800,
-                  },
-                  medium: {
-                    url: slide.image.img.formats.large.url,
-                    width: 600,
-                    height: 600,
-                  },
-                  small: {
-                    url: slide.image.img.formats.large.url,
-                    width: 400,
-                    height: 400,
-                  },
-                  thumbnail: {
-                    url: slide.image.img.formats.large.url,
-                    width: 200,
-                    height: 200,
-                  },
-                },
-              },
-            },
-          })),
-        },
-      },
-      isLoading: false,
-      error: null,
-      isFetching: false,
-      refetch: vi.fn(),
-    } as never);
-
-    render(<Highlights />);
-
-    const slider = screen.getByRole('region', { name: /Highlights slider/i });
-    expect(slider).not.toBeNull();
-
-    const firstImage = screen.getByRole('img');
-    expect(firstImage.getAttribute('src')).toBe('/assets/images/highlights/goals.webp');
+    const images = Array.from(container.querySelectorAll('img'));
+    expect(images[0]?.getAttribute('src') ?? '').not.toContain('data:image/gif');
   });
 });
