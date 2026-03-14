@@ -9,11 +9,17 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { useHero } from '@/shared/hooks/useHero';
 import HeroSkeleton from './HeroSkeleton';
+import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
+import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
+import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
+import { useImagePreloadLink } from '@/shared/hooks/utils/useImagePreloadLink';
 
 export const Hero = (): JSX.Element => {
   const { data, error, isFetching: isDataLoading } = useHero();
   const isError = Boolean(error);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth <= 768
+  );
   const [showFallback, setShowFallback] = useState(false);
 
   useEffect(() => {
@@ -41,15 +47,70 @@ export const Hero = (): JSX.Element => {
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  const heroData = isError || showFallback || !data?.data ? HERO_FALLBACK : data.data;
+  const isUsingFallback = isError || showFallback || !data?.data;
+  const heroData = isUsingFallback ? HERO_FALLBACK : data.data;
+
+  const heroMainMedia = useMemo(
+    () =>
+      isUsingFallback
+        ? LANDING_MEDIA.heroDesktop
+        : (createResponsiveMediaFromImage(heroData?.main_image, {
+            alt: heroData?.main_image?.alt || 'We Better Dashboard Interface',
+            sizes: '(max-width: 1280px) 100vw, 1024px',
+          }) ?? LANDING_MEDIA.heroDesktop),
+    [heroData, isUsingFallback]
+  );
+
+  const heroMobileMedia = useMemo(
+    () =>
+      isUsingFallback
+        ? LANDING_MEDIA.heroMobile
+        : (createResponsiveMediaFromImage(heroData?.main_image_mobile, {
+            alt: heroData?.main_image_mobile?.alt || 'We Better Mobile App Interface',
+            sizes: '(max-width: 768px) 100vw, 480px',
+          }) ?? LANDING_MEDIA.heroMobile),
+    [heroData, isUsingFallback]
+  );
+
+  const floatingMedia = useMemo(() => {
+    if (isUsingFallback) {
+      return [
+        LANDING_MEDIA.heroFloating.menHiking,
+        LANDING_MEDIA.heroFloating.womanPlanning,
+        LANDING_MEDIA.heroFloating.coupleRelationship,
+        LANDING_MEDIA.heroFloating.manMeditating,
+      ];
+    }
+
+    return heroData?.images.map((image, index) => {
+      const fallbackMedia = [
+        LANDING_MEDIA.heroFloating.menHiking,
+        LANDING_MEDIA.heroFloating.womanPlanning,
+        LANDING_MEDIA.heroFloating.coupleRelationship,
+        LANDING_MEDIA.heroFloating.manMeditating,
+      ][index];
+
+      return (
+        createResponsiveMediaFromImage(image, {
+          alt: '',
+          sizes: '(max-width: 1280px) 200px, 320px',
+        }) ?? fallbackMedia
+      );
+    });
+  }, [heroData?.images, isUsingFallback]);
 
   const highPriorityImageProps = useMemo(
     () =>
       ({
-        fetchpriority: 'high',
+        fetchPriority: 'high',
       }) as const,
     []
   );
+
+  useImagePreloadLink(isMobile ? heroMobileMedia : heroMainMedia, {
+    enabled: Boolean(isMobile ? heroMobileMedia : heroMainMedia),
+    id: 'landing-hero-main-image',
+  });
 
   if (isDataLoading && !showFallback) {
     return <HeroSkeleton />;
@@ -111,30 +172,23 @@ export const Hero = (): JSX.Element => {
       <div className="relative z-[3] mt-8 w-full max-w-6xl" role="presentation">
         <div className="relative z-[3] mb-4 w-full px-4 md:mb-0 md:px-0">
           {isMobile ? (
-            <motion.img
-              src={heroData?.main_image_mobile?.src}
+            <ResponsiveImage
+              media={heroMobileMedia}
               alt="We Better Mobile App Interface"
               className="h-auto w-full max-h-[60vh] rounded-xl object-contain"
               loading="eager"
               {...highPriorityImageProps}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
             />
           ) : (
-            <DashboardPreview
-              src={heroData?.main_image?.src}
-              alt={heroData?.main_image?.alt || 'We Better Dashboard Interface'}
-            />
+            <DashboardPreview media={heroMainMedia} />
           )}
         </div>
 
         <div aria-hidden="true">
-          {heroData?.images.map((image: { src: string }, index: number) => (
+          {floatingMedia?.map((media, index: number) => (
             <FloatingImage
               key={`floating-image-${index}`}
-              src={image.src}
-              alt=""
+              media={media}
               className={cn(
                 'hidden h-auto w-auto max-w-[300px] md:block md:max-w-[400px]',
                 HERO_FALLBACK.images[index].className,

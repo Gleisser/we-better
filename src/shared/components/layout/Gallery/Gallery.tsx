@@ -1,97 +1,110 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './Gallery.module.css';
 import { useGallery } from '@/shared/hooks/useGallery';
 import { API_CONFIG } from '@/core/config/api-config';
 import { GalleryIcon, MobileNavIcon, MobileNavNextIcon } from '@/shared/components/common/icons';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { TopLevelImage } from '@/utils/types/common/image';
+import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
+import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
+import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
+import type { ResponsiveMediaSource } from '@/utils/types/responsiveMedia';
 
 const INITIAL_LOAD = 12;
 const LOAD_MORE_COUNT = 8;
 
 type GalleryImage = {
   id: number;
-  src: string;
   alt: string;
   size: 'small' | 'large';
+  media: ResponsiveMediaSource;
 };
+
+const getGalleryImageAlt = (
+  image: Pick<TopLevelImage, 'alternativeText' | 'name' | 'id'>
+): string => image.alternativeText?.trim() || image.name?.trim() || `Gallery image ${image.id}`;
 
 const GALLERY_IMAGES = [
   {
     id: 1,
-    src: '/assets/images/gallery/body.gif',
-    alt: 'Woman running',
+    media: LANDING_MEDIA.galleryFallbacks.body,
+    alt: LANDING_MEDIA.galleryFallbacks.body.alt,
     size: 'large',
   },
   {
     id: 2,
-    src: '/assets/images/gallery/mind.webp',
-    alt: 'Woman thinking',
+    media: LANDING_MEDIA.galleryFallbacks.mind,
+    alt: LANDING_MEDIA.galleryFallbacks.mind.alt,
     size: 'large',
   },
   {
     id: 3,
-    src: '/assets/images/gallery/gallery_4_small.webp',
-    alt: 'Men reading a book',
+    media: LANDING_MEDIA.galleryFallbacks.gallery4,
+    alt: LANDING_MEDIA.galleryFallbacks.gallery4.alt,
     size: 'small',
   },
   {
     id: 4,
-    src: '/assets/images/gallery/family.webp',
-    alt: 'A family of 3',
+    media: LANDING_MEDIA.galleryFallbacks.family,
+    alt: LANDING_MEDIA.galleryFallbacks.family.alt,
     size: 'large',
   },
   {
     id: 5,
-    src: '/assets/images/gallery/care.webp',
-    alt: 'A woman taking care of her self',
+    media: LANDING_MEDIA.galleryFallbacks.care,
+    alt: LANDING_MEDIA.galleryFallbacks.care.alt,
     size: 'large',
   },
   {
     id: 6,
-    src: '/assets/images/gallery/career.webp',
-    alt: 'a man in a suit',
+    media: LANDING_MEDIA.galleryFallbacks.career,
+    alt: LANDING_MEDIA.galleryFallbacks.career.alt,
     size: 'large',
   },
   {
     id: 7,
-    src: '/assets/images/gallery/spirit.webp',
-    alt: 'A woman meditating',
+    media: LANDING_MEDIA.galleryFallbacks.spirit,
+    alt: LANDING_MEDIA.galleryFallbacks.spirit.alt,
     size: 'large',
   },
   {
     id: 8,
-    src: '/assets/images/gallery/gallery_1_small.webp',
-    alt: 'A man hearing headphones',
+    media: LANDING_MEDIA.galleryFallbacks.gallery1,
+    alt: LANDING_MEDIA.galleryFallbacks.gallery1.alt,
     size: 'small',
   },
   {
     id: 9,
-    src: '/assets/images/gallery/gallery_2_small.webp',
-    alt: 'A woman working on her laptop',
+    media: LANDING_MEDIA.galleryFallbacks.gallery2,
+    alt: LANDING_MEDIA.galleryFallbacks.gallery2.alt,
     size: 'small',
   },
   {
     id: 10,
-    src: '/assets/images/gallery/gallery_3_small.webp',
-    alt: 'A woman reflecting in a gallery setting',
+    media: LANDING_MEDIA.galleryFallbacks.gallery3,
+    alt: LANDING_MEDIA.galleryFallbacks.gallery3.alt,
     size: 'small',
   },
   {
     id: 11,
-    src: '/assets/images/gallery/gallery_5_small.webp',
-    alt: 'A woman holding books',
+    media: LANDING_MEDIA.galleryFallbacks.gallery5,
+    alt: LANDING_MEDIA.galleryFallbacks.gallery5.alt,
     size: 'small',
   },
   {
     id: 12,
-    src: '/assets/images/gallery/gallery_6_small.webp',
-    alt: 'Men talking to a woman',
+    media: LANDING_MEDIA.galleryFallbacks.gallery6,
+    alt: LANDING_MEDIA.galleryFallbacks.gallery6.alt,
     size: 'small',
   },
-  // Add all your images here with their correct paths and sizes
 ] as const;
+
+const BODY_IMAGE_PLACEHOLDER =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+const isBodyMotionImage = (image: GalleryImage): boolean =>
+  image.media.src === LANDING_MEDIA.galleryFallbacks.body.src ||
+  image.alt.toLowerCase().includes('running');
 
 const Gallery = (): JSX.Element => {
   // State management
@@ -102,20 +115,40 @@ const Gallery = (): JSX.Element => {
   // Refs
   const observerRef = useRef<IntersectionObserver | null>(null);
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const bodyMotionStageRef = useRef<HTMLDivElement | null>(null);
 
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useGallery();
-  const { handleError, isError, error } = useErrorHandler({
+  const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load gallery content',
   });
 
   // Process images data
-  const images = data?.data?.images.map((image: TopLevelImage) => ({
-    id: image.id,
-    src: `${API_CONFIG.imageBaseURL}${image.url}`,
-    alt: image.alternativeText,
-    size: (image.height > 400 ? 'large' : 'small') as 'large' | 'small',
-  }));
+  const images = data?.data?.images.map((image: TopLevelImage) => {
+    const alt = getGalleryImageAlt(image);
+
+    return {
+      id: image.id,
+      alt,
+      size: (image.height > 400 ? 'large' : 'small') as 'large' | 'small',
+      media:
+        createResponsiveMediaFromImage(
+          {
+            ...image,
+            src: `${API_CONFIG.imageBaseURL}${image.url}`,
+            alt,
+          },
+          {
+            alt,
+            sizes:
+              image.height > 400
+                ? '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                : '(max-width: 768px) 50vw, 25vw',
+          }
+        ) ?? LANDING_MEDIA.galleryFallbacks.mind,
+    };
+  });
 
   // Image ordering logic
   const orderImages = useCallback((images: GalleryImage[] | undefined) => {
@@ -132,27 +165,13 @@ const Gallery = (): JSX.Element => {
       if (nextSmall) orderedImages.push(nextSmall);
     }
 
-    return orderedImages;
+    return [...orderedImages, ...largeImages, ...smallImages];
   }, []);
 
   const orderedImages = orderImages(images);
   const galleryImages = orderedImages?.length > 0 ? orderedImages : GALLERY_IMAGES;
   const visibleImages = galleryImages.slice(0, visibleCount);
-
-  const visibleImageUrls = useMemo(
-    () =>
-      visibleImages
-        .filter(
-          (image): image is NonNullable<typeof image> => image !== undefined && image !== null
-        )
-        .map(image => image.src),
-    [visibleImages]
-  );
-
-  useAssetPreload({
-    urls: visibleImageUrls,
-    onError: handleError,
-  });
+  const shouldRenderGallery = !isDataLoading && !isError;
 
   // Intersection Observer setup
   useEffect(() => {
@@ -163,7 +182,15 @@ const Gallery = (): JSX.Element => {
             const img = entry.target as HTMLImageElement;
             if (img.dataset.src) {
               img.src = img.dataset.src;
+              if (img.dataset.srcset) {
+                img.srcset = img.dataset.srcset;
+              }
+              if (img.dataset.sizes) {
+                img.sizes = img.dataset.sizes;
+              }
               img.removeAttribute('data-src');
+              img.removeAttribute('data-srcset');
+              img.removeAttribute('data-sizes');
               observerRef.current?.unobserve(img);
             }
           }
@@ -197,6 +224,69 @@ const Gallery = (): JSX.Element => {
 
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
+
+  useEffect(() => {
+    if (!shouldRenderGallery) {
+      return;
+    }
+
+    const bodyMotionStage = bodyMotionStageRef.current;
+    const prefersReducedMotion =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!bodyMotionStage) {
+      return;
+    }
+
+    if (isMobile || prefersReducedMotion) {
+      bodyMotionStage.style.setProperty('--gallery-body-pan-progress', '1');
+      return;
+    }
+
+    let rafId = 0;
+
+    const updateBodyPan = (): void => {
+      rafId = 0;
+
+      const section = sectionRef.current;
+
+      if (!section || !bodyMotionStageRef.current) {
+        return;
+      }
+
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || 1;
+      const start = viewportHeight * 0.95;
+      const end = viewportHeight * 0.2;
+      const progress = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
+
+      bodyMotionStageRef.current.style.setProperty(
+        '--gallery-body-pan-progress',
+        progress.toFixed(3)
+      );
+    };
+
+    const requestBodyPanUpdate = (): void => {
+      if (rafId) {
+        return;
+      }
+
+      rafId = window.requestAnimationFrame(updateBodyPan);
+    };
+
+    requestBodyPanUpdate();
+    window.addEventListener('scroll', requestBodyPanUpdate, { passive: true });
+    window.addEventListener('resize', requestBodyPanUpdate);
+
+    return () => {
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
+      window.removeEventListener('scroll', requestBodyPanUpdate);
+      window.removeEventListener('resize', requestBodyPanUpdate);
+    };
+  }, [isMobile, shouldRenderGallery, visibleImages]);
 
   // Navigation handlers
   const hasMore = visibleCount < galleryImages.length;
@@ -243,7 +333,7 @@ const Gallery = (): JSX.Element => {
   }
 
   return (
-    <section className={styles.galleryContainer} aria-labelledby="gallery-title">
+    <section ref={sectionRef} className={styles.galleryContainer} aria-labelledby="gallery-title">
       <div className={styles.galleryContent}>
         <div className={styles.header}>
           <h2 className={styles.title} id="gallery-title">
@@ -268,14 +358,14 @@ const Gallery = (): JSX.Element => {
             </button>
 
             <div className={styles.mobileImageContainer}>
-              <img
+              <ResponsiveImage
+                media={
+                  galleryImages[currentMobileIndex]?.media ?? LANDING_MEDIA.galleryFallbacks.mind
+                }
                 ref={el => (imageRefs.current[currentMobileIndex] = el)}
-                src={galleryImages[currentMobileIndex]?.src}
-                data-src={galleryImages[currentMobileIndex]?.src}
                 alt={galleryImages[currentMobileIndex]?.alt}
                 className={styles.mobileImage}
                 loading="lazy"
-                decoding="async"
               />
             </div>
 
@@ -297,19 +387,60 @@ const Gallery = (): JSX.Element => {
                   role="img"
                   aria-label={image?.alt}
                 >
-                  <img
-                    ref={el => (imageRefs.current[index] = el)}
-                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-                    data-src={image?.src}
-                    alt={image?.alt}
-                    className={styles.image}
-                    loading="lazy"
-                    decoding="async"
-                    onError={e => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = image?.src || '';
-                    }}
-                  />
+                  {isBodyMotionImage(image) ? (
+                    <div
+                      ref={el => {
+                        bodyMotionStageRef.current = el;
+                      }}
+                      className={styles.bodyMotionStage}
+                      data-body-motion="true"
+                    >
+                      <img
+                        ref={el => (imageRefs.current[index] = el)}
+                        src={BODY_IMAGE_PLACEHOLDER}
+                        data-src={image?.media.src}
+                        data-srcset={image?.media.srcSet}
+                        data-sizes={image?.media.sizes}
+                        alt={image?.alt}
+                        className={`${styles.image} ${styles.bodyBackgroundImage}`}
+                        loading="lazy"
+                        decoding="async"
+                        onLoad={e => {
+                          const target = e.target as HTMLImageElement;
+                          const currentSrc = target.currentSrc || image?.media.src || '';
+                          const stage = bodyMotionStageRef.current ?? target.parentElement;
+                          if (stage) {
+                            stage.style.setProperty(
+                              '--gallery-body-image',
+                              `url("${currentSrc.replace(/"/g, '\\"')}")`
+                            );
+                            stage.setAttribute('data-layer-ready', 'true');
+                          }
+                        }}
+                        onError={e => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = image?.media.src || '';
+                        }}
+                      />
+                      <div className={styles.bodyRunnerLayer} aria-hidden="true" />
+                    </div>
+                  ) : (
+                    <img
+                      ref={el => (imageRefs.current[index] = el)}
+                      src={BODY_IMAGE_PLACEHOLDER}
+                      data-src={image?.media.src}
+                      data-srcset={image?.media.srcSet}
+                      data-sizes={image?.media.sizes}
+                      alt={image?.alt}
+                      className={styles.image}
+                      loading="lazy"
+                      decoding="async"
+                      onError={e => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = image?.media.src || '';
+                      }}
+                    />
+                  )}
                 </div>
               ))}
             </div>

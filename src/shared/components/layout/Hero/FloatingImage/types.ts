@@ -1,7 +1,6 @@
-import { ImgHTMLAttributes } from 'react';
+import type { ResponsiveMediaSource } from '@/utils/types/responsiveMedia';
 
-export interface FloatingImageProps extends ImgHTMLAttributes<HTMLImageElement> {
-  src: string;
-  alt: string;
+export interface FloatingImageProps {
+  media: ResponsiveMediaSource;
   className?: string;
 }

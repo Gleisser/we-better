@@ -1,41 +1,36 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef } from 'react';
 import styles from './Community.module.css';
 import { useCommunity } from '@/shared/hooks/useCommunity';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { DiscordIcon } from '@/shared/components/common/icons';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
+import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
 
 const INITIAL_PROFILES = [
   {
     id: 1,
-    src: '/assets/images/community/community_1.webp',
-    alt: 'Community member profile 1',
+    media: LANDING_MEDIA.community.profile1,
   },
   {
     id: 2,
-    src: '/assets/images/community/community_2.webp',
-    alt: 'Community member profile 2',
+    media: LANDING_MEDIA.community.profile2,
   },
   {
     id: 3,
-    src: '/assets/images/community/community_3.webp',
-    alt: 'Community member profile 3',
+    media: LANDING_MEDIA.community.profile3,
   },
   {
     id: 4,
-    src: '/assets/images/community/community_4.webp',
-    alt: 'Community member profile 4',
+    media: LANDING_MEDIA.community.profile4,
   },
   {
     id: 5,
-    src: '/assets/images/community/community_5.webp',
-    alt: 'Community member profile 5',
+    media: LANDING_MEDIA.community.profile5,
   },
   {
     id: 6,
-    src: '/assets/images/community/community_6.webp',
-    alt: 'Community member profile 6',
+    media: LANDING_MEDIA.community.profile6,
   },
 ] as const;
 
@@ -44,7 +39,7 @@ const Community = (): JSX.Element => {
 
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useCommunity();
-  const { handleError, isError, error } = useErrorHandler({
+  const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load community content',
   });
 
@@ -56,13 +51,6 @@ const Community = (): JSX.Element => {
       </span>
     </>
   );
-
-  const profileUrls = useMemo(() => INITIAL_PROFILES.map(profile => profile.src), []);
-
-  useAssetPreload({
-    urls: profileUrls,
-    onError: handleError,
-  });
 
   // Handle scroll animation
   useEffect(() => {
@@ -167,12 +155,10 @@ const Community = (): JSX.Element => {
           <div className={styles.profileColumns} ref={profilesRef} aria-hidden="true">
             {INITIAL_PROFILES.map(profile => (
               <div key={profile.id} className={styles.profileColumn}>
-                <img
-                  src={profile.src}
-                  alt={profile.alt}
+                <ResponsiveImage
+                  media={profile.media}
                   className={styles.profileImage}
                   loading="lazy"
-                  decoding="async"
                 />
               </div>
             ))}

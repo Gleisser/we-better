@@ -5,14 +5,12 @@ import { useFeature } from '@/shared/hooks/useFeature';
 import { FEATURES_CONSTANTS } from '@/utils/constants/fallback';
 import { useEffect, useState, useMemo } from 'react';
 import FeaturesSkeleton from './FeaturesSkeleton';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { Brand } from '@/utils/types/features-response';
 
 const Features = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useFeature();
-  const { handleError, isError, error } = useErrorHandler({
+  const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load features content',
   });
 
@@ -23,16 +21,6 @@ const Features = (): JSX.Element => {
 
   const brands = useMemo(() => data?.data?.brands || [], [data?.data?.brands]);
   const title = data?.data?.subtext;
-
-  const brandUrls = useMemo(
-    () => brands.map((brand: Brand) => brand.logo?.img?.url || '').filter(Boolean),
-    [brands]
-  );
-
-  const { isLoading } = useAssetPreload({
-    urls: brandUrls,
-    onError: handleError,
-  });
 
   // Fallback strategy
   useEffect(() => {
@@ -83,7 +71,7 @@ const Features = (): JSX.Element => {
           ))}
         </div>
 
-        <Featured brands={brands} title={title} headingLevel="h3" isLoading={isLoading} />
+        <Featured brands={brands} title={title} headingLevel="h3" />
       </div>
     </section>
   );

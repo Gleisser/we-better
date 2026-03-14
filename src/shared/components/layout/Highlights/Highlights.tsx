@@ -3,28 +3,35 @@ import styles from './Highlights.module.css';
 import { HIGHLIGHTS_FALLBACK } from '@/utils/constants/fallback';
 import { useHighlight } from '@/shared/hooks/useHighlight';
 import HighlightsSkeleton from './HighlightsSkeleton';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
-import { resolveContentImageUrl } from '@/utils/helpers/resolveContentImageUrl';
+import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
+import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
+import type { ResponsiveMediaSource } from '@/utils/types/responsiveMedia';
 
-const resolveHighlightImageUrl = (
+const FALLBACK_HIGHLIGHT_MEDIA: Record<string, ResponsiveMediaSource> = {
+  Goals: LANDING_MEDIA.highlights.goals,
+  Relationships: LANDING_MEDIA.highlights.relationships,
+  Resilience: LANDING_MEDIA.highlights.resilience,
+  Career: LANDING_MEDIA.highlights.career,
+  Finances: LANDING_MEDIA.highlights.finances,
+};
+
+const resolveHighlightMedia = (
   highlight:
     | (typeof HIGHLIGHTS_FALLBACK)[number]
     | NonNullable<ReturnType<typeof useHighlight>['data']>['data']['slides'][number]
-): string | undefined => {
-  const image = highlight.image;
-
-  if ('url' in image) {
-    return resolveContentImageUrl(image.img.formats.large?.url ?? image.url);
-  }
-
-  return resolveContentImageUrl(image.img.formats.large?.url ?? image.img.url);
-};
+): ResponsiveMediaSource =>
+  createResponsiveMediaFromImage(highlight.image, {
+    alt: highlight.title,
+    sizes: '(max-width: 768px) 100vw, 960px',
+  }) ??
+  FALLBACK_HIGHLIGHT_MEDIA[highlight.title] ??
+  LANDING_MEDIA.highlights.goals;
 
 const Highlights = (): JSX.Element => {
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useHighlight();
-  const { handleError, isError, error } = useErrorHandler({
+  const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load highlights content',
   });
 
@@ -32,24 +39,18 @@ const Highlights = (): JSX.Element => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showFallback, setShowFallback] = useState(false);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
+  const [isSectionVisible, setIsSectionVisible] = useState(false);
 
   // Refs
-  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
-  const observerRef = useRef<IntersectionObserver | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const sliderRef = useRef<HTMLDivElement | null>(null);
 
   // Determine data source with priority for fallback
   const highlights =
     error || showFallback || !data?.data?.slides ? HIGHLIGHTS_FALLBACK : data.data.slides;
 
-  const imageUrls = useMemo(
-    () => highlights.map(resolveHighlightImageUrl).filter((url): url is string => Boolean(url)),
-    [highlights]
-  );
-
-  useAssetPreload({
-    urls: imageUrls,
-    onError: handleError,
-  });
+  const highlightMedia = useMemo(() => highlights.map(resolveHighlightMedia), [highlights]);
+  const shouldRenderContent = !(isDataLoading && !showFallback) && !(isError && !showFallback);
 
   // Faster fallback strategy
   useEffect(() => {
@@ -66,44 +67,56 @@ const Highlights = (): JSX.Element => {
     return () => clearTimeout(timer);
   }, [isDataLoading, error, data]);
 
-  // Setup Intersection Observer
+  // Setup section observer
   useEffect(() => {
-    observerRef.current = new IntersectionObserver(
+    if (!shouldRenderContent || isSectionVisible) {
+      return;
+    }
+
+    const target = sliderRef.current ?? sectionRef.current;
+
+    if (!target) {
+      return;
+    }
+
+    let sectionObserver: IntersectionObserver | null = null;
+
+    sectionObserver = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            const img = entry.target as HTMLImageElement;
-            if (img.dataset.src) {
-              img.src = img.dataset.src;
-              img.removeAttribute('data-src');
-              observerRef.current?.unobserve(img);
-            }
+            setIsSectionVisible(true);
+            sectionObserver?.disconnect();
           }
         });
       },
       {
-        rootMargin: '50px 0px',
-        threshold: 0.1,
+        rootMargin: '250px 0px',
+        threshold: 0.01,
       }
     );
 
-    return () => {
-      observerRef.current?.disconnect();
-    };
-  }, []);
+    sectionObserver.observe(target);
 
-  // Preload next image when active index changes
+    return () => {
+      sectionObserver?.disconnect();
+    };
+  }, [isSectionVisible, shouldRenderContent]);
+
+  // Load only the active and next slide once the section is near the viewport
   useEffect(() => {
-    const nextIndex = (activeIndex + 1) % highlights.length;
-    if (!loadedImages.has(nextIndex) && imageRefs.current[nextIndex]) {
-      const img = imageRefs.current[nextIndex];
-      if (img?.dataset.src) {
-        img.src = img.dataset.src;
-        img.removeAttribute('data-src');
-        setLoadedImages(prev => new Set(prev).add(nextIndex));
-      }
+    if (!isSectionVisible) {
+      return;
     }
-  }, [activeIndex, highlights.length, loadedImages]);
+
+    const nextIndex = (activeIndex + 1) % highlights.length;
+    setLoadedImages(prev => {
+      const next = new Set(prev);
+      next.add(activeIndex);
+      next.add(nextIndex);
+      return next;
+    });
+  }, [activeIndex, highlights.length, isSectionVisible]);
 
   // Handle slider rotation
   useEffect(() => {
@@ -135,15 +148,25 @@ const Highlights = (): JSX.Element => {
   }
 
   return (
-    <section className={styles.highlightsContainer} aria-labelledby="highlights-title">
+    <section
+      ref={sectionRef}
+      className={styles.highlightsContainer}
+      aria-labelledby="highlights-title"
+    >
       <div className={styles.highlightsContent}>
         <h2 className={styles.highlightsTitle} id="highlights-title">
           <span>{data?.data?.title || 'Use We Better today for'}</span>
           <span className={styles.gradientText}>{highlights[activeIndex]?.title}</span>
         </h2>
-        <div className={styles.sliderContainer} role="region" aria-label="Highlights slider">
+        <div
+          ref={sliderRef}
+          className={styles.sliderContainer}
+          role="region"
+          aria-label="Highlights slider"
+        >
           {highlights.map((highlight, index: number) => {
-            const imageSrc = resolveHighlightImageUrl(highlight);
+            const media = highlightMedia[index];
+            const shouldLoad = loadedImages.has(index);
 
             return (
               <div
@@ -154,25 +177,19 @@ const Highlights = (): JSX.Element => {
                 aria-label={`Slide ${index + 1} of ${highlights.length}`}
               >
                 <img
-                  ref={el => {
-                    imageRefs.current[index] = el;
-                    if (el && !loadedImages.has(index)) {
-                      observerRef.current?.observe(el);
-                    }
-                  }}
                   src={
-                    index === activeIndex || loadedImages.has(index)
-                      ? imageSrc
+                    shouldLoad
+                      ? media.src
                       : 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
                   }
-                  data-src={imageSrc}
+                  srcSet={shouldLoad ? media.srcSet : undefined}
+                  sizes={shouldLoad ? media.sizes : undefined}
                   alt={`${highlight.title} - Example of AI-generated artwork showcasing ${highlight.title.toLowerCase()} capabilities`}
                   className={styles.slideImage}
-                  loading={index === 0 ? 'eager' : 'lazy'}
+                  loading={index === activeIndex ? 'eager' : 'lazy'}
                   decoding="async"
-                  onLoad={() => {
-                    setLoadedImages(prev => new Set(prev).add(index));
-                  }}
+                  width={media.width}
+                  height={media.height}
                 />
               </div>
             );

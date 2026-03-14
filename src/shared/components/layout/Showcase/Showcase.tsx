@@ -10,8 +10,10 @@ import {
   ShowcaseMobileArrowRightIcon,
 } from '@/shared/components/common/icons';
 import ShowcaseSkeleton from './ShowcaseSkeleton';
-import { useAssetPreload } from '@/shared/hooks/utils/useAssetPreload';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
+import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
+import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
 
 interface ShowcaseCardProps {
   item: {
@@ -47,6 +49,16 @@ const ShowcaseCard = ({ item, eager }: ShowcaseCardProps): JSX.Element => {
   }, [imageCount, isHovered]);
 
   const activeImage = item.images[imageIndex] ?? item.images[0];
+  const fallbackKey = item.title
+    .toLowerCase()
+    .replace(/[^a-z]+/g, '') as keyof typeof LANDING_MEDIA.showcase;
+  const media =
+    createResponsiveMediaFromImage(activeImage, {
+      alt: activeImage?.alt ?? item.title,
+      sizes: '(max-width: 768px) 100vw, 25vw',
+    }) ??
+    LANDING_MEDIA.showcase[fallbackKey] ??
+    LANDING_MEDIA.showcase.tracking;
 
   return (
     <div
@@ -57,15 +69,10 @@ const ShowcaseCard = ({ item, eager }: ShowcaseCardProps): JSX.Element => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className={styles.imageContainer}>
-        <img
-          src={activeImage?.src ?? ''}
-          alt={activeImage?.alt ?? item.title}
+        <ResponsiveImage
+          media={media}
           className={styles.image}
           loading={eager ? 'eager' : 'lazy'}
-          decoding="async"
-          width="600"
-          height="450"
-          sizes="(max-width: 768px) 100vw, 25vw"
         />
       </div>
       <h3 className={styles.itemTitle}>{item.title}</h3>
@@ -82,7 +89,7 @@ const Showcase = (): JSX.Element => {
 
   // Initialize hooks
   const { data: showcase, isLoading: isDataLoading } = useShowcase();
-  const { handleError, isError, error } = useErrorHandler({
+  const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load showcase content',
   });
 
@@ -98,17 +105,6 @@ const Showcase = (): JSX.Element => {
     () => belts.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage),
     [belts, currentPage, itemsPerPage]
   );
-
-  const currentPageUrls = useMemo(
-    () => currentItems.flatMap(item => item.images.map(image => image.src)),
-    [currentItems]
-  );
-
-  useAssetPreload({
-    urls: currentPageUrls,
-    enabled: !isDataLoading && currentPageUrls.length > 0,
-    onError: handleError,
-  });
 
   // Handle mobile detection
   const checkIfMobile = useCallback(() => {
