@@ -1,5 +1,10 @@
 import type { CSSProperties } from 'react';
 import { useTheme } from '@/shared/hooks/useTheme';
+import {
+  CUTOUT_WIDGET_FONT_PRELOADS,
+  CUTOUT_WIDGET_FONT_STYLESHEET,
+  useFontStylesheets,
+} from '@/shared/hooks/useFontStylesheets';
 import styles from './CutoutWidget.module.css';
 
 const FEATURED_IMAGE =
@@ -33,6 +38,12 @@ const ArrowIcon = (): JSX.Element => (
 
 const CutoutWidget = (): JSX.Element => {
   const { currentTheme } = useTheme();
+
+  useFontStylesheets({
+    preloads: CUTOUT_WIDGET_FONT_PRELOADS,
+    stylesheets: [CUTOUT_WIDGET_FONT_STYLESHEET],
+  });
+
   const surfaceColor =
     currentTheme.mode === 'dark'
       ? currentTheme.colors.background.primary

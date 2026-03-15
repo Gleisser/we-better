@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Moderustic&family=SUSE:wght@600&display=swap');
-
 .cutoutWidget {
   --cutout-surface: #fff;
   --cutout-floating-surface: #fff;
@@ -17,7 +15,7 @@
   align-items: center;
   justify-content: center;
   color: var(--cutout-text);
-  font-family: 'Moderustic', sans-serif;
+  font-family: var(--font-cutout, sans-serif);
   background: transparent;
 }
 
@@ -248,7 +246,7 @@
   top: 1.5rem;
   left: 1.5rem;
   margin: 0;
-  font-family: 'SUSE', sans-serif;
+  font-family: var(--font-cutout-accent, sans-serif);
   font-weight: 600;
   font-size: clamp(2.5rem, 1.6351rem + 4.3243vw, 6.5rem);
   letter-spacing: 0.025em;

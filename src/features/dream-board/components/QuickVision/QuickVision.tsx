@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Dream } from '../../types';
 import { useDreamProgress } from '../../hooks/useDreamProgress';
 import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
-import styles from '../../DreamBoardPage.module.css';
+import styles from './QuickVision.module.css';
 
 interface QuickVisionProps {
   dreams: Dream[];

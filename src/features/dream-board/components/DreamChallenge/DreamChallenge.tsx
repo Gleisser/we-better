@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, TouchEvent } from 'react';
 import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
-import styles from '../../DreamBoardPage.module.css';
+import styles from './DreamChallenge.module.css';
 import { Dream } from '../../types';
 import { DreamChallenge as DreamChallengeType } from '../../api/dreamChallengesApi';
 

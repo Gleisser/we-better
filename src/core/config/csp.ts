@@ -1,8 +1,6 @@
 const DEFAULT_BACKEND_ORIGIN = 'http://localhost:3000';
 
 const APP_HOST_SOURCES = ['https://webetter.ai', 'https://*.webetter.ai', 'https://*.vercel.app'];
-const STYLE_SOURCES = ['https://fonts.googleapis.com'];
-const FONT_SOURCES = ['https://fonts.gstatic.com'];
 const IMAGE_CDN_SOURCES = [
   'https://images.unsplash.com',
   'https://plus.unsplash.com',
@@ -56,8 +54,8 @@ export const CSP_POLICY = {
   'object-src': ["'none'"],
   'script-src': ["'self'"],
   'script-src-elem': ["'self'"],
-  'style-src': uniqueSources(["'self'", "'unsafe-inline'", ...STYLE_SOURCES]),
-  'style-src-elem': uniqueSources(["'self'", "'unsafe-inline'", ...STYLE_SOURCES]),
+  'style-src': uniqueSources(["'self'", "'unsafe-inline'"]),
+  'style-src-elem': uniqueSources(["'self'", "'unsafe-inline'"]),
   'img-src': uniqueSources([
     "'self'",
     'data:',
@@ -87,7 +85,7 @@ export const CSP_POLICY = {
     supabaseOrigin,
     supabaseRealtimeOrigin,
   ]),
-  'font-src': uniqueSources(["'self'", 'data:', ...FONT_SOURCES]),
+  'font-src': uniqueSources(["'self'", 'data:']),
   'frame-src': ["'self'"],
   'worker-src': ["'self'", 'blob:'],
 };

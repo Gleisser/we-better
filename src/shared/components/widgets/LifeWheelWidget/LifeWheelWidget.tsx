@@ -102,7 +102,7 @@ const LifeWheelWidget = (): JSX.Element => {
   const widgetRef = useRef<HTMLDivElement>(null);
   // const renderCountRef = useRef(0); // Removed to prevent infinite loops
 
-  // Handle navigation to LifeWheelPage
+  // Navigate to the active life wheel experience
   const handleNavigateToLifeWheel = (): void => {
     navigate('/app/life-wheel');
   };

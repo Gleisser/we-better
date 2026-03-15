@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
-import styles from '../../DreamBoardPage.module.css';
+import styles from './DreamWeather.module.css';
 import { WeatherState, CategoryWeatherStatus } from '../../api/dreamWeatherApi';
 
 interface Weather {

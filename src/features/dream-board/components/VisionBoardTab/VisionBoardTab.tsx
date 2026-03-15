@@ -1,6 +1,5 @@
 import React from 'react';
 import { Dream, DreamImageUploadInput } from '../../types';
-import styles from '../../DreamBoardPage.module.css';
 import DreamCategories from '../DreamCategories';
 import DreamProgress from '../DreamProgress';
 import QuickVision from '../QuickVision';
@@ -88,7 +87,7 @@ const VisionBoardTab: React.FC<VisionBoardTabProps> = ({
         updateDreamProgress={updateDreamProgress}
       />
 
-      <div className={styles.visionBoardTab}>
+      <div>
         {/* Dream Categories Dashboard */}
         <DreamCategories
           categories={categories}

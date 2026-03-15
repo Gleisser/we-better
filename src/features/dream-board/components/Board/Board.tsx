@@ -15,6 +15,11 @@ import { Toolbar } from './Toolbar/Toolbar';
 import { IntroScreen } from './IntroScreen/IntroScreen';
 import showToast from '@/utils/helpers/toast';
 import {
+  DREAM_BOARD_FONT_PRELOADS,
+  DREAM_BOARD_FONT_STYLESHEET,
+  useFontStylesheets,
+} from '@/shared/hooks/useFontStylesheets';
+import {
   formatDreamBoardImageLimit,
   validateDreamBoardUploadFile,
 } from '../../utils/imagePersistence';
@@ -31,6 +36,11 @@ export const DreamBoard: React.FC<DreamBoardProps> = ({
   readOnly = false,
 }) => {
   const { t } = useDreamBoardTranslation();
+
+  useFontStylesheets({
+    preloads: DREAM_BOARD_FONT_PRELOADS,
+    stylesheets: [DREAM_BOARD_FONT_STYLESHEET],
+  });
 
   // Canvas state
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });

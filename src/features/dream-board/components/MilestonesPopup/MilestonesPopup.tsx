@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../../DreamBoardPage.module.css';
+import styles from './MilestonesPopup.module.css';
 import { Dream, Milestone } from '../../types';
 import TimelineComponent from './TimelineComponent';
 import { calculateProgress, getPercentage } from '../../utils/progressUtils';

@@ -1,0 +1,133 @@
+.weatherImageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  position: relative;
+}
+
+.weatherImageLarge {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+  animation: weatherFloatImproved 4s ease-in-out infinite;
+}
+
+.weatherTitle {
+  font-size: 1.7rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+}
+
+.weatherMessage {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.weatherCardContent {
+  margin-bottom: 24px;
+  border-radius: 15px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+  .weatherCardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .weatherCondition {
+    align-self: flex-start;
+  }
+}
+
+.dreamWeatherCard {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.2),
+    0 1px 1px rgba(255, 255, 255, 0.1) inset;
+  backdrop-filter: blur(10px);
+}
+
+.weatherGlassmorphism {
+  position: relative;
+  backdrop-filter: blur(8px);
+  background: url('/assets/images/dreamboard/weather/background.webp') no-repeat center center;
+  background-size: cover;
+  padding: 24px;
+  border-radius: 20px;
+  overflow: hidden;
+  z-index: 1;
+  color: white;
+}
+
+.weatherGlassmorphism::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(16, 24, 39, 0.8) 0%,
+    rgba(59, 130, 246, 0.5) 50%,
+    rgba(139, 92, 246, 0.3) 100%
+  );
+  z-index: -1;
+}
+
+.weatherCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.weatherCondition {
+  border-radius: 30px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.weatherText {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+@keyframes weatherFloatImproved {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-4px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-4px) rotate(-1deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
