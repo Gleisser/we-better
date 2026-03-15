@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import styles from './ConfirmationModal.module.css';
 import { createPortal } from 'react-dom';
 
@@ -19,7 +19,7 @@ export const ConfirmationModal = ({
   title,
   message,
 }: ConfirmationModalProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
 
   return createPortal(
     <AnimatePresence>

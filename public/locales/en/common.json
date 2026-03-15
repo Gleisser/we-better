@@ -1,0 +1,64 @@
+{
+  "greetings": {
+    "goodMorning": "Good Morning",
+    "goodAfternoon": "Good Afternoon",
+    "goodEvening": "Good Evening",
+    "howAreYou": "how are you?"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "loading": "Loading...",
+    "tryAgain": "Try Again",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "continue": "Continue",
+    "submit": "Submit"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "pricing": "Pricing",
+    "pricingCta": "Premium",
+    "pricingCtaTop": "Save up to 20%",
+    "pricingCtaBottom": "on yearly billing",
+    "dreamBoard": "Dream Board",
+    "missions": "Missions",
+    "lifeWheel": "Life Wheel",
+    "affirmations": "Affirmations",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "header": {
+    "toggleTheme": "Toggle theme",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "markAllAsRead": "Mark all as read",
+    "viewAllNotifications": "View all notifications",
+    "bookmarks": "Bookmarks",
+    "signOut": "Sign out",
+    "user": "User"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "tabs": {
+      "all": "All",
+      "following": "Following",
+      "archive": "Archive"
+    },
+    "actions": {
+      "followBack": "Follow back",
+      "reply": "Reply",
+      "view": "View",
+      "viewThread": "View thread",
+      "viewTask": "View task",
+      "viewBadge": "View badge"
+    }
+  }
+}

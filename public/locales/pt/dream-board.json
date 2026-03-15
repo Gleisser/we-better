@@ -1,0 +1,520 @@
+{
+  "dreamBoard": {
+    "title": "Quadro dos sonhos",
+    "tabs": {
+      "visionBoard": "Quadro visual",
+      "experience": "Experiência",
+      "insights": "Insights"
+    },
+    "loading": {
+      "dreamBoard": "Carregando seu quadro dos sonhos..."
+    },
+    "errors": {
+      "loadFailed": "Não foi possível carregar seu quadro dos sonhos.",
+      "saveFailed": "Não foi possível salvar suas alterações mais recentes."
+    },
+    "emptyState": {
+      "firstImage": {
+        "title": "Comece seu quadro dos sonhos com a primeira imagem",
+        "description": "Adicione uma imagem para desbloquear a Visão Rápida, os insights por categoria e toda a experiência visual do quadro.",
+        "features": {
+          "quickVision": "A Visão Rápida mantém seus sonhos e seu progresso visíveis de imediato.",
+          "categories": "Os cartões de categoria mostram como cada área do seu futuro está tomando forma.",
+          "insights": "Os insights ajudam você a perceber equilíbrio, impulso e próximos passos entre seus sonhos."
+        },
+        "cta": "Adicionar primeira imagem"
+      }
+    },
+    "quickVision": {
+      "title": "Visão rápida",
+      "expand": "Expandir",
+      "minimize": "Minimizar",
+      "errorLoading": "Não foi possível carregar a visão rápida: {{error}}",
+      "decreaseProgress": "Diminuir progresso",
+      "increaseProgress": "Aumentar progresso",
+      "scrollToSeeMore": "Rolar para ver mais sonhos"
+    },
+    "progress": {
+      "title": "Progresso dos sonhos",
+      "loading": "Carregando marcos...",
+      "milestonesCompleted": "{{completed}} de {{total}} marcos concluídos",
+      "manageMilestones": "Gerenciar marcos"
+    },
+    "categories": {
+      "title": "Categorias dos sonhos",
+      "clearFilter": "Limpar filtro",
+      "errorLoading": "Não foi possível carregar o progresso das categorias: {{error}}",
+      "dreamCount": {
+        "single": "sonho",
+        "plural": "sonhos"
+      },
+      "expandedContent": {
+        "dreamsHeader": "Sonhos nesta categoria",
+        "emptyState": "Ainda não há sonhos nesta categoria.",
+        "moreDreams": "{{count}} sonhos a mais"
+      },
+      "names": {
+        "general": "Geral",
+        "travel": "Viagens",
+        "skills": "Habilidades",
+        "finance": "Finanças",
+        "finances": "Finanças",
+        "health": "Saúde",
+        "relationships": "Relacionamentos",
+        "career": "Carreira",
+        "education": "Educação",
+        "spirituality": "Espiritualidade"
+      }
+    },
+    "insights": {
+      "filters": {
+        "all": "Todos",
+        "patterns": "Padrões",
+        "balance": "Equilíbrio",
+        "progress": "Progresso"
+      },
+      "keyTakeaways": {
+        "title": "Principais aprendizados",
+        "emptyMessage": "Adicione mais atividade aos seus sonhos para liberar insights mais ricos."
+      },
+      "relatedDreams": {
+        "title": "Sonhos relacionados",
+        "noRelated": "Ainda não há sonhos relacionados"
+      },
+      "modal": {
+        "title": "Detalhes do insight",
+        "dataVisualization": "Visualização de dados",
+        "visualizationPlaceholder": "Uma visualização mais profunda deste insight aparecerá aqui."
+      },
+      "titles": {
+        "pattern_analysis": "Análise de padrões",
+        "balance_suggestion": "Sugestão de equilíbrio",
+        "progress_insight": "Insight de progresso"
+      }
+    },
+    "cosmic": {
+      "title": "Experiência cósmica dos sonhos",
+      "viewModes": {
+        "cosmic": "Cósmico",
+        "constellation": "Constelação"
+      },
+      "tooltips": {
+        "exitFullscreen": "Sair da tela cheia",
+        "fullscreen": "Entrar em tela cheia",
+        "zoomOut": "Diminuir zoom",
+        "resetView": "Redefinir visualização",
+        "zoomIn": "Aumentar zoom"
+      },
+      "category": {
+        "label": "Filtro por categoria",
+        "all": "Todos os sonhos",
+        "legendTitle": "Categorias de sonhos"
+      },
+      "loading": {
+        "text": "Mapeando seu universo de sonhos..."
+      },
+      "emptyState": {
+        "text": "Seu universo ainda está vazio.",
+        "subtext": "Adicione sonhos para vê-los se conectar como uma constelação viva.",
+        "button": "Voltar ao quadro dos sonhos"
+      },
+      "detail": {
+        "progress": "Progresso",
+        "milestones": "Marcos",
+        "completed": "Concluído",
+        "sharedWith": "Compartilhado com",
+        "created": "Criado em"
+      }
+    },
+    "challenge": {
+      "title": "Desafio dos sonhos",
+      "newChallenge": "Novo desafio",
+      "loading": "Carregando desafios...",
+      "errorLoading": "Não foi possível carregar os desafios: {{error}}",
+      "noActiveChallenges": "Ainda não há desafios ativos. Crie um para transformar um sonho em prática diária.",
+      "deleteConfirm": "Excluir este desafio?",
+      "progress": {
+        "dayOf": "Dia {{current}} de {{total}}",
+        "totalDays": "{{days}} dias no total"
+      },
+      "carousel": {
+        "counter": "{{current}} / {{total}}"
+      },
+      "actions": {
+        "markComplete": "Marcar hoje como concluído",
+        "undoComplete": "Desfazer conclusão de hoje",
+        "editChallenge": "Editar desafio",
+        "deleteChallenge": "Excluir desafio",
+        "previousChallenge": "Desafio anterior",
+        "nextChallenge": "Próximo desafio"
+      },
+      "modal": {
+        "createTitle": "Criar desafio",
+        "editTitle": "Editar desafio",
+        "close": "Fechar modal de desafio",
+        "sections": {
+          "basicInfo": "Informações básicas",
+          "durationDifficulty": "Duração e dificuldade",
+          "frequency": "Frequência",
+          "connectRemind": "Conectar e lembrar"
+        },
+        "form": {
+          "challengeTitle": "Título do desafio",
+          "titlePlaceholder": "Ex.: Praticar piano todos os dias",
+          "description": "Descrição",
+          "descriptionPlaceholder": "Descreva o hábito ou resultado que este desafio apoia",
+          "duration": "Duração",
+          "difficultyLevel": "Nível de dificuldade",
+          "linkToDream": "Vincular a um sonho",
+          "none": "Nenhum sonho vinculado",
+          "enableReminders": "Ativar lembretes",
+          "selectDays": "Selecionar dias"
+        },
+        "units": {
+          "days": "Dias",
+          "weeks": "Semanas",
+          "months": "Meses"
+        },
+        "difficulty": {
+          "easy": "Fácil",
+          "medium": "Médio",
+          "hard": "Difícil"
+        },
+        "frequency": {
+          "daily": "Diária",
+          "weekly": "Semanal",
+          "custom": "Personalizada"
+        },
+        "weekDays": {
+          "mon": "Seg",
+          "tue": "Ter",
+          "wed": "Qua",
+          "thu": "Qui",
+          "fri": "Sex",
+          "sat": "Sáb",
+          "sun": "Dom"
+        },
+        "tips": {
+          "daily": "Desafios diários funcionam melhor quando a ação é simples e repetível.",
+          "weekly": "Desafios semanais dão mais espaço para foco profundo e recuperação.",
+          "custom": "Escolha um ritmo personalizado quando sua rotina precisa de flexibilidade."
+        },
+        "buttons": {
+          "cancel": "Cancelar",
+          "create": "Criar desafio",
+          "update": "Atualizar desafio"
+        }
+      }
+    },
+    "milestones": {
+      "manageTitle": "Marcos de {{dreamTitle}}",
+      "closePopup": "Fechar popup de marcos",
+      "progressSummary": "{{completed}} de {{total}} marcos concluídos ({{percentage}}%)",
+      "deleteConfirm": "Excluir este marco?",
+      "noDateSet": "Sem data definida",
+      "tabs": {
+        "timeline": "Linha do tempo",
+        "chart": "Gráfico",
+        "achievements": "Conquistas"
+      },
+      "timeline": {
+        "title": "Visualização em linha do tempo",
+        "noDates": "Adicione datas aos seus marcos para liberar a visualização em linha do tempo.",
+        "goal": "Meta",
+        "goalCompletion": "Conclusão do sonho",
+        "scrollLeft": "Rolar linha do tempo para a esquerda",
+        "scrollRight": "Rolar linha do tempo para a direita"
+      },
+      "chart": {
+        "title": "Gráfico de progresso",
+        "loading": "Carregando gráfico...",
+        "error": "Não foi possível carregar o gráfico: {{error}}",
+        "noMilestones": "Ainda não há dados suficientes de marcos para mostrar o progresso."
+      },
+      "achievements": {
+        "title": "Conquistas",
+        "badges": {
+          "firstStep": {
+            "title": "Primeiro passo",
+            "description": "Conclua seu primeiro marco para começar a ganhar impulso."
+          },
+          "halfwayThere": {
+            "title": "Metade do caminho",
+            "description": "Alcance 50% de progresso em um sonho."
+          },
+          "wellPlanned": {
+            "title": "Bem planejado",
+            "description": "Defina uma data alvo para cada marco."
+          },
+          "dreamAchieved": {
+            "title": "Sonho alcançado",
+            "description": "Conclua todos os marcos e finalize o sonho."
+          }
+        }
+      },
+      "form": {
+        "addTitle": "Adicionar marco",
+        "editTitle": "Editar marco",
+        "closeForm": "Fechar formulário de marco",
+        "titleLabel": "Título",
+        "descriptionLabel": "Descrição",
+        "targetDateLabel": "Data alvo",
+        "cancel": "Cancelar",
+        "addButton": "Adicionar marco",
+        "saveButton": "Salvar alterações"
+      },
+      "list": {
+        "title": "Lista de marcos",
+        "addButton": "Adicionar marco",
+        "editMilestone": "Editar marco",
+        "deleteMilestone": "Excluir marco",
+        "emptyState": "Ainda não há marcos. Adicione um para começar a acompanhar o progresso."
+      },
+      "history": {
+        "title": "Histórico",
+        "deletedMilestone": "Marco excluído"
+      }
+    },
+    "weather": {
+      "title": "Previsão dos sonhos",
+      "altText": "Ilustração do clima dos sonhos mostrando {{weather}}",
+      "states": {
+        "sunny": "Ensolarado",
+        "partly-cloudy": "Parcialmente nublado",
+        "cloudy": "Nublado",
+        "stormy": "Tempestuoso",
+        "raining": "Chuvoso",
+        "unknown": "Desconhecido"
+      }
+    },
+    "board": {
+      "title": "Quadro dos sonhos",
+      "defaultTitle": "Meu quadro dos sonhos",
+      "defaultDescription": "Quadro visual criado com meus sonhos e objetivos",
+      "loading": "Carregando seu quadro dos sonhos...",
+      "errorTitle": "Algo deu errado",
+      "retry": "Tentar novamente",
+      "saved": "Quadro dos sonhos salvo",
+      "failedToSave": "Não foi possível salvar seu quadro dos sonhos.",
+      "errorSaving": "Ocorreu um erro ao salvar seu quadro dos sonhos.",
+      "imageLimit": "Você atingiu o limite de imagens deste quadro dos sonhos.",
+      "imageUnsupportedType": "Este tipo de arquivo não é suportado. Use JPG, PNG ou WebP.",
+      "imageUploadLimit": "Esta imagem excede o limite de upload de {{limit}}.",
+      "introScreen": {
+        "title": "Bem-vindo ao seu quadro dos sonhos",
+        "description": "Transforme seus objetivos em um espaço visual vivo que você pode moldar, acompanhar e revisitar sempre.",
+        "steps": {
+          "addContent": {
+            "title": "Adicione conteúdo",
+            "description": "Envie imagens que representem a vida e os objetivos que você quer construir."
+          },
+          "trackGoals": {
+            "title": "Acompanhe metas",
+            "description": "Associe marcos para que o progresso fique concreto e mensurável."
+          },
+          "customize": {
+            "title": "Personalize",
+            "description": "Organize e refine seu quadro até que ele pareça claro e motivador."
+          },
+          "saveShare": {
+            "title": "Salve e revisite",
+            "description": "Mantenha seu quadro evoluindo à medida que seus sonhos ganham impulso."
+          }
+        },
+        "getStarted": "Começar"
+      },
+      "milestones": {
+        "title": "Marcos",
+        "loading": "Carregando marcos...",
+        "description": "Quebre este sonho em passos que você realmente pode concluir.",
+        "newMilestonePlaceholder": "Adicionar um novo marco",
+        "addButton": "Adicionar",
+        "emptyState": "Ainda não há marcos.",
+        "dueDate": "Prazo {{date}}",
+        "deleteMilestone": "Excluir marco"
+      },
+      "toolbar": {
+        "buttons": {
+          "uploadPhoto": "Enviar foto",
+          "all": "Todos",
+          "autoArrange": "Organizar automaticamente",
+          "save": "Salvar",
+          "saving": "Salvando...",
+          "delete": "Excluir"
+        },
+        "imageLimitIndicator": "{{current}} / {{limit}} imagens",
+        "modes": {
+          "add": "Adicionar",
+          "filter": "Filtrar",
+          "arrange": "Organizar"
+        },
+        "tooltips": {
+          "addContent": "Adicionar novo conteúdo",
+          "filterContent": "Filtrar conteúdo do quadro",
+          "arrangeContent": "Organizar conteúdo do quadro",
+          "uploadImage": "Enviar uma imagem",
+          "showAll": "Mostrar todo o conteúdo",
+          "showCategory": "Mostrar sonhos de {{category}}",
+          "autoArrange": "Organizar itens automaticamente",
+          "save": "Salvar seu quadro dos sonhos",
+          "delete": "Excluir o conteúdo selecionado"
+        }
+      },
+      "contentControls": {
+        "contentTypes": {
+          "image": "Imagem",
+          "item": "Item"
+        },
+        "fields": {
+          "none": "Nenhum",
+          "title": "Título",
+          "altText": "Texto alternativo",
+          "altTextPlaceholder": "Descreva esta imagem para acessibilidade",
+          "captionPlaceholder": "Adicione um título ou legenda",
+          "xPosition": "Posição X",
+          "yPosition": "Posição Y",
+          "width": "Largura",
+          "height": "Altura",
+          "rotation": "Rotação",
+          "category": "Categoria"
+        },
+        "tabs": {
+          "position": "Posição",
+          "style": "Estilo",
+          "milestones": "Marcos"
+        },
+        "buttons": {
+          "replaceImage": "Trocar imagem",
+          "delete": "Excluir",
+          "cancel": "Cancelar"
+        },
+        "deleteConfirmation": {
+          "title": "Excluir conteúdo?",
+          "message": "Tem certeza de que deseja excluir este {{type}}?"
+        },
+        "edit": "Editar {{type}}",
+        "noStylingOptions": "Ainda não há controles de estilo disponíveis para este conteúdo."
+      },
+      "dreamSymbols": {
+        "messages": {
+          "briefcase": "Sonhos de carreira crescem quando seu esforço diário aponta na mesma direção.",
+          "money": "Liberdade financeira é construída com progresso constante e intencional.",
+          "health": "Seu bem-estar sustenta todos os outros sonhos deste quadro.",
+          "house": "Um lar estável começa com as escolhas que você faz hoje.",
+          "growth": "Crescimento pessoal se multiplica quando você continua aparecendo.",
+          "heart": "Relacionamentos significativos se aprofundam quando você investe neles.",
+          "recreation": "Alegria e lazer merecem espaço no futuro que você está construindo.",
+          "meditation": "Calma interior dá mais clareza e resiliência às suas metas.",
+          "graduation": "Aprender desbloqueia a próxima versão da sua vida.",
+          "travel": "A aventura fica mais próxima sempre que você faz um plano concreto.",
+          "default": "Cada símbolo no seu quadro representa um futuro que vale a pena construir."
+        }
+      }
+    },
+    "timelineGallery": {
+      "title": "Galeria da linha do tempo",
+      "subtitle": "Capture as imagens, marcos e o impulso por trás de cada sonho.",
+      "addImage": "Adicionar imagem",
+      "emptyHint": "Adicione sua primeira imagem para começar a montar uma linha do tempo visual deste quadro dos sonhos.",
+      "previousImage": "Imagem anterior do sonho",
+      "nextImage": "Próxima imagem do sonho",
+      "scrollHint": "Use as setas ou o teclado para explorar sua linha do tempo",
+      "removeImageAria": "Remover imagem {{title}}",
+      "removeImageConfirm": "Remover {{title}} da linha do tempo do seu quadro dos sonhos?",
+      "status": {
+        "saving": "Salvando alterações...",
+        "pending": "Alterações pendentes",
+        "saved": "Todas as alterações salvas"
+      },
+      "form": {
+        "fileLabel": "Arquivo de imagem do sonho",
+        "dreamTitleLabel": "Título do sonho",
+        "dreamTitlePlaceholder": "Dê um nome ao sonho que esta imagem representa",
+        "categoryLabel": "Escolha uma categoria",
+        "milestonesLabel": "Marcos",
+        "milestonesEmpty": "Ainda não há marcos. Adicione um se quiser acompanhar um próximo passo.",
+        "addMilestone": "Adicionar marco",
+        "removeMilestone": "Remover",
+        "milestoneTitlePlaceholder": "Título do marco",
+        "pickDate": "Escolher uma data alvo",
+        "errors": {
+          "submitFailed": "Não foi possível enviar esta imagem agora. Tente novamente."
+        }
+      },
+      "wizard": {
+        "title": "Adicionar uma imagem do sonho",
+        "subtitle": "Conclua cada etapa para colocar uma nova imagem na linha do tempo do seu quadro dos sonhos.",
+        "progressLabel": "Progresso do envio",
+        "steps": {
+          "file": {
+            "title": "Escolha um arquivo",
+            "description": "Selecione uma imagem JPG, PNG ou WebP de até {{limit}}."
+          },
+          "details": {
+            "title": "Adicione detalhes",
+            "description": "Dê um título ou legenda para que o momento seja fácil de reconhecer depois."
+          },
+          "category": {
+            "title": "Escolha uma categoria",
+            "description": "Coloque a imagem na área do sonho que ela mais representa."
+          },
+          "milestones": {
+            "title": "Planeje marcos",
+            "description": "Adicione marcos opcionais para conectar esta imagem a um progresso concreto."
+          }
+        },
+        "dropzone": {
+          "title": "Solte uma imagem aqui",
+          "hint": "Arraste e solte um arquivo, ou procure no seu dispositivo.",
+          "browse": "Procurar"
+        },
+        "fields": {
+          "caption": "Legenda",
+          "captionPlaceholder": "Adicione contexto, inspiração ou uma nota sobre por que esta imagem importa"
+        },
+        "fileLimit": {
+          "badge": "Limite {{limit}}",
+          "title": "Requisitos da imagem",
+          "default": "Escolha um arquivo de até {{limit}}. JPG, PNG e WebP são suportados.",
+          "validating": "{{name}} está sendo verificado. Tamanho original: {{originalSize}}. Limite: {{limit}}.",
+          "ready": "{{name}} está pronto para envio. Tamanho original: {{originalSize}}. Limite: {{limit}}.",
+          "tooLarge": "{{name}} é grande demais, com {{originalSize}}. Escolha uma imagem abaixo de {{limit}}.",
+          "unsupportedType": "{{name}} não está em um formato suportado. Use JPG, PNG ou WebP abaixo de {{limit}}.",
+          "failed": "Não foi possível validar {{name}}. Tamanho original: {{originalSize}}. Tente outra imagem abaixo de {{limit}}."
+        },
+        "preview": {
+          "alt": "Pré-visualização da imagem do sonho selecionada",
+          "selected": "Arquivo selecionado",
+          "originalSize": "Tamanho original: {{size}}",
+          "change": "Trocar arquivo"
+        },
+        "validation": {
+          "fileRequired": "Selecione uma imagem antes de avançar para a próxima etapa.",
+          "validatingFile": "Verificando seu arquivo com o limite de {{limit}}...",
+          "fileReady": "Seu arquivo está pronto. Você pode seguir para a próxima etapa.",
+          "fileTooLarge": "Esta imagem é grande demais. Escolha um arquivo abaixo de {{limit}}.",
+          "unsupportedType": "Este tipo de arquivo não é suportado. Use JPG, PNG ou WebP.",
+          "fileValidationFailed": "Não foi possível validar este arquivo. Tente outra imagem.",
+          "detailsRequired": "Adicione pelo menos um título ou legenda antes de continuar.",
+          "categoryRequired": "Escolha uma categoria antes de continuar."
+        },
+        "uploading": {
+          "title": "Enviando sua imagem",
+          "subtitle": "Aguarde enquanto ela é adicionada à linha do tempo do seu quadro dos sonhos."
+        },
+        "completed": {
+          "title": "Imagem adicionada",
+          "subtitle": "Sua imagem do sonho agora faz parte da linha do tempo."
+        },
+        "buttons": {
+          "cancel": "Cancelar",
+          "back": "Voltar",
+          "next": "Próximo",
+          "save": "Salvar imagem",
+          "uploadAnother": "Enviar outra",
+          "close": "Fechar"
+        }
+      }
+    }
+  }
+}

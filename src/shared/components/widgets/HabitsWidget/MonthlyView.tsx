@@ -20,7 +20,7 @@ import {
   ChevronRightIcon,
   CheckmarkIcon,
 } from '@/shared/components/common/icons';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { HabitStatus } from './types';
 import { STATUS_CONFIG } from './config';
 import styles from './MonthlyView.module.css';
@@ -40,7 +40,7 @@ interface MonthlyViewProps {
 }
 
 export const MonthlyView = ({ isOpen, onClose, habit }: MonthlyViewProps): JSX.Element => {
-  const { t, currentLanguage } = useCommonTranslation();
+  const { t, currentLanguage } = useDashboardTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
 
   // Get the appropriate locale for date formatting

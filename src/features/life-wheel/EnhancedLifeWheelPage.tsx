@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import EnhancedLifeWheel from './EnhancedLifeWheel';
 import styles from './LifeWheel.module.css';
 import { getLatestLifeWheelData } from './api/lifeWheelApi';
-import { useTranslation } from 'react-i18next';
+import { useLifeWheelTranslation } from '@/shared/hooks/useTranslation';
 
 const EnhancedLifeWheelPage = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true);
-  const { t } = useTranslation('common');
+  const { t } = useLifeWheelTranslation();
 
   useEffect(() => {
     // Initial data loading

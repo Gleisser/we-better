@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import {
   useLatestDreamBoardSnapshot,
   UseLatestDreamBoardSnapshotResult,
 } from '@/features/dream-board/hooks/useLatestDreamBoardSnapshot';
-import { getDreamCategoryTranslationKey } from '@/features/dream-board/utils/categoryUtils';
+import {
+  getDreamCategoryTranslationKey,
+  normalizeDreamCategoryKey,
+} from '@/features/dream-board/utils/categoryUtils';
 import styles from './DreamBoardTimelineWidget.module.css';
 
 type DreamBoardTimelineWidgetProps = {
@@ -15,7 +18,7 @@ type DreamBoardTimelineWidgetProps = {
 const DreamBoardTimelineWidget: React.FC<DreamBoardTimelineWidgetProps> = ({
   snapshotOverride,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const navigate = useNavigate();
   const snapshot = useLatestDreamBoardSnapshot();
   const { dreams, metrics, isLoading, error, refresh } = snapshotOverride ?? snapshot;
@@ -61,7 +64,13 @@ const DreamBoardTimelineWidget: React.FC<DreamBoardTimelineWidgetProps> = ({
 
     const translationKey = getDreamCategoryTranslationKey(activeDream.category);
     const translated = t(translationKey) as string;
-    return translated !== translationKey ? translated : activeDream.category;
+    if (translated !== translationKey) {
+      return translated;
+    }
+
+    const dashboardCategoryKey = `widgets.lifeWheel.categories.${normalizeDreamCategoryKey(activeDream.category)}`;
+    const dashboardCategory = t(dashboardCategoryKey) as string;
+    return dashboardCategory !== dashboardCategoryKey ? dashboardCategory : activeDream.category;
   }, [activeIndex, dreams, t]);
 
   const rotateTo = (index: number): void => {

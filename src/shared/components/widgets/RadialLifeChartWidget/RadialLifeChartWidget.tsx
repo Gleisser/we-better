@@ -1,6 +1,6 @@
 import { type CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './RadialLifeChartWidget.module.css';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { useLatestLifeWheel } from '@/features/life-wheel/hooks/useLatestLifeWheel';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -141,7 +141,7 @@ const extractString = (value: string | string[]): string =>
   Array.isArray(value) ? (value[0] ?? '') : value;
 
 const RadialLifeChartWidget = (): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -428,7 +428,10 @@ const RadialLifeChartWidget = (): JSX.Element => {
                     onError={() => setAvatarLoadError(true)}
                   />
                 ) : (
-                  <div className={styles.avatarFallback} aria-label="Profile initials">
+                  <div
+                    className={styles.avatarFallback}
+                    aria-label={translateString('widgets.radialLifeChart.profileInitials')}
+                  >
                     <span className={styles.avatarInitials}>{userInitials}</span>
                   </div>
                 )}

@@ -5,7 +5,7 @@ import { DreamBoardData, DreamBoardProps } from '@/features/dream-board/types';
 import { LifeCategory } from '@/features/life-wheel/types';
 import { Dream } from '../../types';
 import { getLatestDreamBoardData, saveDreamBoardData } from '../../api/dreamBoardApi';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 
 // Define an interface for the vision board content item that extracts data from VisionBoardContent
 interface DreamBoardContentItem {
@@ -61,7 +61,7 @@ const DreamBoardModal: React.FC<DreamBoardModalProps> = ({
   onDelete,
   categories,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
   const [visionBoardData, setVisionBoardData] = useState<DreamBoardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

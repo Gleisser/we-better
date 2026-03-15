@@ -1,0 +1,336 @@
+{
+  "settings": {
+    "title": "Configurações",
+    "subtitle": "Gerencie suas preferências e configurações da conta",
+    "sections": {
+      "profile": "Perfil",
+      "plansAndBilling": "Planos e cobrança",
+      "general": "Geral",
+      "notifications": "Notificações",
+      "privacyAndSecurity": "Privacidade e segurança"
+    },
+    "descriptions": {
+      "plansAndBilling": "Gerencie sua assinatura, informações de cobrança e uso",
+      "general": "Configurações básicas da sua conta e preferências",
+      "notifications": "Controle quais notificações você recebe",
+      "privacyAndSecurity": "Gerencie a privacidade e a segurança da sua conta"
+    },
+    "profile": {
+      "title": "Informações do perfil",
+      "editProfile": "Editar perfil",
+      "cancel": "Cancelar",
+      "saveChanges": "Salvar alterações",
+      "saving": "Salvando...",
+      "profilePicture": "Foto do perfil",
+      "uploadPhoto": "Enviar foto",
+      "changePhoto": "Alterar foto",
+      "fullName": "Nome completo",
+      "emailAddress": "Endereço de e-mail",
+      "changePassword": "Alterar senha",
+      "optional": "(Opcional)",
+      "currentPassword": "Senha atual",
+      "newPassword": "Nova senha",
+      "confirmNewPassword": "Confirmar nova senha",
+      "showPassword": "Mostrar senha",
+      "hidePassword": "Ocultar senha",
+      "dragDropPhoto": "Arraste e solte uma foto aqui ou clique para selecionar",
+      "photoSizeLimit": "Tamanho máximo do arquivo: 5 MB",
+      "supportedFormats": "Formatos suportados: JPEG, PNG, GIF",
+      "uploadDescription": "Clique para enviar uma nova foto de perfil (máx. 5 MB)",
+      "profileDescription": "Sua foto de perfil aparece em todo o aplicativo",
+      "fullNamePlaceholder": "Digite seu nome completo",
+      "emailPlaceholder": "Digite seu endereço de e-mail",
+      "currentPasswordPlaceholder": "Digite a senha atual",
+      "newPasswordPlaceholder": "Digite a nova senha (mínimo de 6 caracteres)",
+      "confirmPasswordPlaceholder": "Confirme a nova senha",
+      "nameRequired": "O nome é obrigatório",
+      "emailRequired": "O e-mail é obrigatório",
+      "invalidEmail": "Digite um endereço de e-mail válido",
+      "passwordRequired": "A senha é obrigatória",
+      "passwordMismatch": "As senhas não coincidem",
+      "passwordMinLength": "A senha deve ter pelo menos 6 caracteres",
+      "profileUpdated": "Perfil atualizado com sucesso!",
+      "passwordChanged": "Senha alterada com sucesso!",
+      "errorUpdating": "Erro ao atualizar o perfil",
+      "errorChangingPassword": "Erro ao alterar a senha",
+      "invalidFileType": "Selecione um arquivo de imagem válido",
+      "fileSizeExceeded": "O arquivo deve ter menos de 5 MB",
+      "currentPasswordRequired": "A senha atual é obrigatória para alterar a senha",
+      "passwordsDoNotMatch": "As novas senhas não coincidem",
+      "newPasswordTooShort": "A nova senha deve ter pelo menos 6 caracteres",
+      "failedToSave": "Falha ao salvar o perfil. Tente novamente."
+    },
+    "billing": {
+      "currentPlan": "Plano atual",
+      "managePlan": "Gerenciar plano",
+      "nextBillingDate": "Próxima cobrança",
+      "paymentMethod": "Método de pagamento",
+      "update": "Atualizar",
+      "unavailable": "As informações de cobrança não estão disponíveis no momento.",
+      "loadingSummary": "Carregando informações de cobrança...",
+      "noPaymentMethod": "Nenhum método de pagamento cadastrado",
+      "freePlanPrice": "Grátis",
+      "cardFallback": "Cartão",
+      "cancelAtPeriodEnd": "O cancelamento está agendado para o fim do período de cobrança.",
+      "processing": "Processando...",
+      "currentUsage": "Uso atual",
+      "viewBillingHistory": "Ver histórico de cobrança",
+      "downloadInvoice": "Baixar fatura",
+      "cancelSubscription": "Cancelar assinatura",
+      "seeAllPlans": "Ver todos os planos",
+      "plans": {
+        "free": "Plano gratuito",
+        "premium": "Plano Premium",
+        "pro": "Plano Pro",
+        "unknown": "Plano desconhecido"
+      },
+      "usage": {
+        "goals": "Metas",
+        "habits": "Hábitos"
+      },
+      "billing": {
+        "monthly": "mês",
+        "yearly": "ano"
+      },
+      "pricing": {
+        "pageTitle": "Preços",
+        "pageSubtitle": "Compare planos e escolha o melhor para suas metas.",
+        "backToSettings": "Voltar para configurações",
+        "title": "Preços simples e transparentes",
+        "subtitle": "Escolha um plano que acompanhe seu progresso.",
+        "modalAriaLabel": "Planos de preços",
+        "close": "Fechar preços",
+        "selectCycle": "Selecione o ciclo de cobrança",
+        "monthly": "Mensal",
+        "yearly": "Anual",
+        "savePercent": "Economize {{percent}}%",
+        "mostPopular": "Mais popular",
+        "perMonth": "/mês",
+        "perYear": "/ano",
+        "loadingPlans": "Carregando planos...",
+        "currentPlan": "Plano atual",
+        "manageInPortal": "Gerenciar no portal de cobrança",
+        "upgradeTo": "Fazer upgrade para {{plan}}",
+        "limits": {
+          "goals": "{{count}} metas",
+          "habits": "{{count}} hábitos"
+        },
+        "features": {
+          "free": {
+            "one": "Acompanhamento de hábitos e metas",
+            "two": "Lembretes básicos",
+            "three": "Insights essenciais do painel"
+          },
+          "premium": {
+            "one": "Tudo do plano Gratuito",
+            "two": "Análises avançadas de progresso",
+            "three": "Suporte prioritário",
+            "four": "Limites ativos maiores"
+          },
+          "pro": {
+            "one": "Tudo do plano Premium",
+            "two": "Limites ativos máximos",
+            "three": "Suporte dedicado para sucesso",
+            "four": "Acesso antecipado a novos recursos"
+          }
+        }
+      },
+      "planPicker": {
+        "title": "Escolha um plano",
+        "description": "Selecione seu plano e ciclo de cobrança para continuar para o checkout.",
+        "selectPlan": "Plano",
+        "selectCycle": "Ciclo de cobrança",
+        "monthly": "Mensal",
+        "yearly": "Anual",
+        "premium": "Premium",
+        "pro": "Pro",
+        "continue": "Continuar para o checkout",
+        "cancel": "Cancelar"
+      },
+      "limitReached": {
+        "title": "Limite do plano atingido",
+        "description": "Você atingiu o limite do seu plano atual. Faça upgrade do plano em Configurações para continuar."
+      }
+    },
+    "notifications": {
+      "emailNotifications": "Notificações por e-mail",
+      "emailDescription": "Receba atualizações e alertas por e-mail",
+      "pushNotifications": "Notificações push",
+      "pushDescription": "Receba notificações do navegador sobre atualizações importantes"
+    },
+    "notificationsV1": {
+      "pushPermissionError": "A permissão de notificação foi negada ou a inscrição falhou. Ative as notificações do navegador e tente novamente.",
+      "master": {
+        "title": "Canais de notificação",
+        "email": "Canal de e-mail",
+        "emailDescription": "Controle principal para todas as notificações por e-mail.",
+        "push": "Canal push",
+        "pushDescription": "Controle principal para notificações push do navegador.",
+        "inApp": "Canal no aplicativo",
+        "inAppDescription": "Mostrar notificações na sua caixa de entrada do aplicativo."
+      },
+      "reminders": {
+        "title": "Eventos de lembrete"
+      },
+      "achievements": {
+        "title": "Eventos de conquista"
+      },
+      "events": {
+        "habitsEmail": "Lembretes de hábitos por e-mail",
+        "habitsEmailDescription": "Lembretes diários de hábitos por e-mail.",
+        "habitsPush": "Lembretes de hábitos por push",
+        "habitsPushDescription": "Lembretes diários de hábitos por push do navegador.",
+        "goalsEmail": "Lembretes de revisão de metas por e-mail",
+        "goalsEmailDescription": "Lembretes de revisão e atraso por e-mail.",
+        "goalsPush": "Lembretes de revisão de metas por push",
+        "goalsPushDescription": "Lembretes de revisão e atraso por push do navegador.",
+        "dreamChallengesEmail": "Lembretes de desafios de sonhos por e-mail",
+        "dreamChallengesEmailDescription": "Lembretes agendados de desafios de sonhos por e-mail.",
+        "dreamChallengesPush": "Lembretes de desafios de sonhos por push",
+        "dreamChallengesPushDescription": "Lembretes agendados de desafios de sonhos por push do navegador.",
+        "affirmationsPush": "Lembretes de afirmações por push",
+        "affirmationsPushDescription": "Afirmações diárias por push do navegador.",
+        "habitStreakEmail": "Conquistas de sequência de hábitos por e-mail",
+        "habitStreakEmailDescription": "Inclua marcos de sequência no resumo semanal por e-mail.",
+        "habitStreakPush": "Conquistas de sequência de hábitos por push",
+        "habitStreakPushDescription": "Envie um push imediato do navegador para marcos de sequência.",
+        "goalMilestonesEmail": "Marcos de metas por e-mail",
+        "goalMilestonesEmailDescription": "Inclua marcos concluídos de metas no resumo semanal.",
+        "goalMilestonesPush": "Marcos de metas por push",
+        "goalMilestonesPushDescription": "Envie um push imediato quando marcos de metas forem concluídos.",
+        "weeklySummaryEmail": "Resumo semanal por e-mail",
+        "weeklySummaryEmailDescription": "Receba um resumo semanal com lembretes e conquistas."
+      },
+      "schedule": {
+        "title": "Agenda e horário de silêncio",
+        "timezone": "Fuso horário",
+        "timezoneDescription": "Usado para agendar lembretes e resumos semanais.",
+        "quietHoursEnabled": "Ativar horário de silêncio",
+        "quietHoursEnabledDescription": "Adiar notificações push e por e-mail durante o horário de silêncio.",
+        "quietHoursStart": "Início do horário de silêncio",
+        "quietHoursStartDescription": "Horário local em que o silêncio começa.",
+        "quietHoursEnd": "Fim do horário de silêncio",
+        "quietHoursEndDescription": "Horário local em que o silêncio termina.",
+        "habitReminderTime": "Horário do lembrete de hábito",
+        "habitReminderTimeDescription": "Horário local preferido para lembretes diários de hábitos.",
+        "goalReminderTime": "Horário do lembrete de revisão de meta",
+        "goalReminderTimeDescription": "Horário local preferido para lembretes de revisão de metas."
+      }
+    },
+    "themes": {
+      "title": "Temas",
+      "description": "Escolha seu estilo ou personalize seu tema",
+      "light": "Claro",
+      "dark": "Escuro",
+      "auto": "Automático",
+      "lightMode": "Modo claro",
+      "darkMode": "Modo escuro",
+      "lightDescription": "Interface limpa e brilhante",
+      "darkDescription": "Mais conforto para seus olhos",
+      "autoModeEnabled": "O modo automático está ativado. Usando o tema {{theme}} com base na preferência do sistema"
+    },
+    "language": {
+      "title": "Idioma",
+      "description": "Escolha seu idioma preferido",
+      "subtitle": "Idioma padrão para o painel público.",
+      "selectAriaLabel": "Selecionar idioma"
+    },
+    "privacy": {
+      "securityScore": {
+        "title": "Pontuação de segurança",
+        "description": "Uma visão rápida das proteções atuais da sua conta."
+      },
+      "dataManagement": {
+        "title": "Gerenciamento de dados",
+        "exportData": "Exportar seus dados",
+        "exportDescription": "Baixe uma cópia dos dados da sua conta para seus registros.",
+        "deleteAccount": "Excluir conta",
+        "deleteDescription": "Remova permanentemente sua conta e todos os dados associados.",
+        "confirmDelete": "Excluir dados da conta",
+        "finalConfirm": "Esta ação não pode ser desfeita.",
+        "deletionInitiated": "Seu pedido de exclusão de conta foi iniciado."
+      },
+      "profileVisibility": {
+        "title": "Visibilidade do perfil",
+        "publicProfile": "Perfil público",
+        "publicDescription": "Permitir que outras pessoas visualizem seu perfil.",
+        "searchIndexing": "Indexação em buscas",
+        "searchDescription": "Permitir que seu perfil público apareça nos resultados de busca.",
+        "analyticsOptOut": "Desativar análises",
+        "analyticsDescription": "Limite o uso de análises vinculadas à sua atividade quando possível.",
+        "marketingCommunications": "Comunicações de marketing",
+        "marketingDescription": "Receba anúncios do produto, atualizações e e-mails promocionais."
+      },
+      "cookies": {
+        "title": "Preferências de cookies",
+        "functional": "Cookies funcionais",
+        "functionalDescription": "Necessários para o funcionamento principal do produto e preferências salvas.",
+        "analytics": "Cookies de análise",
+        "analyticsDescription": "Ajudam a entender o uso do produto e melhorar a experiência.",
+        "marketing": "Cookies de marketing",
+        "marketingDescription": "Usados para personalizar campanhas e medir o desempenho de marketing."
+      },
+      "twoFactor": {
+        "title": "Autenticação em dois fatores",
+        "description": "Adicione mais uma etapa ao entrar para proteger melhor sua conta.",
+        "enabled": "A autenticação em dois fatores está ativada",
+        "enable": "Ativar autenticação em dois fatores",
+        "disable": "Desativar autenticação em dois fatores",
+        "backupCodes": "Códigos de backup",
+        "backupDescription": "Gere códigos de backup de uso único caso você perca acesso ao dispositivo principal.",
+        "generate": "Gerar códigos de backup",
+        "regenerate": "Gerar novos códigos de backup",
+        "smsBackup": "Opção de backup por SMS",
+        "smsDescription": "Permitir SMS como método de recuperação secundário.",
+        "setupModal": "Configurar autenticação em dois fatores",
+        "generatingCodes": "Gerando códigos de backup..."
+      },
+      "accountSecurity": {
+        "title": "Segurança da conta",
+        "loginHistory": "Histórico de login",
+        "loginDescription": "Revise entradas recentes e observe qualquer atividade incomum.",
+        "viewHistory": "Ver histórico",
+        "recentSessions": "Sessões recentes",
+        "activeSessions": "Sessões ativas",
+        "activeDescription": "Dispositivos que estão conectados à sua conta neste momento.",
+        "signOutAll": "Sair das outras sessões",
+        "signOutConfirm": "Sair de todas as outras sessões ativas?",
+        "current": "Sessão atual",
+        "timeAgo": {
+          "justNow": "Agora mesmo",
+          "hoursAgo": "há {{count}}h",
+          "yesterday": "Ontem",
+          "daysAgo": "há {{count}}d"
+        },
+        "viewingHistory": "Carregando histórico de sessões...",
+        "signingOutSessions": "Saindo das outras sessões..."
+      }
+    },
+    "errors": {
+      "loadSessions": "Falha ao carregar as sessões.",
+      "loadSessionHistory": "Falha ao carregar o histórico de sessões.",
+      "loadPlanCatalog": "Falha ao carregar o catálogo de planos.",
+      "openBillingPortal": "Falha ao abrir o portal de cobrança.",
+      "startCheckout": "Falha ao iniciar o checkout.",
+      "signOutOtherSessions": "Falha ao sair das outras sessões."
+    },
+    "actions": {
+      "json": "JSON",
+      "csv": "CSV",
+      "delete": "Excluir",
+      "update": "Atualizar",
+      "enable": "Ativar",
+      "disable": "Desativar",
+      "generate": "Gerar",
+      "regenerate": "Gerar novamente",
+      "viewHistory": "Ver histórico",
+      "signOut": "Sair",
+      "save": "Salvar",
+      "cancel": "Cancelar",
+      "edit": "Editar",
+      "upload": "Enviar",
+      "replace": "Substituir",
+      "manage": "Gerenciar"
+    }
+  }
+}

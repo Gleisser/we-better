@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { UserAttributes } from '@supabase/supabase-js';
 import { useAuth } from '@/shared/hooks/useAuth';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useSettingsTranslation } from '@/shared/hooks/useTranslation';
 import { supabase } from '@/core/services/supabaseClient';
 import { PencilIcon, CheckmarkIcon, CloseIcon, EyeOffIcon } from '@/shared/components/common/icons';
 import styles from './ProfileSettings.module.css';
@@ -47,7 +47,7 @@ const EyeIcon = ({ className }: { className?: string }): JSX.Element => (
 
 const ProfileSettings = ({ className }: ProfileSettingsProps): JSX.Element => {
   const { user, checkAuth } = useAuth();
-  const { t } = useCommonTranslation();
+  const { t } = useSettingsTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useSettingsTranslation } from '@/shared/hooks/useTranslation';
 import { ChevronDownIcon, SettingsIcon } from '@/shared/components/common/icons';
 import ThemeSelector from '@/shared/components/theme/ThemeSelector';
 import LanguageSelector from '@/shared/components/i18n/LanguageSelector';
@@ -146,7 +146,7 @@ const EMPTY_SESSION_SUMMARY: SessionsSummary = {
 };
 
 const Settings = (): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t, currentLanguage } = useSettingsTranslation();
 
   // Memoize translated values to prevent infinite re-renders
   const translations = useMemo(
@@ -390,7 +390,10 @@ const Settings = (): JSX.Element => {
         diffInHours.toString()
       );
     if (diffInHours < 48) return translations.privacy.accountSecurity.timeAgo.yesterday;
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString(currentLanguage === 'pt' ? 'pt-BR' : 'en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   const loadSessionsOverview = useCallback(async (): Promise<void> => {
@@ -399,7 +402,7 @@ const Settings = (): JSX.Element => {
 
     const { data, error } = await sessionsService.getSessionsOverview();
     if (error || !data) {
-      setSessionsError(error || 'Failed to load sessions');
+      setSessionsError(error || (t('settings.errors.loadSessions') as string));
       setSessionSummary(EMPTY_SESSION_SUMMARY);
       setRecentSessions([]);
       setIsSessionsLoading(false);
@@ -409,14 +412,14 @@ const Settings = (): JSX.Element => {
     setSessionSummary(data.summary);
     setRecentSessions(data.recentSessions);
     setIsSessionsLoading(false);
-  }, []);
+  }, [t]);
 
   const loadSessionHistory = useCallback(async (): Promise<void> => {
     setIsHistoryLoading(true);
 
     const { data, error } = await sessionsService.getHistory(50, 0);
     if (error || !data) {
-      setSessionsError(error || 'Failed to load session history');
+      setSessionsError(error || (t('settings.errors.loadSessionHistory') as string));
       setSessionHistory([]);
       setIsHistoryLoading(false);
       return;
@@ -424,14 +427,14 @@ const Settings = (): JSX.Element => {
 
     setSessionHistory(data.sessions);
     setIsHistoryLoading(false);
-  }, []);
+  }, [t]);
 
   const loadPlanCatalog = useCallback(async (): Promise<void> => {
     setIsPlanCatalogLoading(true);
 
     const { data, error } = await billingService.getPlanCatalog();
     if (error || !data) {
-      setBillingError(prev => prev || error || 'Failed to load billing plan catalog');
+      setBillingError(prev => prev || error || (t('settings.errors.loadPlanCatalog') as string));
       setPlanCatalog([]);
       setIsPlanCatalogLoading(false);
       return;
@@ -439,7 +442,7 @@ const Settings = (): JSX.Element => {
 
     setPlanCatalog(data);
     setIsPlanCatalogLoading(false);
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void loadSessionsOverview();
@@ -465,7 +468,7 @@ const Settings = (): JSX.Element => {
 
     const { data, error } = await billingService.createPortalSession(flow, buildReturnUrl());
     if (error || !data?.url) {
-      setBillingError(error || 'Failed to open billing portal');
+      setBillingError(error || (t('settings.errors.openBillingPortal') as string));
       setIsBillingActionLoading(false);
       return;
     }
@@ -506,7 +509,7 @@ const Settings = (): JSX.Element => {
     );
 
     if (error || !data?.url) {
-      setBillingError(error || 'Failed to start checkout');
+      setBillingError(error || (t('settings.errors.startCheckout') as string));
       setIsBillingActionLoading(false);
       return;
     }
@@ -570,7 +573,7 @@ const Settings = (): JSX.Element => {
     const { data, error } = await sessionsService.logoutOtherSessions();
 
     if (error || !data?.success) {
-      setSessionsError(error || 'Failed to sign out from other sessions');
+      setSessionsError(error || (t('settings.errors.signOutOtherSessions') as string));
       setIsSigningOutSessions(false);
       return;
     }
@@ -619,7 +622,11 @@ const Settings = (): JSX.Element => {
       case 'pro':
         return { name: t('settings.billing.plans.pro') as string, color: '#f59e0b', icon: '👑' };
       default:
-        return { name: 'Unknown Plan', color: '#6b7280', icon: '❓' };
+        return {
+          name: t('settings.billing.plans.unknown') as string,
+          color: '#6b7280',
+          icon: '❓',
+        };
     }
   };
 
@@ -629,7 +636,7 @@ const Settings = (): JSX.Element => {
   const formatDate = (dateString: string | null): string => {
     if (!dateString) return '-';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(currentLanguage === 'pt' ? 'pt-BR' : 'en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -744,7 +751,7 @@ const Settings = (): JSX.Element => {
                     </span>
                     <span className={styles.billingValue}>
                       {billingInfo.paymentMethod.type === 'card'
-                        ? `${billingInfo.paymentMethod.brand || 'Card'} ••••${billingInfo.paymentMethod.lastFour || ''}`
+                        ? `${billingInfo.paymentMethod.brand || (t('settings.billing.cardFallback') as string)} ••••${billingInfo.paymentMethod.lastFour || ''}`
                         : translations.billing.noPaymentMethod}
                     </span>
                   </div>

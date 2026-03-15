@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import { SparkleIcon } from '@/shared/components/common/icons';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import AIChatBox from './AIChatBox';
 import styles from './AIAssistantButton.module.css';
 import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
 
 const AIAssistantButton = (): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const [isHovered, setIsHovered] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const controls = useAnimation();

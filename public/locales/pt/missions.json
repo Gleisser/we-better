@@ -1,0 +1,166 @@
+{
+  "missions": {
+    "title": "Missões",
+    "subtitle": "Escolha uma categoria da vida e conclua missões semanais com foco.",
+    "categories": {
+      "social": "Social",
+      "health": "Saúde",
+      "selfCare": "Autocuidado",
+      "money": "Dinheiro",
+      "family": "Família",
+      "spirituality": "Espiritualidade",
+      "relationship": "Relacionamento",
+      "career": "Carreira"
+    },
+    "empty": {
+      "title": "Selecione uma categoria para começar",
+      "description": "Escolha uma categoria acima para carregar seus cards de missão."
+    },
+    "errors": {
+      "loadFailed": "Não foi possível carregar as missões."
+    },
+    "content": {
+      "week": "Semana",
+      "quest": "Missão",
+      "guidePrefix": "Toque em",
+      "guideAction": "Iniciar missão",
+      "guideSuffix": "quando você estiver pronto e, em seguida, pressione e segure a orbe brilhante para registrar sua conquista.",
+      "cta": {
+        "start": "Iniciar missão",
+        "inProgress": "Em progresso",
+        "complete": "Missão concluída"
+      },
+      "difficulty": {
+        "bronze": "Bronze",
+        "silver": "Prata",
+        "gold": "Ouro"
+      },
+      "badges": {
+        "explorer": "Explorador",
+        "connector": "Conector",
+        "kindred": "Afeto",
+        "spark": "Faísca",
+        "momentum": "Em movimento",
+        "fuelUp": "Recarregar energia",
+        "recharge": "Recuperação",
+        "listener": "Escuta ativa",
+        "hydrated": "Hidratado",
+        "calmCore": "Centro calmo",
+        "reflector": "Reflexão",
+        "protector": "Proteção",
+        "unplugged": "Desconectado",
+        "tracker": "Monitoramento",
+        "optimizer": "Otimização",
+        "builder": "Construtor",
+        "accelerator": "Acelerador",
+        "heartbeat": "Batimento",
+        "memoryMaker": "Memórias",
+        "supporter": "Apoio",
+        "tradition": "Tradição",
+        "stillness": "Quietude",
+        "grateful": "Gratidão",
+        "earthbound": "Aterramento",
+        "giver": "Doação",
+        "heartline": "Linha do coração",
+        "presence": "Presença",
+        "bridge": "Ponte",
+        "respect": "Respeito",
+        "focus": "Foco",
+        "upskill": "Evolução",
+        "spotlight": "Destaque",
+        "connectorPlus": "Conector+",
+        "seedPlanter": "Plantador",
+        "pathfinder": "Desbravador",
+        "glowUp": "Florescimento",
+        "northStar": "Estrela-guia"
+      },
+      "hints": {
+        "pendingPrefix": "Toque em",
+        "pendingAction": "Iniciar missão",
+        "pendingSuffix": "e depois segure a orbe quando terminar a ação.",
+        "active": "Mantenha o ritmo; pressione e segure a orbe até ela florescer para registrar sua conquista.",
+        "completed": "Lindo! Já foi guardado no seu cofre. Missões extras esperam por você se quiser ir além."
+      },
+      "tabs": {
+        "pending": "Pendentes",
+        "completed": "Concluídas"
+      },
+      "emptyState": {
+        "noDataTitle": "Ainda não há missões disponíveis",
+        "noDataDescription": "Esta categoria ainda não recebeu missões do backend. Volte em breve.",
+        "noPendingTitle": "Tudo nesta aba foi concluído",
+        "noPendingDescription": "Você não tem missões pendentes agora. Mude para Concluídas para revisar suas vitórias.",
+        "noCompletedTitle": "Ainda não há missões concluídas",
+        "noCompletedDescription": "Conclua uma missão primeiro e ela aparecerá na aba Concluídas."
+      },
+      "header": {
+        "progress": "Progresso",
+        "completed": "Concluídas",
+        "pending": "Pendentes",
+        "active": "Ativa",
+        "states": {
+          "notStarted": "Comece por {{mission}} para ganhar impulso nesta semana.",
+          "inProgress": "Ótimo ritmo. Próximo marco: {{mission}}.",
+          "completed": "Você concluiu esta semana. Revise suas conquistas e prepare sua próxima missão de {{category}}."
+        },
+        "actions": {
+          "startNext": "Iniciar próxima missão",
+          "continue": "Continuar missão",
+          "reviewWins": "Revisar vitórias",
+          "why": "Por que isso importa"
+        },
+        "panels": {
+          "whyTitle": "Como melhorar esta área",
+          "microHabit": "Micro-hábito:"
+        },
+        "guidance": {
+          "fallback": {
+            "summary": "Ações pequenas e constantes criam o impulso mais forte com o tempo.",
+            "improvementFocus": "Escolha uma ação clara que você consiga concluir nesta semana.",
+            "microHabit": "Reserve dois minutos focados hoje para começar."
+          },
+          "social": {
+            "summary": "Conexões significativas crescem quando você cria pequenos momentos de presença.",
+            "improvementFocus": "Priorize uma conversa ou um gesto de gentileza nesta semana.",
+            "microHabit": "Envie uma mensagem atenciosa antes do fim do dia."
+          },
+          "health": {
+            "summary": "Sua energia melhora quando movimento, descanso e nutrição trabalham juntos.",
+            "improvementFocus": "Escolha um hábito de saúde que pareça apoio, não exagero.",
+            "microHabit": "Faça uma caminhada de dez minutos ou beba um copo cheio de água agora."
+          },
+          "selfCare": {
+            "summary": "A recuperação é mais sustentável quando você protege tempo para si de propósito.",
+            "improvementFocus": "Defina um limite que lhe dê mais espaço para recarregar.",
+            "microHabit": "Pause para três respirações lentas antes da próxima tarefa."
+          },
+          "money": {
+            "summary": "A tranquilidade financeira nasce de revisões consistentes, não de grandes esforços ocasionais.",
+            "improvementFocus": "Melhore a visibilidade sobre uma decisão de gasto ou economia nesta semana.",
+            "microHabit": "Revise uma transação recente e rotule-a com intenção."
+          },
+          "family": {
+            "summary": "A confiança em família cresce com momentos repetidos de cuidado e atenção.",
+            "improvementFocus": "Crie um ritual compartilhado ou uma checagem que você possa repetir.",
+            "microHabit": "Procure um familiar com uma pergunta específica hoje."
+          },
+          "spirituality": {
+            "summary": "O alinhamento interior se aprofunda quando você cria espaço para reflexão e gratidão.",
+            "improvementFocus": "Escolha uma prática de aterramento que ajude você a desacelerar.",
+            "microHabit": "Passe dois minutos em silêncio observando a respiração ou anotando gratidão."
+          },
+          "relationship": {
+            "summary": "Relacionamentos mais fortes são construídos com clareza, afeto e reparação.",
+            "improvementFocus": "Concentre-se em um momento de apreciação ou comunicação honesta nesta semana.",
+            "microHabit": "Diga em voz alta um agradecimento ou elogio sincero hoje."
+          },
+          "career": {
+            "summary": "O progresso profissional se acumula quando você conclui trabalho visível e relevante com regularidade.",
+            "improvementFocus": "Avance uma prioridade de um jeito que outras pessoas consigam perceber.",
+            "microHabit": "Bloqueie quinze minutos para concluir o menor próximo passo."
+          }
+        }
+      }
+    }
+  }
+}

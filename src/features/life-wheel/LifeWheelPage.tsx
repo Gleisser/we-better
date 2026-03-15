@@ -3,11 +3,11 @@ import { LifeWheel } from './index';
 import { LifeCategory } from './types';
 import { getLocalizedCategories } from './constants/categories';
 import styles from './LifeWheel.module.css';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useLifeWheelTranslation } from '@/shared/hooks/useTranslation';
 import { useLatestLifeWheel } from '@/features/life-wheel/hooks/useLatestLifeWheel';
 
 const LifeWheelPage = (): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useLifeWheelTranslation();
   const localizedDefaults = useMemo<LifeCategory[]>(() => getLocalizedCategories(t), [t]);
 
   const { data: latestLifeWheel, isLoading, isError, error, refetch } = useLatestLifeWheel();
@@ -61,9 +61,9 @@ const LifeWheelPage = (): JSX.Element => {
       isError && error
         ? error instanceof Error
           ? error.message
-          : 'Failed to load your life wheel data'
+          : (t('widgets.lifeWheel.errors.failedToLoad') as string)
         : null,
-    [error, isError]
+    [error, isError, t]
   );
 
   const lifeWheelData = useMemo(() => ({ categories }), [categories]);

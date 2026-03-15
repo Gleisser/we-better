@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { PencilIcon, TrashIcon } from '@/shared/components/common/icons';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import styles from './HabitActionsMenu.module.css';
 import { createPortal } from 'react-dom';
 
@@ -19,7 +19,7 @@ export const HabitActionsMenu = ({
   onDelete,
   position,
 }: HabitActionsMenuProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
 
   return createPortal(
     <AnimatePresence>

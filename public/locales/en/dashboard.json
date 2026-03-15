@@ -1,0 +1,471 @@
+{
+  "floating": {
+    "aiAssistant": "AI Assistant"
+  },
+  "aiChat": {
+    "title": "AI Assistant",
+    "greeting": "How can I help you today?",
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "closeChat": "Close chat"
+  },
+  "widgets": {
+    "common": {
+      "readMore": "Read more",
+      "showLess": "Show less",
+      "retry": "Try again"
+    },
+    "cardsWidget": {
+      "ariaLabel": "Affirmation cards widget",
+      "title": "Affirmation Cards",
+      "subtitle": "Tap a card to surface the next uplifting statement.",
+      "hint": "Tap or use arrow keys to rotate",
+      "emptyDeck": "No affirmations are available right now.",
+      "screenReaderStatus": "{{label}} affirmation. {{state}}",
+      "activeState": "Active.",
+      "inactiveState": "Inactive.",
+      "celebratorySubtext": "Celebrate today's affirmation",
+      "nextAffirmation": "Next affirmation",
+      "record": "Record",
+      "recording": "Recording",
+      "reminder": "Reminder",
+      "favorite": "Favorite",
+      "saved": "Saved",
+      "streak": "Streak",
+      "craftAffirmation": "Craft affirmation",
+      "craftAffirmationSubtitle": "Design a card that is uniquely yours"
+    },
+    "radialLifeChart": {
+      "title": "Radial Life Chart",
+      "subtitle": "A snapshot of where you are investing your energy.",
+      "chartTitle": "Radial chart showing wellbeing focus areas",
+      "accessibleLabel": "Radial life balance overview",
+      "profileInitials": "Profile initials",
+      "centerLabel": "Your balance",
+      "averageLabel": "Average completion: {{value}} percent",
+      "tooltipValue": "{{category}} · {{value}}/10",
+      "collapse": "Hide chart rings",
+      "expand": "Show chart rings"
+    },
+    "mood": {
+      "title": "How are you feeling today?",
+      "subtitle": "Explore your emotional landscape and spot your patterns.",
+      "view": {
+        "week": "Week",
+        "month": "Month"
+      },
+      "trend": {
+        "weekly": "Weekly mood pulse",
+        "monthly": "Monthly mood pulse",
+        "average": "Average mood: {{value}}",
+        "coverage": "Mood logs: {{count}}/{{total}}",
+        "weeklyEmpty": "No mood logs in the last 7 days yet.",
+        "monthlyEmpty": "No mood logs in the last 28 days yet."
+      },
+      "weeks": {
+        "short": "W{{index}}"
+      },
+      "moods": {
+        "elated": {
+          "label": "Radiant",
+          "description": "Joyful momentum flows through everything you touch today."
+        },
+        "bright": {
+          "label": "Upbeat",
+          "description": "You feel light and optimistic, with a gentle forward motion."
+        },
+        "balanced": {
+          "label": "Balanced",
+          "description": "Steady and composed, you are taking in the moment as it is."
+        },
+        "low": {
+          "label": "Low Tide",
+          "description": "Energy dips and emotions ask for a slower, softer pace."
+        },
+        "drained": {
+          "label": "Drained",
+          "description": "Your reserves feel low and rest is welcome."
+        }
+      }
+    },
+    "dreamBoardWidget": {
+      "title": "Dream Board Snapshot",
+      "subtitle": "A visual glance at the dreams you are building.",
+      "openDreamBoard": "Open Dream Board",
+      "refresh": "Refresh",
+      "refreshing": "Refreshing...",
+      "retry": "Try again",
+      "loading": "Loading your dream board snapshot...",
+      "error": "Unable to load your dream board snapshot right now.",
+      "previousImage": "Previous dream image",
+      "nextImage": "Next dream image",
+      "carouselAria": "Dream board image carousel",
+      "keyboardHint": "Use arrow keys",
+      "counter": "{{current}} / {{total}}",
+      "metrics": {
+        "images": "Images",
+        "categories": "Categories",
+        "averageProgress": "Avg progress"
+      },
+      "empty": {
+        "title": "Your dream gallery will appear here",
+        "description": "Once your Dream Board has images, this widget will show them in a timeline-style view."
+      }
+    },
+    "quote": {
+      "title": "Quote of the day",
+      "shareQuote": "Share quote",
+      "bookmarkQuote": "Bookmark quote",
+      "removeBookmark": "Remove bookmark",
+      "moreOptions": "More options",
+      "quoteCopied": "Quote copied to clipboard!",
+      "quoteBookmarked": "Quote bookmarked!",
+      "learnMore": "Learn more",
+      "bookRecommendations": "Book recommendations",
+      "quickTakeaways": "Quick takeaways",
+      "submitQuote": "Submit a quote",
+      "reactToQuote": "React to quote",
+      "getNewQuote": "Get new quote",
+      "copyQuote": "Copy quote",
+      "tryAgain": "Try Again",
+      "failedToLoad": "Failed to load quotes"
+    },
+    "affirmation": {
+      "title": "Daily Affirmation",
+      "iAffirm": "I Affirm",
+      "affirmedToday": "Affirmed Today",
+      "dailyIntentionLocked": "Daily intention locked in",
+      "loadingAffirmations": "Loading affirmations...",
+      "failedToLoad": "Failed to load affirmations for this category",
+      "tryAgain": "Try Again",
+      "create": "Create",
+      "edit": "Edit",
+      "createCustom": "Create custom affirmation",
+      "editPersonal": "Edit personal affirmation",
+      "scrollLeft": "Scroll categories left",
+      "scrollRight": "Scroll categories right",
+      "deleteAffirmation": "Delete affirmation",
+      "recordAffirmation": "Record affirmation",
+      "stopRecording": "Stop recording",
+      "setReminder": "Set reminder",
+      "daysStreaking": "Days streaking",
+      "bookmark": "Bookmark",
+      "removeBookmark": "Remove bookmark",
+      "bookmarkAffirmation": "Bookmark affirmation",
+      "clearRecording": "Clear recording",
+      "deletePersonalAffirmation": "Delete Personal Affirmation",
+      "deleteConfirmMessage": "Are you sure you want to delete your personal affirmation? This action cannot be undone.",
+      "deletedSuccessfully": "Personal affirmation deleted successfully",
+      "modal": {
+        "createTitle": "Create Personal Affirmation",
+        "updateTitle": "Update Personal Affirmation",
+        "placeholder": "Write your personal affirmation...",
+        "preview": "Preview:",
+        "confirmReplace": "This will replace your existing personal affirmation. Continue?",
+        "cancel": "Cancel",
+        "save": "Save",
+        "yesReplace": "Yes, Replace"
+      },
+      "categories": {
+        "personal": "Personal",
+        "beauty": "Beauty",
+        "blessing": "Blessing",
+        "gratitude": "Gratitude",
+        "happiness": "Happiness",
+        "health": "Health",
+        "love": "Love",
+        "money": "Money",
+        "sleep": "Sleep",
+        "spiritual": "Spiritual"
+      }
+    },
+    "lifeWheel": {
+      "title": "Life Wheel",
+      "assessment": "Life Wheel Assessment",
+      "subtitle": "See how balanced your life feels right now.",
+      "loading": "Loading life wheel data...",
+      "goToDetails": "Go to Life Wheel details",
+      "viewAnalysis": "View Detailed Analysis",
+      "categoryScore": "score:",
+      "tabs": {
+        "current": "Current Assessment",
+        "history": "History",
+        "insights": "Insights"
+      },
+      "errors": {
+        "somethingWentWrong": "Something went wrong",
+        "failedToLoad": "Failed to load life wheel data",
+        "tryAgain": "Try Again"
+      },
+      "actions": {
+        "saving": "Saving...",
+        "saveAssessment": "Save Assessment",
+        "updateAssessment": "Update Assessment",
+        "saveSuccess": "Your Life Wheel data has been saved successfully!"
+      },
+      "history": {
+        "title": "Progress Over Time",
+        "loadingHistory": "Loading history...",
+        "noHistoryYet": "No history entries yet.",
+        "comparingWith": "Comparing with:",
+        "changesFromPrevious": "Changes from Previous Period",
+        "animating": "Animating",
+        "compare": "Compare",
+        "speed": "Speed:",
+        "progressIndicator": "{{current}} / {{total}}",
+        "timeline": {
+          "pauseAnimation": "Pause Animation",
+          "playAnimation": "Play Timeline Animation",
+          "speeds": {
+            "slow": "Slow",
+            "normal": "Normal",
+            "fast": "Fast"
+          }
+        }
+      },
+      "insights": {
+        "title": "Life Wheel Insights",
+        "needTwoDates": "You need at least two dates to compare and get insights.",
+        "saveMoreAssessments": "Complete and save more life wheel assessments over time to track your progress.",
+        "selectDatesToCompare": "Select Dates to Compare",
+        "baseDate": "Base Date",
+        "compareWith": "Compare With",
+        "selectDate": "Select a date",
+        "comparing": "Comparing",
+        "with": "with",
+        "selectTwoDates": "Select two dates above to compare and see insights.",
+        "mostImproved": "Most Improved",
+        "mostDeclined": "Most Declined",
+        "summary": "Summary",
+        "from": "From",
+        "to": "to",
+        "changesByCategory": "Changes by Category",
+        "sortBy": "Sort by:",
+        "clickToChangeSort": "Click to change sorting method",
+        "sortMethods": {
+          "magnitude": "Largest Change",
+          "value": "Current Value",
+          "alphabetical": "Alphabetical",
+          "improved": "Most Improved"
+        },
+        "stats": {
+          "improvedAreas": "Improved Areas",
+          "declinedAreas": "Declined Areas",
+          "unchanged": "Unchanged"
+        }
+      },
+      "healthStatus": {
+        "needsAttention": "Needs Attention",
+        "developing": "Developing",
+        "thriving": "Thriving"
+      },
+      "categories": {
+        "health": "Health",
+        "career": "Career",
+        "money": "Money",
+        "family": "Family",
+        "relationship": "Relationship",
+        "social": "Social",
+        "spirituality": "Spirituality",
+        "selfCare": "Self Care",
+        "personal": "Personal",
+        "education": "Education",
+        "recreation": "Recreation",
+        "environment": "Environment",
+        "community": "Community",
+        "finances": "Finances",
+        "personalGrowth": "Personal Growth",
+        "relationships": "Relationships",
+        "spiritual": "Spiritual"
+      },
+      "categoryDescriptions": {
+        "career": "Professional growth and satisfaction",
+        "health": "Physical and mental wellbeing",
+        "finances": "Financial stability and investments",
+        "relationships": "Personal connections and support",
+        "personalGrowth": "Learning and self-improvement",
+        "recreation": "Leisure and joy",
+        "spiritual": "Meaning and mindfulness",
+        "community": "Belonging and contribution"
+      }
+    },
+    "habits": {
+      "title": "Daily Habits",
+      "loading": "Loading habits...",
+      "errorLoading": "Error loading habits",
+      "tryAgain": "Try Again",
+      "emptyState": "No habits found. Create your first habit to get started!",
+      "createHabit": "Create Habit",
+      "addNew": "Add new habit",
+      "expandWidget": "Expand habits widget",
+      "collapseWidget": "Collapse habits widget",
+      "expandHabit": "Expand habit",
+      "collapseHabit": "Collapse habit",
+      "setStatusTooltip": "Click to set status",
+      "setStatusFor": "Set status for {{day}}",
+      "streakDays": "{{count}} days",
+      "categories": {
+        "all": "All",
+        "health": "Health",
+        "growth": "Growth",
+        "lifestyle": "Lifestyle",
+        "custom": "Custom"
+      },
+      "statuses": {
+        "completed": "Completed",
+        "sick": "Sick/Unwell",
+        "weather": "Weather",
+        "travel": "Travel/Away",
+        "partial": "Partial",
+        "rescheduled": "Rescheduled",
+        "half": "Half Done",
+        "medical": "Medical",
+        "break": "Break",
+        "event": "Event",
+        "rest": "Rest Day"
+      },
+      "form": {
+        "newHabit": "New Habit",
+        "editHabit": "Edit Habit",
+        "name": "Name",
+        "category": "Category",
+        "placeholder": "e.g., Morning Meditation",
+        "createButton": "Create Habit",
+        "saveButton": "Save Changes"
+      },
+      "monthlyView": {
+        "streakLabel": "{{count}} days",
+        "completedLegend": "Completed",
+        "missedLegend": "Missed",
+        "weekdays": {
+          "mon": "Mon",
+          "tue": "Tue",
+          "wed": "Wed",
+          "thu": "Thu",
+          "fri": "Fri",
+          "sat": "Sat",
+          "sun": "Sun"
+        }
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      }
+    },
+    "goals": {
+      "title": "Goals Tracking",
+      "loading": "Loading goals...",
+      "errorLoading": "Error loading goals",
+      "tryAgain": "Try Again",
+      "addNew": "Add new goal",
+      "expandWidget": "Expand goals widget",
+      "collapseWidget": "Collapse goals widget",
+      "emptyState": {
+        "all": "No goals found. Create your first goal to get started!",
+        "category": "No {{category}} goals found.",
+        "createButton": "Create Goal",
+        "createCategoryButton": "Create {{category}} Goal"
+      },
+      "loadMore": "Load More",
+      "categories": {
+        "all": "All",
+        "learning": "Learning",
+        "fitness": "Fitness",
+        "career": "Career",
+        "personal": "Personal"
+      },
+      "progress": {
+        "increase": "Increase progress",
+        "decrease": "Decrease progress",
+        "percentage": "{{progress}}% complete"
+      },
+      "form": {
+        "newGoal": "New Goal",
+        "editGoal": "Edit Goal",
+        "title": "Goal Title",
+        "titlePlaceholder": "Enter your goal title...",
+        "category": "Category",
+        "targetDate": "Target Date",
+        "targetDatePlaceholder": "Select target date",
+        "milestones": "Milestones",
+        "milestonesDescription": "Break down your goal into smaller milestones",
+        "addMilestone": "Add Milestone",
+        "milestonePlaceholder": "Enter milestone...",
+        "createButton": "Create Goal",
+        "saveButton": "Save Changes",
+        "cancel": "Cancel"
+      },
+      "milestones": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "edit": "Edit milestone",
+        "delete": "Delete milestone",
+        "save": "Save",
+        "cancel": "Cancel",
+        "count": "milestones"
+      },
+      "reviewSettings": {
+        "title": "Review Settings",
+        "frequency": "Review Frequency",
+        "notifications": "Notifications",
+        "reminderSettings": "Reminder Settings",
+        "frequencies": {
+          "daily": "Daily",
+          "weekly": "Weekly",
+          "monthly": "Monthly"
+        },
+        "notificationTypes": {
+          "email": "Email",
+          "sms": "SMS",
+          "push": "Push Notification"
+        },
+        "reminderText": "Start reminding me",
+        "reminderOptions": {
+          "1": "1 day",
+          "3": "3 days",
+          "7": "1 week"
+        },
+        "beforeReview": "before review date",
+        "closeSettings": "Close settings",
+        "saveChanges": "Save Changes"
+      },
+      "review": {
+        "nextReview": "Next review: {{date}}",
+        "completeReview": "Complete Review",
+        "reviewCompleted": "Review complete! Next review: {{date}}",
+        "failedToComplete": "Failed to complete review"
+      },
+      "reviewTimer": {
+        "label": "Goals Review",
+        "overdue": "Overdue by {{count}} day",
+        "overdue_plural": "Overdue by {{count}} days",
+        "dueToday": "Due Today",
+        "tomorrow": "Tomorrow",
+        "inDays": "in {{count}} days",
+        "clickToComplete": "Click to complete review"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "more": "More actions"
+      },
+      "confirmDelete": {
+        "title": "Delete Goal",
+        "message": "Are you sure you want to delete this goal? This action cannot be undone.",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "closeModal": "Close modal"
+      },
+      "toasts": {
+        "goalCreated": "New goal created successfully!",
+        "goalUpdated": "Goal updated successfully!",
+        "goalDeleted": "Goal deleted successfully",
+        "reviewCompleted": "Review complete! Next review: {{date}}",
+        "failedToCreate": "Failed to create goal",
+        "failedToUpdate": "Failed to update goal",
+        "failedToDelete": "Failed to delete goal",
+        "failedToComplete": "Failed to complete review"
+      }
+    }
+  }
+}

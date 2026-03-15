@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, TouchEvent } from 'react';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream } from '../../types';
 import { DreamChallenge as DreamChallengeType } from '../../api/dreamChallengesApi';
@@ -32,7 +32,7 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
   onUndoDayCompleted,
   onGetProgressHistory,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
   const hasActiveChallenges = activeChallenges.length > 0;
 
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);

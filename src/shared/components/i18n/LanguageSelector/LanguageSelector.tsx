@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '@/core/i18n';
 import { useTranslation } from '@/shared/hooks/useTranslation';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useSettingsTranslation } from '@/shared/hooks/useTranslation';
 import { ChevronDownIcon, CheckmarkIcon } from '@/shared/components/common/icons';
 import styles from './LanguageSelector.module.css';
 
@@ -12,7 +12,7 @@ interface LanguageSelectorProps {
 
 const LanguageSelector = ({ className }: LanguageSelectorProps): JSX.Element => {
   const { changeLanguage, currentLanguage } = useTranslation();
-  const { t } = useCommonTranslation();
+  const { t } = useSettingsTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -48,7 +48,7 @@ const LanguageSelector = ({ className }: LanguageSelectorProps): JSX.Element => 
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
           aria-haspopup="listbox"
-          aria-label="Select language"
+          aria-label={t('settings.language.selectAriaLabel') as string}
         >
           <div className={styles.selectedOption}>
             <span className={styles.flag}>{currentLangData.flag}</span>

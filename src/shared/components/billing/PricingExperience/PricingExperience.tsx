@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useSettingsTranslation } from '@/shared/hooks/useTranslation';
 import { cn } from '@/utils/classnames';
 import {
   type BillingCycle,
@@ -87,7 +87,7 @@ export const PricingExperience = ({
   isBusy = false,
   error = null,
 }: PricingExperienceProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useSettingsTranslation();
   const prefersReducedMotion = useReducedMotion();
 
   const sortedPlans = useMemo(

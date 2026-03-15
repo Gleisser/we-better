@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { PencilIcon, TrashIcon } from '@/shared/components/common/icons';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { createPortal } from 'react-dom';
 import styles from './GoalActionsMenu.module.css';
 
@@ -19,7 +19,7 @@ export const GoalActionsMenu = ({
   onDelete,
   position,
 }: GoalActionsMenuProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
 
   return createPortal(
     <AnimatePresence>

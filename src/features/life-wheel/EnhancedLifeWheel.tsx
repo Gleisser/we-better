@@ -11,7 +11,7 @@ import {
   getTodaysLifeWheelData,
 } from './api/lifeWheelApi';
 import ReactDOM from 'react-dom';
-import { useTranslation } from 'react-i18next';
+import { useLifeWheelTranslation } from '@/shared/hooks/useTranslation';
 
 // Add keyframe animation for the background gradient
 const animatedGradientStyle: React.CSSProperties = {
@@ -39,7 +39,7 @@ const EnhancedLifeWheel = ({
   readOnly = false,
   className = '',
 }: EnhancedLifeWheelProps): JSX.Element => {
-  const { t } = useTranslation('common');
+  const { t, currentLanguage } = useLifeWheelTranslation();
 
   // Current wheel data
   const [categories, setCategories] = useState<LifeCategory[]>(getLocalizedCategories(t));
@@ -126,14 +126,14 @@ const EnhancedLifeWheel = ({
         }
       } catch (err) {
         console.error('Error loading life wheel data:', err);
-        setError(new Error('Failed to load your life wheel data. Please try again.'));
+        setError(new Error(t('widgets.lifeWheel.errors.failedToLoad') as string));
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchData();
-  }, [t]);
+  }, [currentLanguage, t]);
 
   // Load history data
   useEffect(() => {

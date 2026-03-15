@@ -2,7 +2,7 @@ import { useState, useEffect, useId } from 'react';
 import { motion } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
 import { Portal } from '@/shared/components/common/Portal/Portal';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { Goal, GoalCategory } from './types';
 import { CATEGORY_CONFIG } from './config';
 import styles from './GoalFormModal.module.css';
@@ -80,7 +80,7 @@ export const GoalFormModal = ({
   onSave,
   initialGoal,
 }: GoalFormModalProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const formId = useId();
 
   /**

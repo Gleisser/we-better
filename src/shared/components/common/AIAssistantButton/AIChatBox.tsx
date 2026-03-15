@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import styles from './AIChatBox.module.css';
 import { useBottomSheet } from '@/shared/hooks/useBottomSheet';
 
@@ -9,7 +9,7 @@ interface AIChatBoxProps {
 }
 
 const AIChatBox = ({ onClose }: AIChatBoxProps): JSX.Element | null => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const isMobile = window.innerWidth <= 768;
   const { activeSheet, setActiveSheet } = useBottomSheet();
 

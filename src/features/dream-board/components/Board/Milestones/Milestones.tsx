@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DreamBoardContent } from '../../../types';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import {
   getMilestonesForContent,
   createMilestoneForContent,
@@ -18,7 +18,7 @@ interface MilestonesProps {
 import { Milestone } from '../../../types';
 
 export const Milestones: React.FC<MilestonesProps> = ({ content, onUpdate: _onUpdate }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
   const contentId = content.id;
 
   // State for milestones

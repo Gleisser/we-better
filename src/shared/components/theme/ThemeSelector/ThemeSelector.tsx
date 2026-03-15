@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useTheme, useThemeToggle } from '@/shared/hooks/useTheme';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useSettingsTranslation } from '@/shared/hooks/useTranslation';
 import { CheckmarkIcon } from '@/shared/components/common/icons';
 import styles from './ThemeSelector.module.css';
 
@@ -16,7 +16,7 @@ interface ThemeSelectorProps {
 }
 
 const ThemeSelector = ({ className }: ThemeSelectorProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useSettingsTranslation();
   const { setThemeMode } = useTheme();
   const { currentMode, effectiveTheme } = useThemeToggle();
   const { updateThemeMode, isLoading } = useUserPreferences();

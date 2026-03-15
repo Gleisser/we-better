@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useMissionsTranslation } from '@/shared/hooks/useTranslation';
 import { GamifiedCTAButton } from '@/shared/components/common';
 import styles from './CategoryMissions.module.css';
 import type { MissionCategory } from '../MissionCategories/MissionCategories';
@@ -48,12 +48,6 @@ interface CategoryMissionsProps {
 type MissionFilterTab = 'pending' | 'completed';
 const MAX_VISIBLE_PENDING_MISSIONS = 4;
 const NEXT_MISSION_DELAY_DAYS = 7;
-
-const difficultyBadges: Record<MissionDifficulty, string> = {
-  bronze: 'Bronze',
-  silver: 'Silver',
-  gold: 'Gold',
-};
 
 const difficultyPalettes: Record<
   MissionDifficulty,
@@ -121,7 +115,7 @@ type MissionBadgeId =
   | 'north-star';
 
 interface MissionBadgeMeta {
-  title: string;
+  titleKey: string;
   icon: string;
   skin: BadgeSkin;
 }
@@ -130,187 +124,187 @@ const DEFAULT_MISSION_BADGE_ID: MissionBadgeId = 'explorer';
 
 const missionBadgeCatalog: Record<MissionBadgeId, MissionBadgeMeta> = {
   explorer: {
-    title: 'Explorer',
+    titleKey: 'missions.content.badges.explorer',
     icon: '✨',
     skin: 'purple',
   },
   connector: {
-    title: 'Connector',
+    titleKey: 'missions.content.badges.connector',
     icon: '🔗',
     skin: 'yellow',
   },
   kindred: {
-    title: 'Kindred',
+    titleKey: 'missions.content.badges.kindred',
     icon: '💛',
     skin: 'pink',
   },
   spark: {
-    title: 'Spark',
+    titleKey: 'missions.content.badges.spark',
     icon: '🎉',
     skin: 'orange',
   },
   momentum: {
-    title: 'Momentum',
+    titleKey: 'missions.content.badges.momentum',
     icon: '⚡',
     skin: 'teal',
   },
   'fuel-up': {
-    title: 'Fuel Up',
+    titleKey: 'missions.content.badges.fuelUp',
     icon: '🥗',
     skin: 'green',
   },
   recharge: {
-    title: 'Recharge',
+    titleKey: 'missions.content.badges.recharge',
     icon: '🌙',
     skin: 'purple',
   },
   listener: {
-    title: 'Listener',
+    titleKey: 'missions.content.badges.listener',
     icon: '🎧',
     skin: 'blue',
   },
   hydrated: {
-    title: 'Hydrated',
+    titleKey: 'missions.content.badges.hydrated',
     icon: '💧',
     skin: 'blueDark',
   },
   'calm-core': {
-    title: 'Calm Core',
+    titleKey: 'missions.content.badges.calmCore',
     icon: '🫁',
     skin: 'teal',
   },
   reflector: {
-    title: 'Reflector',
+    titleKey: 'missions.content.badges.reflector',
     icon: '📓',
     skin: 'purple',
   },
   protector: {
-    title: 'Protector',
+    titleKey: 'missions.content.badges.protector',
     icon: '🛡️',
     skin: 'greenDark',
   },
   unplugged: {
-    title: 'Unplugged',
+    titleKey: 'missions.content.badges.unplugged',
     icon: '🌆',
     skin: 'orange',
   },
   tracker: {
-    title: 'Tracker',
+    titleKey: 'missions.content.badges.tracker',
     icon: '🧾',
     skin: 'silver',
   },
   optimizer: {
-    title: 'Optimizer',
+    titleKey: 'missions.content.badges.optimizer',
     icon: '✂️',
     skin: 'green',
   },
   builder: {
-    title: 'Builder',
+    titleKey: 'missions.content.badges.builder',
     icon: '🏦',
     skin: 'blue',
   },
   accelerator: {
-    title: 'Accelerator',
+    titleKey: 'missions.content.badges.accelerator',
     icon: '🚀',
     skin: 'gold',
   },
   heartbeat: {
-    title: 'Heartbeat',
+    titleKey: 'missions.content.badges.heartbeat',
     icon: '💬',
     skin: 'pink',
   },
   'memory-maker': {
-    title: 'Memory Maker',
+    titleKey: 'missions.content.badges.memoryMaker',
     icon: '📸',
     skin: 'yellow',
   },
   supporter: {
-    title: 'Supporter',
+    titleKey: 'missions.content.badges.supporter',
     icon: '🤝',
     skin: 'teal',
   },
   tradition: {
-    title: 'Tradition',
+    titleKey: 'missions.content.badges.tradition',
     icon: '🕯️',
     skin: 'orange',
   },
   stillness: {
-    title: 'Stillness',
+    titleKey: 'missions.content.badges.stillness',
     icon: '🫧',
     skin: 'silver',
   },
   grateful: {
-    title: 'Grateful',
+    titleKey: 'missions.content.badges.grateful',
     icon: '🙏',
     skin: 'yellow',
   },
   earthbound: {
-    title: 'Earthbound',
+    titleKey: 'missions.content.badges.earthbound',
     icon: '🌿',
     skin: 'greenDark',
   },
   giver: {
-    title: 'Giver',
+    titleKey: 'missions.content.badges.giver',
     icon: '🤲',
     skin: 'gold',
   },
   heartline: {
-    title: 'Heartline',
+    titleKey: 'missions.content.badges.heartline',
     icon: '💗',
     skin: 'pink',
   },
   presence: {
-    title: 'Presence',
+    titleKey: 'missions.content.badges.presence',
     icon: '🕯️',
     skin: 'red',
   },
   bridge: {
-    title: 'Bridge',
+    titleKey: 'missions.content.badges.bridge',
     icon: '🌉',
     skin: 'blueDark',
   },
   respect: {
-    title: 'Respect',
+    titleKey: 'missions.content.badges.respect',
     icon: '🧭',
     skin: 'purple',
   },
   focus: {
-    title: 'Focus',
+    titleKey: 'missions.content.badges.focus',
     icon: '🎯',
     skin: 'blue',
   },
   upskill: {
-    title: 'Upskill',
+    titleKey: 'missions.content.badges.upskill',
     icon: '📘',
     skin: 'teal',
   },
   spotlight: {
-    title: 'Spotlight',
+    titleKey: 'missions.content.badges.spotlight',
     icon: '📣',
     skin: 'orange',
   },
   'connector-plus': {
-    title: 'Connector+',
+    titleKey: 'missions.content.badges.connectorPlus',
     icon: '🕸️',
     skin: 'gold',
   },
   'seed-planter': {
-    title: 'Seed Planter',
+    titleKey: 'missions.content.badges.seedPlanter',
     icon: '🌱',
     skin: 'greenDark',
   },
   pathfinder: {
-    title: 'Pathfinder',
+    titleKey: 'missions.content.badges.pathfinder',
     icon: '🧭',
     skin: 'blue',
   },
   'glow-up': {
-    title: 'Glow Up',
+    titleKey: 'missions.content.badges.glowUp',
     icon: '🏵️',
     skin: 'gold',
   },
   'north-star': {
-    title: 'North Star',
+    titleKey: 'missions.content.badges.northStar',
     icon: '🧭',
     skin: 'blueDark',
   },
@@ -385,7 +379,7 @@ const CategoryMissions = ({
   missions: missionsFromApi,
   onMissionStatusChange,
 }: CategoryMissionsProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useMissionsTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const missionCardRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const prefersReducedMotion = useReducedMotion();
@@ -405,6 +399,11 @@ const CategoryMissions = ({
         start: t('missions.content.cta.start') as string,
         inProgress: t('missions.content.cta.inProgress') as string,
         complete: t('missions.content.cta.complete') as string,
+      },
+      difficulty: {
+        bronze: t('missions.content.difficulty.bronze') as string,
+        silver: t('missions.content.difficulty.silver') as string,
+        gold: t('missions.content.difficulty.gold') as string,
       },
       hints: {
         pendingPrefix: t('missions.content.hints.pendingPrefix') as string,
@@ -886,7 +885,7 @@ const CategoryMissions = ({
                       <div className={styles.badgeCircle}>
                         <span className={styles.badgeIcon}>{badge.icon}</span>
                       </div>
-                      <span className={styles.badgeRibbon}>{badge.title}</span>
+                      <span className={styles.badgeRibbon}>{t(badge.titleKey) as string}</span>
                     </motion.div>
 
                     <div className={styles.cardBody}>
@@ -952,7 +951,7 @@ const CategoryMissions = ({
                   </div>
                   <div className={`${styles.difficultyRibbon} ${styles[mission.difficulty]}`}>
                     <span className={styles.ribbonLabel}>
-                      {difficultyBadges[mission.difficulty]}
+                      {translations.difficulty[mission.difficulty]}
                     </span>
                   </div>
                 </motion.div>

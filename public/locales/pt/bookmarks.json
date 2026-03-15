@@ -1,0 +1,59 @@
+{
+  "bookmarks": {
+    "title": "My Bookmarks",
+    "subtitle": "Your saved quotes and affirmations",
+    "itemCount": "{{count}} items",
+    "itemCount_zero": "No items",
+    "itemCount_one": "{{count}} item",
+    "itemCount_other": "{{count}} items",
+    "stats": {
+      "quotes": "Quotes",
+      "affirmations": "Affirmations"
+    },
+    "search": {
+      "placeholder": "Search bookmarks..."
+    },
+    "controls": {
+      "filter": "Filter",
+      "sort": "Sort",
+      "gridView": "Grid view",
+      "listView": "List view"
+    },
+    "sorting": {
+      "newest": "Newest First",
+      "oldest": "Oldest First",
+      "alphabetical": "Alphabetical"
+    },
+    "filters": {
+      "typeLabel": "Type:",
+      "all": "All",
+      "quotes": "Quotes",
+      "affirmations": "Affirmations"
+    },
+    "emptyState": {
+      "noBookmarks": {
+        "title": "No bookmarks yet",
+        "description": "Start bookmarking your favorite quotes and affirmations to see them here."
+      },
+      "noResults": {
+        "title": "No results found",
+        "description": "Try adjusting your search or filter criteria."
+      }
+    }
+  },
+  "cards": {
+    "quote": {
+      "shareTitle": "Inspirational Quote",
+      "shareAction": "Share Quote",
+      "removeBookmark": "Remove Bookmark",
+      "moreOptions": "More options"
+    },
+    "affirmation": {
+      "shareTitle": "Positive Affirmation",
+      "shareAction": "Share Affirmation",
+      "removeBookmark": "Remove Bookmark",
+      "moreOptions": "More options",
+      "typeLabel": "Affirmation"
+    }
+  }
+}

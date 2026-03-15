@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useMissionsTranslation } from '@/shared/hooks/useTranslation';
 import MissionCategories, {
   type MissionCategory,
 } from './components/MissionCategories/MissionCategories';
@@ -68,7 +68,7 @@ const categoryOrder: MissionCategoryId[] = [
 ];
 
 const MissionsPage = (): JSX.Element => {
-  const { t, currentLanguage } = useCommonTranslation();
+  const { t, currentLanguage } = useMissionsTranslation();
   const [selectedCategoryId, setSelectedCategoryId] = useState<MissionCategory['id'] | null>(null);
   const [missionsData, setMissionsData] = useState<MissionsApiResponse | null>(null);
   const [loadError, setLoadError] = useState<Error | null>(null);
@@ -99,11 +99,12 @@ const MissionsPage = (): JSX.Element => {
       setMissionsData(payload);
       setLoadError(null);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error('Failed to load missions');
+      const err =
+        error instanceof Error ? error : new Error(t('missions.errors.loadFailed') as string);
       setLoadError(err);
       console.error('Failed to load missions:', err);
     }
-  }, [currentLanguage]);
+  }, [currentLanguage, t]);
 
   const handleMissionStatusChange = useCallback(
     async (

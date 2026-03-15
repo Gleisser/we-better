@@ -3,7 +3,7 @@ import styles from '../../DreamBoardPage.module.css';
 import { Dream, Milestone } from '../../types';
 import TimelineComponent from './TimelineComponent';
 import { calculateProgress, getPercentage } from '../../utils/progressUtils';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 
 interface MilestoneHistoryItem {
   dreamId: string;
@@ -65,7 +65,7 @@ const MilestonesPopup: React.FC<MilestonesPopupProps> = ({
   achievementBadges,
   fetchedMilestones,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
 
   // State for async chart data (must be at the top level)
   const [chartData, setChartData] = useState<Array<{ date: Date; percentage: number }>>([]);

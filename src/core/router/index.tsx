@@ -1,12 +1,14 @@
 import {
   lazy,
   Suspense,
-  type LazyExoticComponent,
   type ComponentType,
+  type LazyExoticComponent,
   type ReactNode,
 } from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, type RouteObject } from 'react-router-dom';
+import type { AppNamespace } from '@/core/i18n';
 import RouteLoader from './RouteLoader';
+import RouteNamespaceBoundary from './RouteNamespaceBoundary';
 
 const publicRouteShellComponent = lazy(() => import('./PublicRouteShell'));
 const authRouteShellComponent = lazy(() => import('./AuthRouteShell'));
@@ -32,47 +34,71 @@ const quoteIconSpikeRouteComponent = lazy(() => import('@/pages/QuoteIconSpike')
 
 interface LazyRouteOptions {
   label?: string;
+  namespaces?: readonly AppNamespace[];
   variant?: 'fullscreen' | 'content';
 }
 
+const withNamespaceBoundary = (
+  children: ReactNode,
+  { label, namespaces = [], variant = 'fullscreen' }: LazyRouteOptions = {}
+): JSX.Element => (
+  <RouteNamespaceBoundary label={label} namespaces={namespaces} variant={variant}>
+    {children}
+  </RouteNamespaceBoundary>
+);
+
 const renderLazyRoute = (
   Component: LazyExoticComponent<ComponentType>,
-  { label, variant = 'fullscreen' }: LazyRouteOptions = {}
-): JSX.Element => (
-  <Suspense fallback={<RouteLoader label={label} variant={variant} />}>
-    <Component />
-  </Suspense>
-);
+  options: LazyRouteOptions = {}
+): JSX.Element =>
+  withNamespaceBoundary(
+    <Suspense fallback={<RouteLoader label={options.label} variant={options.variant} />}>
+      <Component />
+    </Suspense>,
+    options
+  );
 
 const renderLazyLayoutRoute = (
   Component: LazyExoticComponent<ComponentType<{ children?: ReactNode }>>,
   children: ReactNode,
-  { label, variant = 'fullscreen' }: LazyRouteOptions = {}
-): JSX.Element => (
-  <Suspense fallback={<RouteLoader label={label} variant={variant} />}>
-    <Component>{children}</Component>
-  </Suspense>
-);
+  options: LazyRouteOptions = {}
+): JSX.Element =>
+  withNamespaceBoundary(
+    <Suspense fallback={<RouteLoader label={options.label} variant={options.variant} />}>
+      <Component>{children}</Component>
+    </Suspense>,
+    options
+  );
 
-export const router = createBrowserRouter([
+export const routes: RouteObject[] = [
   {
     path: '/',
-    element: renderLazyRoute(publicRouteShellComponent, { label: 'Loading We Better...' }),
+    element: renderLazyRoute(publicRouteShellComponent, {
+      label: 'Loading We Better...',
+      namespaces: ['landing'],
+    }),
     children: [
       {
         index: true,
-        element: renderLazyRoute(appRouteComponent, { label: 'Loading We Better...' }),
+        element: renderLazyRoute(appRouteComponent, {
+          label: 'Loading We Better...',
+          namespaces: ['landing'],
+        }),
       },
     ],
   },
   {
     path: '/auth',
-    element: renderLazyRoute(authRouteShellComponent, { label: 'Loading authentication...' }),
+    element: renderLazyRoute(authRouteShellComponent, {
+      label: 'Loading authentication...',
+      namespaces: ['auth'],
+    }),
     children: [
       {
         path: 'login',
         element: renderLazyRoute(loginRouteComponent, {
           label: 'Loading login...',
+          namespaces: ['auth'],
           variant: 'content',
         }),
       },
@@ -80,6 +106,7 @@ export const router = createBrowserRouter([
         path: 'signup',
         element: renderLazyRoute(signUpRouteComponent, {
           label: 'Loading sign up...',
+          namespaces: ['auth'],
           variant: 'content',
         }),
       },
@@ -87,6 +114,7 @@ export const router = createBrowserRouter([
         path: 'forgot-password',
         element: renderLazyRoute(forgotPasswordRouteComponent, {
           label: 'Loading password recovery...',
+          namespaces: ['auth'],
           variant: 'content',
         }),
       },
@@ -94,6 +122,7 @@ export const router = createBrowserRouter([
         path: 'reset-password',
         element: renderLazyRoute(resetPasswordRouteComponent, {
           label: 'Loading password reset...',
+          namespaces: ['auth'],
           variant: 'content',
         }),
       },
@@ -101,12 +130,16 @@ export const router = createBrowserRouter([
   },
   {
     path: '/app',
-    element: renderLazyRoute(appRouteShellComponent, { label: 'Loading workspace...' }),
+    element: renderLazyRoute(appRouteShellComponent, {
+      label: 'Loading workspace...',
+      namespaces: ['notifications'],
+    }),
     children: [
       {
         index: true,
         element: renderLazyRoute(dashboardRouteComponent, {
           label: 'Loading dashboard...',
+          namespaces: ['dashboard'],
           variant: 'content',
         }),
       },
@@ -114,6 +147,7 @@ export const router = createBrowserRouter([
         path: 'dashboard',
         element: renderLazyRoute(dashboardRouteComponent, {
           label: 'Loading dashboard...',
+          namespaces: ['dashboard'],
           variant: 'content',
         }),
       },
@@ -121,6 +155,7 @@ export const router = createBrowserRouter([
         path: 'life-wheel',
         element: renderLazyRoute(lifeWheelRouteComponent, {
           label: 'Loading life wheel...',
+          namespaces: ['dashboard', 'life-wheel'],
           variant: 'content',
         }),
       },
@@ -128,6 +163,7 @@ export const router = createBrowserRouter([
         path: 'dream-board',
         element: renderLazyRoute(dreamBoardRouteComponent, {
           label: 'Loading dream board...',
+          namespaces: ['dream-board'],
           variant: 'content',
         }),
       },
@@ -135,6 +171,7 @@ export const router = createBrowserRouter([
         path: 'missions',
         element: renderLazyRoute(missionsRouteComponent, {
           label: 'Loading missions...',
+          namespaces: ['missions'],
           variant: 'content',
         }),
       },
@@ -142,6 +179,7 @@ export const router = createBrowserRouter([
         path: 'settings',
         element: renderLazyRoute(settingsRouteComponent, {
           label: 'Loading settings...',
+          namespaces: ['settings'],
           variant: 'content',
         }),
       },
@@ -149,6 +187,7 @@ export const router = createBrowserRouter([
         path: 'bookmarks',
         element: renderLazyRoute(bookmarksRouteComponent, {
           label: 'Loading bookmarks...',
+          namespaces: ['bookmarks'],
           variant: 'content',
         }),
       },
@@ -156,6 +195,7 @@ export const router = createBrowserRouter([
         path: 'notifications',
         element: renderLazyRoute(notificationsRouteComponent, {
           label: 'Loading notifications...',
+          namespaces: ['notifications'],
           variant: 'content',
         }),
       },
@@ -163,6 +203,7 @@ export const router = createBrowserRouter([
         path: 'pricing',
         element: renderLazyRoute(pricingRouteComponent, {
           label: 'Loading pricing...',
+          namespaces: ['settings', 'pricing'],
           variant: 'content',
         }),
       },
@@ -170,7 +211,10 @@ export const router = createBrowserRouter([
   },
   {
     path: '/auth/confirm',
-    element: renderLazyRoute(emailConfirmationRouteComponent, { label: 'Loading confirmation...' }),
+    element: renderLazyRoute(emailConfirmationRouteComponent, {
+      label: 'Loading confirmation...',
+      namespaces: ['auth'],
+    }),
   },
   {
     path: '/spikes/quote-icons',
@@ -182,9 +226,10 @@ export const router = createBrowserRouter([
       authLayoutRouteComponent,
       renderLazyRoute(forgotPasswordRouteComponent, {
         label: 'Loading password recovery...',
+        namespaces: ['auth'],
         variant: 'content',
       }),
-      { label: 'Loading authentication...' }
+      { label: 'Loading authentication...', namespaces: ['auth'] }
     ),
   },
   {
@@ -193,9 +238,12 @@ export const router = createBrowserRouter([
       authLayoutRouteComponent,
       renderLazyRoute(resetPasswordRouteComponent, {
         label: 'Loading password reset...',
+        namespaces: ['auth'],
         variant: 'content',
       }),
-      { label: 'Loading authentication...' }
+      { label: 'Loading authentication...', namespaces: ['auth'] }
     ),
   },
-]);
+];
+
+export const router = createBrowserRouter(routes);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import styles from './ChallengeModal.module.css';
 import { Dream } from '../../types';
 import { CreateDreamChallengeInput, DreamChallenge } from '../../api/dreamChallengesApi';
@@ -19,7 +19,7 @@ const ChallengeModal: React.FC<ChallengeModalProps> = ({
   dreams,
   editingChallenge,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState('30');

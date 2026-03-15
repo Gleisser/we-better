@@ -1,0 +1,64 @@
+{
+  "greetings": {
+    "goodMorning": "Bom dia",
+    "goodAfternoon": "Boa tarde",
+    "goodEvening": "Boa noite",
+    "howAreYou": "como você está?"
+  },
+  "actions": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "create": "Criar",
+    "loading": "Carregando...",
+    "tryAgain": "Tentar novamente",
+    "close": "Fechar",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "next": "Avançar",
+    "finish": "Concluir",
+    "continue": "Continuar",
+    "submit": "Enviar"
+  },
+  "navigation": {
+    "dashboard": "Painel",
+    "pricing": "Preços",
+    "pricingCta": "Premium",
+    "pricingCtaTop": "Economize até 20%",
+    "pricingCtaBottom": "na cobrança anual",
+    "dreamBoard": "Quadro dos Sonhos",
+    "missions": "Missões",
+    "lifeWheel": "Roda da Vida",
+    "affirmations": "Afirmações",
+    "settings": "Configurações",
+    "profile": "Perfil",
+    "logout": "Sair"
+  },
+  "header": {
+    "toggleTheme": "Alternar tema",
+    "notifications": "Notificações",
+    "profile": "Perfil",
+    "markAllAsRead": "Marcar todas como lidas",
+    "viewAllNotifications": "Ver todas as notificações",
+    "bookmarks": "Favoritos",
+    "signOut": "Sair",
+    "user": "Usuário"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "tabs": {
+      "all": "Todas",
+      "following": "Seguindo",
+      "archive": "Arquivo"
+    },
+    "actions": {
+      "followBack": "Seguir de volta",
+      "reply": "Responder",
+      "view": "Ver",
+      "viewThread": "Ver conversa",
+      "viewTask": "Ver tarefa",
+      "viewBadge": "Ver badge"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { STATUS_CONFIG } from './config';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import styles from './StatusMenu.module.css';
 import { useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -19,7 +19,7 @@ export const StatusMenu: React.FC<StatusMenuProps> = ({
   onSelect,
   position,
 }: StatusMenuProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const menuRef = useRef<HTMLDivElement>(null);
   const isMobile = window.innerWidth <= 768;
 

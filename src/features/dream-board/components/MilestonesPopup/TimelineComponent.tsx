@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Milestone } from '../../types';
 import styles from './TimelineComponent.module.css';
 import { calculateProgress, getPercentage } from '../../utils/progressUtils';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 
 interface TimelineComponentProps {
   milestones: Milestone[];
@@ -17,7 +17,7 @@ const TimelineComponent: React.FC<TimelineComponentProps> = ({
   dreamTitle,
   progress,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
   const timelineWrapperRef = useRef<HTMLDivElement>(null);
   const [showScrollIndicators, setShowScrollIndicators] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);

@@ -11,6 +11,9 @@ const mockUpdateProgressBackend = vi.fn(async () => 0.5);
 const mockGetProgressForDream = vi.fn(async () => undefined);
 
 vi.mock('@/shared/hooks/useTranslation', () => ({
+  useDreamBoardTranslation: () => ({
+    t: (key: string): string => key,
+  }),
   useCommonTranslation: () => ({
     t: (key: string): string => key,
   }),

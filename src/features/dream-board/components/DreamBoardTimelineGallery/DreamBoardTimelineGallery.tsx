@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import { Dream, DreamImageMilestoneInput, DreamImageUploadInput } from '../../types';
 import {
   getDreamCategoryTranslationKey,
@@ -106,7 +106,7 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
   errorMessage,
   categories,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [showUploadWizard, setShowUploadWizard] = useState(false);

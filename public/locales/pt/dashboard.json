@@ -1,0 +1,471 @@
+{
+  "floating": {
+    "aiAssistant": "Assistente de IA"
+  },
+  "aiChat": {
+    "title": "Assistente de IA",
+    "greeting": "Como posso ajudar você hoje?",
+    "placeholder": "Digite sua mensagem...",
+    "send": "Enviar",
+    "closeChat": "Fechar chat"
+  },
+  "widgets": {
+    "common": {
+      "readMore": "Ler mais",
+      "showLess": "Mostrar menos",
+      "retry": "Tentar novamente"
+    },
+    "cardsWidget": {
+      "ariaLabel": "Widget de cartões de afirmação",
+      "title": "Cartões de Afirmação",
+      "subtitle": "Toque em um cartão para revelar a próxima mensagem inspiradora.",
+      "hint": "Toque ou use as setas para girar",
+      "emptyDeck": "Nenhuma afirmação está disponível agora.",
+      "screenReaderStatus": "Afirmação {{label}}. {{state}}",
+      "activeState": "Ativa.",
+      "inactiveState": "Inativa.",
+      "celebratorySubtext": "Celebre a afirmação de hoje",
+      "nextAffirmation": "Próxima afirmação",
+      "record": "Gravar",
+      "recording": "Gravando",
+      "reminder": "Lembrete",
+      "favorite": "Favorito",
+      "saved": "Salvo",
+      "streak": "Sequência",
+      "craftAffirmation": "Criar afirmação",
+      "craftAffirmationSubtitle": "Crie um cartão que seja unicamente seu"
+    },
+    "radialLifeChart": {
+      "title": "Gráfico Radial da Vida",
+      "subtitle": "Uma visão rápida de onde você está investindo sua energia.",
+      "chartTitle": "Gráfico radial mostrando as áreas de foco do seu bem-estar",
+      "accessibleLabel": "Visão geral do equilíbrio da vida",
+      "profileInitials": "Iniciais do perfil",
+      "centerLabel": "Seu equilíbrio",
+      "averageLabel": "Média de conclusão: {{value}} por cento",
+      "tooltipValue": "{{category}} · {{value}}/10",
+      "collapse": "Ocultar anéis do gráfico",
+      "expand": "Mostrar anéis do gráfico"
+    },
+    "mood": {
+      "title": "Como você está se sentindo hoje?",
+      "subtitle": "Explore seu estado emocional e identifique seus padrões.",
+      "view": {
+        "week": "Semana",
+        "month": "Mês"
+      },
+      "trend": {
+        "weekly": "Pulso de humor semanal",
+        "monthly": "Pulso de humor mensal",
+        "average": "Humor médio: {{value}}",
+        "coverage": "Registros de humor: {{count}}/{{total}}",
+        "weeklyEmpty": "Ainda não há registros de humor nos últimos 7 dias.",
+        "monthlyEmpty": "Ainda não há registros de humor nos últimos 28 dias."
+      },
+      "weeks": {
+        "short": "S{{index}}"
+      },
+      "moods": {
+        "elated": {
+          "label": "Radiante",
+          "description": "Uma energia alegre acompanha tudo o que você toca hoje."
+        },
+        "bright": {
+          "label": "Animado",
+          "description": "Você se sente leve e otimista, com um impulso suave para seguir em frente."
+        },
+        "balanced": {
+          "label": "Equilibrado",
+          "description": "Estável e sereno, você acolhe o momento como ele é."
+        },
+        "low": {
+          "label": "Em baixa",
+          "description": "A energia diminui e as emoções pedem um ritmo mais calmo e gentil."
+        },
+        "drained": {
+          "label": "Esgotado",
+          "description": "Suas reservas parecem baixas e o descanso é bem-vindo."
+        }
+      }
+    },
+    "dreamBoardWidget": {
+      "title": "Resumo do Dream Board",
+      "subtitle": "Uma visão visual dos sonhos que você está construindo.",
+      "openDreamBoard": "Abrir Dream Board",
+      "refresh": "Atualizar",
+      "refreshing": "Atualizando...",
+      "retry": "Tentar novamente",
+      "loading": "Carregando o resumo do seu Dream Board...",
+      "error": "Não foi possível carregar o resumo do seu Dream Board agora.",
+      "previousImage": "Imagem anterior do sonho",
+      "nextImage": "Próxima imagem do sonho",
+      "carouselAria": "Carrossel de imagens do Dream Board",
+      "keyboardHint": "Use as setas do teclado",
+      "counter": "{{current}} / {{total}}",
+      "metrics": {
+        "images": "Imagens",
+        "categories": "Categorias",
+        "averageProgress": "Progresso médio"
+      },
+      "empty": {
+        "title": "Sua galeria de sonhos vai aparecer aqui",
+        "description": "Assim que o seu Dream Board tiver imagens, este widget vai exibi-las em uma visualização tipo linha do tempo."
+      }
+    },
+    "quote": {
+      "title": "Frase do dia",
+      "shareQuote": "Compartilhar frase",
+      "bookmarkQuote": "Salvar frase",
+      "removeBookmark": "Remover dos salvos",
+      "moreOptions": "Mais opções",
+      "quoteCopied": "Frase copiada para a área de transferência!",
+      "quoteBookmarked": "Frase salva!",
+      "learnMore": "Saiba mais",
+      "bookRecommendations": "Recomendações de livros",
+      "quickTakeaways": "Aprendizados rápidos",
+      "submitQuote": "Enviar uma frase",
+      "reactToQuote": "Reagir à frase",
+      "getNewQuote": "Buscar nova frase",
+      "copyQuote": "Copiar frase",
+      "tryAgain": "Tentar novamente",
+      "failedToLoad": "Falha ao carregar as frases"
+    },
+    "affirmation": {
+      "title": "Afirmação do dia",
+      "iAffirm": "Eu afirmo",
+      "affirmedToday": "Afirmado hoje",
+      "dailyIntentionLocked": "Intenção do dia registrada",
+      "loadingAffirmations": "Carregando afirmações...",
+      "failedToLoad": "Falha ao carregar as afirmações desta categoria",
+      "tryAgain": "Tentar novamente",
+      "create": "Criar",
+      "edit": "Editar",
+      "createCustom": "Criar afirmação personalizada",
+      "editPersonal": "Editar afirmação pessoal",
+      "scrollLeft": "Rolar categorias para a esquerda",
+      "scrollRight": "Rolar categorias para a direita",
+      "deleteAffirmation": "Excluir afirmação",
+      "recordAffirmation": "Gravar afirmação",
+      "stopRecording": "Parar gravação",
+      "setReminder": "Definir lembrete",
+      "daysStreaking": "Dias em sequência",
+      "bookmark": "Salvar",
+      "removeBookmark": "Remover dos salvos",
+      "bookmarkAffirmation": "Salvar afirmação",
+      "clearRecording": "Limpar gravação",
+      "deletePersonalAffirmation": "Excluir afirmação pessoal",
+      "deleteConfirmMessage": "Tem certeza de que deseja excluir sua afirmação pessoal? Esta ação não pode ser desfeita.",
+      "deletedSuccessfully": "Afirmação pessoal excluída com sucesso",
+      "modal": {
+        "createTitle": "Criar afirmação pessoal",
+        "updateTitle": "Atualizar afirmação pessoal",
+        "placeholder": "Escreva sua afirmação pessoal...",
+        "preview": "Prévia:",
+        "confirmReplace": "Isso vai substituir sua afirmação pessoal atual. Deseja continuar?",
+        "cancel": "Cancelar",
+        "save": "Salvar",
+        "yesReplace": "Sim, substituir"
+      },
+      "categories": {
+        "personal": "Pessoal",
+        "beauty": "Beleza",
+        "blessing": "Bênção",
+        "gratitude": "Gratidão",
+        "happiness": "Felicidade",
+        "health": "Saúde",
+        "love": "Amor",
+        "money": "Dinheiro",
+        "sleep": "Sono",
+        "spiritual": "Espiritual"
+      }
+    },
+    "lifeWheel": {
+      "title": "Roda da Vida",
+      "assessment": "Avaliação da Roda da Vida",
+      "subtitle": "Veja como está o equilíbrio da sua vida neste momento.",
+      "loading": "Carregando dados da roda da vida...",
+      "goToDetails": "Ir para os detalhes da Roda da Vida",
+      "viewAnalysis": "Ver análise detalhada",
+      "categoryScore": "pontuação:",
+      "tabs": {
+        "current": "Avaliação atual",
+        "history": "Histórico",
+        "insights": "Insights"
+      },
+      "errors": {
+        "somethingWentWrong": "Algo deu errado",
+        "failedToLoad": "Falha ao carregar os dados da roda da vida",
+        "tryAgain": "Tentar novamente"
+      },
+      "actions": {
+        "saving": "Salvando...",
+        "saveAssessment": "Salvar avaliação",
+        "updateAssessment": "Atualizar avaliação",
+        "saveSuccess": "Seus dados da Roda da Vida foram salvos com sucesso!"
+      },
+      "history": {
+        "title": "Progresso ao longo do tempo",
+        "loadingHistory": "Carregando histórico...",
+        "noHistoryYet": "Ainda não há registros no histórico.",
+        "comparingWith": "Comparando com:",
+        "changesFromPrevious": "Mudanças em relação ao período anterior",
+        "animating": "Animando",
+        "compare": "Comparar",
+        "speed": "Velocidade:",
+        "progressIndicator": "{{current}} / {{total}}",
+        "timeline": {
+          "pauseAnimation": "Pausar animação",
+          "playAnimation": "Reproduzir animação da linha do tempo",
+          "speeds": {
+            "slow": "Lenta",
+            "normal": "Normal",
+            "fast": "Rápida"
+          }
+        }
+      },
+      "insights": {
+        "title": "Insights da Roda da Vida",
+        "needTwoDates": "Você precisa de pelo menos duas datas para comparar e obter insights.",
+        "saveMoreAssessments": "Conclua e salve mais avaliações da roda da vida ao longo do tempo para acompanhar seu progresso.",
+        "selectDatesToCompare": "Selecione datas para comparar",
+        "baseDate": "Data base",
+        "compareWith": "Comparar com",
+        "selectDate": "Selecione uma data",
+        "comparing": "Comparando",
+        "with": "com",
+        "selectTwoDates": "Selecione duas datas acima para comparar e ver os insights.",
+        "mostImproved": "Maior evolução",
+        "mostDeclined": "Maior queda",
+        "summary": "Resumo",
+        "from": "De",
+        "to": "até",
+        "changesByCategory": "Mudanças por categoria",
+        "sortBy": "Ordenar por:",
+        "clickToChangeSort": "Clique para alterar o método de ordenação",
+        "sortMethods": {
+          "magnitude": "Maior mudança",
+          "value": "Valor atual",
+          "alphabetical": "Alfabética",
+          "improved": "Mais evoluída"
+        },
+        "stats": {
+          "improvedAreas": "Áreas em evolução",
+          "declinedAreas": "Áreas em queda",
+          "unchanged": "Sem mudanças"
+        }
+      },
+      "healthStatus": {
+        "needsAttention": "Precisa de atenção",
+        "developing": "Em desenvolvimento",
+        "thriving": "Prosperando"
+      },
+      "categories": {
+        "health": "Saúde",
+        "career": "Carreira",
+        "money": "Dinheiro",
+        "family": "Família",
+        "relationship": "Relacionamento",
+        "social": "Social",
+        "spirituality": "Espiritualidade",
+        "selfCare": "Autocuidado",
+        "personal": "Pessoal",
+        "education": "Educação",
+        "recreation": "Recreação",
+        "environment": "Ambiente",
+        "community": "Comunidade",
+        "finances": "Finanças",
+        "personalGrowth": "Crescimento pessoal",
+        "relationships": "Relacionamentos",
+        "spiritual": "Espiritual"
+      },
+      "categoryDescriptions": {
+        "career": "Crescimento e satisfação profissional",
+        "health": "Bem-estar físico e mental",
+        "finances": "Estabilidade financeira e investimentos",
+        "relationships": "Conexões pessoais e rede de apoio",
+        "personalGrowth": "Aprendizado e autodesenvolvimento",
+        "recreation": "Lazer e alegria",
+        "spiritual": "Sentido e atenção plena",
+        "community": "Pertencimento e contribuição"
+      }
+    },
+    "habits": {
+      "title": "Hábitos diários",
+      "loading": "Carregando hábitos...",
+      "errorLoading": "Erro ao carregar hábitos",
+      "tryAgain": "Tentar novamente",
+      "emptyState": "Nenhum hábito encontrado. Crie seu primeiro hábito para começar!",
+      "createHabit": "Criar hábito",
+      "addNew": "Adicionar novo hábito",
+      "expandWidget": "Expandir widget de hábitos",
+      "collapseWidget": "Recolher widget de hábitos",
+      "expandHabit": "Expandir hábito",
+      "collapseHabit": "Recolher hábito",
+      "setStatusTooltip": "Clique para definir o status",
+      "setStatusFor": "Definir status para {{day}}",
+      "streakDays": "{{count}} dias",
+      "categories": {
+        "all": "Todos",
+        "health": "Saúde",
+        "growth": "Crescimento",
+        "lifestyle": "Estilo de vida",
+        "custom": "Personalizado"
+      },
+      "statuses": {
+        "completed": "Concluído",
+        "sick": "Doente / indisposto",
+        "weather": "Clima",
+        "travel": "Viagem / fora",
+        "partial": "Parcial",
+        "rescheduled": "Reagendado",
+        "half": "Metade concluída",
+        "medical": "Médico",
+        "break": "Pausa",
+        "event": "Evento",
+        "rest": "Dia de descanso"
+      },
+      "form": {
+        "newHabit": "Novo hábito",
+        "editHabit": "Editar hábito",
+        "name": "Nome",
+        "category": "Categoria",
+        "placeholder": "Ex.: meditação matinal",
+        "createButton": "Criar hábito",
+        "saveButton": "Salvar alterações"
+      },
+      "monthlyView": {
+        "streakLabel": "{{count}} dias",
+        "completedLegend": "Concluído",
+        "missedLegend": "Não concluído",
+        "weekdays": {
+          "mon": "Seg",
+          "tue": "Ter",
+          "wed": "Qua",
+          "thu": "Qui",
+          "fri": "Sex",
+          "sat": "Sáb",
+          "sun": "Dom"
+        }
+      },
+      "actions": {
+        "edit": "Editar",
+        "delete": "Excluir"
+      }
+    },
+    "goals": {
+      "title": "Acompanhamento de metas",
+      "loading": "Carregando metas...",
+      "errorLoading": "Erro ao carregar metas",
+      "tryAgain": "Tentar novamente",
+      "addNew": "Adicionar nova meta",
+      "expandWidget": "Expandir widget de metas",
+      "collapseWidget": "Recolher widget de metas",
+      "emptyState": {
+        "all": "Nenhuma meta encontrada. Crie sua primeira meta para começar!",
+        "category": "Nenhuma meta de {{category}} encontrada.",
+        "createButton": "Criar meta",
+        "createCategoryButton": "Criar meta de {{category}}"
+      },
+      "loadMore": "Carregar mais",
+      "categories": {
+        "all": "Todas",
+        "learning": "Aprendizado",
+        "fitness": "Condicionamento",
+        "career": "Carreira",
+        "personal": "Pessoal"
+      },
+      "progress": {
+        "increase": "Aumentar progresso",
+        "decrease": "Diminuir progresso",
+        "percentage": "{{progress}}% concluído"
+      },
+      "form": {
+        "newGoal": "Nova meta",
+        "editGoal": "Editar meta",
+        "title": "Título da meta",
+        "titlePlaceholder": "Digite o título da sua meta...",
+        "category": "Categoria",
+        "targetDate": "Data alvo",
+        "targetDatePlaceholder": "Selecione a data alvo",
+        "milestones": "Marcos",
+        "milestonesDescription": "Divida sua meta em marcos menores",
+        "addMilestone": "Adicionar marco",
+        "milestonePlaceholder": "Digite um marco...",
+        "createButton": "Criar meta",
+        "saveButton": "Salvar alterações",
+        "cancel": "Cancelar"
+      },
+      "milestones": {
+        "completed": "Concluído",
+        "pending": "Pendente",
+        "edit": "Editar marco",
+        "delete": "Excluir marco",
+        "save": "Salvar",
+        "cancel": "Cancelar",
+        "count": "marcos"
+      },
+      "reviewSettings": {
+        "title": "Configurações de revisão",
+        "frequency": "Frequência de revisão",
+        "notifications": "Notificações",
+        "reminderSettings": "Configurações de lembrete",
+        "frequencies": {
+          "daily": "Diária",
+          "weekly": "Semanal",
+          "monthly": "Mensal"
+        },
+        "notificationTypes": {
+          "email": "E-mail",
+          "sms": "SMS",
+          "push": "Notificação push"
+        },
+        "reminderText": "Comece a me lembrar",
+        "reminderOptions": {
+          "1": "1 dia",
+          "3": "3 dias",
+          "7": "1 semana"
+        },
+        "beforeReview": "antes da data de revisão",
+        "closeSettings": "Fechar configurações",
+        "saveChanges": "Salvar alterações"
+      },
+      "review": {
+        "nextReview": "Próxima revisão: {{date}}",
+        "completeReview": "Concluir revisão",
+        "reviewCompleted": "Revisão concluída! Próxima revisão: {{date}}",
+        "failedToComplete": "Falha ao concluir a revisão"
+      },
+      "reviewTimer": {
+        "label": "Revisão de metas",
+        "overdue": "Atrasada em {{count}} dia",
+        "overdue_plural": "Atrasada em {{count}} dias",
+        "dueToday": "Vence hoje",
+        "tomorrow": "Amanhã",
+        "inDays": "em {{count}} dias",
+        "clickToComplete": "Clique para concluir a revisão"
+      },
+      "actions": {
+        "edit": "Editar",
+        "delete": "Excluir",
+        "more": "Mais ações"
+      },
+      "confirmDelete": {
+        "title": "Excluir meta",
+        "message": "Tem certeza de que deseja excluir esta meta? Esta ação não pode ser desfeita.",
+        "cancel": "Cancelar",
+        "delete": "Excluir",
+        "closeModal": "Fechar modal"
+      },
+      "toasts": {
+        "goalCreated": "Nova meta criada com sucesso!",
+        "goalUpdated": "Meta atualizada com sucesso!",
+        "goalDeleted": "Meta excluída com sucesso",
+        "reviewCompleted": "Revisão concluída! Próxima revisão: {{date}}",
+        "failedToCreate": "Falha ao criar meta",
+        "failedToUpdate": "Falha ao atualizar meta",
+        "failedToDelete": "Falha ao excluir meta",
+        "failedToComplete": "Falha ao concluir a revisão"
+      }
+    }
+  }
+}

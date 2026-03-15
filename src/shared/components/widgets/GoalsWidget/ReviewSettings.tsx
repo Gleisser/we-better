@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import styles from './ReviewSettings.module.css';
 import { ReviewSettings, ReviewFrequency, NotificationMethod } from './types';
 import { Portal } from '@/shared/components/common/Portal/Portal';
@@ -20,7 +20,7 @@ export const ReviewSettingsModal = ({
   settings,
   onSave,
 }: ReviewSettingsModalProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const [localSettings, setLocalSettings] = useState<ReviewSettings>(settings);
 
   const FREQUENCY_OPTIONS: { value: ReviewFrequency; label: string }[] = [

@@ -1,0 +1,520 @@
+{
+  "dreamBoard": {
+    "title": "Dream Board",
+    "tabs": {
+      "visionBoard": "Vision Board",
+      "experience": "Experience",
+      "insights": "Insights"
+    },
+    "loading": {
+      "dreamBoard": "Loading your dream board..."
+    },
+    "errors": {
+      "loadFailed": "We couldn't load your dream board.",
+      "saveFailed": "We couldn't save your latest changes."
+    },
+    "emptyState": {
+      "firstImage": {
+        "title": "Start your Dream Board with a first image",
+        "description": "Add one image to unlock Quick Vision, category insights, and your full visual board experience.",
+        "features": {
+          "quickVision": "Quick Vision keeps your dreams and progress visible at a glance.",
+          "categories": "Category cards reveal how each area of your future is taking shape.",
+          "insights": "Insights help you spot balance, momentum, and next steps across your dreams."
+        },
+        "cta": "Add first image"
+      }
+    },
+    "quickVision": {
+      "title": "Quick Vision",
+      "expand": "Expand",
+      "minimize": "Minimize",
+      "errorLoading": "Unable to load quick vision data: {{error}}",
+      "decreaseProgress": "Decrease progress",
+      "increaseProgress": "Increase progress",
+      "scrollToSeeMore": "Scroll to see more dreams"
+    },
+    "progress": {
+      "title": "Dream Progress",
+      "loading": "Loading milestones...",
+      "milestonesCompleted": "{{completed}} of {{total}} milestones completed",
+      "manageMilestones": "Manage milestones"
+    },
+    "categories": {
+      "title": "Dream Categories",
+      "clearFilter": "Clear filter",
+      "errorLoading": "Unable to load category progress: {{error}}",
+      "dreamCount": {
+        "single": "dream",
+        "plural": "dreams"
+      },
+      "expandedContent": {
+        "dreamsHeader": "Dreams in this category",
+        "emptyState": "No dreams in this category yet.",
+        "moreDreams": "{{count}} more dreams"
+      },
+      "names": {
+        "general": "General",
+        "travel": "Travel",
+        "skills": "Skills",
+        "finance": "Finance",
+        "finances": "Finances",
+        "health": "Health",
+        "relationships": "Relationships",
+        "career": "Career",
+        "education": "Education",
+        "spirituality": "Spirituality"
+      }
+    },
+    "insights": {
+      "filters": {
+        "all": "All",
+        "patterns": "Patterns",
+        "balance": "Balance",
+        "progress": "Progress"
+      },
+      "keyTakeaways": {
+        "title": "Key takeaways",
+        "emptyMessage": "Add more dream activity to unlock richer insights."
+      },
+      "relatedDreams": {
+        "title": "Related dreams",
+        "noRelated": "No related dreams yet"
+      },
+      "modal": {
+        "title": "Insight details",
+        "dataVisualization": "Data visualization",
+        "visualizationPlaceholder": "A deeper visualization for this insight will appear here."
+      },
+      "titles": {
+        "pattern_analysis": "Pattern Analysis",
+        "balance_suggestion": "Balance Suggestion",
+        "progress_insight": "Progress Insight"
+      }
+    },
+    "cosmic": {
+      "title": "Cosmic Dream Experience",
+      "viewModes": {
+        "cosmic": "Cosmic",
+        "constellation": "Constellation"
+      },
+      "tooltips": {
+        "exitFullscreen": "Exit fullscreen",
+        "fullscreen": "Enter fullscreen",
+        "zoomOut": "Zoom out",
+        "resetView": "Reset view",
+        "zoomIn": "Zoom in"
+      },
+      "category": {
+        "label": "Category filter",
+        "all": "All dreams",
+        "legendTitle": "Dream categories"
+      },
+      "loading": {
+        "text": "Mapping your dream universe..."
+      },
+      "emptyState": {
+        "text": "Your universe is empty for now.",
+        "subtext": "Add dreams to see them connect as a living constellation.",
+        "button": "Return to Dream Board"
+      },
+      "detail": {
+        "progress": "Progress",
+        "milestones": "Milestones",
+        "completed": "Completed",
+        "sharedWith": "Shared with",
+        "created": "Created"
+      }
+    },
+    "challenge": {
+      "title": "Dream Challenge",
+      "newChallenge": "New challenge",
+      "loading": "Loading challenges...",
+      "errorLoading": "Unable to load challenges: {{error}}",
+      "noActiveChallenges": "No active challenges yet. Create one to turn a dream into a daily practice.",
+      "deleteConfirm": "Delete this challenge?",
+      "progress": {
+        "dayOf": "Day {{current}} of {{total}}",
+        "totalDays": "{{days}} total days"
+      },
+      "carousel": {
+        "counter": "{{current}} / {{total}}"
+      },
+      "actions": {
+        "markComplete": "Mark today complete",
+        "undoComplete": "Undo today's completion",
+        "editChallenge": "Edit challenge",
+        "deleteChallenge": "Delete challenge",
+        "previousChallenge": "Previous challenge",
+        "nextChallenge": "Next challenge"
+      },
+      "modal": {
+        "createTitle": "Create challenge",
+        "editTitle": "Edit challenge",
+        "close": "Close challenge modal",
+        "sections": {
+          "basicInfo": "Basic info",
+          "durationDifficulty": "Duration and difficulty",
+          "frequency": "Frequency",
+          "connectRemind": "Connect and remind"
+        },
+        "form": {
+          "challengeTitle": "Challenge title",
+          "titlePlaceholder": "Example: Practice piano every day",
+          "description": "Description",
+          "descriptionPlaceholder": "Describe the habit or outcome this challenge supports",
+          "duration": "Duration",
+          "difficultyLevel": "Difficulty level",
+          "linkToDream": "Link to a dream",
+          "none": "No linked dream",
+          "enableReminders": "Enable reminders",
+          "selectDays": "Select days"
+        },
+        "units": {
+          "days": "Days",
+          "weeks": "Weeks",
+          "months": "Months"
+        },
+        "difficulty": {
+          "easy": "Easy",
+          "medium": "Medium",
+          "hard": "Hard"
+        },
+        "frequency": {
+          "daily": "Daily",
+          "weekly": "Weekly",
+          "custom": "Custom"
+        },
+        "weekDays": {
+          "mon": "Mon",
+          "tue": "Tue",
+          "wed": "Wed",
+          "thu": "Thu",
+          "fri": "Fri",
+          "sat": "Sat",
+          "sun": "Sun"
+        },
+        "tips": {
+          "daily": "Daily challenges work best when the action is simple and repeatable.",
+          "weekly": "Weekly challenges give you more room for deeper focus and recovery.",
+          "custom": "Choose a custom rhythm when your routine needs flexibility."
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "create": "Create challenge",
+          "update": "Update challenge"
+        }
+      }
+    },
+    "milestones": {
+      "manageTitle": "Milestones for {{dreamTitle}}",
+      "closePopup": "Close milestones popup",
+      "progressSummary": "{{completed}} of {{total}} milestones completed ({{percentage}}%)",
+      "deleteConfirm": "Delete this milestone?",
+      "noDateSet": "No date set",
+      "tabs": {
+        "timeline": "Timeline",
+        "chart": "Chart",
+        "achievements": "Achievements"
+      },
+      "timeline": {
+        "title": "Timeline view",
+        "noDates": "Add dates to your milestones to unlock the timeline view.",
+        "goal": "Goal",
+        "goalCompletion": "Dream completion",
+        "scrollLeft": "Scroll timeline left",
+        "scrollRight": "Scroll timeline right"
+      },
+      "chart": {
+        "title": "Progress chart",
+        "loading": "Loading chart...",
+        "error": "Unable to load chart: {{error}}",
+        "noMilestones": "There isn't enough milestone data to plot progress yet."
+      },
+      "achievements": {
+        "title": "Achievements",
+        "badges": {
+          "firstStep": {
+            "title": "First Step",
+            "description": "Complete your first milestone to start building momentum."
+          },
+          "halfwayThere": {
+            "title": "Halfway There",
+            "description": "Reach 50% progress on a dream."
+          },
+          "wellPlanned": {
+            "title": "Well Planned",
+            "description": "Give every milestone a target date."
+          },
+          "dreamAchieved": {
+            "title": "Dream Achieved",
+            "description": "Complete every milestone and finish the dream."
+          }
+        }
+      },
+      "form": {
+        "addTitle": "Add milestone",
+        "editTitle": "Edit milestone",
+        "closeForm": "Close milestone form",
+        "titleLabel": "Title",
+        "descriptionLabel": "Description",
+        "targetDateLabel": "Target date",
+        "cancel": "Cancel",
+        "addButton": "Add milestone",
+        "saveButton": "Save changes"
+      },
+      "list": {
+        "title": "Milestone list",
+        "addButton": "Add milestone",
+        "editMilestone": "Edit milestone",
+        "deleteMilestone": "Delete milestone",
+        "emptyState": "No milestones yet. Add one to start tracking progress."
+      },
+      "history": {
+        "title": "History",
+        "deletedMilestone": "Deleted milestone"
+      }
+    },
+    "weather": {
+      "title": "Dream Forecast",
+      "altText": "Dream weather illustration showing {{weather}}",
+      "states": {
+        "sunny": "Sunny",
+        "partly-cloudy": "Partly cloudy",
+        "cloudy": "Cloudy",
+        "stormy": "Stormy",
+        "raining": "Rainy",
+        "unknown": "Unknown"
+      }
+    },
+    "board": {
+      "title": "Dream Board",
+      "defaultTitle": "My Dream Board",
+      "defaultDescription": "Vision board created with my dreams and goals",
+      "loading": "Loading your dream board...",
+      "errorTitle": "Something went wrong",
+      "retry": "Try again",
+      "saved": "Dream Board saved",
+      "failedToSave": "We couldn't save your Dream Board.",
+      "errorSaving": "An error occurred while saving your Dream Board.",
+      "imageLimit": "You've reached the image limit for this Dream Board.",
+      "imageUnsupportedType": "This file type isn't supported. Use JPG, PNG, or WebP.",
+      "imageUploadLimit": "This image exceeds the {{limit}} upload limit.",
+      "introScreen": {
+        "title": "Welcome to your Dream Board",
+        "description": "Turn your goals into a living visual space you can shape, track, and revisit anytime.",
+        "steps": {
+          "addContent": {
+            "title": "Add content",
+            "description": "Upload images that represent the life and goals you want to build."
+          },
+          "trackGoals": {
+            "title": "Track goals",
+            "description": "Attach milestones so progress feels concrete and measurable."
+          },
+          "customize": {
+            "title": "Customize",
+            "description": "Arrange and refine your board until it feels motivating and clear."
+          },
+          "saveShare": {
+            "title": "Save and revisit",
+            "description": "Keep your board evolving as your dreams gain momentum."
+          }
+        },
+        "getStarted": "Get started"
+      },
+      "milestones": {
+        "title": "Milestones",
+        "loading": "Loading milestones...",
+        "description": "Break this dream into steps you can actually complete.",
+        "newMilestonePlaceholder": "Add a new milestone",
+        "addButton": "Add",
+        "emptyState": "No milestones yet.",
+        "dueDate": "Due {{date}}",
+        "deleteMilestone": "Delete milestone"
+      },
+      "toolbar": {
+        "buttons": {
+          "uploadPhoto": "Upload photo",
+          "all": "All",
+          "autoArrange": "Auto-arrange",
+          "save": "Save",
+          "saving": "Saving...",
+          "delete": "Delete"
+        },
+        "imageLimitIndicator": "{{current}} / {{limit}} images",
+        "modes": {
+          "add": "Add",
+          "filter": "Filter",
+          "arrange": "Arrange"
+        },
+        "tooltips": {
+          "addContent": "Add new content",
+          "filterContent": "Filter board content",
+          "arrangeContent": "Arrange board content",
+          "uploadImage": "Upload an image",
+          "showAll": "Show all content",
+          "showCategory": "Show {{category}} dreams",
+          "autoArrange": "Arrange items automatically",
+          "save": "Save your Dream Board",
+          "delete": "Delete selected content"
+        }
+      },
+      "contentControls": {
+        "contentTypes": {
+          "image": "Image",
+          "item": "Item"
+        },
+        "fields": {
+          "none": "None",
+          "title": "Title",
+          "altText": "Alt text",
+          "altTextPlaceholder": "Describe this image for accessibility",
+          "captionPlaceholder": "Add a title or caption",
+          "xPosition": "X position",
+          "yPosition": "Y position",
+          "width": "Width",
+          "height": "Height",
+          "rotation": "Rotation",
+          "category": "Category"
+        },
+        "tabs": {
+          "position": "Position",
+          "style": "Style",
+          "milestones": "Milestones"
+        },
+        "buttons": {
+          "replaceImage": "Replace image",
+          "delete": "Delete",
+          "cancel": "Cancel"
+        },
+        "deleteConfirmation": {
+          "title": "Delete content?",
+          "message": "Are you sure you want to delete this {{type}}?"
+        },
+        "edit": "Edit {{type}}",
+        "noStylingOptions": "No style controls are available for this content yet."
+      },
+      "dreamSymbols": {
+        "messages": {
+          "briefcase": "Career dreams grow when your daily effort points in the same direction.",
+          "money": "Financial freedom is built through steady, intentional progress.",
+          "health": "Your wellbeing supports every other dream on this board.",
+          "house": "A stable home begins with the choices you make today.",
+          "growth": "Personal growth compounds when you keep showing up.",
+          "heart": "Meaningful relationships deepen when you invest in them.",
+          "recreation": "Joy and play deserve room in the future you're building.",
+          "meditation": "Inner calm gives your goals more clarity and resilience.",
+          "graduation": "Learning unlocks the next version of your life.",
+          "travel": "Adventure gets closer every time you make one concrete plan.",
+          "default": "Every symbol on your board represents a future worth shaping."
+        }
+      }
+    },
+    "timelineGallery": {
+      "title": "Timeline Gallery",
+      "subtitle": "Capture the images, milestones, and momentum behind each dream.",
+      "addImage": "Add image",
+      "emptyHint": "Add your first image to start building a visual timeline for this dream board.",
+      "previousImage": "Previous dream image",
+      "nextImage": "Next dream image",
+      "scrollHint": "Use the arrows or keyboard to explore your timeline",
+      "removeImageAria": "Remove image {{title}}",
+      "removeImageConfirm": "Remove {{title}} from your dream board timeline?",
+      "status": {
+        "saving": "Saving changes...",
+        "pending": "Changes pending",
+        "saved": "All changes saved"
+      },
+      "form": {
+        "fileLabel": "Dream image file",
+        "dreamTitleLabel": "Dream title",
+        "dreamTitlePlaceholder": "Name the dream this image represents",
+        "categoryLabel": "Choose a category",
+        "milestonesLabel": "Milestones",
+        "milestonesEmpty": "No milestones yet. Add one if you want to track a future step.",
+        "addMilestone": "Add milestone",
+        "removeMilestone": "Remove",
+        "milestoneTitlePlaceholder": "Milestone title",
+        "pickDate": "Pick a target date",
+        "errors": {
+          "submitFailed": "We could not upload this image right now. Try again."
+        }
+      },
+      "wizard": {
+        "title": "Add a dream image",
+        "subtitle": "Complete each step to place a new image on your Dream Board timeline.",
+        "progressLabel": "Upload progress",
+        "steps": {
+          "file": {
+            "title": "Choose a file",
+            "description": "Select a JPG, PNG, or WebP image up to {{limit}}."
+          },
+          "details": {
+            "title": "Add details",
+            "description": "Give the image a title or caption so the moment is easy to recognize later."
+          },
+          "category": {
+            "title": "Pick a category",
+            "description": "Place the image under the dream area it supports the most."
+          },
+          "milestones": {
+            "title": "Plan milestones",
+            "description": "Add optional milestones to connect this image to concrete progress."
+          }
+        },
+        "dropzone": {
+          "title": "Drop an image here",
+          "hint": "Drag and drop a file, or browse your device.",
+          "browse": "Browse"
+        },
+        "fields": {
+          "caption": "Caption",
+          "captionPlaceholder": "Add context, inspiration, or a note about why this image matters"
+        },
+        "fileLimit": {
+          "badge": "Limit {{limit}}",
+          "title": "Image requirements",
+          "default": "Choose a file up to {{limit}}. JPG, PNG, and WebP are supported.",
+          "validating": "{{name}} is being checked. Original size: {{originalSize}}. Limit: {{limit}}.",
+          "ready": "{{name}} is ready to upload. Original size: {{originalSize}}. Limit: {{limit}}.",
+          "tooLarge": "{{name}} is too large at {{originalSize}}. Choose an image under {{limit}}.",
+          "unsupportedType": "{{name}} is not a supported format. Use JPG, PNG, or WebP under {{limit}}.",
+          "failed": "We could not validate {{name}}. Original size: {{originalSize}}. Try another image under {{limit}}."
+        },
+        "preview": {
+          "alt": "Selected dream image preview",
+          "selected": "Selected file",
+          "originalSize": "Original size: {{size}}",
+          "change": "Change file"
+        },
+        "validation": {
+          "fileRequired": "Select an image before moving to the next step.",
+          "validatingFile": "Checking your file against the {{limit}} limit...",
+          "fileReady": "Your file is ready. You can continue to the next step.",
+          "fileTooLarge": "This image is too large. Choose a file under {{limit}}.",
+          "unsupportedType": "This file type is not supported. Use JPG, PNG, or WebP.",
+          "fileValidationFailed": "We could not validate this file. Try another image.",
+          "detailsRequired": "Add at least a title or caption before continuing.",
+          "categoryRequired": "Choose a category before continuing."
+        },
+        "uploading": {
+          "title": "Uploading your image",
+          "subtitle": "Hold on while we add it to your Dream Board timeline."
+        },
+        "completed": {
+          "title": "Image added",
+          "subtitle": "Your dream image is now part of the timeline."
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "back": "Back",
+          "next": "Next",
+          "save": "Save image",
+          "uploadAnother": "Upload another",
+          "close": "Close"
+        }
+      }
+    }
+  }
+}
