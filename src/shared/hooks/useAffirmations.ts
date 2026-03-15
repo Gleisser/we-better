@@ -91,6 +91,13 @@ export interface UseAffirmationsReturn {
   refetch: () => Promise<void>;
 }
 
+interface UseAffirmationsOptions {
+  loadPersonalAffirmation?: boolean;
+  loadReminderSettings?: boolean;
+  loadStreak?: boolean;
+  loadTodayStatus?: boolean;
+}
+
 const affirmationsQueryKeyPrefix = (userId: string | null) =>
   ['affirmations', userId ?? 'anonymous'] as const;
 
@@ -149,37 +156,41 @@ const syncReminderPushSubscription = async (isEnabled: boolean | undefined): Pro
   }
 };
 
-export const useAffirmations = (): UseAffirmationsReturn => {
+export const useAffirmations = (options: UseAffirmationsOptions = {}): UseAffirmationsReturn => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const userId = user?.id ?? null;
   const [manualError, setManualError] = useState<Error | null>(null);
+  const loadPersonalAffirmation = options.loadPersonalAffirmation ?? true;
+  const loadReminderSettings = options.loadReminderSettings ?? true;
+  const loadStreak = options.loadStreak ?? true;
+  const loadTodayStatus = options.loadTodayStatus ?? true;
 
   const personalAffirmationQuery = useQuery({
     queryKey: personalAffirmationQueryKey(userId),
     queryFn: async () => fetchPersonalAffirmation(),
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && loadPersonalAffirmation,
     meta: AUTH_SCOPED_QUERY_META,
   });
 
   const reminderSettingsQuery = useQuery({
     queryKey: reminderSettingsQueryKey(userId),
     queryFn: async () => normalizeReminderSettings(await fetchReminderSettings()),
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && loadReminderSettings,
     meta: AUTH_SCOPED_QUERY_META,
   });
 
   const streakQuery = useQuery({
     queryKey: streakQueryKey(userId),
     queryFn: async () => fetchAffirmationStreak(),
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && loadStreak,
     meta: AUTH_SCOPED_QUERY_META,
   });
 
   const todayStatusQuery = useQuery({
     queryKey: todayStatusQueryKey(userId),
     queryFn: async () => checkTodayStatusApi(),
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && loadTodayStatus,
     meta: AUTH_SCOPED_QUERY_META,
   });
 
@@ -494,10 +505,10 @@ export const useAffirmations = (): UseAffirmationsReturn => {
     logs: [],
     hasAffirmedToday: todayStatusQuery.data ?? false,
     isLoading:
-      personalAffirmationQuery.isLoading ||
-      reminderSettingsQuery.isLoading ||
-      streakQuery.isLoading ||
-      todayStatusQuery.isLoading ||
+      (loadPersonalAffirmation && personalAffirmationQuery.isLoading) ||
+      (loadReminderSettings && reminderSettingsQuery.isLoading) ||
+      (loadStreak && streakQuery.isLoading) ||
+      (loadTodayStatus && todayStatusQuery.isLoading) ||
       createPersonalAffirmationMutation.isPending ||
       updatePersonalAffirmationMutation.isPending ||
       deletePersonalAffirmationMutation.isPending ||
@@ -505,10 +516,16 @@ export const useAffirmations = (): UseAffirmationsReturn => {
       updateReminderSettingsMutation.isPending,
     error:
       manualError ||
-      (personalAffirmationQuery.error instanceof Error ? personalAffirmationQuery.error : null) ||
-      (reminderSettingsQuery.error instanceof Error ? reminderSettingsQuery.error : null) ||
-      (streakQuery.error instanceof Error ? streakQuery.error : null) ||
-      (todayStatusQuery.error instanceof Error ? todayStatusQuery.error : null) ||
+      (loadPersonalAffirmation && personalAffirmationQuery.error instanceof Error
+        ? personalAffirmationQuery.error
+        : null) ||
+      (loadReminderSettings && reminderSettingsQuery.error instanceof Error
+        ? reminderSettingsQuery.error
+        : null) ||
+      (loadStreak && streakQuery.error instanceof Error ? streakQuery.error : null) ||
+      (loadTodayStatus && todayStatusQuery.error instanceof Error
+        ? todayStatusQuery.error
+        : null) ||
       (statsQuery.error instanceof Error ? statsQuery.error : null),
     fetchPersonalAffirmation: fetchPersonalAffirmationData,
     createPersonalAffirmation,

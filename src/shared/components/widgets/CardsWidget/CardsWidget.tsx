@@ -16,6 +16,7 @@ import { CreateAffirmationModal } from '@/shared/components/widgets/AffirmationW
 import { useVoiceRecorder } from '@/shared/hooks/useVoiceRecorder';
 import { useAffirmations } from '@/shared/hooks/useAffirmations';
 import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
+import { useIdleActivation } from '@/shared/hooks/utils/useIdleActivation';
 import { useDashboardAffirmationDeck } from '@/features/affirmations/hooks/useDashboardAffirmationDeck';
 import {
   BellIcon,
@@ -216,6 +217,11 @@ const celebrationPalette = ['#f472b6', '#a855f7', '#38bdf8', '#facc15', '#4ade80
 const CardsWidget = (): JSX.Element => {
   const { t, currentLanguage } = useDashboardTranslation();
   const categoryTheme = useMemo(() => buildCategoryTheme(t), [t]);
+  const shouldLoadDashboardMeta = useIdleActivation({
+    minimumDelay: 1500,
+    timeout: 2500,
+    fallbackDelay: 1500,
+  });
 
   const [cards, setCards] = useState<AffirmationCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -231,17 +237,26 @@ const CardsWidget = (): JSX.Element => {
     stopRecording,
     clearRecording,
   } = useVoiceRecorder();
-  const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations();
+  const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations({
+    enabled: shouldLoadDashboardMeta,
+  });
   const {
     reminderSettings: backendReminderSettings,
     updateReminderSettings,
     streak,
     personalAffirmation,
+    fetchPersonalAffirmation,
     createPersonalAffirmation,
     updatePersonalAffirmation,
     hasAffirmedToday,
     logAffirmation,
-  } = useAffirmations();
+    fetchReminderSettings,
+  } = useAffirmations({
+    loadPersonalAffirmation: shouldLoadDashboardMeta,
+    loadReminderSettings: shouldLoadDashboardMeta,
+    loadStreak: shouldLoadDashboardMeta,
+    loadTodayStatus: true,
+  });
   const {
     data: affirmationDeck,
     isLoading: isDeckLoading,
@@ -417,13 +432,15 @@ const CardsWidget = (): JSX.Element => {
 
   const handleReminderClick = useCallback(() => {
     setReminderAnimationTick(previous => previous + 1);
+    void fetchReminderSettings();
     setShowReminderSettings(true);
-  }, []);
+  }, [fetchReminderSettings]);
 
   const handleCreateAffirmation = useCallback(() => {
+    void fetchPersonalAffirmation();
     setShowCreateModal(true);
     setIsCelebrating(true);
-  }, []);
+  }, [fetchPersonalAffirmation]);
 
   const triggerStreakAnimation = useCallback(() => {
     setStreakAnimationTick(previous => previous + 1);

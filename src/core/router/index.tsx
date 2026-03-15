@@ -9,6 +9,7 @@ import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import type { AppNamespace } from '@/core/i18n';
 import RouteLoader from './RouteLoader';
 import RouteNamespaceBoundary from './RouteNamespaceBoundary';
+import SharedAuthShell from './SharedAuthShell';
 
 const publicRouteShellComponent = lazy(() => import('./PublicRouteShell'));
 const authRouteShellComponent = lazy(() => import('./AuthRouteShell'));
@@ -88,124 +89,129 @@ export const routes: RouteObject[] = [
     ],
   },
   {
-    path: '/auth',
-    element: renderLazyRoute(authRouteShellComponent, {
-      label: 'Loading authentication...',
-      namespaces: ['auth'],
-    }),
+    element: <SharedAuthShell />,
     children: [
       {
-        path: 'login',
-        element: renderLazyRoute(loginRouteComponent, {
-          label: 'Loading login...',
+        path: '/auth',
+        element: renderLazyRoute(authRouteShellComponent, {
+          label: 'Loading authentication...',
           namespaces: ['auth'],
-          variant: 'content',
         }),
+        children: [
+          {
+            path: 'login',
+            element: renderLazyRoute(loginRouteComponent, {
+              label: 'Loading login...',
+              namespaces: ['auth'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'signup',
+            element: renderLazyRoute(signUpRouteComponent, {
+              label: 'Loading sign up...',
+              namespaces: ['auth'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'forgot-password',
+            element: renderLazyRoute(forgotPasswordRouteComponent, {
+              label: 'Loading password recovery...',
+              namespaces: ['auth'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'reset-password',
+            element: renderLazyRoute(resetPasswordRouteComponent, {
+              label: 'Loading password reset...',
+              namespaces: ['auth'],
+              variant: 'content',
+            }),
+          },
+        ],
       },
       {
-        path: 'signup',
-        element: renderLazyRoute(signUpRouteComponent, {
-          label: 'Loading sign up...',
-          namespaces: ['auth'],
-          variant: 'content',
-        }),
-      },
-      {
-        path: 'forgot-password',
-        element: renderLazyRoute(forgotPasswordRouteComponent, {
-          label: 'Loading password recovery...',
-          namespaces: ['auth'],
-          variant: 'content',
-        }),
-      },
-      {
-        path: 'reset-password',
-        element: renderLazyRoute(resetPasswordRouteComponent, {
-          label: 'Loading password reset...',
-          namespaces: ['auth'],
-          variant: 'content',
-        }),
-      },
-    ],
-  },
-  {
-    path: '/app',
-    element: renderLazyRoute(appRouteShellComponent, {
-      label: 'Loading workspace...',
-      namespaces: ['notifications'],
-    }),
-    children: [
-      {
-        index: true,
-        element: renderLazyRoute(dashboardRouteComponent, {
-          label: 'Loading dashboard...',
-          namespaces: ['dashboard'],
-          variant: 'content',
-        }),
-      },
-      {
-        path: 'dashboard',
-        element: renderLazyRoute(dashboardRouteComponent, {
-          label: 'Loading dashboard...',
-          namespaces: ['dashboard'],
-          variant: 'content',
-        }),
-      },
-      {
-        path: 'life-wheel',
-        element: renderLazyRoute(lifeWheelRouteComponent, {
-          label: 'Loading life wheel...',
-          namespaces: ['dashboard', 'life-wheel'],
-          variant: 'content',
-        }),
-      },
-      {
-        path: 'dream-board',
-        element: renderLazyRoute(dreamBoardRouteComponent, {
-          label: 'Loading dream board...',
-          namespaces: ['dream-board'],
-          variant: 'content',
-        }),
-      },
-      {
-        path: 'missions',
-        element: renderLazyRoute(missionsRouteComponent, {
-          label: 'Loading missions...',
-          namespaces: ['missions'],
-          variant: 'content',
-        }),
-      },
-      {
-        path: 'settings',
-        element: renderLazyRoute(settingsRouteComponent, {
-          label: 'Loading settings...',
-          namespaces: ['settings'],
-          variant: 'content',
-        }),
-      },
-      {
-        path: 'bookmarks',
-        element: renderLazyRoute(bookmarksRouteComponent, {
-          label: 'Loading bookmarks...',
-          namespaces: ['bookmarks'],
-          variant: 'content',
-        }),
-      },
-      {
-        path: 'notifications',
-        element: renderLazyRoute(notificationsRouteComponent, {
-          label: 'Loading notifications...',
+        path: '/app',
+        element: renderLazyRoute(appRouteShellComponent, {
+          label: 'Loading workspace...',
           namespaces: ['notifications'],
-          variant: 'content',
         }),
-      },
-      {
-        path: 'pricing',
-        element: renderLazyRoute(pricingRouteComponent, {
-          label: 'Loading pricing...',
-          namespaces: ['settings', 'pricing'],
-          variant: 'content',
-        }),
+        children: [
+          {
+            index: true,
+            element: renderLazyRoute(dashboardRouteComponent, {
+              label: 'Loading dashboard...',
+              namespaces: ['dashboard'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'dashboard',
+            element: renderLazyRoute(dashboardRouteComponent, {
+              label: 'Loading dashboard...',
+              namespaces: ['dashboard'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'life-wheel',
+            element: renderLazyRoute(lifeWheelRouteComponent, {
+              label: 'Loading life wheel...',
+              namespaces: ['dashboard', 'life-wheel'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'dream-board',
+            element: renderLazyRoute(dreamBoardRouteComponent, {
+              label: 'Loading dream board...',
+              namespaces: ['dream-board'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'missions',
+            element: renderLazyRoute(missionsRouteComponent, {
+              label: 'Loading missions...',
+              namespaces: ['missions'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'settings',
+            element: renderLazyRoute(settingsRouteComponent, {
+              label: 'Loading settings...',
+              namespaces: ['settings'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'bookmarks',
+            element: renderLazyRoute(bookmarksRouteComponent, {
+              label: 'Loading bookmarks...',
+              namespaces: ['bookmarks'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'notifications',
+            element: renderLazyRoute(notificationsRouteComponent, {
+              label: 'Loading notifications...',
+              namespaces: ['notifications'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'pricing',
+            element: renderLazyRoute(pricingRouteComponent, {
+              label: 'Loading pricing...',
+              namespaces: ['settings', 'pricing'],
+              variant: 'content',
+            }),
+          },
+        ],
       },
     ],
   },

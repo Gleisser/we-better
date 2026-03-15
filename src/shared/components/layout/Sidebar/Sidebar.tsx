@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LottieLightIcon } from '@/shared/components/common/LottieLightIcon';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
-import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
 import {
   CollapseIcon,
   DreamBoardIcon,
@@ -31,22 +30,11 @@ const Sidebar = (): JSX.Element => {
   });
   const location = useLocation();
   const { logout } = useAuth();
-  const { data: billingSummary } = useBillingSummary();
 
   const pricingLabel = t('navigation.pricing') as string;
   const pricingCtaLabel = t('navigation.pricingCta') as string;
   const pricingCtaTop = t('navigation.pricingCtaTop') as string;
   const pricingCtaBottom = t('navigation.pricingCtaBottom') as string;
-  const hasActivePaidPlan = useMemo(() => {
-    if (!billingSummary) {
-      return false;
-    }
-
-    return (
-      billingSummary.currentPlan !== 'free' &&
-      billingSummary.subscriptionStatus.toLowerCase() !== 'free'
-    );
-  }, [billingSummary]);
 
   useEffect(() => {
     document.body.classList.toggle('sidebar-collapsed', isCollapsed);
@@ -144,61 +132,60 @@ const Sidebar = (): JSX.Element => {
 
         {/* Main Navigation */}
         <nav className={styles.mainNav}>
-          {!hasActivePaidPlan &&
-            (isCollapsed ? (
-              <Link
-                to="/app/pricing"
-                className={styles.navItem}
-                data-active={isActiveRoute('/app/pricing')}
-                aria-label={pricingLabel}
-                title={pricingLabel}
+          {isCollapsed ? (
+            <Link
+              to="/app/pricing"
+              className={styles.navItem}
+              data-active={isActiveRoute('/app/pricing')}
+              aria-label={pricingLabel}
+              title={pricingLabel}
+            >
+              <span className={styles.icon}>
+                <SparkleIcon className={styles.icon} />
+              </span>
+            </Link>
+          ) : (
+            <Link
+              to="/app/pricing"
+              className={styles.pricingCta}
+              data-active={isActiveRoute('/app/pricing')}
+              aria-label={pricingLabel}
+            >
+              <span className={`${styles.pricingDrawer} ${styles.pricingDrawerTop}`}>
+                {pricingCtaTop}
+              </span>
+              <span className={`${styles.pricingDrawer} ${styles.pricingDrawerBottom}`}>
+                {pricingCtaBottom}
+              </span>
+              <span className={styles.pricingButtonCore}>
+                <span className={styles.pricingButtonText}>{pricingCtaLabel}</span>
+              </span>
+              <svg
+                className={`${styles.pricingCorner} ${styles.pricingCornerOne}`}
+                viewBox="-1 1 32 32"
               >
-                <span className={styles.icon}>
-                  <SparkleIcon className={styles.icon} />
-                </span>
-              </Link>
-            ) : (
-              <Link
-                to="/app/pricing"
-                className={styles.pricingCta}
-                data-active={isActiveRoute('/app/pricing')}
-                aria-label={pricingLabel}
+                <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+              </svg>
+              <svg
+                className={`${styles.pricingCorner} ${styles.pricingCornerTwo}`}
+                viewBox="-1 1 32 32"
               >
-                <span className={`${styles.pricingDrawer} ${styles.pricingDrawerTop}`}>
-                  {pricingCtaTop}
-                </span>
-                <span className={`${styles.pricingDrawer} ${styles.pricingDrawerBottom}`}>
-                  {pricingCtaBottom}
-                </span>
-                <span className={styles.pricingButtonCore}>
-                  <span className={styles.pricingButtonText}>{pricingCtaLabel}</span>
-                </span>
-                <svg
-                  className={`${styles.pricingCorner} ${styles.pricingCornerOne}`}
-                  viewBox="-1 1 32 32"
-                >
-                  <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
-                </svg>
-                <svg
-                  className={`${styles.pricingCorner} ${styles.pricingCornerTwo}`}
-                  viewBox="-1 1 32 32"
-                >
-                  <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
-                </svg>
-                <svg
-                  className={`${styles.pricingCorner} ${styles.pricingCornerThree}`}
-                  viewBox="-1 1 32 32"
-                >
-                  <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
-                </svg>
-                <svg
-                  className={`${styles.pricingCorner} ${styles.pricingCornerFour}`}
-                  viewBox="-1 1 32 32"
-                >
-                  <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
-                </svg>
-              </Link>
-            ))}
+                <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+              </svg>
+              <svg
+                className={`${styles.pricingCorner} ${styles.pricingCornerThree}`}
+                viewBox="-1 1 32 32"
+              >
+                <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+              </svg>
+              <svg
+                className={`${styles.pricingCorner} ${styles.pricingCornerFour}`}
+                viewBox="-1 1 32 32"
+              >
+                <path d="M32,32C14.355,32,0,17.645,0,0h.985c0,17.102,13.913,31.015,31.015,31.015v.985Z" />
+              </svg>
+            </Link>
+          )}
 
           {menuItems.map(item =>
             (() => {

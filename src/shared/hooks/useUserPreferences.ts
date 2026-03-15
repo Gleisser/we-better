@@ -20,7 +20,11 @@ interface UseUserPreferencesReturn {
   clearError: () => void;
 }
 
-const userPreferencesQueryKey = (userId: string | null) =>
+interface UseUserPreferencesOptions {
+  loadOnMount?: boolean;
+}
+
+export const userPreferencesQueryKey = (userId: string | null) =>
   ['userPreferences', userId ?? 'anonymous'] as const;
 
 const USER_PREFERENCES_OFFLINE_CACHE_KEY = 'user-preferences-cache';
@@ -39,11 +43,14 @@ const loadOfflinePreferences = (): UserPreferences | null => {
   }
 };
 
-export function useUserPreferences(): UseUserPreferencesReturn {
+export function useUserPreferences(
+  options: UseUserPreferencesOptions = {}
+): UseUserPreferencesReturn {
   const queryClient = useQueryClient();
   const { user, isLoading: authLoading } = useAuth();
   const userId = user?.id ?? null;
   const [manualError, setManualError] = useState<string | null>(null);
+  const loadOnMount = options.loadOnMount ?? true;
 
   useEffect(() => {
     preferencesService.clearCache();
@@ -60,7 +67,7 @@ export function useUserPreferences(): UseUserPreferencesReturn {
 
       return result.data;
     },
-    enabled: !authLoading && Boolean(userId),
+    enabled: !authLoading && Boolean(userId) && loadOnMount,
     meta: AUTH_SCOPED_QUERY_META,
   });
 

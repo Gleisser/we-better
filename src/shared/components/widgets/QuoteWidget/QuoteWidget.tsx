@@ -7,6 +7,7 @@ import { AnimatedWebPIcon } from '@/shared/components/common/AnimatedWebPIcon';
 import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/shared/hooks/useTiltEffect';
+import { useIdleActivation } from '@/shared/hooks/utils/useIdleActivation';
 import { quoteService, type Quote } from '@/core/services/quoteService';
 import { QuoteMoreOptionsMenu } from './QuoteMoreOptionsMenu';
 import { SafeBookmarkIcon, SafeShareIcon } from './SafeAnimatedIcons';
@@ -161,6 +162,11 @@ const QuoteWidget = (): JSX.Element => {
   const { t } = useDashboardTranslation();
   const { theme } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5);
+  const shouldLoadBookmarkState = useIdleActivation({
+    minimumDelay: 1500,
+    timeout: 2500,
+    fallbackDelay: 1500,
+  });
 
   const [quote, setQuote] = useState<Quote | null>(null);
   const [quotePool, setQuotePool] = useState<Quote[]>([]);
@@ -221,7 +227,9 @@ const QuoteWidget = (): JSX.Element => {
     removeBookmark,
     isBookmarked: isQuoteBookmarked,
     isBookmarkActionPending,
-  } = useBookmarkedQuotes();
+  } = useBookmarkedQuotes({
+    enabled: shouldLoadBookmarkState,
+  });
 
   useEffect(() => {
     if (Array.isArray(fetchedQuotes) && fetchedQuotes.length > 0) {

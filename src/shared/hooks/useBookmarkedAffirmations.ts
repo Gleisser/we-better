@@ -17,6 +17,10 @@ interface UseBookmarkedAffirmationsResult {
   error: Error | null;
 }
 
+interface UseBookmarkedAffirmationsOptions {
+  enabled?: boolean;
+}
+
 const getMetadataString = (metadata: Record<string, unknown>, key: string): string => {
   const value = metadata[key];
   return typeof value === 'string' ? value : '';
@@ -27,7 +31,9 @@ const toTimestamp = (value: string): number => {
   return Number.isNaN(parsed) ? Date.now() : parsed;
 };
 
-export const useBookmarkedAffirmations = (): UseBookmarkedAffirmationsResult => {
+export const useBookmarkedAffirmations = (
+  options: UseBookmarkedAffirmationsOptions = {}
+): UseBookmarkedAffirmationsResult => {
   const {
     bookmarks,
     addBookmark,
@@ -38,6 +44,7 @@ export const useBookmarkedAffirmations = (): UseBookmarkedAffirmationsResult => 
     error,
   } = useBookmarksByType<BookmarkedAffirmation>({
     itemType: 'affirmation',
+    enabled: options.enabled,
     fromRecord: bookmark => ({
       id: bookmark.itemId,
       text: getMetadataString(bookmark.metadata, 'text') || bookmark.title,

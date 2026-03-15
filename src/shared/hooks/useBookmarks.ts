@@ -15,6 +15,7 @@ interface BookmarkAdapter<TBookmark extends { id: string }> {
   itemType: BookmarkItemType;
   fromRecord: (record: BookmarkRecord) => TBookmark;
   toCreateInput: (bookmark: TBookmark) => CreateBookmarkInput;
+  enabled?: boolean;
 }
 
 interface BookmarkMutationContext {
@@ -50,6 +51,7 @@ export const useBookmarksByType = <TBookmark extends { id: string }>({
   itemType,
   fromRecord,
   toCreateInput,
+  enabled = true,
 }: BookmarkAdapter<TBookmark>): UseBookmarksByTypeResult<TBookmark> => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -59,10 +61,10 @@ export const useBookmarksByType = <TBookmark extends { id: string }>({
   const bookmarksQuery = useQuery({
     queryKey,
     queryFn: () => bookmarksService.getBookmarks(),
-    enabled: Boolean(user?.id),
+    enabled: Boolean(user?.id) && enabled,
   });
 
-  const bookmarks = (bookmarksQuery.data ?? [])
+  const bookmarks = ((enabled ? bookmarksQuery.data : []) ?? [])
     .filter(bookmark => bookmark.itemType === itemType)
     .map(fromRecord);
 
@@ -173,11 +175,11 @@ export const useBookmarksByType = <TBookmark extends { id: string }>({
       await removeBookmarkMutation.mutateAsync(bookmarkId);
     },
     isBookmarked: bookmarkId =>
-      (bookmarksQuery.data ?? []).some(
+      ((enabled ? bookmarksQuery.data : []) ?? []).some(
         bookmark => bookmark.itemId === bookmarkId && bookmark.itemType === itemType
       ),
     isBookmarkActionPending: bookmarkId => pendingIds.includes(bookmarkId),
-    isLoading: bookmarksQuery.isLoading,
+    isLoading: enabled && bookmarksQuery.isLoading,
     error: bookmarksQuery.error ?? addBookmarkMutation.error ?? removeBookmarkMutation.error,
   };
 };

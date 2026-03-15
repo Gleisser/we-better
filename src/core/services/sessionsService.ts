@@ -265,11 +265,32 @@ class SessionsService {
     twoFactorUsed?: boolean;
   }): Promise<{ data: SessionDto | null; error: string | null }> {
     try {
-      const data = await apiRequest<SessionDto>(
-        `${API_BASE_URL}/track`,
-        'POST',
-        buildTrackBody(options)
-      );
+      const token = await getAuthToken();
+      if (!token) {
+        throw new Error('Not authenticated');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/track`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: 'include',
+        keepalive: true,
+        body: JSON.stringify(buildTrackBody(options)),
+      });
+
+      const payload = (await response.json().catch(() => ({}))) as Record<string, unknown>;
+      if (!response.ok) {
+        const errorMessage =
+          typeof payload.error === 'string'
+            ? payload.error
+            : `Request failed with status ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      const data = payload as unknown as SessionDto;
       return { data, error: null };
     } catch (error) {
       return {

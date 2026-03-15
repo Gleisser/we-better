@@ -142,4 +142,28 @@ describe('useUserPreferences', () => {
     expect(result.current.preferences).toBeNull();
     expect(mockedPreferencesService.clearCache).toHaveBeenCalled();
   });
+
+  it('can update theme preferences without loading preferences on mount', async () => {
+    mockedUseAuth.mockReturnValue({
+      user: authenticatedUser,
+      isLoading: false,
+      isAuthenticated: true,
+      checkAuth: vi.fn(),
+      logout: vi.fn(),
+    });
+
+    const { result } = renderHook(() => useUserPreferences({ loadOnMount: false }), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(mockedPreferencesService.getUserPreferences).not.toHaveBeenCalled();
+
+    await result.current.updateThemeMode('light');
+
+    expect(mockedPreferencesService.patchUserPreferences).toHaveBeenCalledWith({
+      theme_mode: 'light',
+    });
+  });
 });

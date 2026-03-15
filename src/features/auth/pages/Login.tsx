@@ -1,13 +1,10 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '@/shared/hooks/useAuth';
 import { authService } from '@/core/services/authService';
 import styles from './Login.module.css';
 
 const Login = (): JSX.Element => {
-  const navigate = useNavigate();
-  const { checkAuth } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -26,10 +23,7 @@ const Login = (): JSX.Element => {
         throw authError;
       }
 
-      if (user) {
-        await checkAuth();
-        navigate('/app');
-      } else {
+      if (!user) {
         console.warn('Sign in returned empty user object');
         setError('Authentication failed - no user returned');
       }

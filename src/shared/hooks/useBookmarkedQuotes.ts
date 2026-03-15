@@ -18,6 +18,10 @@ interface UseBookmarkedQuotesResult {
   error: Error | null;
 }
 
+interface UseBookmarkedQuotesOptions {
+  enabled?: boolean;
+}
+
 const getMetadataString = (metadata: Record<string, unknown>, key: string): string => {
   const value = metadata[key];
   return typeof value === 'string' ? value : '';
@@ -28,7 +32,9 @@ const toTimestamp = (value: string): number => {
   return Number.isNaN(parsed) ? Date.now() : parsed;
 };
 
-export const useBookmarkedQuotes = (): UseBookmarkedQuotesResult => {
+export const useBookmarkedQuotes = (
+  options: UseBookmarkedQuotesOptions = {}
+): UseBookmarkedQuotesResult => {
   const {
     bookmarks,
     addBookmark,
@@ -39,6 +45,7 @@ export const useBookmarkedQuotes = (): UseBookmarkedQuotesResult => {
     error,
   } = useBookmarksByType<BookmarkedQuote>({
     itemType: 'quote',
+    enabled: options.enabled,
     fromRecord: bookmark => ({
       id: bookmark.itemId,
       text: getMetadataString(bookmark.metadata, 'text') || bookmark.title,

@@ -1,16 +1,9 @@
-import {
-  InfiniteData,
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
+import { InfiniteData, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AUTH_SCOPED_QUERY_META } from '@/core/config/react-query';
 import {
   NotificationFeedItemDto,
   NotificationsFeedResponse,
-  UnreadCountResponse,
   notificationsService,
 } from '@/core/services/notificationsService';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -24,6 +17,7 @@ interface UseNotificationsFeedOptions {
 interface UseUnreadNotificationsCountOptions {
   enabled?: boolean;
   refreshIntervalMs?: number;
+  refetchOnMount?: boolean;
 }
 
 interface UseUnreadNotificationsCountReturn {
@@ -46,14 +40,13 @@ interface UseNotificationsFeedReturn {
   markAllAsRead: () => Promise<boolean>;
 }
 
+const resolveUnreadCountFallback = async (): Promise<number> => 0;
+
 const notificationsFeedQueryKeyPrefix = (userId: string | null) =>
   ['notifications', 'feed', userId ?? 'anonymous'] as const;
 
 const notificationsFeedQueryKey = (userId: string | null, pageSize: number, unreadOnly: boolean) =>
   [...notificationsFeedQueryKeyPrefix(userId), { pageSize, unreadOnly }] as const;
-
-const unreadNotificationsCountQueryKey = (userId: string | null) =>
-  ['notifications', 'unreadCount', userId ?? 'anonymous'] as const;
 
 const loadNotificationsPage = async (
   pageSize: number,
@@ -68,16 +61,6 @@ const loadNotificationsPage = async (
 
   if (result.error || !result.data) {
     throw new Error(result.error || 'Failed to load notifications');
-  }
-
-  return result.data;
-};
-
-const loadUnreadCount = async (): Promise<UnreadCountResponse> => {
-  const result = await notificationsService.getUnreadCount();
-
-  if (result.error || !result.data) {
-    throw new Error(result.error || 'Failed to load unread notifications');
   }
 
   return result.data;
@@ -141,25 +124,60 @@ const markAllNotificationsAsRead = (
 export function useUnreadNotificationsCount(
   options: UseUnreadNotificationsCountOptions = {}
 ): UseUnreadNotificationsCountReturn {
-  const { user } = useAuth();
+  const { user, unreadNotificationCount = 0, refreshUnreadNotificationCount } = useAuth();
   const userId = user?.id ?? null;
   const enabled = Boolean(userId) && (options.enabled ?? true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const refreshUnreadCount = refreshUnreadNotificationCount ?? resolveUnreadCountFallback;
 
-  const query = useQuery({
-    queryKey: unreadNotificationsCountQueryKey(userId),
-    queryFn: loadUnreadCount,
-    enabled,
-    refetchInterval: enabled ? (options.refreshIntervalMs ?? false) : false,
-    meta: AUTH_SCOPED_QUERY_META,
-  });
+  const refetch = useCallback(async (): Promise<void> => {
+    if (!enabled) {
+      setError(null);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await refreshUnreadCount();
+      setError(null);
+    } catch (refetchError) {
+      setError(
+        refetchError instanceof Error ? refetchError.message : 'Failed to load unread notifications'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [enabled, refreshUnreadCount]);
+
+  useEffect(() => {
+    if (!enabled || !options.refetchOnMount) {
+      return;
+    }
+
+    void refetch();
+  }, [enabled, options.refetchOnMount, refetch]);
+
+  useEffect(() => {
+    if (!enabled || !options.refreshIntervalMs) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      void refetch();
+    }, options.refreshIntervalMs);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [enabled, options.refreshIntervalMs, refetch]);
 
   return {
-    unreadCount: query.data?.unread ?? 0,
-    isLoading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : null,
-    refetch: async () => {
-      await query.refetch();
-    },
+    unreadCount: enabled ? unreadNotificationCount : 0,
+    isLoading,
+    error,
+    refetch,
   };
 }
 
@@ -167,7 +185,7 @@ export function useNotificationsFeed(
   options: UseNotificationsFeedOptions = {}
 ): UseNotificationsFeedReturn {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, decrementUnreadNotificationCount, clearUnreadNotificationCount } = useAuth();
   const userId = user?.id ?? null;
   const pageSize = Math.max(1, options.pageSize ?? 20);
   const unreadOnly = options.unreadOnly ?? false;
@@ -217,10 +235,8 @@ export function useNotificationsFeed(
         queryClient.setQueryData(queryKey, data);
       });
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: unreadNotificationsCountQueryKey(userId),
-      });
+    onSuccess: () => {
+      decrementUnreadNotificationCount?.();
     },
   });
 
@@ -240,30 +256,19 @@ export function useNotificationsFeed(
       const previousEntries = queryClient.getQueriesData<InfiniteData<NotificationsFeedResponse>>({
         queryKey,
       });
-      const previousUnreadCount = queryClient.getQueryData<UnreadCountResponse>(
-        unreadNotificationsCountQueryKey(userId)
-      );
 
       queryClient.setQueriesData<InfiniteData<NotificationsFeedResponse>>({ queryKey }, data =>
         markAllNotificationsAsRead(data, nowIso)
       );
-      queryClient.setQueryData(unreadNotificationsCountQueryKey(userId), { unread: 0 });
-
-      return { previousEntries, previousUnreadCount };
+      return { previousEntries };
     },
     onError: (_error, _variables, context) => {
       context?.previousEntries.forEach(([queryKey, data]) => {
         queryClient.setQueryData(queryKey, data);
       });
-      queryClient.setQueryData(
-        unreadNotificationsCountQueryKey(userId),
-        context?.previousUnreadCount
-      );
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: unreadNotificationsCountQueryKey(userId),
-      });
+    onSuccess: () => {
+      clearUnreadNotificationCount?.();
     },
   });
 

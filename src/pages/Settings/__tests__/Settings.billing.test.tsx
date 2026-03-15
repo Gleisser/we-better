@@ -5,6 +5,8 @@ import Settings from '../Settings';
 import { billingService } from '@/core/services/billingService';
 import { sessionsService } from '@/core/services/sessionsService';
 import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
+import { usePlanCatalog } from '@/shared/hooks/usePlanCatalog';
+import { useSessionsHistory, useSessionsOverview } from '@/shared/hooks/useSessionsOverview';
 
 vi.mock('@/shared/hooks/useTranslation', () => ({
   useSettingsTranslation: () => ({
@@ -42,6 +44,15 @@ vi.mock('@/shared/hooks/useBillingSummary', () => ({
   useBillingSummary: vi.fn(),
 }));
 
+vi.mock('@/shared/hooks/usePlanCatalog', () => ({
+  usePlanCatalog: vi.fn(),
+}));
+
+vi.mock('@/shared/hooks/useSessionsOverview', () => ({
+  useSessionsOverview: vi.fn(),
+  useSessionsHistory: vi.fn(),
+}));
+
 vi.mock('@/core/services/billingService', () => ({
   billingService: {
     getBillingSummary: vi.fn(),
@@ -72,6 +83,9 @@ const mockedSessionsService = sessionsService as unknown as {
   logoutOtherSessions: ReturnType<typeof vi.fn>;
 };
 const mockedUseBillingSummary = vi.mocked(useBillingSummary);
+const mockedUsePlanCatalog = vi.mocked(usePlanCatalog);
+const mockedUseSessionsOverview = vi.mocked(useSessionsOverview);
+const mockedUseSessionsHistory = vi.mocked(useSessionsHistory);
 
 const makeBillingSummary = (
   plan: 'free' | 'premium' | 'pro'
@@ -174,6 +188,32 @@ describe('Settings billing flow', () => {
     });
     mockedUseBillingSummary.mockReturnValue({
       data: makeBillingSummary('free'),
+      error: null,
+      isLoading: false,
+      refetch: vi.fn(),
+    });
+    mockedUsePlanCatalog.mockReturnValue({
+      plans: planCatalog,
+      error: null,
+      isLoading: false,
+      refetch: vi.fn(),
+    });
+    mockedUseSessionsOverview.mockReturnValue({
+      summary: {
+        totalSessions: 1,
+        activeSessions: 1,
+        currentSessionId: 'abc',
+        lastLogin: null,
+        suspiciousSessions: 0,
+        trustedDevices: 1,
+      },
+      recentSessions: [],
+      error: null,
+      isLoading: false,
+      refetch: vi.fn(),
+    });
+    mockedUseSessionsHistory.mockReturnValue({
+      sessions: [],
       error: null,
       isLoading: false,
       refetch: vi.fn(),

@@ -1,8 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AUTH_SCOPED_QUERY_META } from '@/core/config/react-query';
 import {
   notificationSettingsService,
   NotificationSettingsDto,
 } from '@/core/services/notificationSettingsService';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 const FALLBACK_NOTIFICATION_SETTINGS: NotificationSettingsDto = {
   email_notifications: true,
@@ -39,65 +42,102 @@ interface UseNotificationSettingsReturn {
   clearError: () => void;
 }
 
+export const notificationSettingsQueryKey = (userId: string | null) =>
+  ['notificationSettings', userId ?? 'anonymous'] as const;
+
 export function useNotificationSettings(): UseNotificationSettingsReturn {
-  const [settings, setSettings] = useState<NotificationSettingsDto>(FALLBACK_NOTIFICATION_SETTINGS);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
   const [error, setError] = useState<string | null>(null);
 
-  const loadSettings = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+  const query = useQuery({
+    queryKey: notificationSettingsQueryKey(userId),
+    queryFn: async (): Promise<NotificationSettingsDto> => {
+      const result = await notificationSettingsService.getSettings();
+      if (result.error || !result.data) {
+        throw new Error(result.error || 'Failed to load notification settings');
+      }
 
-    const { data, error: fetchError } = await notificationSettingsService.getSettings();
-    if (fetchError || !data) {
-      setError(fetchError || 'Failed to load notification settings');
-      setSettings(FALLBACK_NOTIFICATION_SETTINGS);
-      setIsLoading(false);
-      return;
-    }
+      return result.data;
+    },
+    enabled: Boolean(userId),
+    meta: AUTH_SCOPED_QUERY_META,
+  });
 
-    setSettings(data);
-    setIsLoading(false);
-  }, []);
+  const updateMutation = useMutation({
+    mutationFn: async (
+      patch: Partial<NotificationSettingsDto>
+    ): Promise<NotificationSettingsDto> => {
+      const result = await notificationSettingsService.updateSettings(patch);
+      if (result.error || !result.data) {
+        throw new Error(result.error || 'Failed to update notification settings');
+      }
+
+      return result.data;
+    },
+    onMutate: async patch => {
+      setError(null);
+      await queryClient.cancelQueries({ queryKey: notificationSettingsQueryKey(userId) });
+      const previous = queryClient.getQueryData<NotificationSettingsDto>(
+        notificationSettingsQueryKey(userId)
+      );
+
+      queryClient.setQueryData<NotificationSettingsDto>(
+        notificationSettingsQueryKey(userId),
+        current => ({
+          ...(current ?? FALLBACK_NOTIFICATION_SETTINGS),
+          ...patch,
+        })
+      );
+
+      return { previous };
+    },
+    onSuccess: data => {
+      queryClient.setQueryData(notificationSettingsQueryKey(userId), data);
+    },
+    onError: (mutationError, _patch, context) => {
+      queryClient.setQueryData(
+        notificationSettingsQueryKey(userId),
+        context?.previous ?? FALLBACK_NOTIFICATION_SETTINGS
+      );
+      setError(
+        mutationError instanceof Error
+          ? mutationError.message
+          : 'Failed to update notification settings'
+      );
+    },
+  });
 
   const updateSettings = useCallback(
     async (patch: Partial<NotificationSettingsDto>): Promise<boolean> => {
-      setIsSaving(true);
-      setError(null);
-
-      const previous = settings;
-      setSettings(current => ({ ...current, ...patch }));
-
-      const { data, error: updateError } = await notificationSettingsService.updateSettings(patch);
-      if (updateError || !data) {
-        setSettings(previous);
-        setError(updateError || 'Failed to update notification settings');
-        setIsSaving(false);
+      if (!userId) {
+        setError('Not authenticated');
         return false;
       }
 
-      setSettings(data);
-      setIsSaving(false);
-      return true;
+      try {
+        await updateMutation.mutateAsync(patch);
+        return true;
+      } catch {
+        return false;
+      }
     },
-    [settings]
+    [updateMutation, userId]
   );
 
   const clearError = useCallback(() => {
     setError(null);
   }, []);
 
-  useEffect(() => {
-    void loadSettings();
-  }, [loadSettings]);
-
   return {
-    settings,
-    isLoading,
-    isSaving,
-    error,
-    refresh: loadSettings,
+    settings: query.data ?? FALLBACK_NOTIFICATION_SETTINGS,
+    isLoading: Boolean(userId) && query.isLoading,
+    isSaving: updateMutation.isPending,
+    error: error || (query.error instanceof Error ? query.error.message : null),
+    refresh: async () => {
+      await query.refetch();
+    },
     updateSettings,
     clearError,
   };

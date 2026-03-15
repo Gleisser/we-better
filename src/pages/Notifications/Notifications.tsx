@@ -2,10 +2,8 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationsTranslation } from '@/shared/hooks/useTranslation';
-import {
-  useNotificationsFeed,
-  useUnreadNotificationsCount,
-} from '@/shared/hooks/useNotificationsFeed';
+import { useNotificationsFeed } from '@/shared/hooks/useNotificationsFeed';
+import { useAuth } from '@/shared/hooks/useAuth';
 import type { NotificationFeedItemDto } from '@/core/services/notificationsService';
 import styles from './Notifications.module.css';
 
@@ -45,7 +43,7 @@ const toDateKey = (value: string): string => {
 const Notifications = (): JSX.Element => {
   const { t, currentLanguage } = useNotificationsTranslation();
   const navigate = useNavigate();
-  const { unreadCount } = useUnreadNotificationsCount();
+  const { unreadNotificationCount = 0 } = useAuth();
   const {
     notifications,
     total,
@@ -102,7 +100,7 @@ const Notifications = (): JSX.Element => {
             onClick={() => {
               void markAllAsRead();
             }}
-            disabled={unreadCount === 0 || isLoading}
+            disabled={unreadNotificationCount === 0 || isLoading}
           >
             {t('notificationsPage.markAllAsRead') as string}
           </button>
