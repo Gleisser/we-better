@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import styles from './MoodWidget.module.css';
 import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { useMood } from '@/shared/hooks/useMood';
+import type { QueryBehaviorOptions } from '@/shared/hooks/utils/queryBehavior';
 import type { MoodId, MoodPulseDirection } from '@/core/services/moodService';
 import { getLocalDateString } from '@/utils/helpers/dateUtils';
 
@@ -45,6 +46,12 @@ const GAUGE_WIDTH = GAUGE_CENTER * 2;
 const GAUGE_HEIGHT = GAUGE_RADIUS + GAUGE_STROKE + 24;
 const TICK_COUNT = 25;
 const POINTER_OFFSET = 26;
+const DASHBOARD_MOOD_QUERY_OPTIONS: QueryBehaviorOptions = {
+  staleTime: 1000 * 60,
+  gcTime: 1000 * 60 * 10,
+  refetchOnWindowFocus: false,
+  retry: 1,
+};
 
 const MOODS: MoodDefinition[] = [
   {
@@ -217,7 +224,7 @@ const MoodWidget = (): JSX.Element => {
     isWeeklyPulseLoading,
     isMonthlyPulseLoading,
     error,
-  } = useMood();
+  } = useMood(DASHBOARD_MOOD_QUERY_OPTIONS);
 
   const translate = useCallback(
     (key: string, options?: Record<string, unknown>): string => {

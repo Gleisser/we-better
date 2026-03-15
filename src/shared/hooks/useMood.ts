@@ -13,6 +13,7 @@ import {
 } from '@/core/services/moodService';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { getLocalDateString } from '@/utils/helpers/dateUtils';
+import type { QueryBehaviorOptions } from '@/shared/hooks/utils/queryBehavior';
 
 interface UseMoodReturn {
   entries: MoodEntry[];
@@ -124,7 +125,7 @@ const upsertMoodEntry = (entries: MoodEntry[], nextEntry: MoodEntry): MoodEntry[
   return [nextEntry, ...nextEntries];
 };
 
-export const useMood = (): UseMoodReturn => {
+export const useMood = (queryOptions?: QueryBehaviorOptions): UseMoodReturn => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const userId = user?.id ?? null;
@@ -157,6 +158,7 @@ export const useMood = (): UseMoodReturn => {
     queryFn: async () => loadMoodEntries(entriesParams),
     enabled: Boolean(userId),
     meta: AUTH_SCOPED_QUERY_META,
+    ...queryOptions,
   });
 
   const weeklyPulseQuery = useQuery({
@@ -164,6 +166,7 @@ export const useMood = (): UseMoodReturn => {
     queryFn: async () => loadMoodPulse(7, weeklyEndDate),
     enabled: Boolean(userId),
     meta: AUTH_SCOPED_QUERY_META,
+    ...queryOptions,
   });
 
   const monthlyPulseQuery = useQuery({
@@ -171,6 +174,7 @@ export const useMood = (): UseMoodReturn => {
     queryFn: async () => loadMoodPulse(28, monthlyEndDate),
     enabled: Boolean(userId),
     meta: AUTH_SCOPED_QUERY_META,
+    ...queryOptions,
   });
 
   const fetchMoodEntries = useCallback(
@@ -192,6 +196,7 @@ export const useMood = (): UseMoodReturn => {
           queryKey: moodEntriesQueryKey(userId, nextParams),
           queryFn: async () => loadMoodEntries(nextParams),
           meta: AUTH_SCOPED_QUERY_META,
+          ...queryOptions,
         });
 
         setEntriesParams(previousParams =>
@@ -202,7 +207,7 @@ export const useMood = (): UseMoodReturn => {
         setManualError(error instanceof Error ? error : new Error('Failed to fetch mood entries'));
       }
     },
-    [entriesParams, queryClient, userId]
+    [entriesParams, queryClient, queryOptions, userId]
   );
 
   const fetchWeeklyPulse = useCallback(
@@ -217,6 +222,7 @@ export const useMood = (): UseMoodReturn => {
           queryKey: moodPulseQueryKey(userId, 7, endDate),
           queryFn: async () => loadMoodPulse(7, endDate),
           meta: AUTH_SCOPED_QUERY_META,
+          ...queryOptions,
         });
 
         setWeeklyEndDate(previousEndDate =>
@@ -229,7 +235,7 @@ export const useMood = (): UseMoodReturn => {
         );
       }
     },
-    [queryClient, userId, weeklyEndDate]
+    [queryClient, queryOptions, userId, weeklyEndDate]
   );
 
   const fetchMonthlyPulse = useCallback(
@@ -244,6 +250,7 @@ export const useMood = (): UseMoodReturn => {
           queryKey: moodPulseQueryKey(userId, 28, endDate),
           queryFn: async () => loadMoodPulse(28, endDate),
           meta: AUTH_SCOPED_QUERY_META,
+          ...queryOptions,
         });
 
         setMonthlyEndDate(previousEndDate =>
@@ -256,7 +263,7 @@ export const useMood = (): UseMoodReturn => {
         );
       }
     },
-    [monthlyEndDate, queryClient, userId]
+    [monthlyEndDate, queryClient, queryOptions, userId]
   );
 
   const refreshMoodAndPulse = useCallback(

@@ -1,7 +1,18 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import DashboardGrid from './DashboardGrid';
 import styles from './DashboardGrid.module.css';
+
+const mockUseDeferredSectionQuery = vi.fn();
+const mockUseIdleActivation = vi.fn();
+
+vi.mock('@/shared/hooks/utils/useDeferredSectionQuery', () => ({
+  useDeferredSectionQuery: (...args: unknown[]) => mockUseDeferredSectionQuery(...args),
+}));
+
+vi.mock('@/shared/hooks/utils/useIdleActivation', () => ({
+  useIdleActivation: (...args: unknown[]) => mockUseIdleActivation(...args),
+}));
 
 vi.mock('@/shared/components/widgets/QuoteWidget/QuoteWidget', () => ({
   default: () => <div data-testid="mock-quote-widget" />,
@@ -19,24 +30,49 @@ vi.mock('@/shared/components/widgets/CardsWidget/CardsWidget', () => ({
   default: () => <div data-testid="mock-cards-widget" />,
 }));
 
-vi.mock('../../widgets/RadialLifeChartWidget/RadialLifeChartWidget', () => ({
+vi.mock('@/shared/components/widgets/RadialLifeChartWidget/RadialLifeChartWidget', () => ({
   default: () => <div data-testid="mock-radial-widget" />,
 }));
 
-vi.mock('../../widgets/MoodWidget/MoodWidget', () => ({
+vi.mock('@/shared/components/widgets/MoodWidget/MoodWidget', () => ({
   default: () => <div data-testid="mock-mood-widget" />,
 }));
 
-vi.mock('../../widgets/DreamBoardTimelineWidget', () => ({
+vi.mock('@/shared/components/widgets/DreamBoardTimelineWidget', () => ({
   default: () => <div data-testid="mock-dream-board-widget" />,
 }));
 
 describe('DashboardGrid', () => {
-  it('renders Dream Board widget after Mood widget and applies dreamBoard grid class', () => {
-    render(<DashboardGrid featuredArticle={null} isLoading={false} />);
+  beforeEach(() => {
+    mockUseDeferredSectionQuery.mockReturnValue(true);
+    mockUseIdleActivation.mockReturnValue(false);
+  });
 
-    const moodWidget = screen.getByTestId('mock-mood-widget');
-    const dreamBoardWidget = screen.getByTestId('mock-dream-board-widget');
+  it('renders the first dashboard row immediately while lower widgets remain deferred', async () => {
+    mockUseDeferredSectionQuery.mockReturnValue(false);
+
+    render(<DashboardGrid />);
+
+    expect(await screen.findByTestId('mock-quote-widget')).not.toBeNull();
+    expect(await screen.findByTestId('mock-cards-widget')).not.toBeNull();
+    expect(await screen.findByTestId('mock-radial-widget')).not.toBeNull();
+
+    expect(screen.queryByTestId('mock-mood-widget')).toBeNull();
+    expect(screen.queryByTestId('mock-dream-board-widget')).toBeNull();
+    expect(screen.queryByTestId('mock-habits-widget')).toBeNull();
+    expect(screen.queryByTestId('mock-goals-widget')).toBeNull();
+
+    expect(screen.getByTestId('mood-slot').getAttribute('data-dashboard-state')).toBe('deferred');
+    expect(screen.getByTestId('dreamBoard-slot').getAttribute('data-dashboard-state')).toBe(
+      'deferred'
+    );
+  });
+
+  it('renders Dream Board widget after Mood widget and applies dreamBoard grid class', async () => {
+    render(<DashboardGrid />);
+
+    const moodWidget = await screen.findByTestId('mock-mood-widget');
+    const dreamBoardWidget = await screen.findByTestId('mock-dream-board-widget');
 
     expect(
       Boolean(
