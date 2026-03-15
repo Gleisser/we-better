@@ -10,21 +10,17 @@ import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useThemeToggle } from '@/shared/hooks/useTheme';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
 import { useAuth } from '@/shared/hooks/useAuth';
-import {
-  useNotificationsFeed,
-  useUnreadNotificationsCount,
-} from '@/shared/hooks/useNotificationsFeed';
+import { useNotificationsFeed } from '@/shared/hooks/useNotificationsFeed';
 import { getInitials } from '@/shared/utils/string/getInitials';
 import styles from './HeaderActions.module.css';
 
 const HeaderActions = (): JSX.Element => {
   const { t } = useCommonTranslation();
-  const { user } = useAuth();
+  const { user, unreadNotificationCount = 0 } = useAuth();
   const { activePopup, setActivePopup } = useHeader();
   const [isMobile, setIsMobile] = useState(false);
   const [avatarLoadError, setAvatarLoadError] = useState(false);
   const notificationsEnabled = activePopup === 'notifications';
-  const { unreadCount, refetch: refetchUnreadCount } = useUnreadNotificationsCount();
   const {
     notifications,
     isLoading: notificationsLoading,
@@ -37,7 +33,9 @@ const HeaderActions = (): JSX.Element => {
 
   // Theme functionality
   const { currentMode, effectiveTheme, toggleTheme, isDark } = useThemeToggle();
-  const { updateThemeMode, isLoading: preferencesLoading } = useUserPreferences();
+  const { updateThemeMode, isLoading: preferencesLoading } = useUserPreferences({
+    loadOnMount: false,
+  });
 
   const avatarFromMetadata = user?.user_metadata?.avatar_url;
   const userAvatarUrl =
@@ -92,14 +90,6 @@ const HeaderActions = (): JSX.Element => {
   useEffect(() => {
     setAvatarLoadError(false);
   }, [userAvatarUrl]);
-
-  useEffect(() => {
-    if (!notificationsEnabled) {
-      return;
-    }
-
-    void refetchUnreadCount();
-  }, [notificationsEnabled, refetchUnreadCount]);
 
   // Close popups when clicking outside
   useEffect(() => {
@@ -207,14 +197,14 @@ const HeaderActions = (): JSX.Element => {
           onClick={() => setActivePopup(activePopup === 'notifications' ? null : 'notifications')}
         >
           <BellIcon className={styles.notificationIcon} />
-          {unreadCount > 0 && (
+          {unreadNotificationCount > 0 && (
             <motion.span
               className={styles.notificationBadge}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 500, damping: 25 }}
             >
-              {unreadCount}
+              {unreadNotificationCount}
             </motion.span>
           )}
         </button>
@@ -224,7 +214,7 @@ const HeaderActions = (): JSX.Element => {
           <NotificationsPopup
             onClose={() => setActivePopup(null)}
             notifications={notifications}
-            unreadCount={unreadCount}
+            unreadCount={unreadNotificationCount}
             isLoading={notificationsLoading}
             onMarkAsRead={notificationId => {
               void markAsRead(notificationId);
@@ -242,7 +232,7 @@ const HeaderActions = (): JSX.Element => {
           isOpen={true}
           onClose={() => setActivePopup(null)}
           notifications={notifications}
-          unreadCount={unreadCount}
+          unreadCount={unreadNotificationCount}
           isLoading={notificationsLoading}
           onMarkAsRead={notificationId => {
             void markAsRead(notificationId);

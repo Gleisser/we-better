@@ -1,48 +1,22 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import PricingExperience from '@/shared/components/billing/PricingExperience/PricingExperience';
-import {
-  billingService,
-  type BillingCycle,
-  type BillingPlanCatalogItem,
-  type PlanCode,
-} from '@/core/services/billingService';
+import { billingService, type BillingCycle, type PlanCode } from '@/core/services/billingService';
 import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
+import { usePlanCatalog } from '@/shared/hooks/usePlanCatalog';
 import styles from './Pricing.module.css';
 
 type PaidPlanCode = Exclude<PlanCode, 'free'>;
 
 const Pricing = (): JSX.Element => {
-  const [planCatalog, setPlanCatalog] = useState<BillingPlanCatalogItem[]>([]);
   const [selectedCycle, setSelectedCycle] = useState<BillingCycle>('monthly');
-  const [isCatalogLoading, setIsCatalogLoading] = useState(true);
   const [isActionLoading, setIsActionLoading] = useState(false);
-  const [catalogError, setCatalogError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const { plans: planCatalog, error: catalogError, isLoading: isCatalogLoading } = usePlanCatalog();
   const {
     data: billingInfo,
     error: billingError,
     isLoading: isBillingLoading,
   } = useBillingSummary();
-
-  const loadPlanCatalog = useCallback(async (): Promise<void> => {
-    setIsCatalogLoading(true);
-    setCatalogError(null);
-
-    const catalogResult = await billingService.getPlanCatalog();
-    if (catalogResult.error) {
-      setCatalogError(catalogResult.error);
-    }
-
-    if (catalogResult.data) {
-      setPlanCatalog(catalogResult.data);
-    }
-
-    setIsCatalogLoading(false);
-  }, []);
-
-  useEffect(() => {
-    void loadPlanCatalog();
-  }, [loadPlanCatalog]);
 
   useEffect(() => {
     if (billingInfo?.billingCycle) {

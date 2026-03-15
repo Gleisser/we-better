@@ -1,6 +1,6 @@
 import React, { StrictMode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useNotificationsFeed, useUnreadNotificationsCount } from '../useNotificationsFeed';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -50,6 +50,10 @@ describe('notifications hooks', () => {
       user: { id: 'user-123', email: 'user@example.com' },
       isLoading: false,
       isAuthenticated: true,
+      unreadNotificationCount: 3,
+      refreshUnreadNotificationCount: vi.fn().mockResolvedValue(3),
+      decrementUnreadNotificationCount: vi.fn(),
+      clearUnreadNotificationCount: vi.fn(),
       checkAuth: vi.fn(),
       logout: vi.fn(),
     });
@@ -68,7 +72,7 @@ describe('notifications hooks', () => {
     });
   });
 
-  it('keeps the unread badge polling separate from the feed and skips the feed when disabled', async () => {
+  it('reads the unread badge from shared auth state and skips the feed when disabled', async () => {
     const { result } = renderHook(
       () => ({
         unread: useUnreadNotificationsCount(),
@@ -82,7 +86,47 @@ describe('notifications hooks', () => {
     await waitFor(() => expect(result.current.unread.unreadCount).toBe(3));
 
     expect(result.current.feed.notifications).toEqual([]);
-    expect(mockedNotificationsService.getUnreadCount).toHaveBeenCalledTimes(1);
+    expect(mockedNotificationsService.getUnreadCount).not.toHaveBeenCalled();
     expect(mockedNotificationsService.getNotifications).not.toHaveBeenCalled();
+  });
+
+  it('supports deferred unread-count activation and only refreshes on demand', async () => {
+    const refreshUnreadNotificationCount = vi.fn().mockResolvedValue(3);
+    mockedUseAuth.mockReturnValue({
+      user: { id: 'user-123', email: 'user@example.com' },
+      isLoading: false,
+      isAuthenticated: true,
+      unreadNotificationCount: 3,
+      refreshUnreadNotificationCount,
+      decrementUnreadNotificationCount: vi.fn(),
+      clearUnreadNotificationCount: vi.fn(),
+      checkAuth: vi.fn(),
+      logout: vi.fn(),
+    });
+
+    const { result, rerender } = renderHook(
+      ({ enabled }) => useUnreadNotificationsCount({ enabled, refetchOnMount: false }),
+      {
+        initialProps: { enabled: false },
+        wrapper: createWrapper(),
+      }
+    );
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.unreadCount).toBe(0);
+    expect(refreshUnreadNotificationCount).not.toHaveBeenCalled();
+
+    await act(async () => {
+      rerender({ enabled: true });
+    });
+
+    await waitFor(() => expect(result.current.unreadCount).toBe(3));
+    expect(refreshUnreadNotificationCount).not.toHaveBeenCalled();
+
+    await act(async () => {
+      await result.current.refetch();
+    });
+
+    expect(refreshUnreadNotificationCount).toHaveBeenCalledTimes(1);
   });
 });

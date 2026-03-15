@@ -93,4 +93,25 @@ describe('useAffirmations', () => {
     expect(mockedFetchAffirmationStreak).toHaveBeenCalledTimes(1);
     expect(mockedCheckTodayStatus).toHaveBeenCalledTimes(1);
   });
+
+  it('can limit dashboard bootstrap to today status only', async () => {
+    const { result } = renderHook(
+      () =>
+        useAffirmations({
+          loadPersonalAffirmation: false,
+          loadReminderSettings: false,
+          loadStreak: false,
+          loadTodayStatus: true,
+        }),
+      {
+        wrapper: createWrapper(),
+      }
+    );
+
+    await waitFor(() => expect(result.current.hasAffirmedToday).toBe(true));
+    expect(mockedFetchPersonalAffirmation).not.toHaveBeenCalled();
+    expect(mockedFetchReminderSettings).not.toHaveBeenCalled();
+    expect(mockedFetchAffirmationStreak).not.toHaveBeenCalled();
+    expect(mockedCheckTodayStatus).toHaveBeenCalledTimes(1);
+  });
 });

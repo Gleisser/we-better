@@ -44,15 +44,15 @@ const mapBookmarkRow = (row: BookmarkRow): BookmarkRecord => ({
 
 const getCurrentUserId = async (): Promise<string | null> => {
   const {
-    data: { user },
+    data: { session },
     error,
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getSession();
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return user?.id ?? null;
+  return session?.user?.id ?? null;
 };
 
 const fetchExistingBookmark = async (

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSettingsTranslation } from '@/shared/hooks/useTranslation';
 import { ChevronDownIcon, SettingsIcon } from '@/shared/components/common/icons';
@@ -8,20 +8,17 @@ import ProfileSettings from '@/shared/components/user/ProfileSettings';
 import Toggle from '@/shared/components/common/Toggle';
 import PricingModal from '@/shared/components/billing/PricingModal/PricingModal';
 import NotificationPreferencesSection from './components/NotificationPreferencesSection';
-import {
-  sessionsService,
-  type SessionDto,
-  type SessionsSummary,
-} from '@/core/services/sessionsService';
+import { sessionsService } from '@/core/services/sessionsService';
 import {
   billingService,
   type BillingSummary,
-  type BillingPlanCatalogItem,
   type PlanCode,
   type BillingCycle,
   type PortalFlow,
 } from '@/core/services/billingService';
 import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
+import { usePlanCatalog } from '@/shared/hooks/usePlanCatalog';
+import { useSessionsHistory, useSessionsOverview } from '@/shared/hooks/useSessionsOverview';
 import styles from './Settings.module.css';
 
 interface PrivacySettings {
@@ -135,15 +132,6 @@ const QrCodeIcon = ({ className }: { className?: string }): JSX.Element => (
     <path d="M12 21v-1" stroke="currentColor" strokeWidth="2" />
   </svg>
 );
-
-const EMPTY_SESSION_SUMMARY: SessionsSummary = {
-  totalSessions: 0,
-  activeSessions: 0,
-  currentSessionId: null,
-  lastLogin: null,
-  suspiciousSessions: 0,
-  trustedDevices: 0,
-};
 
 const Settings = (): JSX.Element => {
   const { t, currentLanguage } = useSettingsTranslation();
@@ -314,16 +302,9 @@ const Settings = (): JSX.Element => {
     trustedDevices: 3,
   });
 
-  const [sessionSummary, setSessionSummary] = useState<SessionsSummary>(EMPTY_SESSION_SUMMARY);
-  const [recentSessions, setRecentSessions] = useState<SessionDto[]>([]);
-  const [sessionHistory, setSessionHistory] = useState<SessionDto[]>([]);
   const [showLoginHistory, setShowLoginHistory] = useState(false);
-  const [isSessionsLoading, setIsSessionsLoading] = useState(true);
-  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [isSigningOutSessions, setIsSigningOutSessions] = useState(false);
-  const [sessionsError, setSessionsError] = useState<string | null>(null);
-  const [planCatalog, setPlanCatalog] = useState<BillingPlanCatalogItem[]>([]);
-  const [isPlanCatalogLoading, setIsPlanCatalogLoading] = useState(false);
+  const [sessionsActionError, setSessionsActionError] = useState<string | null>(null);
   const [isBillingActionLoading, setIsBillingActionLoading] = useState(false);
   const [billingError, setBillingError] = useState<string | null>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
@@ -334,7 +315,30 @@ const Settings = (): JSX.Element => {
     error: billingSummaryError,
     isLoading: isBillingLoading,
   } = useBillingSummary();
-  const effectiveBillingError = billingError || billingSummaryError;
+  const {
+    summary: sessionSummary,
+    recentSessions,
+    error: sessionsOverviewError,
+    isLoading: isSessionsLoading,
+    refetch: refetchSessionsOverview,
+  } = useSessionsOverview();
+  const {
+    sessions: sessionHistory,
+    error: sessionHistoryError,
+    isLoading: isHistoryLoading,
+    refetch: refetchSessionHistory,
+  } = useSessionsHistory({
+    limit: 50,
+    offset: 0,
+    enabled: showLoginHistory,
+  });
+  const {
+    plans: planCatalog,
+    error: planCatalogError,
+    isLoading: isPlanCatalogLoading,
+  } = usePlanCatalog();
+  const effectiveBillingError = billingError || billingSummaryError || planCatalogError;
+  const sessionsError = sessionsActionError || sessionsOverviewError || sessionHistoryError;
 
   // Handle privacy setting changes
   const handlePrivacyChange = (setting: keyof PrivacySettings, enabled: boolean): void => {
@@ -395,62 +399,6 @@ const Settings = (): JSX.Element => {
       day: 'numeric',
     });
   };
-
-  const loadSessionsOverview = useCallback(async (): Promise<void> => {
-    setIsSessionsLoading(true);
-    setSessionsError(null);
-
-    const { data, error } = await sessionsService.getSessionsOverview();
-    if (error || !data) {
-      setSessionsError(error || (t('settings.errors.loadSessions') as string));
-      setSessionSummary(EMPTY_SESSION_SUMMARY);
-      setRecentSessions([]);
-      setIsSessionsLoading(false);
-      return;
-    }
-
-    setSessionSummary(data.summary);
-    setRecentSessions(data.recentSessions);
-    setIsSessionsLoading(false);
-  }, [t]);
-
-  const loadSessionHistory = useCallback(async (): Promise<void> => {
-    setIsHistoryLoading(true);
-
-    const { data, error } = await sessionsService.getHistory(50, 0);
-    if (error || !data) {
-      setSessionsError(error || (t('settings.errors.loadSessionHistory') as string));
-      setSessionHistory([]);
-      setIsHistoryLoading(false);
-      return;
-    }
-
-    setSessionHistory(data.sessions);
-    setIsHistoryLoading(false);
-  }, [t]);
-
-  const loadPlanCatalog = useCallback(async (): Promise<void> => {
-    setIsPlanCatalogLoading(true);
-
-    const { data, error } = await billingService.getPlanCatalog();
-    if (error || !data) {
-      setBillingError(prev => prev || error || (t('settings.errors.loadPlanCatalog') as string));
-      setPlanCatalog([]);
-      setIsPlanCatalogLoading(false);
-      return;
-    }
-
-    setPlanCatalog(data);
-    setIsPlanCatalogLoading(false);
-  }, [t]);
-
-  useEffect(() => {
-    void loadSessionsOverview();
-  }, [loadSessionsOverview]);
-
-  useEffect(() => {
-    void loadPlanCatalog();
-  }, [loadPlanCatalog]);
 
   useEffect(() => {
     if (billingInfo?.billingCycle) {
@@ -554,10 +502,6 @@ const Settings = (): JSX.Element => {
 
     const nextVisible = !showLoginHistory;
     setShowLoginHistory(nextVisible);
-
-    if (nextVisible) {
-      await loadSessionHistory();
-    }
   };
 
   // Handle sign out all sessions
@@ -573,7 +517,7 @@ const Settings = (): JSX.Element => {
     const { data, error } = await sessionsService.logoutOtherSessions();
 
     if (error || !data?.success) {
-      setSessionsError(error || (t('settings.errors.signOutOtherSessions') as string));
+      setSessionsActionError(error || (t('settings.errors.signOutOtherSessions') as string));
       setIsSigningOutSessions(false);
       return;
     }
@@ -582,9 +526,10 @@ const Settings = (): JSX.Element => {
       console.warn('Logout other sessions warning:', data.warning);
     }
 
-    await loadSessionsOverview();
+    setSessionsActionError(null);
+    await refetchSessionsOverview();
     if (showLoginHistory) {
-      await loadSessionHistory();
+      await refetchSessionHistory();
     }
 
     setIsSigningOutSessions(false);

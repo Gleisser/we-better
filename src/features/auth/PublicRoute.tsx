@@ -40,16 +40,17 @@
 
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
+import AuthTransitionScreen from './AuthTransitionScreen';
 
 export const PublicRoute = ({ children }: { children: React.ReactNode }): JSX.Element => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isAuthResolved, isLoggingOut } = useAuth();
   const location = useLocation();
 
   // Special case for reset password - allow authenticated access
   const isResetPasswordRoute = location.pathname.includes('/auth/reset-password');
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (isLoggingOut || ((isLoading || !isAuthResolved) && !user)) {
+    return <AuthTransitionScreen message="Checking your session..." />;
   }
 
   // If user is authenticated AND not on reset password page, redirect to app
