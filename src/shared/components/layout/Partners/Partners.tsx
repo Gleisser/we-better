@@ -1,9 +1,11 @@
+import { useRef } from 'react';
 import { usePartner } from '@/shared/hooks/usePartner';
 import styles from './Partners.module.css';
 import { API_CONFIG } from '@/core/config/api-config';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { PARTNERS_FALLBACK } from '@/utils/constants/fallback';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
 import { Brand } from '@/utils/types/features-response';
 
 const defaultTitle = (
@@ -13,8 +15,11 @@ const defaultTitle = (
 );
 
 const Partners = (): JSX.Element => {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const shouldFetch = useDeferredSectionQuery(sectionRef);
+
   // Initialize hooks
-  const { data, isLoading: isDataLoading } = usePartner();
+  const { data, isLoading: isDataLoading } = usePartner({ enabled: shouldFetch });
   const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load partners content',
   });
@@ -53,7 +58,7 @@ const Partners = (): JSX.Element => {
   }
 
   return (
-    <section className={styles.partnersContainer} aria-labelledby="partners-title">
+    <section ref={sectionRef} className={styles.partnersContainer} aria-labelledby="partners-title">
       <div className={styles.partnersContent}>
         <h2 className={styles.title} id="partners-title">
           {renderHighlightedText({

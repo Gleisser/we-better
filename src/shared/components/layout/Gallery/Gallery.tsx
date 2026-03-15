@@ -4,6 +4,7 @@ import { useGallery } from '@/shared/hooks/useGallery';
 import { API_CONFIG } from '@/core/config/api-config';
 import { GalleryIcon, MobileNavIcon, MobileNavNextIcon } from '@/shared/components/common/icons';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
 import { TopLevelImage } from '@/utils/types/common/image';
 import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
 import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
@@ -117,9 +118,10 @@ const Gallery = (): JSX.Element => {
   const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
   const sectionRef = useRef<HTMLElement | null>(null);
   const bodyMotionStageRef = useRef<HTMLDivElement | null>(null);
+  const shouldFetch = useDeferredSectionQuery(sectionRef);
 
   // Initialize hooks
-  const { data, isLoading: isDataLoading } = useGallery();
+  const { data, isLoading: isDataLoading } = useGallery({ enabled: shouldFetch });
   const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load gallery content',
   });

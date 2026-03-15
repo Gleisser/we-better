@@ -4,6 +4,7 @@ import { HIGHLIGHTS_FALLBACK } from '@/utils/constants/fallback';
 import { useHighlight } from '@/shared/hooks/useHighlight';
 import HighlightsSkeleton from './HighlightsSkeleton';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
 import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
 import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
 import type { ResponsiveMediaSource } from '@/utils/types/responsiveMedia';
@@ -29,8 +30,13 @@ const resolveHighlightMedia = (
   LANDING_MEDIA.highlights.goals;
 
 const Highlights = (): JSX.Element => {
+  // Refs
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const shouldFetch = useDeferredSectionQuery(sectionRef);
+
   // Initialize hooks
-  const { data, isLoading: isDataLoading } = useHighlight();
+  const { data, isLoading: isDataLoading } = useHighlight({ enabled: shouldFetch });
   const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load highlights content',
   });
@@ -40,10 +46,6 @@ const Highlights = (): JSX.Element => {
   const [showFallback, setShowFallback] = useState(false);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
   const [isSectionVisible, setIsSectionVisible] = useState(false);
-
-  // Refs
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const sliderRef = useRef<HTMLDivElement | null>(null);
 
   // Determine data source with priority for fallback
   const highlights =

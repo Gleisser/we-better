@@ -8,8 +8,12 @@ interface QueryHookOptions<TData> {
   gcTime?: number;
 }
 
+interface UseQueryHookOptions {
+  enabled?: boolean;
+}
+
 interface QueryHookResult<TData> {
-  useQueryHook: () => ReturnType<typeof useQuery<TData>>;
+  useQueryHook: (options?: UseQueryHookOptions) => ReturnType<typeof useQuery<TData>>;
   prefetchData: (queryClient: QueryClient) => Promise<void>;
   invalidateCache: (queryClient: QueryClient) => Promise<void>;
 }
@@ -21,7 +25,9 @@ export function createQueryHook<TData>({
   gcTime = 1000 * 60 * 30, // 30 minutes
 }: QueryHookOptions<TData>): QueryHookResult<TData> {
   // Create the main query hook
-  function useQueryHook(): ReturnType<typeof useQuery<TData>> {
+  function useQueryHook(options: UseQueryHookOptions = {}): ReturnType<typeof useQuery<TData>> {
+    const { enabled = true } = options;
+
     return useQuery<TData>({
       queryKey,
       queryFn: async () => {
@@ -34,8 +40,7 @@ export function createQueryHook<TData>({
       },
       staleTime,
       gcTime,
-      retry: 2,
-      retryDelay: attemptIndex => Math.min(1000 * 1.5 ** attemptIndex, 10000),
+      enabled,
       refetchOnMount: false,
       refetchOnWindowFocus: false,
     });

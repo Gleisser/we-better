@@ -1,12 +1,17 @@
+import { useRef } from 'react';
 import { useFooter } from '@/shared/hooks/useFooter';
 import styles from './Footer.module.css';
 import { FOOTER_FALLBACK } from '@/utils/constants/fallback';
 import { AppStore, MenuList } from '@/utils/types/footer';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
 
 const Footer = (): JSX.Element => {
+  const footerRef = useRef<HTMLElement | null>(null);
+  const shouldFetch = useDeferredSectionQuery(footerRef);
+
   // Initialize hooks
-  const { data, isLoading: isDataLoading } = useFooter();
+  const { data, isLoading: isDataLoading } = useFooter({ enabled: shouldFetch });
   const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load footer content',
   });
@@ -44,7 +49,7 @@ const Footer = (): JSX.Element => {
   }
 
   return (
-    <footer className={styles.footer} role="contentinfo">
+    <footer ref={footerRef} className={styles.footer} role="contentinfo">
       <div className={styles.footerContent}>
         <div className={styles.topSection}>
           {/* Menu Links */}

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import styles from './PreFooter.module.css';
 import { usePrefooter } from '@/shared/hooks/usePrefooter';
 import { PREFOOTER_FALLBACK } from '@/utils/constants/fallback';
@@ -5,13 +6,17 @@ import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { API_CONFIG } from '@/core/config/api-config';
 import { ButtonArrowIcon } from '@/shared/components/common/icons';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
 import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
 import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
 import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
 
 const PreFooter = (): JSX.Element => {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const shouldFetch = useDeferredSectionQuery(sectionRef);
+
   // Initialize hooks
-  const { data, isLoading: isDataLoading } = usePrefooter();
+  const { data, isLoading: isDataLoading } = usePrefooter({ enabled: shouldFetch });
   const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load pre-footer content',
   });
@@ -80,7 +85,11 @@ const PreFooter = (): JSX.Element => {
   }
 
   return (
-    <section className={styles.preFooterContainer} aria-labelledby="prefooter-title">
+    <section
+      ref={sectionRef}
+      className={styles.preFooterContainer}
+      aria-labelledby="prefooter-title"
+    >
       <div className={styles.preFooterContent}>
         {/* Left Column */}
         <div className={styles.leftColumn}>

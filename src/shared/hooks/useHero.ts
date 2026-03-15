@@ -1,6 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { heroService } from '@/core/services/hero.service';
 import { HeroResponse } from '@/utils/types/hero';
+
+interface UseHeroOptions {
+  enabled?: boolean;
+}
 
 interface UseHeroResult {
   data: HeroResponse | null;
@@ -9,34 +13,23 @@ interface UseHeroResult {
   refetch: () => Promise<void>;
 }
 
-export function useHero(): UseHeroResult {
-  const [data, setData] = useState<HeroResponse | null>(null);
-  const [error, setError] = useState<Error | null>(null);
-  const [isFetching, setIsFetching] = useState(true);
-
-  const fetchHero = useCallback(async () => {
-    setIsFetching(true);
-    setError(null);
-
-    try {
-      const response = await heroService.getHero();
-      setData(response);
-    } catch (fetchError) {
-      setError(fetchError instanceof Error ? fetchError : new Error('Failed to load hero data'));
-    } finally {
-      setIsFetching(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void fetchHero();
-  }, [fetchHero]);
+export function useHero(options: UseHeroOptions = {}): UseHeroResult {
+  const { enabled = true } = options;
+  const query = useQuery({
+    queryKey: ['hero'],
+    queryFn: () => heroService.getHero(),
+    enabled,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 
   return {
-    data,
-    error,
-    isFetching,
-    refetch: fetchHero,
+    data: query.data ?? null,
+    error: query.error instanceof Error ? query.error : null,
+    isFetching: query.isFetching,
+    refetch: async () => {
+      await query.refetch();
+    },
   };
 }
 
