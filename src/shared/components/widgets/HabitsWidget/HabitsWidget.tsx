@@ -17,6 +17,7 @@ import { StatusMenu } from './StatusMenu';
 import { HabitStatus, Habit as LocalHabit, HabitCategory } from './types';
 import { STATUS_CONFIG, CATEGORY_CONFIG } from './config';
 import { useHabitLogsMap, useHabits } from '@/shared/hooks/useHabits';
+import type { QueryBehaviorOptions } from '@/shared/hooks/utils/queryBehavior';
 import {
   Habit as ApiHabit,
   HabitLog,
@@ -24,6 +25,20 @@ import {
 } from '@/core/services/habitsService';
 import { HabitForm } from './HabitForm';
 import { HabitActionsMenu } from './HabitActionsMenu';
+
+const DASHBOARD_HABITS_QUERY_OPTIONS: QueryBehaviorOptions = {
+  staleTime: 1000 * 60 * 2,
+  gcTime: 1000 * 60 * 15,
+  refetchOnWindowFocus: false,
+  retry: 1,
+};
+
+const DASHBOARD_HABIT_LOGS_QUERY_OPTIONS: QueryBehaviorOptions = {
+  staleTime: 1000 * 60,
+  gcTime: 1000 * 60 * 10,
+  refetchOnWindowFocus: false,
+  retry: 1,
+};
 
 // Helper function to transform API Habit to local Habit format
 const transformApiHabit = (apiHabit: ApiHabit, logs: HabitLog[] = []): LocalHabit => {
@@ -83,11 +98,13 @@ const HabitsWidget = (): JSX.Element => {
     logHabitCompletion,
   } = useHabits({
     category: selectedApiCategory,
+    queryOptions: DASHBOARD_HABITS_QUERY_OPTIONS,
   });
   const { logsByHabit, refetchHabitLogs } = useHabitLogsMap(
     apiHabits.map(habit => habit.id),
     habitLogDateRange.startDate,
-    habitLogDateRange.endDate
+    habitLogDateRange.endDate,
+    DASHBOARD_HABIT_LOGS_QUERY_OPTIONS
   );
 
   // Transform API habits to local format

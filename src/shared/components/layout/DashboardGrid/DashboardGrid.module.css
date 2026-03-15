@@ -99,3 +99,97 @@
   position: relative;
   z-index: 2;
 }
+
+.widgetFallback {
+  @apply relative h-full w-full overflow-hidden rounded-[32px];
+  min-height: 20rem;
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 45%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.84));
+}
+
+.widgetFallbackGlow {
+  @apply absolute inset-0;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.05) 35%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.05) 65%,
+    transparent 80%
+  );
+  animation: widgetFallbackShimmer 2.8s ease-in-out infinite;
+  transform: translateX(-35%);
+}
+
+.widgetFallbackContent {
+  @apply relative flex h-full flex-col justify-between p-6;
+}
+
+.widgetFallbackEyebrow {
+  @apply inline-flex w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-white/60;
+}
+
+.widgetFallbackTitle {
+  @apply mt-6 h-7 rounded-full bg-white/10;
+  width: min(16rem, 70%);
+}
+
+.widgetFallbackBody {
+  @apply mt-auto flex flex-col gap-3;
+}
+
+.widgetFallbackBody span {
+  @apply block h-3 rounded-full bg-white/10;
+}
+
+.widgetFallbackBody span:nth-child(1) {
+  width: 100%;
+}
+
+.widgetFallbackBody span:nth-child(2) {
+  width: 82%;
+}
+
+.widgetFallbackBody span:nth-child(3) {
+  width: 58%;
+}
+
+.quoteFallback,
+.cardsFallback,
+.radialFallback {
+  min-height: 21rem;
+}
+
+.moodFallback {
+  min-height: 24rem;
+}
+
+.dreamBoardFallback {
+  min-height: 22rem;
+}
+
+.habitsFallback,
+.goalsFallback {
+  min-height: 21rem;
+}
+
+@keyframes widgetFallbackShimmer {
+  0% {
+    transform: translateX(-35%);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateX(35%);
+    opacity: 0;
+  }
+}

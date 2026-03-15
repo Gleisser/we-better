@@ -21,6 +21,7 @@ import { GoalActionsMenu } from './GoalActionsMenu.js';
 import { ConfirmationModal } from './ConfirmationModal.js';
 import { ReviewTimer } from './ReviewTimer.js';
 import { useGoals } from '@/shared/hooks/useGoals';
+import type { QueryBehaviorOptions } from '@/shared/hooks/utils/queryBehavior';
 import {
   GoalWithMilestones as ApiGoalWithMilestones,
   UserReviewSettings as ApiReviewSettings,
@@ -31,6 +32,12 @@ import {
 } from '@/core/services/goalsService';
 
 const INITIAL_GOALS_TO_SHOW = 3; // Start with 3 goals on mobile
+const DASHBOARD_GOALS_QUERY_OPTIONS: QueryBehaviorOptions = {
+  staleTime: 1000 * 60 * 2,
+  gcTime: 1000 * 60 * 20,
+  refetchOnWindowFocus: false,
+  retry: 1,
+};
 
 // Helper function to transform API Goal to local Goal format
 const transformApiGoal = (apiGoal: ApiGoalWithMilestones): Goal => {
@@ -140,6 +147,7 @@ const GoalsWidget = (): JSX.Element => {
   } = useGoals({
     category: queryCategory,
     includeMilestones: true,
+    queryOptions: DASHBOARD_GOALS_QUERY_OPTIONS,
   });
 
   // Transform API goals to local format

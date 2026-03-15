@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { AUTH_SCOPED_QUERY_META } from '@/core/config/react-query';
 import { useAuth } from './useAuth';
 import * as habitsService from '@/core/services/habitsService';
+import type { QueryBehaviorOptions } from '@/shared/hooks/utils/queryBehavior';
 import {
   Habit,
   HabitLog,
@@ -14,6 +15,7 @@ import {
 interface UseHabitsOptions {
   category?: string;
   showArchived?: boolean;
+  queryOptions?: QueryBehaviorOptions;
 }
 
 interface UseHabitsReturn {
@@ -104,7 +106,8 @@ const updateHabitAcrossCaches = (
 export const useHabitLogsMap = (
   habitIds: string[],
   startDate?: string,
-  endDate?: string
+  endDate?: string,
+  queryOptions?: QueryBehaviorOptions
 ): UseHabitLogsMapReturn => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -120,6 +123,7 @@ export const useHabitLogsMap = (
       },
       enabled: Boolean(userId),
       meta: AUTH_SCOPED_QUERY_META,
+      ...queryOptions,
     })),
   });
 
@@ -147,9 +151,10 @@ export const useHabitLogsMap = (
           return response.logs;
         },
         meta: AUTH_SCOPED_QUERY_META,
+        ...queryOptions,
       });
     },
-    [endDate, queryClient, startDate, userId]
+    [endDate, queryClient, queryOptions, startDate, userId]
   );
 
   return {
@@ -166,6 +171,7 @@ export const useHabits = (options: UseHabitsOptions = {}): UseHabitsReturn => {
   const userId = user?.id ?? null;
   const category = options.category;
   const showArchived = options.showArchived ?? false;
+  const queryOptions = options.queryOptions;
   const [manualError, setManualError] = useState<Error | null>(null);
 
   const habitsQuery = useQuery({
@@ -173,6 +179,7 @@ export const useHabits = (options: UseHabitsOptions = {}): UseHabitsReturn => {
     queryFn: async () => loadHabits(category, showArchived),
     enabled: Boolean(userId) && isAuthenticated,
     meta: AUTH_SCOPED_QUERY_META,
+    ...queryOptions,
   });
 
   const statsQuery = useQuery({
@@ -180,6 +187,7 @@ export const useHabits = (options: UseHabitsOptions = {}): UseHabitsReturn => {
     queryFn: async () => habitsService.getHabitStats(),
     enabled: false,
     meta: AUTH_SCOPED_QUERY_META,
+    ...queryOptions,
   });
 
   const createHabitMutation = useMutation({
@@ -246,13 +254,14 @@ export const useHabits = (options: UseHabitsOptions = {}): UseHabitsReturn => {
           queryKey: habitsListQueryKey(userId, nextCategory, nextShowArchived),
           queryFn: async () => loadHabits(nextCategory, nextShowArchived),
           meta: AUTH_SCOPED_QUERY_META,
+          ...queryOptions,
         });
         setManualError(null);
       } catch (error) {
         setManualError(error instanceof Error ? error : new Error('Failed to fetch habits'));
       }
     },
-    [queryClient, userId]
+    [queryClient, queryOptions, userId]
   );
 
   const createHabit = useCallback(
@@ -378,6 +387,7 @@ export const useHabits = (options: UseHabitsOptions = {}): UseHabitsReturn => {
           queryKey: habitLogsQueryKey(userId, habitId, startDate, endDate),
           queryFn: async () => loadHabitLogs(habitId, startDate, endDate),
           meta: AUTH_SCOPED_QUERY_META,
+          ...queryOptions,
         });
         setManualError(null);
         return response;
@@ -386,7 +396,7 @@ export const useHabits = (options: UseHabitsOptions = {}): UseHabitsReturn => {
         return null;
       }
     },
-    [queryClient, userId]
+    [queryClient, queryOptions, userId]
   );
 
   const deleteHabitLog = useCallback(

@@ -27,10 +27,12 @@ import {
   toggleMilestoneCompletion,
 } from '@/core/services/goalsService';
 import { useAuth } from '@/shared/hooks/useAuth';
+import type { QueryBehaviorOptions } from '@/shared/hooks/utils/queryBehavior';
 
 export interface UseGoalsOptions {
   category?: GoalCategory;
   includeMilestones?: boolean;
+  queryOptions?: QueryBehaviorOptions;
 }
 
 export interface UseGoalsReturn {
@@ -133,6 +135,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
   const userId = user?.id ?? null;
   const category = options.category;
   const includeMilestones = options.includeMilestones ?? true;
+  const queryOptions = options.queryOptions;
   const [manualError, setManualError] = useState<Error | null>(null);
 
   const goalsQuery = useQuery({
@@ -140,6 +143,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
     queryFn: async () => loadGoals(category, includeMilestones),
     enabled: Boolean(userId),
     meta: AUTH_SCOPED_QUERY_META,
+    ...queryOptions,
   });
 
   const reviewSettingsQuery = useQuery({
@@ -147,6 +151,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
     queryFn: async () => fetchReviewSettingsApi(),
     enabled: Boolean(userId),
     meta: AUTH_SCOPED_QUERY_META,
+    ...queryOptions,
   });
 
   const statsQuery = useQuery({
@@ -154,6 +159,7 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
     queryFn: async () => fetchGoalStatsApi(),
     enabled: false,
     meta: AUTH_SCOPED_QUERY_META,
+    ...queryOptions,
   });
 
   const createGoalMutation = useMutation({
@@ -399,13 +405,14 @@ export const useGoals = (options: UseGoalsOptions = {}): UseGoalsReturn => {
           queryKey: goalsQueryKey(userId, nextCategory, nextIncludeMilestones),
           queryFn: async () => loadGoals(nextCategory, nextIncludeMilestones),
           meta: AUTH_SCOPED_QUERY_META,
+          ...queryOptions,
         });
         setManualError(null);
       } catch (error) {
         setManualError(error instanceof Error ? error : new Error('Failed to fetch goals'));
       }
     },
-    [queryClient, userId]
+    [queryClient, queryOptions, userId]
   );
 
   const createGoal = useCallback(
