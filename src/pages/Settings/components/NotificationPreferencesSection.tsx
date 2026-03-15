@@ -1,7 +1,7 @@
 import { type ReactNode, useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@/shared/components/common/icons';
 import Toggle from '@/shared/components/common/Toggle';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useSettingsTranslation } from '@/shared/hooks/useTranslation';
 import { useNotificationSettings } from '@/shared/hooks/useNotificationSettings';
 import { pushSubscriptionService } from '@/core/services/pushSubscriptionService';
 import type { NotificationSettingsDto } from '@/core/services/notificationSettingsService';
@@ -26,7 +26,7 @@ const normalizeTimeForApi = (value: string): string => {
 };
 
 const NotificationPreferencesSection = (): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useSettingsTranslation();
   const { settings, isLoading, isSaving, error, updateSettings } = useNotificationSettings();
   const [pushPermissionError, setPushPermissionError] = useState<string | null>(null);
   const [openSubsections, setOpenSubsections] = useState<

@@ -13,7 +13,7 @@ import {
   TrashIcon,
   BookmarkIcon,
 } from '@/shared/components/common/icons';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import ParticleEffect from './ParticleEffect';
 import { useVoiceRecorder } from '@/shared/hooks/useVoiceRecorder';
 import { Tooltip } from '@/shared/components/common/Tooltip';
@@ -113,7 +113,7 @@ const getCategoryConfig = (
 });
 
 const AffirmationWidget = (): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const categoryConfig = getCategoryConfig(t);
   const [currentAffirmation, setCurrentAffirmation] = useState<UserAffirmation | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<AffirmationCategory>('personal');

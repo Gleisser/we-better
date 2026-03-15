@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import styles from './HabitsWidget.module.css';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { format, addDays } from 'date-fns';
 import { enUS, ptBR } from 'date-fns/locale';
 import { MonthlyView } from './MonthlyView';
@@ -42,7 +42,7 @@ const transformApiHabit = (apiHabit: ApiHabit, logs: HabitLog[] = []): LocalHabi
 };
 
 const HabitsWidget = (): JSX.Element => {
-  const { t, currentLanguage } = useCommonTranslation();
+  const { t, currentLanguage } = useDashboardTranslation();
   const [selectedCategory, setSelectedCategory] = useState<HabitCategory | 'all'>('all');
   const { theme } = useTimeBasedTheme();
 

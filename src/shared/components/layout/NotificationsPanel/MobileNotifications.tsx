@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { XIcon } from '@/shared/components/common/icons';
 import type { NotificationFeedItemDto } from '@/core/services/notificationsService';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useNotificationsTranslation } from '@/shared/hooks/useTranslation';
 import NotificationEventAvatar from '@/shared/components/layout/NotificationEventAvatar';
 import styles from './MobileNotifications.module.css';
 
@@ -43,7 +43,7 @@ export const MobileNotifications = ({
   onMarkAsRead,
   onMarkAllAsRead,
 }: MobileNotificationsProps): JSX.Element => {
-  const { t, currentLanguage } = useCommonTranslation();
+  const { t, currentLanguage } = useNotificationsTranslation();
 
   return (
     <AnimatePresence>

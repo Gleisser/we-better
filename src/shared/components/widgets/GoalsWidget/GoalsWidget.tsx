@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import {
   PlusIcon,
   ChevronDownIcon,
@@ -94,7 +94,7 @@ const transformToApiReviewSettings = (
 };
 
 const GoalsWidget = (): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const [isCollapsed, setIsCollapsed] = useState(() => {
     return window.innerWidth <= 768;
   });
@@ -608,7 +608,7 @@ const GoalsWidget = (): JSX.Element => {
                             toast.error('Failed to update progress');
                           }
                         }}
-                        aria-label="Increase progress by 5%"
+                        aria-label={t('widgets.goals.progress.increase') as string}
                       >
                         <ProgressUpIcon className={styles.actionIcon} />
                       </button>
@@ -640,7 +640,7 @@ const GoalsWidget = (): JSX.Element => {
                             toast.error('Failed to update progress');
                           }
                         }}
-                        aria-label="Decrease progress by 5%"
+                        aria-label={t('widgets.goals.progress.decrease') as string}
                       >
                         <ProgressDownIcon className={styles.actionIcon} />
                       </button>
@@ -655,7 +655,7 @@ const GoalsWidget = (): JSX.Element => {
                           setSelectedGoal(goal);
                           setShowActionsMenu(true);
                         }}
-                        aria-label="More actions"
+                        aria-label={t('widgets.goals.actions.more') as string}
                       >
                         <DotsHorizontalIcon className={styles.actionIcon} />
                       </button>

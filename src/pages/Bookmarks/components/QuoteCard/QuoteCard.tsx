@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { BookmarkIcon, MoreVerticalIcon, ShareIcon } from '@/shared/components/common/icons';
 import { useBookmarkedQuotes, type BookmarkedQuote } from '@/shared/hooks/useBookmarkedQuotes';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useBookmarksTranslation } from '@/shared/hooks/useTranslation';
 import { useState, useMemo } from 'react';
 import styles from './QuoteCard.module.css';
 
@@ -20,7 +20,7 @@ const THEME_CONFIG: Record<string, { color: string; bgClass: string; icon: strin
 
 const QuoteCard = ({ quote, onRemove }: QuoteCardProps): JSX.Element => {
   const { removeBookmark } = useBookmarkedQuotes();
-  const { t, currentLanguage } = useCommonTranslation();
+  const { t, currentLanguage } = useBookmarksTranslation();
   const [showMenu, setShowMenu] = useState(false);
 
   // Memoize translated values to prevent infinite re-renders

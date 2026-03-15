@@ -1,7 +1,7 @@
 import { type CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import styles from './MoodWidget.module.css';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { useMood } from '@/shared/hooks/useMood';
 import type { MoodId, MoodPulseDirection } from '@/core/services/moodService';
 import { getLocalDateString } from '@/utils/helpers/dateUtils';
@@ -206,7 +206,7 @@ const describeArc = (
 };
 
 const MoodWidget = (): JSX.Element => {
-  const { t, currentLanguage } = useCommonTranslation();
+  const { t, currentLanguage } = useDashboardTranslation();
   const {
     saveMoodEntry,
     getMoodForDate,

@@ -4,7 +4,7 @@ import {
   useBookmarkedAffirmations,
   type BookmarkedAffirmation,
 } from '@/shared/hooks/useBookmarkedAffirmations';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useBookmarksTranslation } from '@/shared/hooks/useTranslation';
 import { useState, useMemo } from 'react';
 import styles from './AffirmationCard.module.css';
 
@@ -25,7 +25,7 @@ const CATEGORY_CONFIG: Record<string, { color: string; icon: string; gradient: s
 
 const AffirmationCard = ({ affirmation, onRemove }: AffirmationCardProps): JSX.Element => {
   const { removeBookmark } = useBookmarkedAffirmations();
-  const { t, currentLanguage } = useCommonTranslation();
+  const { t, currentLanguage } = useBookmarksTranslation();
   const [showMenu, setShowMenu] = useState(false);
 
   // Memoize translated values to prevent infinite re-renders

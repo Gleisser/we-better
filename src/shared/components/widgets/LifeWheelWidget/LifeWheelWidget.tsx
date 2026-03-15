@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import LifeWheel from '@/shared/components/layout/LifeWheel/LifeWheel';
 import { getLatestLifeWheelData } from '@/features/life-wheel/api/lifeWheelApi';
 import { createLogger } from '@/shared/utils/debugUtils';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import styles from './LifeWheelWidget.module.css';
 import { Tooltip } from '@/shared/components/common/Tooltip';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -52,7 +52,7 @@ const ExternalLinkIcon = ({ className }: { className?: string }): JSX.Element =>
 );
 
 const LifeWheelWidget = (): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const navigate = useNavigate();
 
   // Function to get translated category name

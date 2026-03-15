@@ -1,6 +1,6 @@
 import { format, differenceInDays, isToday as isTodayFn, isPast } from 'date-fns';
 import { enUS, ptBR } from 'date-fns/locale';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import styles from './ReviewTimer.module.css';
 
 interface ReviewTimerProps {
@@ -12,7 +12,7 @@ export const ReviewTimer = ({
   nextReviewDate,
   onCompleteReview,
 }: ReviewTimerProps): JSX.Element => {
-  const { t, currentLanguage } = useCommonTranslation();
+  const { t, currentLanguage } = useDashboardTranslation();
   const daysUntilReview = differenceInDays(nextReviewDate, new Date());
   const isToday = isTodayFn(nextReviewDate);
   const isOverdue = isPast(nextReviewDate) && !isToday;

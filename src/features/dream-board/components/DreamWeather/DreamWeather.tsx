@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import styles from '../../DreamBoardPage.module.css';
 import { WeatherState, CategoryWeatherStatus } from '../../api/dreamWeatherApi';
 
@@ -23,7 +23,7 @@ const weatherImages = {
 // Weather display names are now handled via translations
 
 const DreamWeather: React.FC<DreamWeatherProps> = ({ weather }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
 
   // Get the image path based on weather type - default to cloudy if not found
   const getWeatherImage = (type: string): string => {

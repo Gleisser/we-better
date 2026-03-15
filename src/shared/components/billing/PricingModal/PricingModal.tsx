@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useSettingsTranslation } from '@/shared/hooks/useTranslation';
 import PricingExperience from '@/shared/components/billing/PricingExperience/PricingExperience';
 import type {
   BillingCycle,
@@ -43,7 +43,7 @@ export const PricingModal = ({
   isBusy = false,
   error = null,
 }: PricingModalProps): JSX.Element | null => {
-  const { t } = useCommonTranslation();
+  const { t } = useSettingsTranslation();
   const prefersReducedMotion = useReducedMotion();
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 

@@ -1,7 +1,11 @@
 import { supabase } from './supabaseClient';
 
 const API_BASE_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/notifications/push-subscriptions`;
+const SERVICE_WORKER_PATH = '/sw-notifications.js';
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_PUSH_VAPID_PUBLIC_KEY as string | undefined;
+
+let serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration> | null = null;
+let postPaintRegistrationScheduled = false;
 
 function base64UrlToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -35,12 +39,47 @@ function isPushSupported(): boolean {
   );
 }
 
+function hasGrantedNotificationPermission(): boolean {
+  return isPushSupported() && Notification.permission === 'granted';
+}
+
 async function getOrRegisterServiceWorker(): Promise<ServiceWorkerRegistration> {
-  const existing = await navigator.serviceWorker.getRegistration('/sw-notifications.js');
-  if (existing) {
-    return existing;
+  if (!serviceWorkerRegistrationPromise) {
+    serviceWorkerRegistrationPromise = (async () => {
+      const existing = await navigator.serviceWorker.getRegistration(SERVICE_WORKER_PATH);
+      if (existing) {
+        return existing;
+      }
+
+      return navigator.serviceWorker.register(SERVICE_WORKER_PATH);
+    })().catch(error => {
+      serviceWorkerRegistrationPromise = null;
+      throw error;
+    });
   }
-  return navigator.serviceWorker.register('/sw-notifications.js');
+
+  return serviceWorkerRegistrationPromise;
+}
+
+const scheduleAfterFirstPaint = (callback: () => void): void => {
+  requestAnimationFrame(() => {
+    window.setTimeout(callback, 0);
+  });
+};
+
+export function registerServiceWorkerAfterFirstPaint(): void {
+  if (!hasGrantedNotificationPermission() || postPaintRegistrationScheduled) {
+    return;
+  }
+
+  postPaintRegistrationScheduled = true;
+
+  scheduleAfterFirstPaint(() => {
+    void getOrRegisterServiceWorker().catch(error => {
+      console.warn('Service worker registration failed:', error);
+      postPaintRegistrationScheduled = false;
+    });
+  });
 }
 
 async function persistSubscription(
@@ -104,6 +143,14 @@ class PushSubscriptionService {
     return isPushSupported();
   }
 
+  async ensureServiceWorker(): Promise<ServiceWorkerRegistration> {
+    if (!isPushSupported()) {
+      throw new Error('Push notifications are not supported in this browser');
+    }
+
+    return getOrRegisterServiceWorker();
+  }
+
   async subscribeCurrentBrowser(): Promise<{ success: boolean; error: string | null }> {
     if (!isPushSupported()) {
       return { success: false, error: 'Push notifications are not supported in this browser' };
@@ -119,7 +166,7 @@ class PushSubscriptionService {
     }
 
     try {
-      const registration = await getOrRegisterServiceWorker();
+      const registration = await this.ensureServiceWorker();
       const existingSubscription = await registration.pushManager.getSubscription();
 
       if (existingSubscription) {
@@ -151,10 +198,10 @@ class PushSubscriptionService {
     }
 
     try {
-      const registration = await navigator.serviceWorker.getRegistration('/sw-notifications.js');
+      const registration = await navigator.serviceWorker.getRegistration(SERVICE_WORKER_PATH);
       const subscription = registration
         ? await registration.pushManager.getSubscription()
-        : await (await getOrRegisterServiceWorker()).pushManager.getSubscription();
+        : await (await this.ensureServiceWorker()).pushManager.getSubscription();
 
       if (!subscription) {
         return { success: true, error: null };

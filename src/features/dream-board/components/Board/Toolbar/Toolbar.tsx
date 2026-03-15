@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import styles from './Toolbar.module.css';
 import { ToolbarMode } from '../../../types';
 
@@ -31,7 +31,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   isSaving = false,
   imageCount = 0,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
   const imageLimit = 7;
 
   // Helper function to get translated category name

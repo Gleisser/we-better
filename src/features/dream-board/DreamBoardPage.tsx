@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import { cn } from '@/utils/classnames';
 import {
   Dream,
@@ -66,7 +66,7 @@ const getCategoryDetails = (category: string): CategoryDetails => {
 };
 
 const DreamBoardPage: React.FC = () => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
 
   // Dream Weather hook
   const { weather: dreamWeather, error: weatherError } = useDreamWeather({

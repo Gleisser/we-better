@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import styles from './QuoteWidget.module.css';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 
 interface QuoteMoreOptionsMenuProps {
   isOpen: boolean;
@@ -22,7 +22,7 @@ export const QuoteMoreOptionsMenu = ({
   onTakeaways,
   onSubmitQuote,
 }: QuoteMoreOptionsMenuProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
 
   return createPortal(
     <AnimatePresence>

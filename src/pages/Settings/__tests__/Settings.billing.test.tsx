@@ -7,8 +7,9 @@ import { sessionsService } from '@/core/services/sessionsService';
 import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
 
 vi.mock('@/shared/hooks/useTranslation', () => ({
-  useCommonTranslation: () => ({
+  useSettingsTranslation: () => ({
     t: (key: string): string => key,
+    currentLanguage: 'en',
   }),
 }));
 

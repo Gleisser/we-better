@@ -1,0 +1,336 @@
+{
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your preferences and account settings",
+    "sections": {
+      "profile": "Profile",
+      "plansAndBilling": "Plans & Billing",
+      "general": "General",
+      "notifications": "Notifications",
+      "privacyAndSecurity": "Privacy & Security"
+    },
+    "descriptions": {
+      "plansAndBilling": "Manage your subscription, billing information, and usage",
+      "general": "Basic settings for your account and preferences",
+      "notifications": "Control what notifications you receive",
+      "privacyAndSecurity": "Manage your privacy and account security settings"
+    },
+    "profile": {
+      "title": "Profile Information",
+      "editProfile": "Edit Profile",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "profilePicture": "Profile Picture",
+      "uploadPhoto": "Upload Photo",
+      "changePhoto": "Change Photo",
+      "fullName": "Full Name",
+      "emailAddress": "Email Address",
+      "changePassword": "Change Password",
+      "optional": "(Optional)",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "showPassword": "Show Password",
+      "hidePassword": "Hide Password",
+      "dragDropPhoto": "Drag and drop a photo here, or click to select",
+      "photoSizeLimit": "Maximum file size: 5MB",
+      "supportedFormats": "Supported formats: JPEG, PNG, GIF",
+      "uploadDescription": "Click to upload a new profile photo (max 5MB)",
+      "profileDescription": "Your profile picture appears throughout the app",
+      "fullNamePlaceholder": "Enter your full name",
+      "emailPlaceholder": "Enter your email address",
+      "currentPasswordPlaceholder": "Enter current password",
+      "newPasswordPlaceholder": "Enter new password (min 6 characters)",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "invalidEmail": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordMismatch": "Passwords do not match",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "profileUpdated": "Profile updated successfully!",
+      "passwordChanged": "Password changed successfully!",
+      "errorUpdating": "Error updating profile",
+      "errorChangingPassword": "Error changing password",
+      "invalidFileType": "Please select a valid image file",
+      "fileSizeExceeded": "File size must be less than 5MB",
+      "currentPasswordRequired": "Current password is required to change password",
+      "passwordsDoNotMatch": "New passwords do not match",
+      "newPasswordTooShort": "New password must be at least 6 characters",
+      "failedToSave": "Failed to save profile. Please try again."
+    },
+    "billing": {
+      "currentPlan": "Current Plan",
+      "managePlan": "Manage Plan",
+      "nextBillingDate": "Next Billing Date",
+      "paymentMethod": "Payment Method",
+      "update": "Update",
+      "unavailable": "Billing information is unavailable right now.",
+      "loadingSummary": "Loading billing information...",
+      "noPaymentMethod": "No payment method on file",
+      "freePlanPrice": "Free",
+      "cardFallback": "Card",
+      "cancelAtPeriodEnd": "Cancellation is scheduled for the end of the billing period.",
+      "processing": "Processing...",
+      "currentUsage": "Current Usage",
+      "viewBillingHistory": "View Billing History",
+      "downloadInvoice": "Download Invoice",
+      "cancelSubscription": "Cancel Subscription",
+      "seeAllPlans": "See all plans",
+      "plans": {
+        "free": "Free Plan",
+        "premium": "Premium Plan",
+        "pro": "Pro Plan",
+        "unknown": "Unknown Plan"
+      },
+      "usage": {
+        "goals": "Goals",
+        "habits": "Habits"
+      },
+      "billing": {
+        "monthly": "month",
+        "yearly": "year"
+      },
+      "pricing": {
+        "pageTitle": "Pricing",
+        "pageSubtitle": "Compare plans and choose the best fit for your goals.",
+        "backToSettings": "Back to Settings",
+        "title": "Simple, Transparent Pricing",
+        "subtitle": "Choose a plan that grows with your progress.",
+        "modalAriaLabel": "Pricing plans",
+        "close": "Close pricing",
+        "selectCycle": "Select billing cycle",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "savePercent": "Save {{percent}}%",
+        "mostPopular": "Most Popular",
+        "perMonth": "/month",
+        "perYear": "/year",
+        "loadingPlans": "Loading plans...",
+        "currentPlan": "Current plan",
+        "manageInPortal": "Manage in billing portal",
+        "upgradeTo": "Upgrade to {{plan}}",
+        "limits": {
+          "goals": "{{count}} goals",
+          "habits": "{{count}} habits"
+        },
+        "features": {
+          "free": {
+            "one": "Habit and goal tracking",
+            "two": "Basic reminders",
+            "three": "Core dashboard insights"
+          },
+          "premium": {
+            "one": "Everything in Free",
+            "two": "Advanced progress analytics",
+            "three": "Priority support",
+            "four": "Higher active limits"
+          },
+          "pro": {
+            "one": "Everything in Premium",
+            "two": "Maximum active limits",
+            "three": "Dedicated success support",
+            "four": "Early access to new features"
+          }
+        }
+      },
+      "planPicker": {
+        "title": "Choose a Plan",
+        "description": "Select your plan and billing cycle to continue to checkout.",
+        "selectPlan": "Plan",
+        "selectCycle": "Billing Cycle",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "premium": "Premium",
+        "pro": "Pro",
+        "continue": "Continue to Checkout",
+        "cancel": "Cancel"
+      },
+      "limitReached": {
+        "title": "Plan limit reached",
+        "description": "You have reached your current plan limit. Upgrade your plan in Settings to continue."
+      }
+    },
+    "notifications": {
+      "emailNotifications": "Email Notifications",
+      "emailDescription": "Receive updates and alerts via email",
+      "pushNotifications": "Push Notifications",
+      "pushDescription": "Receive browser notifications for important updates"
+    },
+    "notificationsV1": {
+      "pushPermissionError": "Push permission was denied or subscription failed. Enable browser notifications and try again.",
+      "master": {
+        "title": "Notification Channels",
+        "email": "Email channel",
+        "emailDescription": "Master switch for all email notifications.",
+        "push": "Push channel",
+        "pushDescription": "Master switch for browser push notifications.",
+        "inApp": "In-app channel",
+        "inAppDescription": "Show notifications in your in-app inbox."
+      },
+      "reminders": {
+        "title": "Reminder Events"
+      },
+      "achievements": {
+        "title": "Achievement Events"
+      },
+      "events": {
+        "habitsEmail": "Habit reminders by email",
+        "habitsEmailDescription": "Daily habit reminders by email.",
+        "habitsPush": "Habit reminders by push",
+        "habitsPushDescription": "Daily habit reminders by browser push.",
+        "goalsEmail": "Goal review reminders by email",
+        "goalsEmailDescription": "Review and overdue reminders by email.",
+        "goalsPush": "Goal review reminders by push",
+        "goalsPushDescription": "Review and overdue reminders by browser push.",
+        "dreamChallengesEmail": "Dream challenge reminders by email",
+        "dreamChallengesEmailDescription": "Scheduled dream challenge reminders by email.",
+        "dreamChallengesPush": "Dream challenge reminders by push",
+        "dreamChallengesPushDescription": "Scheduled dream challenge reminders by browser push.",
+        "affirmationsPush": "Affirmation reminders by push",
+        "affirmationsPushDescription": "Daily affirmations by browser push.",
+        "habitStreakEmail": "Habit streak achievements by email",
+        "habitStreakEmailDescription": "Include streak milestones in the weekly email digest.",
+        "habitStreakPush": "Habit streak achievements by push",
+        "habitStreakPushDescription": "Send an immediate browser push for streak milestones.",
+        "goalMilestonesEmail": "Goal milestones by email",
+        "goalMilestonesEmailDescription": "Include completed goal milestones in the weekly digest.",
+        "goalMilestonesPush": "Goal milestones by push",
+        "goalMilestonesPushDescription": "Send an immediate push when goal milestones are completed.",
+        "weeklySummaryEmail": "Weekly summary email",
+        "weeklySummaryEmailDescription": "Receive a weekly digest with reminders and achievements."
+      },
+      "schedule": {
+        "title": "Schedule & Quiet Hours",
+        "timezone": "Timezone",
+        "timezoneDescription": "Used for scheduling reminders and weekly summaries.",
+        "quietHoursEnabled": "Enable quiet hours",
+        "quietHoursEnabledDescription": "Delay push and email notifications during quiet hours.",
+        "quietHoursStart": "Quiet hours start",
+        "quietHoursStartDescription": "Local time when quiet hours begin.",
+        "quietHoursEnd": "Quiet hours end",
+        "quietHoursEndDescription": "Local time when quiet hours end.",
+        "habitReminderTime": "Habit reminder time",
+        "habitReminderTimeDescription": "Preferred local time for daily habit reminders.",
+        "goalReminderTime": "Goal review reminder time",
+        "goalReminderTimeDescription": "Preferred local time for goal review reminders."
+      }
+    },
+    "themes": {
+      "title": "Themes",
+      "description": "Choose your style or personalize your theme",
+      "light": "Light",
+      "dark": "Dark",
+      "auto": "Auto",
+      "lightMode": "Light Mode",
+      "darkMode": "Dark Mode",
+      "lightDescription": "Clean and bright interface",
+      "darkDescription": "Easy on your eyes",
+      "autoModeEnabled": "Auto mode is enabled - using {{theme}} theme based on system preference"
+    },
+    "language": {
+      "title": "Language",
+      "description": "Choose your preferred language",
+      "subtitle": "Default language for public dashboard.",
+      "selectAriaLabel": "Select language"
+    },
+    "privacy": {
+      "securityScore": {
+        "title": "Security Score",
+        "description": "A quick overview of the current protections around your account."
+      },
+      "dataManagement": {
+        "title": "Data Management",
+        "exportData": "Export your data",
+        "exportDescription": "Download a copy of your account data for your records.",
+        "deleteAccount": "Delete account",
+        "deleteDescription": "Permanently remove your account and all associated data.",
+        "confirmDelete": "Delete account data",
+        "finalConfirm": "This action cannot be undone.",
+        "deletionInitiated": "Your account deletion request has been started."
+      },
+      "profileVisibility": {
+        "title": "Profile Visibility",
+        "publicProfile": "Public profile",
+        "publicDescription": "Allow other people to view your profile.",
+        "searchIndexing": "Search indexing",
+        "searchDescription": "Allow your public profile to appear in search results.",
+        "analyticsOptOut": "Opt out of analytics",
+        "analyticsDescription": "Limit product analytics tied to your activity where possible.",
+        "marketingCommunications": "Marketing communications",
+        "marketingDescription": "Receive product announcements, updates, and promotional emails."
+      },
+      "cookies": {
+        "title": "Cookie Preferences",
+        "functional": "Functional cookies",
+        "functionalDescription": "Required for core product behavior and saved preferences.",
+        "analytics": "Analytics cookies",
+        "analyticsDescription": "Help us understand product usage and improve the experience.",
+        "marketing": "Marketing cookies",
+        "marketingDescription": "Used to personalize campaigns and measure marketing performance."
+      },
+      "twoFactor": {
+        "title": "Two-Factor Authentication",
+        "description": "Add another step when signing in to better protect your account.",
+        "enabled": "Two-factor authentication is enabled",
+        "enable": "Enable two-factor authentication",
+        "disable": "Disable two-factor authentication",
+        "backupCodes": "Backup codes",
+        "backupDescription": "Generate one-time backup codes in case you lose access to your primary device.",
+        "generate": "Generate backup codes",
+        "regenerate": "Regenerate backup codes",
+        "smsBackup": "SMS backup option",
+        "smsDescription": "Allow SMS as a backup recovery method.",
+        "setupModal": "Set up two-factor authentication",
+        "generatingCodes": "Generating backup codes..."
+      },
+      "accountSecurity": {
+        "title": "Account Security",
+        "loginHistory": "Login history",
+        "loginDescription": "Review recent sign-ins and watch for anything unfamiliar.",
+        "viewHistory": "View history",
+        "recentSessions": "Recent sessions",
+        "activeSessions": "Active sessions",
+        "activeDescription": "Devices that are currently signed in to your account.",
+        "signOutAll": "Sign out other sessions",
+        "signOutConfirm": "Sign out of every other active session?",
+        "current": "Current session",
+        "timeAgo": {
+          "justNow": "Just now",
+          "hoursAgo": "{{count}}h ago",
+          "yesterday": "Yesterday",
+          "daysAgo": "{{count}}d ago"
+        },
+        "viewingHistory": "Loading session history...",
+        "signingOutSessions": "Signing out other sessions..."
+      }
+    },
+    "errors": {
+      "loadSessions": "Failed to load sessions.",
+      "loadSessionHistory": "Failed to load session history.",
+      "loadPlanCatalog": "Failed to load billing plan catalog.",
+      "openBillingPortal": "Failed to open the billing portal.",
+      "startCheckout": "Failed to start checkout.",
+      "signOutOtherSessions": "Failed to sign out other sessions."
+    },
+    "actions": {
+      "json": "JSON",
+      "csv": "CSV",
+      "delete": "Delete",
+      "update": "Update",
+      "enable": "Enable",
+      "disable": "Disable",
+      "generate": "Generate",
+      "regenerate": "Regenerate",
+      "viewHistory": "View History",
+      "signOut": "Sign Out",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "upload": "Upload",
+      "replace": "Replace",
+      "manage": "Manage"
+    }
+  }
+}

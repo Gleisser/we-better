@@ -4,7 +4,7 @@ import styles from './QuoteWidget.module.css';
 import { MoreVerticalIcon, RefreshIcon } from '../../common/icons';
 import { LottieLightIcon } from '@/shared/components/common/LottieLightIcon';
 import { AnimatedWebPIcon } from '@/shared/components/common/AnimatedWebPIcon';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { useTimeBasedTheme } from '@/shared/hooks/useTimeBasedTheme';
 import { useTiltEffect } from '@/shared/hooks/useTiltEffect';
 import { quoteService, type Quote } from '@/core/services/quoteService';
@@ -158,7 +158,7 @@ const LoadingSkeleton = (): JSX.Element => (
 );
 
 const QuoteWidget = (): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const { theme } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5);
 
@@ -239,7 +239,7 @@ const QuoteWidget = (): JSX.Element => {
     isQuotePoolError && quotePoolError
       ? quotePoolError instanceof Error
         ? quotePoolError.message
-        : 'Failed to load quotes'
+        : (t('widgets.quote.failedToLoad') as string)
       : null;
 
   const isInitialLoading = isQuotePoolLoading && !quote;
@@ -837,7 +837,7 @@ const QuoteWidget = (): JSX.Element => {
                         }}
                         onMouseEnter={triggerLikeAnimation}
                         onFocus={triggerLikeAnimation}
-                        aria-label="React to quote"
+                        aria-label={t('widgets.quote.reactToQuote') as string}
                       >
                         <span
                           className={`${styles.actionIcon} ${styles.reactionIcon} ${styles.iconPulse}`}
@@ -885,7 +885,7 @@ const QuoteWidget = (): JSX.Element => {
                       }}
                       onMouseEnter={triggerRefreshAnimation}
                       onFocus={triggerRefreshAnimation}
-                      aria-label="Get new quote"
+                      aria-label={t('widgets.quote.getNewQuote') as string}
                       disabled={isNextQuoteBusy}
                     >
                       <span
@@ -909,7 +909,7 @@ const QuoteWidget = (): JSX.Element => {
                       onClick={handleCopyQuote}
                       onMouseEnter={triggerClipboardAnimation}
                       onFocus={triggerClipboardAnimation}
-                      aria-label="Copy quote"
+                      aria-label={t('widgets.quote.copyQuote') as string}
                     >
                       <span className={`${styles.actionIcon} ${styles.iconSlide}`}>
                         <LottieLightIcon

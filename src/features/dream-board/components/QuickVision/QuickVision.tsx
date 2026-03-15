@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Dream } from '../../types';
 import { useDreamProgress } from '../../hooks/useDreamProgress';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import styles from '../../DreamBoardPage.module.css';
 
 interface QuickVisionProps {
@@ -17,7 +17,7 @@ const QuickVision: React.FC<QuickVisionProps> = ({
   toggleMiniBoard,
   updateDreamProgress: externalUpdateDreamProgress,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
 
   const {
     updateDreamProgress: updateProgressBackend,

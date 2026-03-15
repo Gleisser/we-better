@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { XIcon } from '@/shared/components/common/icons';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { Habit, HabitCategory } from './types';
 import { CATEGORY_CONFIG } from './config';
 import styles from './HabitForm.module.css';
@@ -104,7 +104,7 @@ export const HabitForm = ({
   initialValues,
   mode,
 }: HabitFormProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const [name, setName] = useState(initialValues?.name ?? '');
   const [category, setCategory] = useState<HabitCategory>(initialValues?.category ?? 'health');
 

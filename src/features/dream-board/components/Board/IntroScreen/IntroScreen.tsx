@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import styles from '../Board.module.css';
 
 interface IntroScreenProps {
@@ -7,7 +7,7 @@ interface IntroScreenProps {
 }
 
 export const IntroScreen: React.FC<IntroScreenProps> = ({ onClose }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
 
   return (
     <div className={styles.introScreenOverlay} onClick={onClose}>

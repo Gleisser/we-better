@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream } from '../../types';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 
 interface Insight {
   id: string;
@@ -24,7 +24,7 @@ const InsightTypeIcons: Record<string, string> = {
 };
 
 const DreamInsights: React.FC<DreamInsightsProps> = ({ dreams, insights }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
 
   // Helper function to get translated category name
   const getTranslatedCategoryName = (categoryName: string): string => {

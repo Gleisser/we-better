@@ -1,0 +1,166 @@
+{
+  "missions": {
+    "title": "Missions",
+    "subtitle": "Choose a life category and complete focused weekly missions.",
+    "categories": {
+      "social": "Social",
+      "health": "Health",
+      "selfCare": "Self Care",
+      "money": "Money",
+      "family": "Family",
+      "spirituality": "Spirituality",
+      "relationship": "Relationship",
+      "career": "Career"
+    },
+    "empty": {
+      "title": "Select a category to start",
+      "description": "Pick one category above to load your mission cards."
+    },
+    "errors": {
+      "loadFailed": "Failed to load missions."
+    },
+    "content": {
+      "week": "Week",
+      "quest": "Quest",
+      "guidePrefix": "Tap",
+      "guideAction": "Start Mission",
+      "guideSuffix": "when you are ready, then press and hold the glowing orb to log your win.",
+      "cta": {
+        "start": "Start Mission",
+        "inProgress": "In Progress",
+        "complete": "Mission Complete"
+      },
+      "difficulty": {
+        "bronze": "Bronze",
+        "silver": "Silver",
+        "gold": "Gold"
+      },
+      "badges": {
+        "explorer": "Explorer",
+        "connector": "Connector",
+        "kindred": "Kindred",
+        "spark": "Spark",
+        "momentum": "Momentum",
+        "fuelUp": "Fuel Up",
+        "recharge": "Recharge",
+        "listener": "Listener",
+        "hydrated": "Hydrated",
+        "calmCore": "Calm Core",
+        "reflector": "Reflector",
+        "protector": "Protector",
+        "unplugged": "Unplugged",
+        "tracker": "Tracker",
+        "optimizer": "Optimizer",
+        "builder": "Builder",
+        "accelerator": "Accelerator",
+        "heartbeat": "Heartbeat",
+        "memoryMaker": "Memory Maker",
+        "supporter": "Supporter",
+        "tradition": "Tradition",
+        "stillness": "Stillness",
+        "grateful": "Grateful",
+        "earthbound": "Earthbound",
+        "giver": "Giver",
+        "heartline": "Heartline",
+        "presence": "Presence",
+        "bridge": "Bridge",
+        "respect": "Respect",
+        "focus": "Focus",
+        "upskill": "Upskill",
+        "spotlight": "Spotlight",
+        "connectorPlus": "Connector+",
+        "seedPlanter": "Seed Planter",
+        "pathfinder": "Pathfinder",
+        "glowUp": "Glow Up",
+        "northStar": "North Star"
+      },
+      "hints": {
+        "pendingPrefix": "Tap",
+        "pendingAction": "Start Mission",
+        "pendingSuffix": "then hold the orb when you finish the action.",
+        "active": "Keep momentum, press and hold the orb until it blooms to log your win.",
+        "completed": "Beautiful! Banked into your vault. Stretch missions await if you want extra shine."
+      },
+      "tabs": {
+        "pending": "Pending",
+        "completed": "Completed"
+      },
+      "emptyState": {
+        "noDataTitle": "No missions available yet",
+        "noDataDescription": "This category does not have missions from the backend yet. Please check back shortly.",
+        "noPendingTitle": "Everything in this tab is done",
+        "noPendingDescription": "You have no pending missions right now. Switch to Completed to review your wins.",
+        "noCompletedTitle": "No completed missions yet",
+        "noCompletedDescription": "Complete one mission first, then it will appear in the Completed tab."
+      },
+      "header": {
+        "progress": "Progress",
+        "completed": "Completed",
+        "pending": "Pending",
+        "active": "Active",
+        "states": {
+          "notStarted": "Start with {{mission}} to build momentum this week.",
+          "inProgress": "Great pace. Next milestone: {{mission}}.",
+          "completed": "You completed this week. Review your wins and prepare your next {{category}} quest."
+        },
+        "actions": {
+          "startNext": "Start Next Mission",
+          "continue": "Continue Mission",
+          "reviewWins": "Review Wins",
+          "why": "Why this matters"
+        },
+        "panels": {
+          "whyTitle": "How to improve this area",
+          "microHabit": "Micro-habit:"
+        },
+        "guidance": {
+          "fallback": {
+            "summary": "Small, steady actions create the strongest momentum over time.",
+            "improvementFocus": "Choose one clear action you can finish this week.",
+            "microHabit": "Take two focused minutes today to get started."
+          },
+          "social": {
+            "summary": "Meaningful connection grows when you create small moments of presence.",
+            "improvementFocus": "Prioritize one conversation or act of kindness this week.",
+            "microHabit": "Send one thoughtful message before the day ends."
+          },
+          "health": {
+            "summary": "Your energy improves when movement, rest, and nourishment work together.",
+            "improvementFocus": "Pick one health habit that feels supportive, not extreme.",
+            "microHabit": "Take a ten-minute walk or drink a full glass of water right now."
+          },
+          "selfCare": {
+            "summary": "Recovery is more sustainable when you protect time for yourself on purpose.",
+            "improvementFocus": "Set one boundary that gives you more room to recharge.",
+            "microHabit": "Pause for three slow breaths before your next task."
+          },
+          "money": {
+            "summary": "Financial calm comes from consistent check-ins, not occasional big efforts.",
+            "improvementFocus": "Improve visibility into one spending or saving decision this week.",
+            "microHabit": "Review one recent transaction and label it with intent."
+          },
+          "family": {
+            "summary": "Family trust grows through repeatable moments of care and attention.",
+            "improvementFocus": "Create one shared ritual or check-in you can repeat.",
+            "microHabit": "Reach out to one family member with a specific question today."
+          },
+          "spirituality": {
+            "summary": "Inner alignment deepens when you make room for reflection and gratitude.",
+            "improvementFocus": "Choose one grounding practice that helps you slow down.",
+            "microHabit": "Spend two quiet minutes noticing your breath or writing gratitude."
+          },
+          "relationship": {
+            "summary": "Stronger relationships are built through clarity, warmth, and repair.",
+            "improvementFocus": "Focus on one moment of appreciation or honest communication this week.",
+            "microHabit": "Say one sincere thank you or appreciation out loud today."
+          },
+          "career": {
+            "summary": "Career progress compounds when you finish visible, meaningful work regularly.",
+            "improvementFocus": "Move one priority forward in a way other people can notice.",
+            "microHabit": "Block fifteen minutes to complete the smallest next step."
+          }
+        }
+      }
+    }
+  }
+}

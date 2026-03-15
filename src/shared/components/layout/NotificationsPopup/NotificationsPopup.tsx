@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { XIcon } from '@/shared/components/common/icons';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useNotificationsTranslation } from '@/shared/hooks/useTranslation';
 import type { NotificationFeedItemDto } from '@/core/services/notificationsService';
 import NotificationEventAvatar from '@/shared/components/layout/NotificationEventAvatar';
 import styles from './NotificationsPopup.module.css';
@@ -42,7 +42,7 @@ const NotificationsPopup = ({
   onMarkAsRead,
   onMarkAllAsRead,
 }: NotificationsPopupProps): JSX.Element => {
-  const { t, currentLanguage } = useCommonTranslation();
+  const { t, currentLanguage } = useNotificationsTranslation();
   const navigate = useNavigate();
 
   return (

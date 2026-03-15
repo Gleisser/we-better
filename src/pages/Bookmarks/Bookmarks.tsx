@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBookmarkedQuotes } from '@/shared/hooks/useBookmarkedQuotes';
 import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useBookmarksTranslation } from '@/shared/hooks/useTranslation';
 import { BookmarkIcon, SearchIcon, ChevronDownIcon } from '@/shared/components/common/icons';
 import { cn } from '@/utils/classnames';
 import QuoteCard from './components/QuoteCard/QuoteCard';
@@ -107,7 +107,7 @@ const ListIcon = ({ className }: { className?: string }): JSX.Element => (
 const Bookmarks = (): JSX.Element => {
   const { bookmarkedQuotes, isLoading: areQuotesLoading } = useBookmarkedQuotes();
   const { bookmarkedAffirmations, isLoading: areAffirmationsLoading } = useBookmarkedAffirmations();
-  const { t } = useCommonTranslation();
+  const { t } = useBookmarksTranslation();
 
   // State
   const [searchTerm, setSearchTerm] = useState('');

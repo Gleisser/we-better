@@ -9,13 +9,14 @@ import DreamBoardTimelineWidget from './DreamBoardTimelineWidget';
 const mockNavigate = vi.fn();
 
 vi.mock('@/shared/hooks/useTranslation', () => ({
-  useCommonTranslation: () => ({
+  useDashboardTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>): string => {
       if (key === 'widgets.dreamBoardWidget.counter') {
         return `${options?.current as number} / ${options?.total as number}`;
       }
       return key;
     },
+    currentLanguage: 'en',
   }),
 }));
 

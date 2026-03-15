@@ -3,7 +3,7 @@ import { Dream, Milestone } from '../../types';
 import styles from './CosmicDreamExperience.module.css';
 import { createPortal } from 'react-dom';
 import { getDreamMilestonesForContents } from '../../api/dreamMilestonesApi';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import { getLatestDreamProgress } from '@/core/services/dreamProgressService';
 import {
   buildDreamMilestonesMap,
@@ -92,7 +92,7 @@ export const CosmicDreamExperience: React.FC<CosmicDreamExperienceProps> = ({
   onDreamSelect,
   activeDream,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
 
   // Helper function to get translated category name
   const getTranslatedCategoryName = (categoryName: string): string => {

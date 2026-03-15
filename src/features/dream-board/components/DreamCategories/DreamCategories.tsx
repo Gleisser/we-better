@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream } from '../../types';
 import { useDreamProgress } from '../../hooks/useDreamProgress';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 
 // CategoryDetails type for styling and presentation
 type CategoryDetails = {
@@ -39,7 +39,7 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
   filterCategory,
   setFilterCategory,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
 
   // Helper function to get translated category name
   const getTranslatedCategoryName = (categoryName: string): string => {

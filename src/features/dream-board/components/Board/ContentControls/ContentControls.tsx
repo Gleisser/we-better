@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, useId } from 'react';
 import { DreamBoardContent, DreamBoardContentType } from '../../../types';
 import { LifeCategory } from '@/features/life-wheel/types';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import showToast from '@/utils/helpers/toast';
 import {
   formatDreamBoardImageLimit,
@@ -86,7 +86,7 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   onClose,
   lifeWheelCategories = [],
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
   const controlsId = useId();
 
   // Memoize translated values to prevent infinite re-renders

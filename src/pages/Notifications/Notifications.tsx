@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useNotificationsTranslation } from '@/shared/hooks/useTranslation';
 import {
   useNotificationsFeed,
   useUnreadNotificationsCount,
@@ -43,7 +43,7 @@ const toDateKey = (value: string): string => {
 };
 
 const Notifications = (): JSX.Element => {
-  const { t, currentLanguage } = useCommonTranslation();
+  const { t, currentLanguage } = useNotificationsTranslation();
   const navigate = useNavigate();
   const { unreadCount } = useUnreadNotificationsCount();
   const {

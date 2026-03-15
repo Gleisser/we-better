@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { XIcon } from '@/shared/components/common/icons';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import styles from './CreateAffirmationModal.module.css';
 
 interface CreateAffirmationModalProps {
@@ -20,7 +20,7 @@ export const CreateAffirmationModal = ({
   onSave,
   existingAffirmation,
 }: CreateAffirmationModalProps): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t } = useDashboardTranslation();
   const [text, setText] = useState(existingAffirmation || '');
   const [showConfirm, setShowConfirm] = useState(false);
 

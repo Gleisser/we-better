@@ -1,0 +1,31 @@
+{
+  "notificationsPage": {
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as Read",
+    "notificationCount": "You have {{count}} notifications to go through",
+    "notificationCount_zero": "You have no notifications",
+    "notificationCount_one": "You have {{count}} notification to go through",
+    "notificationCount_other": "You have {{count}} notifications to go through",
+    "timeGroups": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "thisWeek": "This Week",
+      "lastWeek": "Last Week",
+      "older": "Older"
+    },
+    "actions": {
+      "view": "View",
+      "markAsRead": "Mark as read",
+      "delete": "Delete"
+    },
+    "tabs": {
+      "all": "All",
+      "following": "Following",
+      "archive": "Archive"
+    },
+    "emptyState": {
+      "title": "No notifications yet",
+      "description": "When you have notifications, they will appear here."
+    }
+  }
+}

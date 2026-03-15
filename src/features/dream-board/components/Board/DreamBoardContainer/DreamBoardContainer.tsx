@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import {
   DreamBoardProps,
   DreamBoardData,
@@ -31,7 +31,7 @@ export const DreamBoardContainer: React.FC<DreamBoardProps> = ({
   className = '',
   readOnly = false,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
 
   // Canvas state
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });

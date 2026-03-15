@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import styles from './CardsWidget.module.css';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { affirmationService, type Affirmation } from '@/core/services/affirmationService';
 import { Tooltip } from '@/shared/components/common/Tooltip';
 import { ReminderSettings } from '@/shared/components/widgets/AffirmationWidget/ReminderSettings';
@@ -210,12 +210,11 @@ const createCardBackground = (accent: string): string => {
 };
 
 const CARD_OUT_DURATION = 600;
-const DEFAULT_ERROR_MESSAGE = 'Unable to load affirmations right now.';
 const CELEBRATION_PARTICLES = 12;
 const celebrationPalette = ['#f472b6', '#a855f7', '#38bdf8', '#facc15', '#4ade80', '#f97316'];
 
 const CardsWidget = (): JSX.Element => {
-  const { t } = useCommonTranslation();
+  const { t, currentLanguage } = useDashboardTranslation();
   const categoryTheme = useMemo(() => buildCategoryTheme(t), [t]);
 
   const [cards, setCards] = useState<AffirmationCard[]>([]);
@@ -316,7 +315,7 @@ const CardsWidget = (): JSX.Element => {
 
       if (validCards.length === 0) {
         setCards([]);
-        setError('No affirmations available right now.');
+        setError(t('widgets.cardsWidget.emptyDeck') as string);
         return;
       }
 
@@ -346,9 +345,9 @@ const CardsWidget = (): JSX.Element => {
     } catch (err) {
       console.error('Failed to build affirmations for CardsWidget:', err);
       setCards([]);
-      setError(DEFAULT_ERROR_MESSAGE);
+      setError(t('widgets.affirmation.failedToLoad') as string);
     }
-  }, [affirmationDeck, categoryTheme, personalAffirmation]);
+  }, [affirmationDeck, categoryTheme, personalAffirmation, t]);
 
   useEffect(() => {
     if (!deckError) {
@@ -357,8 +356,8 @@ const CardsWidget = (): JSX.Element => {
 
     console.error('Failed to load affirmations for CardsWidget:', deckError);
     setCards([]);
-    setError(DEFAULT_ERROR_MESSAGE);
-  }, [deckError]);
+    setError(t('widgets.affirmation.failedToLoad') as string);
+  }, [currentLanguage, deckError, t]);
 
   const reminderSettings = useMemo(
     () =>
@@ -660,7 +659,7 @@ const CardsWidget = (): JSX.Element => {
     : (t('widgets.cardsWidget.celebratorySubtext') as string);
 
   return (
-    <section className={styles.container} aria-label="Affirmation cards widget">
+    <section className={styles.container} aria-label={t('widgets.cardsWidget.ariaLabel') as string}>
       <header className={styles.header}>
         <div className={styles.headingGroup}>
           <h2 className={styles.title}>{t('widgets.cardsWidget.title') as string}</h2>
@@ -679,14 +678,14 @@ const CardsWidget = (): JSX.Element => {
       <div className={styles.cardsWrapper}>
         {loading ? (
           <div className={styles.status} role="status">
-            Loading affirmations…
+            {t('widgets.affirmation.loadingAffirmations') as string}
           </div>
         ) : error ? (
           <div className={styles.status} role="alert">
             {error}
           </div>
         ) : cards.length === 0 ? (
-          <div className={styles.status}>No affirmations available yet.</div>
+          <div className={styles.status}>{t('widgets.cardsWidget.emptyDeck') as string}</div>
         ) : (
           <ul className={styles.cards} role="listbox" aria-activedescendant={activeCardId}>
             {cards.map((card, index) => {
@@ -730,7 +729,15 @@ const CardsWidget = (): JSX.Element => {
                   onKeyDown={event => handleKeyboardNavigation(event, index)}
                 >
                   <span className={styles.srOnly}>
-                    {card.label} affirmation. {index === currentIndex ? 'Active.' : 'Inactive.'}
+                    {
+                      t('widgets.cardsWidget.screenReaderStatus', {
+                        label: card.label,
+                        state:
+                          index === currentIndex
+                            ? (t('widgets.cardsWidget.activeState') as string)
+                            : (t('widgets.cardsWidget.inactiveState') as string),
+                      }) as string
+                    }
                   </span>
 
                   <div className={styles.cardContent}>

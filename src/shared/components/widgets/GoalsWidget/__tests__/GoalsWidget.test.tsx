@@ -18,7 +18,7 @@ vi.mock('@/shared/hooks/useTimeBasedTheme', () => ({
 }));
 
 vi.mock('@/shared/hooks/useTranslation', () => ({
-  useCommonTranslation: () => ({
+  useDashboardTranslation: () => ({
     t: (key: string) => {
       if (key === 'widgets.goals.reviewSettings.title') {
         return 'Review settings';
@@ -30,6 +30,7 @@ vi.mock('@/shared/hooks/useTranslation', () => ({
 
       return key;
     },
+    currentLanguage: 'en',
   }),
 }));
 

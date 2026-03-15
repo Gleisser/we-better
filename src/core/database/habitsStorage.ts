@@ -1,5 +1,6 @@
 import { Habit, HabitLog, HabitStreak, HabitStats } from '@/core/services/habitsService';
 import { db, LocalHabit, LocalHabitLog } from './db';
+import { ensureDatabaseReady } from './runtime';
 
 /**
  * Default TTL values (in milliseconds)
@@ -58,6 +59,7 @@ export const habitsStorage = {
    * @param synced Whether this habit is synced with the server
    */
   async saveHabit(habit: Habit, synced = true): Promise<string> {
+    await ensureDatabaseReady();
     const localHabit = toLocalHabit(habit, synced);
     const id = await db.habits.put(localHabit);
     return id.toString();
@@ -69,6 +71,7 @@ export const habitsStorage = {
    * @param synced Whether these habits are synced with the server
    */
   async saveHabits(habits: Habit[], synced = true): Promise<void> {
+    await ensureDatabaseReady();
     const localHabits = habits.map(habit => toLocalHabit(habit, synced));
     await db.habits.bulkPut(localHabits);
   },
@@ -78,6 +81,7 @@ export const habitsStorage = {
    * @param id The habit ID
    */
   async getHabit(id: string): Promise<Habit | undefined> {
+    await ensureDatabaseReady();
     const habit = await db.habits.get(id);
     if (!habit || habit._deleted) return undefined;
     return toServerHabit(habit);
@@ -97,6 +101,7 @@ export const habitsStorage = {
       includeDeleted?: boolean;
     } = {}
   ): Promise<Habit[]> {
+    await ensureDatabaseReady();
     let query = db.habits.where('user_id').equals(userId);
 
     // Apply filters
@@ -129,6 +134,7 @@ export const habitsStorage = {
    * Get all unsynced habits
    */
   async getUnsyncedHabits(): Promise<LocalHabit[]> {
+    await ensureDatabaseReady();
     return db.habits.where('_synced').equals(0).toArray();
   },
 
@@ -137,6 +143,7 @@ export const habitsStorage = {
    * @param id The habit ID
    */
   async markHabitAsDeleted(id: string): Promise<void> {
+    await ensureDatabaseReady();
     const habit = await db.habits.get(id);
     if (habit) {
       await db.habits.update(id, {
@@ -151,6 +158,7 @@ export const habitsStorage = {
    * @param id The habit ID
    */
   async deleteHabit(id: string): Promise<void> {
+    await ensureDatabaseReady();
     await db.habits.delete(id);
   },
 
@@ -164,6 +172,7 @@ export const habitsStorage = {
    * @param synced Whether this log is synced with the server
    */
   async saveHabitLog(log: HabitLog, synced = true): Promise<string> {
+    await ensureDatabaseReady();
     const localLog = toLocalHabitLog(log, synced);
     const id = await db.habitLogs.put(localLog);
     return id.toString();
@@ -175,6 +184,7 @@ export const habitsStorage = {
    * @param synced Whether these logs are synced with the server
    */
   async saveHabitLogs(logs: HabitLog[], synced = true): Promise<void> {
+    await ensureDatabaseReady();
     const localLogs = logs.map(log => toLocalHabitLog(log, synced));
     await db.habitLogs.bulkPut(localLogs);
   },
@@ -184,6 +194,7 @@ export const habitsStorage = {
    * @param id The log ID
    */
   async getHabitLog(id: string): Promise<HabitLog | undefined> {
+    await ensureDatabaseReady();
     const log = await db.habitLogs.get(id);
     if (!log || log._deleted) return undefined;
     return toServerHabitLog(log);
@@ -202,6 +213,7 @@ export const habitsStorage = {
       includeDeleted?: boolean;
     } = {}
   ): Promise<HabitLog[]> {
+    await ensureDatabaseReady();
     const query = db.habitLogs.where('habit_id').equals(habitId);
 
     // Execute query
@@ -233,6 +245,7 @@ export const habitsStorage = {
    * @param date The date string (YYYY-MM-DD)
    */
   async getHabitLogsByDate(userId: string, date: string): Promise<HabitLog[]> {
+    await ensureDatabaseReady();
     const logs = await db.habitLogs
       .where('[user_id+date]')
       .equals([userId, date])
@@ -246,6 +259,7 @@ export const habitsStorage = {
    * Get all unsynced habit logs
    */
   async getUnsyncedHabitLogs(): Promise<LocalHabitLog[]> {
+    await ensureDatabaseReady();
     return db.habitLogs.where('_synced').equals(0).toArray();
   },
 
@@ -254,6 +268,7 @@ export const habitsStorage = {
    * @param id The log ID
    */
   async markHabitLogAsDeleted(id: string): Promise<void> {
+    await ensureDatabaseReady();
     const log = await db.habitLogs.get(id);
     if (log) {
       await db.habitLogs.update(id, {
@@ -272,6 +287,7 @@ export const habitsStorage = {
    * @param streak The streak to save
    */
   async saveHabitStreak(streak: HabitStreak): Promise<string> {
+    await ensureDatabaseReady();
     const id = await db.habitStreaks.put(streak);
     return id.toString();
   },
@@ -282,6 +298,7 @@ export const habitsStorage = {
    * @param userId The user ID
    */
   async getHabitStreak(habitId: string, userId: string): Promise<HabitStreak | undefined> {
+    await ensureDatabaseReady();
     return db.habitStreaks.where('[habit_id+user_id]').equals([habitId, userId]).first();
   },
 
@@ -296,6 +313,7 @@ export const habitsStorage = {
    * @param ttl Time to live in milliseconds
    */
   async cacheSet<T>(key: string, data: T, ttl = DEFAULT_CACHE_TTL.HABITS): Promise<void> {
+    await ensureDatabaseReady();
     const cacheItem = {
       id: key,
       data,
@@ -311,6 +329,7 @@ export const habitsStorage = {
    * @param key Cache key
    */
   async cacheGet<T>(key: string): Promise<T | null> {
+    await ensureDatabaseReady();
     const item = await db.cache.get(key);
 
     // Return null if item doesn't exist or is expired
@@ -326,6 +345,7 @@ export const habitsStorage = {
    * @param key Cache key
    */
   async cacheDelete(key: string): Promise<void> {
+    await ensureDatabaseReady();
     await db.cache.delete(key);
   },
 
@@ -333,6 +353,7 @@ export const habitsStorage = {
    * Clear expired cache items
    */
   async clearExpiredCache(): Promise<void> {
+    await ensureDatabaseReady();
     const now = Date.now();
     await db.cache.where('expiresAt').below(now).delete();
   },
@@ -362,6 +383,7 @@ export const habitsStorage = {
    * Clear all data for testing/development
    */
   async clearAllData(): Promise<void> {
+    await ensureDatabaseReady();
     await db.habits.clear();
     await db.habitLogs.clear();
     await db.habitStreaks.clear();

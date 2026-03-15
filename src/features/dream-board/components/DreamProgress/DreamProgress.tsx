@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useCommonTranslation } from '@/shared/hooks/useTranslation';
+import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import styles from '../../DreamBoardPage.module.css';
 import { Dream, Milestone } from '../../types';
 import { getMilestonesForContent } from '../../services/milestonesService';
@@ -29,7 +29,7 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
   onMilestonesLoaded,
   fetchedMilestones,
 }) => {
-  const { t } = useCommonTranslation();
+  const { t } = useDreamBoardTranslation();
   const [dreamMilestones, setDreamMilestones] = useState<Record<string, Milestone[]>>({});
   const [loading, setLoading] = useState(true);
 
