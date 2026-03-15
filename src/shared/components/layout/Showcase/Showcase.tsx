@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import styles from './Showcase.module.css';
 import { SHOWCASE_FALLBACK } from '@/utils/constants/fallback';
@@ -11,6 +11,7 @@ import {
 } from '@/shared/components/common/icons';
 import ShowcaseSkeleton from './ShowcaseSkeleton';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
 import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
 import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
 import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
@@ -82,13 +83,16 @@ const ShowcaseCard = ({ item, eager }: ShowcaseCardProps): JSX.Element => {
 };
 
 const Showcase = (): JSX.Element => {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const shouldFetch = useDeferredSectionQuery(sectionRef);
+
   // State management
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
   // Initialize hooks
-  const { data: showcase, isLoading: isDataLoading } = useShowcase();
+  const { data: showcase, isLoading: isDataLoading } = useShowcase({ enabled: shouldFetch });
   const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load showcase content',
   });
@@ -193,7 +197,7 @@ const Showcase = (): JSX.Element => {
 
   // Rest of the component remains the same...
   return (
-    <section className={styles.showcaseContainer} aria-labelledby="showcase-title">
+    <section ref={sectionRef} className={styles.showcaseContainer} aria-labelledby="showcase-title">
       <div className={styles.showcaseContent}>
         <div className={styles.header}>
           <h2 className={styles.title} id="showcase-title">

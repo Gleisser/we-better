@@ -3,13 +3,17 @@ import styles from './Features.module.css';
 import FeaturesCard from './Card/FeaturesCard';
 import { useFeature } from '@/shared/hooks/useFeature';
 import { FEATURES_CONSTANTS } from '@/utils/constants/fallback';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import FeaturesSkeleton from './FeaturesSkeleton';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
 
 const Features = (): JSX.Element => {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const shouldFetch = useDeferredSectionQuery(sectionRef);
+
   // Initialize hooks
-  const { data, isLoading: isDataLoading } = useFeature();
+  const { data, isLoading: isDataLoading } = useFeature({ enabled: shouldFetch });
   const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load features content',
   });
@@ -56,7 +60,7 @@ const Features = (): JSX.Element => {
   }
 
   return (
-    <section className={styles.featuresContainer} aria-labelledby="features-title">
+    <section ref={sectionRef} className={styles.featuresContainer} aria-labelledby="features-title">
       <div role="main">
         <h2 className={styles.sectionTitle} id="features-title">
           {/* Main section title */}

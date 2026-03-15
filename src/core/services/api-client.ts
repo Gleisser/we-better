@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 import { RateLimiter } from './rate-limiter';
 import { ENV_CONFIG } from '@/core/config/env.config';
-import { shouldRetry, getRetryDelay, getErrorMessage } from '@/utils/helpers/error-handling';
+import { getErrorMessage } from '@/utils/helpers/error-handling';
 import { APIError, Meta } from '@/utils/types/common/meta';
 
 // Wrapper to maintain backward compatibility
@@ -43,36 +43,6 @@ class ApiClient {
         }
 
         return config;
-      }
-    );
-
-    this.client.interceptors.response.use(
-      response => response,
-      async error => {
-        type RetryableRequest = InternalAxiosRequestConfig & {
-          _retry?: boolean;
-          _retryCount?: number;
-        };
-
-        const originalRequest = error.config as RetryableRequest | undefined;
-
-        if (!originalRequest) {
-          throw error;
-        }
-
-        if (originalRequest._retry || !shouldRetry(error)) {
-          throw error;
-        }
-
-        originalRequest._retry = true;
-
-        const retryCount = originalRequest._retryCount ?? 0;
-        const retryDelay = getRetryDelay(error, retryCount);
-        originalRequest._retryCount = retryCount + 1;
-
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
-
-        return this.client(originalRequest);
       }
     );
   }

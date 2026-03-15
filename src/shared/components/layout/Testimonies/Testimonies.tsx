@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import styles from './Testimonies.module.css';
 import { useTestimony } from '@/shared/hooks/useTestimony';
 import { TESTIMONY_FALLBACK } from '@/utils/constants/fallback';
@@ -5,6 +6,7 @@ import { API_CONFIG } from '@/core/config/api-config';
 import { TestimonyItem } from '@/utils/types/testimony';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
 import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
 import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
 import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
@@ -16,8 +18,11 @@ const FALLBACK_TESTIMONY_MEDIA = [
 ];
 
 const Testimonies = (): JSX.Element => {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const shouldFetch = useDeferredSectionQuery(sectionRef);
+
   // Initialize hooks
-  const { data, isLoading: isDataLoading } = useTestimony();
+  const { data, isLoading: isDataLoading } = useTestimony({ enabled: shouldFetch });
   const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load testimonials',
   });
@@ -61,7 +66,11 @@ const Testimonies = (): JSX.Element => {
   }
 
   return (
-    <section className={styles.testimoniesContainer} aria-labelledby="testimonies-title">
+    <section
+      ref={sectionRef}
+      className={styles.testimoniesContainer}
+      aria-labelledby="testimonies-title"
+    >
       <div className={styles.testimoniesContent}>
         <div className={styles.header}>
           <h2 className={styles.title} id="testimonies-title">

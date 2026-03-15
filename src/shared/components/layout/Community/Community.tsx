@@ -4,6 +4,7 @@ import { useCommunity } from '@/shared/hooks/useCommunity';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { DiscordIcon } from '@/shared/components/common/icons';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
 import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
 import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
 
@@ -35,10 +36,12 @@ const INITIAL_PROFILES = [
 ] as const;
 
 const Community = (): JSX.Element => {
+  const sectionRef = useRef<HTMLElement | null>(null);
   const profilesRef = useRef<HTMLDivElement>(null);
+  const shouldFetch = useDeferredSectionQuery(sectionRef);
 
   // Initialize hooks
-  const { data, isLoading: isDataLoading } = useCommunity();
+  const { data, isLoading: isDataLoading } = useCommunity({ enabled: shouldFetch });
   const { isError, error } = useErrorHandler({
     fallbackMessage: 'Failed to load community content',
   });
@@ -119,7 +122,11 @@ const Community = (): JSX.Element => {
   }
 
   return (
-    <section className={styles.communityContainer} aria-labelledby="community-title">
+    <section
+      ref={sectionRef}
+      className={styles.communityContainer}
+      aria-labelledby="community-title"
+    >
       <div className={styles.communityContent}>
         <div className={styles.leftColumn}>
           <div className={styles.discordLabel} aria-label="Discord server ranking">

@@ -1,4 +1,4 @@
-const DEFAULT_API_BASE_URL = 'http://localhost:3000/api';
+const DEFAULT_API_BASE_URL = '/api';
 
 function normalizeUrl(url: string): string {
   return url.endsWith('/') ? url.slice(0, -1) : url;
@@ -12,11 +12,6 @@ function resolveApiBaseUrl(): string {
     } catch {
       return `${normalizeUrl(backendUrl)}/api`;
     }
-  }
-
-  const explicitApiBaseUrl = import.meta.env.VITE_API_BASE_URL;
-  if (explicitApiBaseUrl) {
-    return normalizeUrl(explicitApiBaseUrl);
   }
 
   return DEFAULT_API_BASE_URL;
