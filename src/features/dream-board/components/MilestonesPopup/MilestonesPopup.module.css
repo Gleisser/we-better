@@ -1,0 +1,813 @@
+.progressBar {
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.progressFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.milestoneSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.milestoneSectionHeader h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.addMilestoneButton {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addMilestoneButton:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.milestoneList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.milestoneItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.milestoneItem:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.milestoneCheckboxContainer {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.milestoneCheckbox {
+  margin-right: 0.8rem;
+  height: 18px;
+  width: 18px;
+  cursor: pointer;
+}
+
+.milestoneLabel {
+  font-size: 0.95rem;
+  color: #fff;
+  text-decoration: none;
+  transition: text-decoration 0.2s;
+  cursor: pointer;
+}
+
+.milestoneCheckbox:checked + .milestoneLabel {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.milestoneDetails {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.milestoneDate {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.milestoneActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editMilestoneButton,
+.deleteMilestoneButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.2rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.editMilestoneButton:hover,
+.deleteMilestoneButton:hover {
+  opacity: 1;
+}
+
+.emptyMilestones {
+  text-align: center;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.milestoneHistorySection {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.milestoneHistorySection details {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.milestoneHistorySection summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.3rem 0;
+}
+
+.milestoneHistoryList {
+  list-style: none;
+  padding: 0.5rem 0 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.historyItem {
+  display: flex;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.historyAction {
+  font-weight: 500;
+  margin-right: 0.5rem;
+  min-width: 80px;
+}
+
+.historyMilestone {
+  flex: 1;
+}
+
+.historyTime {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.formGroup {
+  margin-bottom: 1.2rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.formGroup textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.cancelButton,
+.saveButton {
+  padding: 0.7rem 1.2rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cancelButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.saveButton {
+  background-color: #3b82f6;
+  border: none;
+  color: #fff;
+  font-weight: 500;
+}
+
+.saveButton:hover {
+  background-color: #2563eb;
+}
+
+.milestonesPopup {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 0;
+  width: 95%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.milestonesPopupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2));
+  border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.milestonesPopupHeader h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.closePopupButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.closePopupButton:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.milestonesPopupContent {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(90vh - 80px);
+}
+
+.milestonesProgressSummary {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.milestonesProgressSummary .progressBar {
+  height: 8px;
+  margin-bottom: 1rem;
+}
+
+.milestonesProgressSummary p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+}
+
+.milestonesContainer {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.milestoneFormContainer {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.milestoneFormHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.milestoneFormHeader h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 600;
+}
+
+.closeFormButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.closeFormButton:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.visualizationTabs {
+  display: flex;
+  gap: 0.8rem;
+  margin: 1.5rem 0;
+}
+
+.vizTab {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  text-align: center;
+}
+
+.vizTab:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.activeVizTab {
+  background-color: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.timelineVisualization,
+.chartVisualization,
+.achievementsVisualization {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.timelineVisualization h4,
+.chartVisualization h4,
+.achievementsVisualization h4 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 600;
+}
+
+.emptyVisualization {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.progressChartContainer {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.achievementBadges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.achievementBadge {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.achievementBadge.earnedBadge {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(46, 125, 50, 0.15));
+  border-color: rgba(76, 175, 80, 0.4);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+}
+
+.achievementBadge.earnedBadge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+}
+
+.achievementBadge.unearnedBadge {
+  opacity: 0.5;
+  filter: grayscale(0.8);
+  background: rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.achievementBadge.unearnedBadge .badgeIcon {
+  opacity: 0.3;
+}
+
+.badgeIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.badgeLock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  z-index: 2;
+}
+
+.badgeInfo {
+  text-align: center;
+}
+
+.badgeTitle {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: white;
+}
+
+.achievementBadge.unearnedBadge .badgeTitle {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.badgeDescription {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+.achievementBadge.unearnedBadge .badgeDescription {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+  .achievementBadges {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .achievementBadge {
+    min-height: 120px;
+    padding: 1rem 0.8rem;
+  }
+
+  .badgeIcon {
+    font-size: 2rem;
+  }
+
+  .badgeLock {
+    font-size: 1.6rem;
+  }
+
+  .badgeTitle {
+    font-size: 0.9rem;
+  }
+
+  .badgeDescription {
+    font-size: 0.75rem;
+  }
+}
+
+[data-theme='light'] .modalOverlay {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='light'] .milestonesPopup {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme='light'] .milestonesPopupHeader {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(37, 99, 235, 0.05));
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+[data-theme='light'] .milestonesPopupHeader h3 {
+  color: #1f2937;
+}
+
+[data-theme='light'] .closePopupButton {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme='light'] .closePopupButton:hover {
+  color: #000000;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='light'] .milestonesProgressSummary {
+  background-color: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+[data-theme='light'] .milestonesProgressSummary p {
+  color: #374151;
+}
+
+[data-theme='light'] .formGroup label {
+  color: #374151;
+}
+
+[data-theme='light'] .formGroup input,
+[data-theme='light'] .formGroup textarea {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #1f2937;
+}
+
+[data-theme='light'] .formGroup input:focus,
+[data-theme='light'] .formGroup textarea:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+[data-theme='light'] .cancelButton {
+  background: none;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+}
+
+[data-theme='light'] .cancelButton:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+[data-theme='light'] .saveButton {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+[data-theme='light'] .saveButton:hover {
+  background-color: #2563eb;
+}
+
+[data-theme='light'] .milestonesContainer {
+  background-color: rgba(59, 130, 246, 0.02);
+  border: 1px solid rgba(59, 130, 246, 0.08);
+}
+
+[data-theme='light'] .milestoneFormContainer {
+  background-color: rgba(59, 130, 246, 0.03);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+[data-theme='light'] .milestoneFormHeader h4 {
+  color: #1f2937;
+}
+
+[data-theme='light'] .closeFormButton {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme='light'] .closeFormButton:hover {
+  color: #000000;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='light'] .milestoneItem {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='light'] .milestoneItem:hover {
+  background-color: rgba(59, 130, 246, 0.02);
+}
+
+[data-theme='light'] .milestoneLabel {
+  color: #1f2937;
+}
+
+[data-theme='light'] .milestoneCheckbox:checked + .milestoneLabel {
+  color: #6b7280;
+}
+
+[data-theme='light'] .milestoneDate {
+  color: #6b7280;
+}
+
+[data-theme='light'] .emptyMilestones {
+  color: #9ca3af;
+}
+
+[data-theme='light'] .addMilestoneButton {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+[data-theme='light'] .addMilestoneButton:hover {
+  background-color: rgba(59, 130, 246, 0.15);
+}
+
+[data-theme='light'] .vizTab {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #374151;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .vizTab:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .activeVizTab {
+  background-color: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #1f2937;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme='light'] .timelineVisualization,
+[data-theme='light'] .chartVisualization,
+[data-theme='light'] .achievementsVisualization {
+  background-color: rgba(59, 130, 246, 0.02);
+  border: 1px solid rgba(59, 130, 246, 0.08);
+}
+
+[data-theme='light'] .timelineVisualization h4,
+[data-theme='light'] .chartVisualization h4,
+[data-theme='light'] .achievementsVisualization h4 {
+  color: #1f2937;
+}
+
+[data-theme='light'] .emptyVisualization {
+  color: #9ca3af;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme='light'] .achievementBadge {
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .achievementBadge.earnedBadge {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(46, 125, 50, 0.05));
+  border-color: rgba(76, 175, 80, 0.25);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.1);
+}
+
+[data-theme='light'] .achievementBadge.earnedBadge:hover {
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.15);
+}
+
+[data-theme='light'] .achievementBadge.unearnedBadge {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.05);
+  opacity: 0.6;
+}
+
+[data-theme='light'] .badgeTitle {
+  color: #1f2937;
+}
+
+[data-theme='light'] .achievementBadge.unearnedBadge .badgeTitle {
+  color: #9ca3af;
+}
+
+[data-theme='light'] .badgeDescription {
+  color: #6b7280;
+}
+
+[data-theme='light'] .achievementBadge.unearnedBadge .badgeDescription {
+  color: #d1d5db;
+}
+
+[data-theme='light'] .badgeLock {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='light'] .milestoneHistorySection details {
+  background-color: rgba(59, 130, 246, 0.02);
+  border: 1px solid rgba(59, 130, 246, 0.08);
+}
+
+[data-theme='light'] .milestoneHistorySection summary {
+  color: #1f2937;
+}
+
+[data-theme='light'] .historyItem {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='light'] .historyAction {
+  color: #3b82f6;
+}
+
+[data-theme='light'] .historyMilestone {
+  color: #1f2937;
+}
+
+[data-theme='light'] .historyTime {
+  color: #9ca3af;
+}
+
+[data-theme='light'] .milestoneSectionHeader h4 {
+  color: #1f2937;
+}
+
+@media (max-width: 768px) {
+  [data-theme='light'] .achievementBadges {
+    grid-template-columns: 1fr;
+  }
+
+  [data-theme='light'] .badgeTitle {
+    color: #1f2937;
+  }
+
+  [data-theme='light'] .badgeDescription {
+    color: #6b7280;
+  }
+}

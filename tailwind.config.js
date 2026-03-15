@@ -5,9 +5,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
-        'plus-jakarta': ['Plus Jakarta Sans', 'sans-serif'],
+        sans: ['var(--font-sans)'],
+        serif: ['var(--font-heading)'],
+        'plus-jakarta': ['var(--font-plus-jakarta)'],
       },
       colors: {
         theme: {

@@ -75,8 +75,7 @@
   display: inline-flex;
 }
 
-.actionButton,
-.bookmarkButton {
+.actionButton {
   width: 44px;
   height: 44px;
   border-radius: 16px;
@@ -94,16 +93,14 @@
     color 0.2s ease;
 }
 
-.actionButton:hover,
-.bookmarkButton:hover {
+.actionButton:hover {
   transform: translateY(-2px);
   border-color: rgba(255, 255, 255, 0.4);
   color: white;
   box-shadow: 0 12px 22px rgba(15, 23, 42, 0.35);
 }
 
-.actionButton:active,
-.bookmarkButton:active {
+.actionButton:active {
   transform: translateY(0);
 }
 
@@ -190,22 +187,10 @@
   overflow: visible;
 }
 
-.iconLift,
-.iconPop,
 .iconPulse,
 .iconRotate,
 .iconSlide {
   transform-origin: center;
-}
-
-.actionButton:hover .iconLift,
-.actionButton:focus-visible .iconLift {
-  animation: iconLift 0.28s ease-out;
-}
-
-.bookmarkButton:hover .iconPop,
-.bookmarkButton:focus-visible .iconPop {
-  animation: iconPop 0.3s ease-out;
 }
 
 .gradientButton:hover .iconPulse,
@@ -792,10 +777,6 @@
   color: rgba(var(--accent-rgb), 0.95);
 }
 
-.newQuoteButton {
-  position: relative;
-}
-
 .tagBadge {
   position: absolute;
   left: 36px;
@@ -822,30 +803,6 @@
 .tagText {
   display: inline-block;
   text-transform: uppercase;
-}
-
-@keyframes iconLift {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-2px) scale(1.08);
-  }
-  100% {
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes iconPop {
-  0% {
-    transform: scale(1);
-  }
-  55% {
-    transform: scale(1.16);
-  }
-  100% {
-    transform: scale(1);
-  }
 }
 
 @keyframes iconPulse {
@@ -1178,7 +1135,6 @@
 }
 
 [data-theme='light'] .headerText,
-[data-theme='light'] .themeText,
 [data-theme='light'] .errorMessage {
   color: rgba(15, 23, 42, 0.65);
 }
@@ -1190,7 +1146,7 @@
 }
 
 [data-theme='light'] .actionButton,
-[data-theme='light'] .bookmarkButton {
+[data-theme='light'] .actionButton {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.65));
   border: 1px solid rgba(148, 163, 184, 0.35);
   color: rgba(15, 23, 42, 0.65);
@@ -1212,8 +1168,7 @@
   color: #0f172a;
 }
 
-[data-theme='light'] .actionButton:hover,
-[data-theme='light'] .bookmarkButton:hover {
+[data-theme='light'] .actionButton:hover {
   border-color: rgba(var(--accent-rgb), 0.35);
   color: var(--accent-color);
 }
@@ -1244,12 +1199,6 @@
 
 [data-theme='light'] .successMessage {
   background: rgba(255, 255, 255, 0.95);
-}
-
-[data-theme='light'] .themeTag {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  color: rgba(15, 23, 42, 0.7);
 }
 
 [data-theme='light'] .quoteText {
@@ -1339,8 +1288,7 @@
     padding: 4px 6px;
   }
 
-  .actionButton,
-  .bookmarkButton {
+  .actionButton {
     width: 38px;
     height: 38px;
     border-radius: 13px;
@@ -1441,8 +1389,7 @@
     gap: 12px;
   }
 
-  .actionButton,
-  .bookmarkButton {
+  .actionButton {
     width: 34px;
     height: 34px;
     border-radius: 11px;

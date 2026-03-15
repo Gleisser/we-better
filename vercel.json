@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; manifest-src 'self'; object-src 'none'; script-src 'self'; script-src-elem 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://images.unsplash.com https://plus.unsplash.com https://img.icons8.com https://via.placeholder.com https://webetter.ai https://*.webetter.ai https://*.vercel.app https://*.supabase.co; media-src 'self' blob: https://webetter.ai https://*.webetter.ai https://*.vercel.app https://*.supabase.co; connect-src 'self' https://webetter.ai https://*.webetter.ai https://*.vercel.app https://*.supabase.co wss://*.supabase.co; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self'; worker-src 'self' blob:"
+          "value": "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; manifest-src 'self'; object-src 'none'; script-src 'self'; script-src-elem 'self'; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://plus.unsplash.com https://img.icons8.com https://via.placeholder.com https://webetter.ai https://*.webetter.ai https://*.vercel.app https://*.supabase.co; media-src 'self' blob: https://webetter.ai https://*.webetter.ai https://*.vercel.app https://*.supabase.co; connect-src 'self' https://webetter.ai https://*.webetter.ai https://*.vercel.app https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; frame-src 'self'; worker-src 'self' blob:"
         }
       ]
     },

@@ -642,7 +642,7 @@ const QuoteWidget = (): JSX.Element => {
             <div className={styles.bookmarkWrapper}>
               <button
                 type="button"
-                className={`${styles.bookmarkButton} ${
+                className={`${styles.actionButton} ${
                   isCurrentQuoteBookmarked ? styles.bookmarked : ''
                 }`}
                 onClick={event => {
@@ -878,7 +878,7 @@ const QuoteWidget = (): JSX.Element => {
 
                     <button
                       type="button"
-                      className={`${styles.actionButton} ${styles.gradientButton} ${styles.newQuoteButton}`}
+                      className={`${styles.actionButton} ${styles.gradientButton}`}
                       onClick={() => {
                         triggerRefreshAnimation();
                         void handleNewQuote();

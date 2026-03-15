@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import RadarChart from './components/RadarChart/EnhancedRadarChart';
 import { LifeCategory } from './types';
 import { getLocalizedCategories } from './constants/categories';
-import styles from './LifeWheel.module.css';
+import styles from './EnhancedLifeWheel.module.css';
 import {
   getLatestLifeWheelData,
   saveLifeWheelData,

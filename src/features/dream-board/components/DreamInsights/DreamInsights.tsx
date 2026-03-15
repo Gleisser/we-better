@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import styles from '../../DreamBoardPage.module.css';
+import styles from './DreamInsights.module.css';
 import { Dream } from '../../types';
 import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 

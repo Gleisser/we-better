@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../DreamBoardPage.module.css';
+import styles from './FooterTools.module.css';
 import DreamWeather from '../DreamWeather';
 import { WeatherState, CategoryWeatherStatus } from '../../api/dreamWeatherApi';
 

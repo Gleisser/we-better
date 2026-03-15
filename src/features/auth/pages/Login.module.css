@@ -21,7 +21,7 @@
 
 .quoteContent {
   @apply relative h-full flex flex-col p-12;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.1));
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.1));
 }
 
 .quoteLabel {
@@ -41,7 +41,7 @@
 .quoteTitle {
   @apply text-[3.5rem] font-serif leading-[1.1] mb-6;
   color: rgba(255, 255, 255, 0.95);
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-heading, Georgia, serif);
 }
 
 .quoteText {
@@ -124,7 +124,7 @@
   @apply flex items-center space-x-2 text-sm text-gray-600;
 }
 
-.rememberMe input[type="checkbox"] {
+.rememberMe input[type='checkbox'] {
   @apply rounded border-gray-300 text-blue-600 
          focus:ring-blue-500;
 }
@@ -208,4 +208,4 @@
 
 .formFooter {
   @apply mt-6 text-center;
-} 
+}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
-import styles from '../../DreamBoardPage.module.css';
+import styles from './DreamProgress.module.css';
 import { Dream, Milestone } from '../../types';
 import { getMilestonesForContent } from '../../services/milestonesService';
 

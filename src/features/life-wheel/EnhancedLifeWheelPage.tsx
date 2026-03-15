@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import EnhancedLifeWheel from './EnhancedLifeWheel';
-import styles from './LifeWheel.module.css';
+import styles from './EnhancedLifeWheel.module.css';
 import { getLatestLifeWheelData } from './api/lifeWheelApi';
 import { useLifeWheelTranslation } from '@/shared/hooks/useTranslation';
 

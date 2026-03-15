@@ -1,0 +1,362 @@
+.miniBoard {
+  margin-bottom: 24px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(140deg, rgba(20, 21, 38, 0.95), rgba(38, 25, 61, 0.9));
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(124, 82, 255, 0.2);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  height: 250px;
+}
+
+.expanded {
+  height: 450px;
+}
+
+.miniBoardHeader {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.miniBoardHeader h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+.miniBoardHeader button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.miniBoardHeader button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.miniBoardContentWrapper {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.miniBoardContent {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.miniBoardContent::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollIndicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.9), rgba(72, 79, 233, 0.7));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 4px 12px rgba(124, 58, 237, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+.scrollIndicator:hover {
+  transform: translateX(-50%) translateY(-2px) scale(1.05);
+  box-shadow:
+    0 6px 20px rgba(124, 58, 237, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.scrollIndicator:active {
+  transform: translateX(-50%) translateY(0) scale(0.95);
+}
+
+.scrollArrow {
+  font-size: 16px;
+  animation: bounce 2s infinite;
+}
+
+.miniDream {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 12px 16px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s ease;
+  min-height: 70px;
+  flex-shrink: 0;
+}
+
+.miniDream:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.miniDream::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(124, 58, 237, 0.05), rgba(124, 58, 237, 0.01));
+  pointer-events: none;
+}
+
+.dreamIcon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  font-size: 16px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.7), rgba(72, 79, 233, 0.5));
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.5);
+}
+
+.dreamTitle {
+  flex: 1;
+  color: white;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.progressContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.progressBar {
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.progressIndicator {
+  height: 100%;
+  background: linear-gradient(90deg, #7c4dff, #00bcd4);
+  border-radius: 4px;
+  position: relative;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px rgba(124, 77, 255, 0.6);
+}
+
+.progressIndicator::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  animation: pulse 1.5s infinite;
+  border-radius: 0 4px 4px 0;
+}
+
+.dreamStatus {
+  width: 120px;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 16px;
+  position: relative;
+}
+
+.progressControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progressButton {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.7), rgba(72, 79, 233, 0.5));
+  color: white;
+  font-size: 18px;
+  line-height: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.4);
+}
+
+.progressButton:hover:not(:disabled) {
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.6);
+}
+
+.progressButton:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.progressButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.buttonIcon {
+  display: block;
+  height: 18px;
+  width: 18px;
+  line-height: 18px;
+}
+
+.progressValue {
+  min-width: 40px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: white;
+}
+
+.dreamContentWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.miniBoardHeaderControls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.miniBoardHeaderControls button {
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  padding: 0 14px;
+  font-size: 0.85rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.miniBoardHeaderControls button:last-child {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(79, 70, 229, 0.2));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.miniBoardHeaderControls button:last-child:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(79, 70, 229, 0.3));
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+  transform: translateY(-1px);
+}
+
+.miniBoardHeaderControls .expandButton::before {
+  content: '▼';
+  margin-right: 8px;
+  font-size: 12px;
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
+
+.miniBoardHeaderControls .minimizeButton::before {
+  content: '▲';
+  margin-right: 8px;
+  font-size: 12px;
+  line-height: 1;
+  position: relative;
+  top: -1px;
+}
+
+.errorState {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: #fecaca;
+  font-size: 0.9rem;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

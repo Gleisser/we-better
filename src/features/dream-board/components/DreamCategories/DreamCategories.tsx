@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import styles from '../../DreamBoardPage.module.css';
+import styles from './DreamCategories.module.css';
 import { Dream } from '../../types';
 import { useDreamProgress } from '../../hooks/useDreamProgress';
 import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';

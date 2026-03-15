@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../DreamBoardPage.module.css';
+import styles from './DetailedTimeline.module.css';
 
 const DetailedTimeline: React.FC = () => {
   return (
