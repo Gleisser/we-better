@@ -21,6 +21,24 @@ interface LifeWheelHistoryResponse {
   total: number;
 }
 
+export interface LifeWheelEntrySnapshot {
+  id: string;
+  date: string;
+  categories: LifeCategory[];
+}
+
+export interface LifeWheelOverviewResponse {
+  success: boolean;
+  hasEntryToday: boolean;
+  todayEntry?: LifeWheelEntrySnapshot;
+  currentEntry?: LifeWheelEntrySnapshot;
+  history: {
+    entries: LifeWheelEntrySnapshot[];
+    total: number;
+  };
+  error?: string;
+}
+
 /**
  * Get the auth token from Supabase session or storage
  */
@@ -105,11 +123,7 @@ const apiRequest = async <T>(
  */
 export const getLatestLifeWheelData = async (): Promise<{
   success: boolean;
-  entry?: {
-    id: string;
-    date: string;
-    categories: LifeCategory[];
-  };
+  entry?: LifeWheelEntrySnapshot;
   error?: string;
 }> => {
   try {
@@ -146,11 +160,7 @@ export const getLatestLifeWheelData = async (): Promise<{
  */
 export const getTodaysLifeWheelData = async (): Promise<{
   success: boolean;
-  entry?: {
-    id: string;
-    date: string;
-    categories: LifeCategory[];
-  };
+  entry?: LifeWheelEntrySnapshot;
   hasEntryToday: boolean;
   error?: string;
 }> => {
@@ -198,11 +208,7 @@ export const saveLifeWheelData = async (data: {
   entryId?: string; // If provided, updates this entry instead of creating new
 }): Promise<{
   success: boolean;
-  entry?: {
-    id: string;
-    date: string;
-    categories: LifeCategory[];
-  };
+  entry?: LifeWheelEntrySnapshot;
   error?: string;
   isUpdate?: boolean;
 }> => {
@@ -267,11 +273,7 @@ export const getLifeWheelHistory = async (
   offset = 0
 ): Promise<{
   success: boolean;
-  entries?: {
-    id: string;
-    date: string;
-    categories: LifeCategory[];
-  }[];
+  entries?: LifeWheelEntrySnapshot[];
   error?: string;
 }> => {
   try {
@@ -317,11 +319,7 @@ export const updateLifeWheelData = async (
   }
 ): Promise<{
   success: boolean;
-  entry?: {
-    id: string;
-    date: string;
-    categories: LifeCategory[];
-  };
+  entry?: LifeWheelEntrySnapshot;
   error?: string;
 }> => {
   try {
@@ -422,6 +420,56 @@ export const getLifeWheelProgress = async (
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to get life wheel progress',
+    };
+  }
+};
+
+export const getLifeWheelOverview = async (
+  limit = 10,
+  offset = 0
+): Promise<LifeWheelOverviewResponse> => {
+  try {
+    const response = await apiRequest<{
+      hasEntryToday: boolean;
+      todayEntry: LifeWheelEntry | null;
+      currentEntry: LifeWheelEntry | null;
+      history: LifeWheelHistoryResponse;
+    }>(`${API_URL}/overview?limit=${limit}&offset=${offset}`);
+
+    const toEntrySnapshot = (entry: LifeWheelEntry | null): LifeWheelEntrySnapshot | undefined =>
+      entry
+        ? {
+            id: entry.id,
+            date: entry.created_at,
+            categories: entry.categories,
+          }
+        : undefined;
+
+    return {
+      success: true,
+      hasEntryToday: response?.hasEntryToday ?? false,
+      todayEntry: toEntrySnapshot(response?.todayEntry ?? null),
+      currentEntry: toEntrySnapshot(response?.currentEntry ?? null),
+      history: {
+        entries:
+          response?.history.entries.map(entry => ({
+            id: entry.id,
+            date: entry.created_at,
+            categories: entry.categories,
+          })) ?? [],
+        total: response?.history.total ?? 0,
+      },
+    };
+  } catch (error) {
+    console.error('Error getting life wheel overview:', error);
+    return {
+      success: false,
+      hasEntryToday: false,
+      history: {
+        entries: [],
+        total: 0,
+      },
+      error: error instanceof Error ? error.message : 'Failed to get life wheel overview',
     };
   }
 };
