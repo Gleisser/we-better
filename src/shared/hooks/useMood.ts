@@ -44,6 +44,15 @@ interface MoodEntriesQueryParams {
   offset: number;
 }
 
+interface UseMoodOptions {
+  enabled?: boolean;
+  initialData?: {
+    entries: MoodEntry[];
+    weeklyPulse: WeeklyMoodPulseResponse;
+    monthlyPulse: WeeklyMoodPulseResponse;
+  } | null;
+}
+
 const MOOD_HISTORY_DAYS = 28;
 const DEFAULT_MOOD_LIMIT = 35;
 const DEFAULT_MOOD_OFFSET = 0;
@@ -125,10 +134,15 @@ const upsertMoodEntry = (entries: MoodEntry[], nextEntry: MoodEntry): MoodEntry[
   return [nextEntry, ...nextEntries];
 };
 
-export const useMood = (queryOptions?: QueryBehaviorOptions): UseMoodReturn => {
+export const useMood = (
+  queryOptions?: QueryBehaviorOptions,
+  options: UseMoodOptions = {}
+): UseMoodReturn => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const userId = user?.id ?? null;
+  const enabled = options.enabled ?? true;
+  const initialData = options.initialData ?? null;
   const [entriesParams, setEntriesParams] = useState<MoodEntriesQueryParams>(() =>
     createDefaultEntriesParams()
   );
@@ -156,7 +170,13 @@ export const useMood = (queryOptions?: QueryBehaviorOptions): UseMoodReturn => {
   const entriesQuery = useQuery({
     queryKey: currentEntriesQueryKey,
     queryFn: async () => loadMoodEntries(entriesParams),
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && enabled,
+    initialData: initialData
+      ? {
+          entries: initialData.entries,
+          total: initialData.entries.length,
+        }
+      : undefined,
     meta: AUTH_SCOPED_QUERY_META,
     ...queryOptions,
   });
@@ -164,7 +184,8 @@ export const useMood = (queryOptions?: QueryBehaviorOptions): UseMoodReturn => {
   const weeklyPulseQuery = useQuery({
     queryKey: currentWeeklyPulseQueryKey,
     queryFn: async () => loadMoodPulse(7, weeklyEndDate),
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && enabled,
+    initialData: initialData?.weeklyPulse,
     meta: AUTH_SCOPED_QUERY_META,
     ...queryOptions,
   });
@@ -172,7 +193,8 @@ export const useMood = (queryOptions?: QueryBehaviorOptions): UseMoodReturn => {
   const monthlyPulseQuery = useQuery({
     queryKey: currentMonthlyPulseQueryKey,
     queryFn: async () => loadMoodPulse(28, monthlyEndDate),
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && enabled,
+    initialData: initialData?.monthlyPulse,
     meta: AUTH_SCOPED_QUERY_META,
     ...queryOptions,
   });

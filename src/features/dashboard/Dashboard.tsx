@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import styles from './Dashboard.module.css';
+import { DashboardOverviewProvider } from './DashboardOverviewProvider';
 import DashboardGrid from '@/shared/components/layout/DashboardGrid/DashboardGrid';
 import { useIdleActivation } from '@/shared/hooks/utils/useIdleActivation';
 
@@ -16,14 +17,16 @@ const Dashboard = (): JSX.Element => {
   });
 
   return (
-    <div className={styles.container}>
-      <DashboardGrid />
-      {shouldRenderAIAssistant ? (
-        <Suspense fallback={null}>
-          <AIAssistantButton />
-        </Suspense>
-      ) : null}
-    </div>
+    <DashboardOverviewProvider>
+      <div className={styles.container}>
+        <DashboardGrid />
+        {shouldRenderAIAssistant ? (
+          <Suspense fallback={null}>
+            <AIAssistantButton />
+          </Suspense>
+        ) : null}
+      </div>
+    </DashboardOverviewProvider>
   );
 };
 

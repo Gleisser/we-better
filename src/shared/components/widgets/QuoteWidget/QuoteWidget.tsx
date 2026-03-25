@@ -11,6 +11,7 @@ import { useIdleActivation } from '@/shared/hooks/utils/useIdleActivation';
 import { quoteService, type Quote } from '@/core/services/quoteService';
 import { QuoteMoreOptionsMenu } from './QuoteMoreOptionsMenu';
 import { SafeBookmarkIcon, SafeShareIcon } from './SafeAnimatedIcons';
+import { useDashboardOverview } from '@/features/dashboard/DashboardOverviewContext';
 import { useQuotePool } from '@/features/quotes/hooks/useQuotePool';
 import { useBookmarkedQuotes } from '@/shared/hooks/useBookmarkedQuotes';
 import shareLottie from './icons/share.json';
@@ -162,6 +163,9 @@ const QuoteWidget = (): JSX.Element => {
   const { t } = useDashboardTranslation();
   const { theme } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5);
+  const dashboardOverview = useDashboardOverview();
+  const isDashboardOverviewManaged = dashboardOverview !== null;
+  const dashboardQuotes = dashboardOverview?.data?.inspiration.quotes;
   const shouldLoadBookmarkState = useIdleActivation({
     minimumDelay: 1500,
     timeout: 2500,
@@ -221,7 +225,9 @@ const QuoteWidget = (): JSX.Element => {
     isError: isQuotePoolError,
     error: quotePoolError,
     refetch: refetchQuotePool,
-  } = useQuotePool();
+  } = useQuotePool({
+    enabled: !isDashboardOverviewManaged,
+  });
   const {
     addBookmark,
     removeBookmark,
@@ -232,10 +238,23 @@ const QuoteWidget = (): JSX.Element => {
   });
 
   useEffect(() => {
-    if (Array.isArray(fetchedQuotes) && fetchedQuotes.length > 0) {
-      setQuotePool(fetchedQuotes);
+    if (isDashboardOverviewManaged) {
+      if (!dashboardQuotes) {
+        return;
+      }
+
+      setQuotePool(previousQuotes =>
+        previousQuotes === dashboardQuotes ? previousQuotes : dashboardQuotes
+      );
+      return;
     }
-  }, [fetchedQuotes]);
+
+    if (Array.isArray(fetchedQuotes) && fetchedQuotes.length > 0) {
+      setQuotePool(previousQuotes =>
+        previousQuotes === fetchedQuotes ? previousQuotes : fetchedQuotes
+      );
+    }
+  }, [dashboardQuotes, fetchedQuotes, isDashboardOverviewManaged]);
 
   useEffect(() => {
     if (!quote && quotePool.length > 0) {
@@ -244,13 +263,16 @@ const QuoteWidget = (): JSX.Element => {
   }, [quote, quotePool]);
 
   const fetchError =
-    isQuotePoolError && quotePoolError
-      ? quotePoolError instanceof Error
-        ? quotePoolError.message
-        : (t('widgets.quote.failedToLoad') as string)
-      : null;
+    isDashboardOverviewManaged && dashboardOverview.error
+      ? dashboardOverview.error.message
+      : isQuotePoolError && quotePoolError
+        ? quotePoolError instanceof Error
+          ? quotePoolError.message
+          : (t('widgets.quote.failedToLoad') as string)
+        : null;
 
-  const isInitialLoading = isQuotePoolLoading && !quote;
+  const isInitialLoading =
+    (isDashboardOverviewManaged ? dashboardOverview.isLoading : isQuotePoolLoading) && !quote;
   const showLoadingSkeleton = isInitialLoading && !fetchError;
   const isNextQuoteBusy = isFetchingNextQuote || isInitialLoading;
 

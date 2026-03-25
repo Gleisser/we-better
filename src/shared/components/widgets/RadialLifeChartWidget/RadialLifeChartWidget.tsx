@@ -2,6 +2,7 @@ import { type CSSProperties, useCallback, useEffect, useMemo, useState } from 'r
 import styles from './RadialLifeChartWidget.module.css';
 import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { useLatestLifeWheel } from '@/features/life-wheel/hooks/useLatestLifeWheel';
+import { useDashboardOverview } from '@/features/dashboard/DashboardOverviewContext';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { getInitials } from '@/shared/utils/string/getInitials';
@@ -144,22 +145,36 @@ const RadialLifeChartWidget = (): JSX.Element => {
   const { t } = useDashboardTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const dashboardOverview = useDashboardOverview();
+  const isDashboardOverviewManaged = dashboardOverview !== null;
 
   const {
     data: latestLifeWheel,
     isLoading,
     isError,
     error: latestLifeWheelError,
-  } = useLatestLifeWheel();
+  } = useLatestLifeWheel({ enabled: !isDashboardOverviewManaged });
 
   const fetchError =
-    isError && latestLifeWheelError
-      ? latestLifeWheelError instanceof Error
-        ? latestLifeWheelError.message
-        : String(latestLifeWheelError)
-      : null;
+    isDashboardOverviewManaged && dashboardOverview.error
+      ? dashboardOverview.error.message
+      : isError && latestLifeWheelError
+        ? latestLifeWheelError instanceof Error
+          ? latestLifeWheelError.message
+          : String(latestLifeWheelError)
+        : null;
 
-  const rawCategories = useMemo(() => latestLifeWheel?.entry?.categories ?? [], [latestLifeWheel]);
+  const rawCategories = useMemo(
+    () =>
+      isDashboardOverviewManaged
+        ? (dashboardOverview?.data?.lifeWheel.entry?.categories ?? [])
+        : (latestLifeWheel?.entry?.categories ?? []),
+    [
+      dashboardOverview?.data?.lifeWheel.entry?.categories,
+      isDashboardOverviewManaged,
+      latestLifeWheel,
+    ]
+  );
 
   const translateCategory = useCallback(
     (categoryName: string): { key: string; label: string } => {
@@ -280,6 +295,7 @@ const RadialLifeChartWidget = (): JSX.Element => {
 
   const hasFetchError = Boolean(fetchError);
   const hasData = areas.length > 0;
+  const isWidgetLoading = isDashboardOverviewManaged ? dashboardOverview.isLoading : isLoading;
   const handleNavigate = useCallback(() => {
     navigate('/app/life-wheel');
   }, [navigate]);
@@ -301,7 +317,7 @@ const RadialLifeChartWidget = (): JSX.Element => {
         </div>
       </header>
 
-      {isLoading ? (
+      {isWidgetLoading ? (
         <div className={styles.stateWrapper}>
           <p className={styles.stateText}>{translateString('widgets.lifeWheel.loading')}</p>
         </div>

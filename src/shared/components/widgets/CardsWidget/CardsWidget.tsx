@@ -18,6 +18,7 @@ import { useAffirmations } from '@/shared/hooks/useAffirmations';
 import { useBookmarkedAffirmations } from '@/shared/hooks/useBookmarkedAffirmations';
 import { useIdleActivation } from '@/shared/hooks/utils/useIdleActivation';
 import { useDashboardAffirmationDeck } from '@/features/affirmations/hooks/useDashboardAffirmationDeck';
+import { useDashboardOverview } from '@/features/dashboard/DashboardOverviewContext';
 import {
   BellIcon,
   MicrophoneIcon,
@@ -217,7 +218,10 @@ const celebrationPalette = ['#f472b6', '#a855f7', '#38bdf8', '#facc15', '#4ade80
 const CardsWidget = (): JSX.Element => {
   const { t, currentLanguage } = useDashboardTranslation();
   const categoryTheme = useMemo(() => buildCategoryTheme(t), [t]);
-  const shouldLoadDashboardMeta = useIdleActivation({
+  const dashboardOverview = useDashboardOverview();
+  const isDashboardOverviewManaged = dashboardOverview !== null;
+  const dashboardHasAffirmedToday = dashboardOverview?.data?.inspiration.hasAffirmedToday ?? false;
+  const shouldLoadBookmarks = useIdleActivation({
     minimumDelay: 1500,
     timeout: 2500,
     fallbackDelay: 1500,
@@ -229,6 +233,10 @@ const CardsWidget = (): JSX.Element => {
   const [error, setError] = useState<string | null>(null);
   const [isAffirming, setIsAffirming] = useState(false);
   const [isCelebrating, setIsCelebrating] = useState(false);
+  const [affirmedTodayOverride, setAffirmedTodayOverride] = useState<boolean | null>(null);
+  const [shouldLoadPersonalAffirmation, setShouldLoadPersonalAffirmation] = useState(false);
+  const [shouldLoadReminderSettings, setShouldLoadReminderSettings] = useState(false);
+  const [shouldLoadStreak, setShouldLoadStreak] = useState(false);
   const {
     isRecording,
     audioUrl,
@@ -238,7 +246,7 @@ const CardsWidget = (): JSX.Element => {
     clearRecording,
   } = useVoiceRecorder();
   const { addBookmark, removeBookmark, isBookmarked } = useBookmarkedAffirmations({
-    enabled: shouldLoadDashboardMeta,
+    enabled: shouldLoadBookmarks,
   });
   const {
     reminderSettings: backendReminderSettings,
@@ -250,18 +258,19 @@ const CardsWidget = (): JSX.Element => {
     updatePersonalAffirmation,
     hasAffirmedToday,
     logAffirmation,
+    fetchStreak,
     fetchReminderSettings,
   } = useAffirmations({
-    loadPersonalAffirmation: shouldLoadDashboardMeta,
-    loadReminderSettings: shouldLoadDashboardMeta,
-    loadStreak: shouldLoadDashboardMeta,
-    loadTodayStatus: true,
+    loadPersonalAffirmation: shouldLoadPersonalAffirmation,
+    loadReminderSettings: shouldLoadReminderSettings,
+    loadStreak: shouldLoadStreak,
+    loadTodayStatus: !isDashboardOverviewManaged,
   });
   const {
     data: affirmationDeck,
     isLoading: isDeckLoading,
     error: deckError,
-  } = useDashboardAffirmationDeck();
+  } = useDashboardAffirmationDeck({ enabled: !isDashboardOverviewManaged });
   const [showReminderSettings, setShowReminderSettings] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
@@ -281,7 +290,11 @@ const CardsWidget = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (!affirmationDeck) {
+    const activeAffirmationDeck = isDashboardOverviewManaged
+      ? (dashboardOverview?.data?.inspiration.affirmations ?? [])
+      : (affirmationDeck ?? []);
+
+    if (!activeAffirmationDeck.length) {
       return;
     }
 
@@ -289,7 +302,7 @@ const CardsWidget = (): JSX.Element => {
       setError(null);
 
       const categories = Object.keys(categoryTheme) as AffirmationCategory[];
-      const affirmationsByCategory = affirmationDeck.reduce<
+      const affirmationsByCategory = activeAffirmationDeck.reduce<
         Partial<Record<AffirmationCategory, Affirmation[]>>
       >((accumulator, affirmation) => {
         const category = affirmationService.determineAffirmationType(affirmation.categories);
@@ -362,9 +375,27 @@ const CardsWidget = (): JSX.Element => {
       setCards([]);
       setError(t('widgets.affirmation.failedToLoad') as string);
     }
-  }, [affirmationDeck, categoryTheme, personalAffirmation, t]);
+  }, [
+    affirmationDeck,
+    categoryTheme,
+    dashboardOverview?.data?.inspiration.affirmations,
+    isDashboardOverviewManaged,
+    personalAffirmation,
+    t,
+  ]);
 
   useEffect(() => {
+    if (isDashboardOverviewManaged) {
+      if (!dashboardOverview?.error) {
+        return;
+      }
+
+      console.error('Failed to load affirmations for CardsWidget:', dashboardOverview.error);
+      setCards([]);
+      setError(t('widgets.affirmation.failedToLoad') as string);
+      return;
+    }
+
     if (!deckError) {
       return;
     }
@@ -372,7 +403,11 @@ const CardsWidget = (): JSX.Element => {
     console.error('Failed to load affirmations for CardsWidget:', deckError);
     setCards([]);
     setError(t('widgets.affirmation.failedToLoad') as string);
-  }, [currentLanguage, deckError, t]);
+  }, [currentLanguage, dashboardOverview?.error, deckError, isDashboardOverviewManaged, t]);
+
+  useEffect(() => {
+    setAffirmedTodayOverride(null);
+  }, [dashboardHasAffirmedToday, hasAffirmedToday]);
 
   const reminderSettings = useMemo(
     () =>
@@ -430,14 +465,16 @@ const CardsWidget = (): JSX.Element => {
     }
   }, [isRecording, startRecording, stopRecording]);
 
-  const handleReminderClick = useCallback(() => {
+  const handleReminderClick = useCallback(async () => {
     setReminderAnimationTick(previous => previous + 1);
-    void fetchReminderSettings();
+    setShouldLoadReminderSettings(true);
+    await fetchReminderSettings();
     setShowReminderSettings(true);
   }, [fetchReminderSettings]);
 
-  const handleCreateAffirmation = useCallback(() => {
-    void fetchPersonalAffirmation();
+  const handleCreateAffirmation = useCallback(async () => {
+    setShouldLoadPersonalAffirmation(true);
+    await fetchPersonalAffirmation();
     setShowCreateModal(true);
     setIsCelebrating(true);
   }, [fetchPersonalAffirmation]);
@@ -563,9 +600,12 @@ const CardsWidget = (): JSX.Element => {
 
   const nextIndex = cards.length > 0 ? (currentIndex + 1) % cards.length : -1;
   const activeCardId = cards.length > 0 ? cards[currentIndex]?.id : undefined;
-  const loading = isDeckLoading;
+  const loading = isDashboardOverviewManaged ? dashboardOverview.isLoading : isDeckLoading;
+  const resolvedHasAffirmedToday =
+    affirmedTodayOverride ??
+    (isDashboardOverviewManaged ? dashboardHasAffirmedToday : hasAffirmedToday);
   const isRotateDisabled = loading || cards.length <= 1;
-  const isAffirmDisabled = loading || !activeCard || isAffirming || hasAffirmedToday;
+  const isAffirmDisabled = loading || !activeCard || isAffirming || resolvedHasAffirmedToday;
   const accentColor = activeCard?.accent;
   const isCardBookmarked = activeCard?.id ? isBookmarked(activeCard.id) : false;
   const streakCount = streak?.current_streak ?? 0;
@@ -604,9 +644,13 @@ const CardsWidget = (): JSX.Element => {
   const streakTooltip = t('widgets.affirmation.daysStreaking') as string;
 
   const recordMetric = isRecording ? 'REC' : audioUrl ? 'Clip' : '';
-  const reminderMetric = reminderSettings.enabled ? reminderSettings.time : 'Off';
+  const reminderMetric = shouldLoadReminderSettings
+    ? reminderSettings.enabled
+      ? reminderSettings.time
+      : 'Off'
+    : '';
   const favoriteMetric = isCardBookmarked ? (t('widgets.cardsWidget.saved') as string) : '';
-  const streakMetric = `${streakCount}d`;
+  const streakMetric = shouldLoadStreak ? `${streakCount}d` : '';
   const recordLabel = isRecording
     ? (t('widgets.cardsWidget.recording') as string)
     : (t('widgets.cardsWidget.record') as string);
@@ -622,10 +666,12 @@ const CardsWidget = (): JSX.Element => {
 
   const handleStreakClick = useCallback(() => {
     triggerStreakAnimation();
+    setShouldLoadStreak(true);
+    void fetchStreak();
     if (streakCount > 0) {
       setIsCelebrating(true);
     }
-  }, [streakCount, triggerStreakAnimation]);
+  }, [fetchStreak, streakCount, triggerStreakAnimation]);
 
   const handleSavePersonalAffirmation = useCallback(
     async (text: string) => {
@@ -644,7 +690,7 @@ const CardsWidget = (): JSX.Element => {
   );
 
   const handleAffirm = useCallback(async () => {
-    if (isAffirming || hasAffirmedToday || !activeCard) {
+    if (isAffirming || resolvedHasAffirmedToday || !activeCard) {
       return;
     }
 
@@ -652,26 +698,27 @@ const CardsWidget = (): JSX.Element => {
       setIsAffirming(true);
       setIsCelebrating(true);
       await logAffirmation(activeCard.text);
+      setAffirmedTodayOverride(true);
     } catch (affirmError) {
       console.error('Failed to register affirmation from CardsWidget:', affirmError);
     } finally {
       setIsAffirming(false);
     }
-  }, [activeCard, hasAffirmedToday, isAffirming, logAffirmation]);
+  }, [activeCard, isAffirming, logAffirmation, resolvedHasAffirmedToday]);
 
   const buttonClassNames = [styles.affirmButton];
   if (isAffirming) {
     buttonClassNames.push(styles.affirming);
   }
-  if (hasAffirmedToday) {
+  if (resolvedHasAffirmedToday) {
     buttonClassNames.push(styles.affirmed);
   }
 
-  const affirmIcon = hasAffirmedToday ? '✔️' : '✨';
-  const affirmLabel = hasAffirmedToday
+  const affirmIcon = resolvedHasAffirmedToday ? '✔️' : '✨';
+  const affirmLabel = resolvedHasAffirmedToday
     ? (t('widgets.affirmation.affirmedToday') as string)
     : (t('widgets.affirmation.iAffirm') as string);
-  const affirmSubLabel = hasAffirmedToday
+  const affirmSubLabel = resolvedHasAffirmedToday
     ? (t('widgets.affirmation.dailyIntentionLocked') as string)
     : (t('widgets.cardsWidget.celebratorySubtext') as string);
 
@@ -868,7 +915,7 @@ const CardsWidget = (): JSX.Element => {
           tooltip={reminderTooltip}
           onClick={handleReminderClick}
           onPreview={triggerReminderAnimation}
-          active={reminderSettings.enabled}
+          active={shouldLoadReminderSettings && reminderSettings.enabled}
           metric={reminderMetric}
           accentColor={reminderAccent}
         />
@@ -904,7 +951,7 @@ const CardsWidget = (): JSX.Element => {
           tooltip={streakTooltip}
           onClick={handleStreakClick}
           onPreview={triggerStreakAnimation}
-          active={streakCount > 0}
+          active={shouldLoadStreak && streakCount > 0}
           metric={streakMetric}
           accentColor={streakAccent}
         />
@@ -978,7 +1025,7 @@ const CardsWidget = (): JSX.Element => {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onSave={handleSavePersonalAffirmation}
-        existingAffirmation={personalAffirmation?.text}
+        existingAffirmation={shouldLoadPersonalAffirmation ? personalAffirmation?.text : undefined}
       />
     </section>
   );

@@ -143,4 +143,86 @@ describe('useMood', () => {
     expect(mockedFetchWeeklyMoodPulse).toHaveBeenCalledTimes(1);
     expect(mockedFetchMonthlyMoodPulse).toHaveBeenCalledTimes(1);
   });
+
+  it('serves dashboard overview mood data without firing the legacy mood queries', async () => {
+    const initialData = {
+      entries: [
+        {
+          id: 'mood-2',
+          user_id: 'user-123',
+          date: getLocalDateString(),
+          mood_id: 'bright' as const,
+          created_at: '2026-03-11T00:00:00.000Z',
+          updated_at: '2026-03-11T00:00:00.000Z',
+        },
+      ],
+      weeklyPulse: {
+        window: {
+          start_date: '2026-03-05',
+          end_date: '2026-03-11',
+          days: 7,
+        },
+        coverage: {
+          logged_days: 1,
+          missing_days: 6,
+        },
+        current_week: {
+          average_score: 4,
+          average_mood_id: 'bright' as const,
+          days: [
+            {
+              date: getLocalDateString(),
+              mood_id: 'bright' as const,
+              score: 4,
+            },
+          ],
+        },
+        comparison: {
+          previous_average_score: 3,
+          delta_score: 1,
+          direction: 'up' as const,
+        },
+      },
+      monthlyPulse: {
+        window: {
+          start_date: '2026-02-13',
+          end_date: '2026-03-11',
+          days: 28,
+        },
+        coverage: {
+          logged_days: 1,
+          missing_days: 27,
+        },
+        current_week: {
+          average_score: 4,
+          average_mood_id: 'bright' as const,
+          days: [
+            {
+              date: getLocalDateString(),
+              mood_id: 'bright' as const,
+              score: 4,
+            },
+          ],
+        },
+        comparison: {
+          previous_average_score: 3,
+          delta_score: 1,
+          direction: 'up' as const,
+        },
+      },
+    };
+
+    const { result } = renderHook(() => useMood(undefined, { enabled: false, initialData }), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.todayMood?.id).toBe('mood-2'));
+
+    expect(result.current.todayMood?.mood_id).toBe('bright');
+    expect(result.current.weeklyPulse?.comparison.direction).toBe('up');
+    expect(result.current.monthlyPulse?.comparison.direction).toBe('up');
+    expect(mockedFetchMoodEntries).not.toHaveBeenCalled();
+    expect(mockedFetchWeeklyMoodPulse).not.toHaveBeenCalled();
+    expect(mockedFetchMonthlyMoodPulse).not.toHaveBeenCalled();
+  });
 });

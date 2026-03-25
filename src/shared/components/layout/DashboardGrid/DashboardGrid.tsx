@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, type ReactNode, type Ref } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode, type Ref } from 'react';
 import styles from './DashboardGrid.module.css';
 import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
 import { useIdleActivation } from '@/shared/hooks/utils/useIdleActivation';
@@ -121,12 +121,14 @@ const DeferredWidgetSlot = ({
   widgetClassName,
   fallbackLabel,
   children,
-}: Omit<WidgetSlotProps, 'shouldRender'>): JSX.Element => {
+  unlockRender = true,
+}: Omit<WidgetSlotProps, 'shouldRender'> & { unlockRender?: boolean }): JSX.Element => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const shouldRender = useDeferredSectionQuery(containerRef, {
+  const shouldIntersectRender = useDeferredSectionQuery(containerRef, {
     rootMargin: '250px 0px',
     threshold: 0.01,
   });
+  const shouldRender = unlockRender && shouldIntersectRender;
 
   return (
     <WidgetSlot
@@ -146,6 +148,33 @@ const DashboardGrid = (): JSX.Element => {
     timeout: 3000,
     fallbackDelay: 1800,
   });
+  const shouldUnlockOptionalWidgetsOnIdle = useIdleActivation({
+    minimumDelay: 6000,
+    timeout: 8000,
+    fallbackDelay: 6000,
+  });
+  const [hasScrolledDashboard, setHasScrolledDashboard] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleScroll = (): void => {
+      if (window.scrollY > 24) {
+        setHasScrolledDashboard(true);
+      }
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const shouldUnlockOptionalWidgets = hasScrolledDashboard || shouldUnlockOptionalWidgetsOnIdle;
 
   useEffect(() => {
     if (!shouldPrefetchDeferredWidgets) {
@@ -200,6 +229,7 @@ const DashboardGrid = (): JSX.Element => {
           widgetKey="dreamBoard"
           widgetClassName={styles.dreamBoard}
           fallbackLabel="Loading dream board timeline widget"
+          unlockRender={shouldUnlockOptionalWidgets}
         >
           <DreamBoardTimelineWidget />
         </DeferredWidgetSlot>
@@ -208,6 +238,7 @@ const DashboardGrid = (): JSX.Element => {
           widgetKey="habits"
           widgetClassName={styles.habits}
           fallbackLabel="Loading habits widget"
+          unlockRender={shouldUnlockOptionalWidgets}
         >
           <HabitsWidget />
         </DeferredWidgetSlot>
@@ -216,6 +247,7 @@ const DashboardGrid = (): JSX.Element => {
           widgetKey="goals"
           widgetClassName={styles.goals}
           fallbackLabel="Loading goals widget"
+          unlockRender={shouldUnlockOptionalWidgets}
         >
           <GoalsWidget />
         </DeferredWidgetSlot>
