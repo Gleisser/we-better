@@ -1,17 +1,19 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useQueryClient } from '@tanstack/react-query';
 import RadarChart from './components/RadarChart/EnhancedRadarChart';
 import { LifeCategory } from './types';
 import { getLocalizedCategories } from './constants/categories';
 import styles from './EnhancedLifeWheel.module.css';
 import {
-  getLatestLifeWheelData,
   saveLifeWheelData,
-  getLifeWheelHistory,
-  getTodaysLifeWheelData,
+  type LifeWheelEntrySnapshot,
+  type LifeWheelOverviewResponse,
 } from './api/lifeWheelApi';
 import ReactDOM from 'react-dom';
 import { useLifeWheelTranslation } from '@/shared/hooks/useTranslation';
+import { useAuth } from '@/shared/hooks/useAuth';
+import { lifeWheelOverviewQueryKey, useLifeWheelOverview } from './hooks/useLifeWheelOverview';
 
 // Add keyframe animation for the background gradient
 const animatedGradientStyle: React.CSSProperties = {
@@ -30,6 +32,38 @@ type HistoryEntry = {
   categories: LifeCategory[];
 };
 
+const INITIAL_HISTORY_LIMIT = 10;
+
+const localizeCategoryValues = (
+  categories: Pick<LifeCategory, 'id' | 'value'>[],
+  t: (key: string) => string
+): LifeCategory[] => {
+  const localizedCategories = getLocalizedCategories(t);
+  const valuesById = new Map(categories.map(category => [category.id, category.value]));
+
+  return localizedCategories.map(category => ({
+    ...category,
+    value: valuesById.get(category.id) ?? category.value,
+  }));
+};
+
+const upsertHistoryEntry = (
+  entries: HistoryEntry[],
+  entry: LifeWheelEntrySnapshot,
+  limit = INITIAL_HISTORY_LIMIT
+): HistoryEntry[] => {
+  const nextEntries = [
+    {
+      id: entry.id,
+      date: entry.date,
+      categories: entry.categories,
+    },
+    ...entries.filter(existingEntry => existingEntry.id !== entry.id),
+  ];
+
+  return nextEntries.slice(0, limit);
+};
+
 interface EnhancedLifeWheelProps {
   readOnly?: boolean;
   className?: string;
@@ -40,13 +74,22 @@ const EnhancedLifeWheel = ({
   className = '',
 }: EnhancedLifeWheelProps): JSX.Element => {
   const { t, currentLanguage } = useLifeWheelTranslation();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const translationRef = useRef(t);
+  const {
+    overview,
+    error: overviewError,
+    isLoading: overviewLoading,
+    refetch: refetchOverview,
+  } = useLifeWheelOverview({
+    limit: INITIAL_HISTORY_LIMIT,
+  });
 
   // Current wheel data
   const [categories, setCategories] = useState<LifeCategory[]>(getLocalizedCategories(t));
 
   // States for loading, error, saving
-  const [isLoading, setIsLoading] = useState(true);
-  const [historyLoading, setHistoryLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -89,79 +132,45 @@ const EnhancedLifeWheel = ({
   } | null>(null);
   const [hasEntryToday, setHasEntryToday] = useState(false);
 
-  // Load current life wheel data and check for today's entry
+  const historyLoading = overviewLoading;
+
   useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      try {
-        setIsLoading(true);
+    translationRef.current = t;
+  }, [t]);
 
-        // First check if user has an entry for today
-        const todaysResponse = await getTodaysLifeWheelData();
-        setHasEntryToday(todaysResponse.hasEntryToday);
+  // Hydrate the screen from the aggregated overview response.
+  useEffect(() => {
+    if (!overview?.success) {
+      return;
+    }
 
-        if (todaysResponse.entry) {
-          // User has an entry for today, use it
-          setTodaysEntry(todaysResponse.entry);
-          const localizedCategories = getLocalizedCategories(t);
-          const mergedCategories = todaysResponse.entry.categories.map(serverCat => {
-            const localizedCat = localizedCategories.find(local => local.id === serverCat.id);
-            return localizedCat ? { ...localizedCat, value: serverCat.value } : serverCat;
-          });
-          setCategories(mergedCategories);
-        } else {
-          // No entry for today, try to get latest entry for reference
-          const response = await getLatestLifeWheelData();
-          if (response.entry) {
-            // Merge server data with localized category names and descriptions
-            const localizedCategories = getLocalizedCategories(t);
-            const mergedCategories = response.entry.categories.map(serverCat => {
-              const localizedCat = localizedCategories.find(local => local.id === serverCat.id);
-              return localizedCat ? { ...localizedCat, value: serverCat.value } : serverCat;
-            });
-            setCategories(mergedCategories);
-          } else {
-            // If no server data at all, use localized categories
-            setCategories(getLocalizedCategories(t));
-          }
-        }
-      } catch (err) {
-        console.error('Error loading life wheel data:', err);
-        setError(new Error(t('widgets.lifeWheel.errors.failedToLoad') as string));
-      } finally {
-        setIsLoading(false);
+    setHasEntryToday(overview.hasEntryToday);
+    setTodaysEntry(overview.todayEntry ?? null);
+    setHistoryEntries(overview.history.entries);
+    setSelectedHistoryEntry(previousSelectedEntry => {
+      if (
+        previousSelectedEntry &&
+        overview.history.entries.some(entry => entry.id === previousSelectedEntry)
+      ) {
+        return previousSelectedEntry;
       }
-    };
 
-    fetchData();
+      return overview.history.entries[0]?.id ?? null;
+    });
+
+    if (overview.currentEntry) {
+      setCategories(
+        localizeCategoryValues(overview.currentEntry.categories, translationRef.current)
+      );
+    } else {
+      setCategories(getLocalizedCategories(translationRef.current));
+    }
+  }, [overview]);
+
+  // Re-localize current categories without refetching when the language changes.
+  useEffect(() => {
+    setCategories(previousCategories => localizeCategoryValues(previousCategories, t));
   }, [currentLanguage, t]);
-
-  // Load history data
-  useEffect(() => {
-    const fetchHistory = async (): Promise<void> => {
-      try {
-        setHistoryLoading(true);
-        const response = await getLifeWheelHistory();
-        if (response.entries && response.entries.length > 0) {
-          setHistoryEntries(
-            response.entries.map(entry => ({
-              id: entry.id,
-              date: entry.date,
-              categories: entry.categories,
-            }))
-          );
-
-          // Set the latest entry as selected by default
-          setSelectedHistoryEntry(response.entries[0].id);
-        }
-      } catch (err) {
-        console.error('Error loading life wheel history:', err);
-      } finally {
-        setHistoryLoading(false);
-      }
-    };
-
-    fetchHistory();
-  }, []);
 
   // Handle category value change
   const handleValueChange = useCallback(
@@ -198,20 +207,37 @@ const EnhancedLifeWheel = ({
 
         // Update today's entry state if we just created/updated it
         if (result.entry) {
-          setTodaysEntry(result.entry);
-          setHasEntryToday(true);
-        }
+          const savedEntry = result.entry;
 
-        // Reload history after saving
-        const response = await getLifeWheelHistory();
-        if (response.entries && response.entries.length > 0) {
-          setHistoryEntries(
-            response.entries.map(entry => ({
-              id: entry.id,
-              date: entry.date,
-              categories: entry.categories,
-            }))
-          );
+          setTodaysEntry(savedEntry);
+          setHasEntryToday(true);
+          setHistoryEntries(previousEntries => upsertHistoryEntry(previousEntries, savedEntry));
+          setSelectedHistoryEntry(savedEntry.id);
+
+          if (user?.id) {
+            queryClient.setQueryData<LifeWheelOverviewResponse>(
+              lifeWheelOverviewQueryKey(user.id, INITIAL_HISTORY_LIMIT, 0),
+              previousOverview => {
+                const previousEntries = previousOverview?.history.entries ?? [];
+                const alreadyPresent = previousEntries.some(entry => entry.id === savedEntry.id);
+                const nextHistoryEntries = upsertHistoryEntry(previousEntries, savedEntry);
+
+                return {
+                  success: true,
+                  hasEntryToday: true,
+                  todayEntry: savedEntry,
+                  currentEntry: savedEntry,
+                  history: {
+                    entries: nextHistoryEntries,
+                    total:
+                      previousOverview?.history.total !== undefined
+                        ? previousOverview.history.total + (alreadyPresent ? 0 : 1)
+                        : nextHistoryEntries.length,
+                  },
+                };
+              }
+            );
+          }
         }
       } else {
         throw new Error(result.error || 'Failed to save data');
@@ -227,7 +253,7 @@ const EnhancedLifeWheel = ({
     } finally {
       setIsSaving(false);
     }
-  }, [categories, readOnly, hasEntryToday, todaysEntry]);
+  }, [categories, readOnly, hasEntryToday, todaysEntry, queryClient, user?.id]);
 
   // Switch between selected history entries
   const handleHistoryEntrySelect = useCallback((entryId: string) => {
@@ -561,12 +587,26 @@ const EnhancedLifeWheel = ({
     [insightsSortMethod]
   );
 
-  if (isLoading) {
+  if (overviewLoading) {
     return (
       <div className={`${styles.lifeWheelContainer} ${className}`} style={animatedGradientStyle}>
         <div className={styles.loadingState}>
           <div className={styles.spinner}></div>
           <p>{t('widgets.lifeWheel.loading')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (overviewError) {
+    return (
+      <div className={`${styles.lifeWheelContainer} ${className}`} style={animatedGradientStyle}>
+        <div className={styles.errorState}>
+          <h3>{t('widgets.lifeWheel.errors.somethingWentWrong')}</h3>
+          <p>{overviewError}</p>
+          <button onClick={() => void refetchOverview()} className={styles.retryButton}>
+            {t('widgets.lifeWheel.errors.tryAgain')}
+          </button>
         </div>
       </div>
     );
