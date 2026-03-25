@@ -1,6 +1,10 @@
 import { UseQueryResult, useQuery } from '@tanstack/react-query';
 import { affirmationService, type Affirmation } from '@/core/services/affirmationService';
 
+interface UseDashboardAffirmationDeckOptions {
+  enabled?: boolean;
+}
+
 const DASHBOARD_AFFIRMATION_CATEGORIES = [
   'personal',
   'beauty',
@@ -32,9 +36,12 @@ const loadDashboardAffirmationDeck = async (): Promise<Affirmation[]> => {
   return affirmationService.mapAffirmationResponse(response);
 };
 
-export const useDashboardAffirmationDeck = (): UseQueryResult<Affirmation[], Error> =>
+export const useDashboardAffirmationDeck = (
+  options: UseDashboardAffirmationDeckOptions = {}
+): UseQueryResult<Affirmation[], Error> =>
   useQuery({
     queryKey: dashboardAffirmationDeckQueryKey,
     queryFn: loadDashboardAffirmationDeck,
     staleTime: Infinity,
+    enabled: options.enabled ?? true,
   });

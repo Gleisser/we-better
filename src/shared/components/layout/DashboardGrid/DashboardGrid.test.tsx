@@ -68,7 +68,24 @@ describe('DashboardGrid', () => {
     );
   });
 
-  it('renders Dream Board widget after Mood widget and applies dreamBoard grid class', async () => {
+  it('keeps optional lower widgets deferred until the dashboard is unlocked', async () => {
+    render(<DashboardGrid />);
+
+    expect(await screen.findByTestId('mock-mood-widget')).not.toBeNull();
+    expect(screen.queryByTestId('mock-dream-board-widget')).toBeNull();
+    expect(screen.queryByTestId('mock-habits-widget')).toBeNull();
+    expect(screen.queryByTestId('mock-goals-widget')).toBeNull();
+
+    expect(screen.getByTestId('dreamBoard-slot').getAttribute('data-dashboard-state')).toBe(
+      'deferred'
+    );
+    expect(screen.getByTestId('habits-slot').getAttribute('data-dashboard-state')).toBe('deferred');
+    expect(screen.getByTestId('goals-slot').getAttribute('data-dashboard-state')).toBe('deferred');
+  });
+
+  it('renders Dream Board widget after Mood widget once optional widgets are unlocked', async () => {
+    mockUseIdleActivation.mockReturnValue(true);
+
     render(<DashboardGrid />);
 
     const moodWidget = await screen.findByTestId('mock-mood-widget');

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import styles from './MoodWidget.module.css';
 import { useDashboardTranslation } from '@/shared/hooks/useTranslation';
 import { useMood } from '@/shared/hooks/useMood';
+import { useDashboardOverview } from '@/features/dashboard/DashboardOverviewContext';
 import type { QueryBehaviorOptions } from '@/shared/hooks/utils/queryBehavior';
 import type { MoodId, MoodPulseDirection } from '@/core/services/moodService';
 import { getLocalDateString } from '@/utils/helpers/dateUtils';
@@ -214,6 +215,8 @@ const describeArc = (
 
 const MoodWidget = (): JSX.Element => {
   const { t, currentLanguage } = useDashboardTranslation();
+  const dashboardOverview = useDashboardOverview();
+  const isDashboardOverviewManaged = dashboardOverview !== null;
   const {
     saveMoodEntry,
     getMoodForDate,
@@ -224,7 +227,10 @@ const MoodWidget = (): JSX.Element => {
     isWeeklyPulseLoading,
     isMonthlyPulseLoading,
     error,
-  } = useMood(DASHBOARD_MOOD_QUERY_OPTIONS);
+  } = useMood(DASHBOARD_MOOD_QUERY_OPTIONS, {
+    enabled: !isDashboardOverviewManaged,
+    initialData: dashboardOverview?.data?.mood ?? null,
+  });
 
   const translate = useCallback(
     (key: string, options?: Record<string, unknown>): string => {
@@ -248,10 +254,12 @@ const MoodWidget = (): JSX.Element => {
   }, [todayMood]);
 
   useEffect(() => {
-    if (error) {
-      console.error('Mood widget failed to sync data:', error);
+    const resolvedError = isDashboardOverviewManaged ? (dashboardOverview?.error ?? null) : error;
+
+    if (resolvedError) {
+      console.error('Mood widget failed to sync data:', resolvedError);
     }
-  }, [error]);
+  }, [dashboardOverview?.error, error, isDashboardOverviewManaged]);
 
   const history = useMemo<MoodHistoryPoint[]>(() => {
     return getRecentDates(HISTORY_DAYS).map(date => {
@@ -463,14 +471,12 @@ const MoodWidget = (): JSX.Element => {
     () => ({ '--accent-color': selectedMood.accent }) as CSSProperties,
     [selectedMood.accent]
   );
+  const isBusy = isDashboardOverviewManaged
+    ? dashboardOverview.isLoading
+    : isLoading || isWeeklyPulseLoading || isMonthlyPulseLoading;
 
   return (
-    <section
-      className={styles.container}
-      style={accentStyle}
-      aria-live="polite"
-      aria-busy={isLoading || isWeeklyPulseLoading || isMonthlyPulseLoading}
-    >
+    <section className={styles.container} style={accentStyle} aria-live="polite" aria-busy={isBusy}>
       <header className={styles.header}>
         <div>
           <h2 className={styles.title}>{translate('widgets.mood.title')}</h2>
