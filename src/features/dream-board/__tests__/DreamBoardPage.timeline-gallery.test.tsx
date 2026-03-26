@@ -2,7 +2,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeAll, beforeEach, afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 import DreamBoardPage from '../DreamBoardPage';
 import { DreamBoardContentType, DreamBoardData } from '../types';
-import { getLatestDreamBoardData, saveDreamBoardData } from '../api/dreamBoardApi';
+import {
+  DreamBoardOverviewData,
+  getDreamBoardOverview,
+  saveDreamBoardData,
+} from '../api/dreamBoardApi';
 import { createMilestoneForContent } from '../services/milestonesService';
 import { validateDreamBoardUploadFile } from '../utils/imagePersistence';
 import { uploadDreamBoardImageFile } from '../utils/imageStorage';
@@ -20,7 +24,7 @@ vi.mock('@/shared/hooks/useTranslation', () => ({
 }));
 
 vi.mock('../api/dreamBoardApi', () => ({
-  getLatestDreamBoardData: vi.fn(),
+  getDreamBoardOverview: vi.fn(),
   saveDreamBoardData: vi.fn(),
 }));
 
@@ -103,7 +107,7 @@ vi.mock('../components/CosmicDreamExperience/CosmicDreamExperience', () => ({
   CosmicDreamExperience: () => <div data-testid="dream-experience" />,
 }));
 
-const mockedGetLatestDreamBoardData = vi.mocked(getLatestDreamBoardData);
+const mockedGetDreamBoardOverview = vi.mocked(getDreamBoardOverview);
 const mockedSaveDreamBoardData = vi.mocked(saveDreamBoardData);
 const mockedCreateMilestoneForContent = vi.mocked(createMilestoneForContent);
 const mockedValidateDreamBoardUploadFile = vi.mocked(validateDreamBoardUploadFile);
@@ -125,6 +129,23 @@ const createDreamBoardData = (count: number): DreamBoardData => ({
     alt: `Dream ${index + 1}`,
     caption: `Dream ${index + 1}`,
   })),
+});
+
+const createDreamBoardOverview = (board: DreamBoardData | null): DreamBoardOverviewData => ({
+  board,
+  progressByContentId: {},
+  milestonesByContentId: {},
+  weather: {
+    overall: 'cloudy' as const,
+    categoryStatus: {},
+    message: 'Weather snapshot',
+    calculatedAt: new Date().toISOString(),
+  },
+  challenges: {
+    activeChallenges: [],
+    completedChallenges: [],
+    latestChallengeCompletionById: {},
+  },
 });
 
 class MockFileReader {
@@ -156,7 +177,7 @@ beforeEach(() => {
   mockedValidateDreamBoardUploadFile.mockClear();
   mockedUploadDreamBoardImageFile.mockClear();
 
-  mockedGetLatestDreamBoardData.mockResolvedValue(null);
+  mockedGetDreamBoardOverview.mockResolvedValue(createDreamBoardOverview(null));
   mockedSaveDreamBoardData.mockResolvedValue(createDreamBoardData(1));
   mockedValidateDreamBoardUploadFile.mockResolvedValue({
     originalBytes: 1024,
@@ -218,7 +239,9 @@ describe('DreamBoardPage timeline gallery flow', () => {
   });
 
   it('renders inline gallery before Quick Vision', async () => {
-    mockedGetLatestDreamBoardData.mockResolvedValue(createDreamBoardData(1));
+    mockedGetDreamBoardOverview.mockResolvedValue(
+      createDreamBoardOverview(createDreamBoardData(1))
+    );
 
     render(<DreamBoardPage />);
 
@@ -234,7 +257,9 @@ describe('DreamBoardPage timeline gallery flow', () => {
   });
 
   it('opens upload form and saves title/category/milestones for a new image', async () => {
-    mockedGetLatestDreamBoardData.mockResolvedValue(createDreamBoardData(1));
+    mockedGetDreamBoardOverview.mockResolvedValue(
+      createDreamBoardOverview(createDreamBoardData(1))
+    );
     mockedSaveDreamBoardData.mockResolvedValue(createDreamBoardData(2));
 
     render(<DreamBoardPage />);
@@ -299,7 +324,9 @@ describe('DreamBoardPage timeline gallery flow', () => {
   });
 
   it('removes an image and schedules autosave', async () => {
-    mockedGetLatestDreamBoardData.mockResolvedValue(createDreamBoardData(1));
+    mockedGetDreamBoardOverview.mockResolvedValue(
+      createDreamBoardOverview(createDreamBoardData(1))
+    );
     mockedSaveDreamBoardData.mockResolvedValue(createDreamBoardData(0));
 
     render(<DreamBoardPage />);
@@ -323,7 +350,9 @@ describe('DreamBoardPage timeline gallery flow', () => {
   });
 
   it('does not remove an image when user cancels confirmation', async () => {
-    mockedGetLatestDreamBoardData.mockResolvedValue(createDreamBoardData(1));
+    mockedGetDreamBoardOverview.mockResolvedValue(
+      createDreamBoardOverview(createDreamBoardData(1))
+    );
     vi.mocked(window.confirm).mockReturnValue(false);
 
     render(<DreamBoardPage />);
@@ -337,7 +366,9 @@ describe('DreamBoardPage timeline gallery flow', () => {
   });
 
   it('shows image limit error when trying to add more than 7 images', async () => {
-    mockedGetLatestDreamBoardData.mockResolvedValue(createDreamBoardData(7));
+    mockedGetDreamBoardOverview.mockResolvedValue(
+      createDreamBoardOverview(createDreamBoardData(7))
+    );
 
     render(<DreamBoardPage />);
 
@@ -349,7 +380,9 @@ describe('DreamBoardPage timeline gallery flow', () => {
   });
 
   it('shows file-size validation feedback as soon as an oversized image is chosen', async () => {
-    mockedGetLatestDreamBoardData.mockResolvedValue(createDreamBoardData(1));
+    mockedGetDreamBoardOverview.mockResolvedValue(
+      createDreamBoardOverview(createDreamBoardData(1))
+    );
     mockedValidateDreamBoardUploadFile.mockResolvedValueOnce({
       originalBytes: 7 * 1024 * 1024,
       fitsLimit: false,
@@ -378,7 +411,9 @@ describe('DreamBoardPage timeline gallery flow', () => {
   });
 
   it('does not render the old My Dream Board button in Quick Vision', async () => {
-    mockedGetLatestDreamBoardData.mockResolvedValue(createDreamBoardData(1));
+    mockedGetDreamBoardOverview.mockResolvedValue(
+      createDreamBoardOverview(createDreamBoardData(1))
+    );
 
     render(<DreamBoardPage />);
 

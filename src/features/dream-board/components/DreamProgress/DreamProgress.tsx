@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 import styles from './DreamProgress.module.css';
 import { Dream, Milestone } from '../../types';
-import { getMilestonesForContent } from '../../services/milestonesService';
+import { getMilestonesForContents } from '../../services/milestonesService';
 
 // CategoryDetails type for styling and presentation
 type CategoryDetails = {
@@ -34,18 +34,25 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMilestones = async (): Promise<void> => {
-      try {
-        const milestonesMap: Record<string, Milestone[]> = {};
+    if (fetchedMilestones) {
+      setDreamMilestones(fetchedMilestones);
+      setLoading(false);
+      return;
+    }
 
-        for (const dream of dreams) {
-          // Assuming dream.id is the content ID for milestones
-          const milestones = await getMilestonesForContent(dream.id);
-          milestonesMap[dream.id] = milestones;
-        }
+    if (dreams.length === 0) {
+      setDreamMilestones({});
+      setLoading(false);
+      return;
+    }
+
+    const fetchMilestones = async (): Promise<void> => {
+      setLoading(true);
+
+      try {
+        const milestonesMap = await getMilestonesForContents(dreams.map(dream => dream.id));
 
         setDreamMilestones(milestonesMap);
-        // Pass the fetched milestones to parent component
         onMilestonesLoaded?.(milestonesMap);
       } catch (error) {
         console.error('❌ Error fetching dream milestones:', error);
@@ -54,10 +61,8 @@ const DreamProgress: React.FC<DreamProgressProps> = ({
       }
     };
 
-    if (dreams.length > 0) {
-      fetchMilestones();
-    }
-  }, [dreams, onMilestonesLoaded]);
+    void fetchMilestones();
+  }, [dreams, fetchedMilestones, onMilestonesLoaded]);
 
   // Use fetched milestones from parent if available, otherwise use local state
   const currentMilestones = fetchedMilestones || dreamMilestones;

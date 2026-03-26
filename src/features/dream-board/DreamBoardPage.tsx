@@ -10,9 +10,10 @@ import {
   DreamBoardContent,
   DreamBoardContentType,
 } from './types';
-import { saveDreamBoardData, getLatestDreamBoardData } from './api/dreamBoardApi';
+import { getDreamBoardOverview, saveDreamBoardData } from './api/dreamBoardApi';
+import { DreamChallenge as DreamChallengeRecord } from './api/dreamChallengesApi';
+import { DreamWeatherResponse } from './api/dreamWeatherApi';
 import { mockCategories, mockInsights, mockNotifications } from './mock-data';
-import { useDreamWeather } from './hooks/useDreamWeather';
 import { CosmicDreamExperience } from './components/CosmicDreamExperience/CosmicDreamExperience';
 import categoryDetails from './components/constants/dreamboard';
 import achievementBadges from './components/constants/achievements';
@@ -68,13 +69,6 @@ const getCategoryDetails = (category: string): CategoryDetails => {
 const DreamBoardPage: React.FC = () => {
   const { t } = useDreamBoardTranslation();
 
-  // Dream Weather hook
-  const { weather: dreamWeather, error: weatherError } = useDreamWeather({
-    includeMetrics: false,
-    includeCategoryStatus: true,
-    autoFetch: true,
-  });
-
   // Add a state to track if the user has created a dream board yet
   const [expandedMiniBoard, setExpandedMiniBoard] = useState(true);
   const [activeTab, setActiveTab] = useState('vision-board');
@@ -89,6 +83,7 @@ const DreamBoardPage: React.FC = () => {
   const autosaveTimeoutRef = useRef<number | null>(null);
   const pendingDreamsRef = useRef<Dream[] | null>(null);
   const pendingMilestonesRef = useRef<Record<string, DreamImageMilestoneInput[]>>({});
+  const hasBootstrappedOverviewRef = useRef(false);
   const firstImageInputRef = useRef<HTMLInputElement>(null);
 
   // New state variables for Dream Categories section
@@ -117,6 +112,12 @@ const DreamBoardPage: React.FC = () => {
   const [fetchedDreamMilestones, setFetchedDreamMilestones] = useState<Record<string, Milestone[]>>(
     {}
   );
+  const [dreamWeather, setDreamWeather] = useState<DreamWeatherResponse | null>(null);
+  const [challengeSnapshot, setChallengeSnapshot] = useState<{
+    activeChallenges: DreamChallengeRecord[];
+    completedChallenges: DreamChallengeRecord[];
+    latestChallengeCompletionById: Record<string, string>;
+  } | null>(null);
 
   // Toggle mini vision board expansion
   const toggleMiniBoard = (): void => {
@@ -223,7 +224,10 @@ const DreamBoardPage: React.FC = () => {
   };
 
   // Convert DreamBoardData to Dreams format for frontend
-  const convertDreamBoardDataToDreams = (data: DreamBoardData): Dream[] => {
+  const convertDreamBoardDataToDreams = (
+    data: DreamBoardData,
+    progressByContentId: Record<string, number> = {}
+  ): Dream[] => {
     const backendData = data as DreamBoardData & { created_at?: string; updated_at?: string };
 
     return data.content.map((contentItem, index) => ({
@@ -232,7 +236,7 @@ const DreamBoardPage: React.FC = () => {
       description: contentItem.caption || '',
       category: contentItem.categoryId || 'General',
       timeframe: 'mid-term' as const,
-      progress: 0,
+      progress: progressByContentId[contentItem.id] ?? 0,
       createdAt: data.createdAt || backendData.created_at || new Date().toISOString(),
       imageUrl: contentItem.src,
       imageStorageBucket: contentItem.storageBucket,
@@ -509,23 +513,42 @@ const DreamBoardPage: React.FC = () => {
 
   // Load existing dream board data on component mount
   useEffect(() => {
+    if (hasBootstrappedOverviewRef.current) {
+      return;
+    }
+
+    hasBootstrappedOverviewRef.current = true;
+
     const loadDreamBoardData = async (): Promise<void> => {
       setIsLoading(true);
       setLoadError(null);
 
       try {
-        const data = await getLatestDreamBoardData();
-        if (data?.id) {
-          setDreamBoardId(data.id);
+        const overview = await getDreamBoardOverview();
+        if (!overview) {
+          throw new Error('Failed to load dream board overview');
         }
 
-        if (data?.content && data.content.length > 0) {
-          setDreams(convertDreamBoardDataToDreams(data));
+        setDreamWeather(overview.weather);
+        setChallengeSnapshot(overview.challenges);
+        setFetchedDreamMilestones(overview.milestonesByContentId);
+
+        if (overview.board?.id) {
+          setDreamBoardId(overview.board.id);
+        } else {
+          setDreamBoardId(null);
+        }
+
+        if (overview.board?.content && overview.board.content.length > 0) {
+          setDreams(convertDreamBoardDataToDreams(overview.board, overview.progressByContentId));
         } else {
           setDreams([]);
         }
       } catch (error) {
         console.error('Error loading dream board:', error);
+        setDreamWeather(null);
+        setChallengeSnapshot(null);
+        setFetchedDreamMilestones({});
         setLoadError('LOAD_FAILED');
       } finally {
         setIsLoading(false);
@@ -751,10 +774,10 @@ const DreamBoardPage: React.FC = () => {
     () =>
       dreamWeather ?? {
         overall: 'cloudy' as const,
-        message: weatherError ? 'Unable to load weather data' : 'Loading weather...',
+        message: 'Unable to load weather data',
         categoryStatus: {},
       },
-    [dreamWeather, weatherError]
+    [dreamWeather]
   );
 
   const triggerFirstImageUpload = (): void => {
@@ -966,7 +989,10 @@ const DreamBoardPage: React.FC = () => {
       {!hasNoDreams && (
         <div className="mt-8 grid gap-4 md:gap-8 lg:grid-cols-2">
           <FooterTools weather={footerWeather} notifications={mockNotifications} />
-          <DreamChallengeContainer dreams={dreams} />
+          <DreamChallengeContainer
+            dreams={dreams}
+            initialChallengeData={challengeSnapshot ?? undefined}
+          />
         </div>
       )}
 
