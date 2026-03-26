@@ -2,7 +2,10 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationsTranslation } from '@/shared/hooks/useTranslation';
-import { useNotificationsFeed } from '@/shared/hooks/useNotificationsFeed';
+import {
+  DEFAULT_NOTIFICATIONS_FEED_PAGE_SIZE,
+  useNotificationsFeed,
+} from '@/shared/hooks/useNotificationsFeed';
 import { useAuth } from '@/shared/hooks/useAuth';
 import type { NotificationFeedItemDto } from '@/core/services/notificationsService';
 import styles from './Notifications.module.css';
@@ -54,9 +57,16 @@ const Notifications = (): JSX.Element => {
     markAllAsRead,
     loadMore,
   } = useNotificationsFeed({
-    pageSize: 20,
+    pageSize: DEFAULT_NOTIFICATIONS_FEED_PAGE_SIZE,
     enabled: true,
   });
+  const visibleUnreadCount = useMemo(() => {
+    if (hasMore) {
+      return unreadNotificationCount;
+    }
+
+    return notifications.reduce((count, notification) => count + (notification.read_at ? 0 : 1), 0);
+  }, [hasMore, notifications, unreadNotificationCount]);
 
   const groupedNotifications = useMemo<TimeGroup[]>(() => {
     const today = toDateKey(new Date().toISOString());
@@ -100,7 +110,7 @@ const Notifications = (): JSX.Element => {
             onClick={() => {
               void markAllAsRead();
             }}
-            disabled={unreadNotificationCount === 0 || isLoading}
+            disabled={visibleUnreadCount === 0 || isLoading}
           >
             {t('notificationsPage.markAllAsRead') as string}
           </button>

@@ -13,7 +13,11 @@ interface UsePlanCatalogResult {
   refetch: () => Promise<void>;
 }
 
-export function usePlanCatalog(): UsePlanCatalogResult {
+interface UsePlanCatalogOptions {
+  enabled?: boolean;
+}
+
+export function usePlanCatalog(options: UsePlanCatalogOptions = {}): UsePlanCatalogResult {
   const { user } = useAuth();
   const userId = user?.id ?? null;
 
@@ -27,7 +31,7 @@ export function usePlanCatalog(): UsePlanCatalogResult {
 
       return result.data ?? [];
     },
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && (options.enabled ?? true),
     meta: AUTH_SCOPED_QUERY_META,
   });
 

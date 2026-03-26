@@ -8,6 +8,8 @@ import {
 } from '@/core/services/notificationsService';
 import { useAuth } from '@/shared/hooks/useAuth';
 
+export const DEFAULT_NOTIFICATIONS_FEED_PAGE_SIZE = 20;
+
 interface UseNotificationsFeedOptions {
   pageSize?: number;
   unreadOnly?: boolean;
@@ -187,7 +189,7 @@ export function useNotificationsFeed(
   const queryClient = useQueryClient();
   const { user, decrementUnreadNotificationCount, clearUnreadNotificationCount } = useAuth();
   const userId = user?.id ?? null;
-  const pageSize = Math.max(1, options.pageSize ?? 20);
+  const pageSize = Math.max(1, options.pageSize ?? DEFAULT_NOTIFICATIONS_FEED_PAGE_SIZE);
   const unreadOnly = options.unreadOnly ?? false;
   const enabled = Boolean(userId) && (options.enabled ?? true);
 

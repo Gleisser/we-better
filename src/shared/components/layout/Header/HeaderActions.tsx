@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import { BellIcon } from '@/shared/components/common/icons';
 import NotificationsPopup from '../NotificationsPopup/NotificationsPopup';
 import { MobileNotifications } from '../NotificationsPanel/MobileNotifications';
@@ -10,26 +11,34 @@ import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useThemeToggle } from '@/shared/hooks/useTheme';
 import { useUserPreferences } from '@/shared/hooks/useUserPreferences';
 import { useAuth } from '@/shared/hooks/useAuth';
-import { useNotificationsFeed } from '@/shared/hooks/useNotificationsFeed';
+import {
+  DEFAULT_NOTIFICATIONS_FEED_PAGE_SIZE,
+  useNotificationsFeed,
+} from '@/shared/hooks/useNotificationsFeed';
 import { getInitials } from '@/shared/utils/string/getInitials';
 import styles from './HeaderActions.module.css';
 
+const NOTIFICATIONS_PREVIEW_LIMIT = 8;
+
 const HeaderActions = (): JSX.Element => {
+  const location = useLocation();
   const { t } = useCommonTranslation();
   const { user, unreadNotificationCount = 0 } = useAuth();
   const { activePopup, setActivePopup } = useHeader();
   const [isMobile, setIsMobile] = useState(false);
   const [avatarLoadError, setAvatarLoadError] = useState(false);
-  const notificationsEnabled = activePopup === 'notifications';
+  const isNotificationsRoute = location.pathname.startsWith('/app/notifications');
+  const notificationsEnabled = activePopup === 'notifications' && !isNotificationsRoute;
   const {
     notifications,
     isLoading: notificationsLoading,
     markAsRead,
     markAllAsRead,
   } = useNotificationsFeed({
-    pageSize: 8,
+    pageSize: DEFAULT_NOTIFICATIONS_FEED_PAGE_SIZE,
     enabled: notificationsEnabled,
   });
+  const previewNotifications = notifications.slice(0, NOTIFICATIONS_PREVIEW_LIMIT);
 
   // Theme functionality
   const { currentMode, effectiveTheme, toggleTheme, isDark } = useThemeToggle();
@@ -90,6 +99,12 @@ const HeaderActions = (): JSX.Element => {
   useEffect(() => {
     setAvatarLoadError(false);
   }, [userAvatarUrl]);
+
+  useEffect(() => {
+    if (isNotificationsRoute && activePopup === 'notifications') {
+      setActivePopup(null);
+    }
+  }, [activePopup, isNotificationsRoute, setActivePopup]);
 
   // Close popups when clicking outside
   useEffect(() => {
@@ -194,7 +209,14 @@ const HeaderActions = (): JSX.Element => {
         <button
           className={styles.notificationButton}
           aria-label={t('header.notifications') as string}
-          onClick={() => setActivePopup(activePopup === 'notifications' ? null : 'notifications')}
+          onClick={() => {
+            if (isNotificationsRoute) {
+              setActivePopup(null);
+              return;
+            }
+
+            setActivePopup(activePopup === 'notifications' ? null : 'notifications');
+          }}
         >
           <BellIcon className={styles.notificationIcon} />
           {unreadNotificationCount > 0 && (
@@ -210,10 +232,10 @@ const HeaderActions = (): JSX.Element => {
         </button>
 
         {/* Desktop Notifications */}
-        {!isMobile && activePopup === 'notifications' && (
+        {!isMobile && activePopup === 'notifications' && !isNotificationsRoute && (
           <NotificationsPopup
             onClose={() => setActivePopup(null)}
-            notifications={notifications}
+            notifications={previewNotifications}
             unreadCount={unreadNotificationCount}
             isLoading={notificationsLoading}
             onMarkAsRead={notificationId => {
@@ -227,11 +249,11 @@ const HeaderActions = (): JSX.Element => {
       </div>
 
       {/* Mobile Notifications - Render outside the notification container */}
-      {isMobile && activePopup === 'notifications' && (
+      {isMobile && activePopup === 'notifications' && !isNotificationsRoute && (
         <MobileNotifications
           isOpen={true}
           onClose={() => setActivePopup(null)}
-          notifications={notifications}
+          notifications={previewNotifications}
           unreadCount={unreadNotificationCount}
           isLoading={notificationsLoading}
           onMarkAsRead={notificationId => {

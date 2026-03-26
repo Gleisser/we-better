@@ -3,7 +3,7 @@ import { AUTH_SCOPED_QUERY_META } from '@/core/config/react-query';
 import { billingService, type BillingSummary } from '@/core/services/billingService';
 import { useAuth } from '@/shared/hooks/useAuth';
 
-const BILLING_SUMMARY_QUERY_KEY = (userId: string | null) =>
+export const billingSummaryQueryKey = (userId: string | null) =>
   ['billingSummary', userId ?? 'anonymous'] as const;
 
 interface UseBillingSummaryResult {
@@ -13,12 +13,16 @@ interface UseBillingSummaryResult {
   refetch: () => Promise<void>;
 }
 
-export function useBillingSummary(): UseBillingSummaryResult {
+interface UseBillingSummaryOptions {
+  enabled?: boolean;
+}
+
+export function useBillingSummary(options: UseBillingSummaryOptions = {}): UseBillingSummaryResult {
   const { user } = useAuth();
   const userId = user?.id ?? null;
 
   const query = useQuery({
-    queryKey: BILLING_SUMMARY_QUERY_KEY(userId),
+    queryKey: billingSummaryQueryKey(userId),
     queryFn: async (): Promise<BillingSummary | null> => {
       const result = await billingService.getBillingSummary();
       if (result.error) {
@@ -27,7 +31,7 @@ export function useBillingSummary(): UseBillingSummaryResult {
 
       return result.data;
     },
-    enabled: Boolean(userId),
+    enabled: Boolean(userId) && (options.enabled ?? true),
     meta: AUTH_SCOPED_QUERY_META,
   });
 

@@ -57,6 +57,7 @@
       "trend": {
         "weekly": "Pulso de humor semanal",
         "monthly": "Pulso de humor mensal",
+        "loading": "Carregando histórico de humor...",
         "average": "Humor médio: {{value}}",
         "coverage": "Registros de humor: {{count}}/{{total}}",
         "weeklyEmpty": "Ainda não há registros de humor nos últimos 7 dias.",

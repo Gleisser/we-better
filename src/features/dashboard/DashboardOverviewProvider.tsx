@@ -7,6 +7,7 @@ import {
   type DashboardOverviewContextValue,
 } from './DashboardOverviewContext';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { getLocalDateString } from '@/utils/helpers/dateUtils';
 
 const dashboardOverviewQueryKey = (userId: string | null) =>
   ['dashboardOverview', userId ?? 'anonymous'] as const;
@@ -14,11 +15,12 @@ const dashboardOverviewQueryKey = (userId: string | null) =>
 export const DashboardOverviewProvider = ({ children }: { children: ReactNode }): JSX.Element => {
   const { user, isLoading: authLoading } = useAuth();
   const userId = user?.id ?? null;
+  const endDate = getLocalDateString();
 
   const overviewQuery = useQuery({
-    queryKey: dashboardOverviewQueryKey(userId),
+    queryKey: [...dashboardOverviewQueryKey(userId), endDate],
     queryFn: async () => {
-      const result = await dashboardOverviewService.getOverview();
+      const result = await dashboardOverviewService.getOverview(undefined, endDate);
 
       if (result.error || !result.data) {
         throw new Error(result.error ?? 'Failed to load dashboard overview');
