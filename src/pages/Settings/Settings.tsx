@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSettingsTranslation } from '@/shared/hooks/useTranslation';
 import { ChevronDownIcon, SettingsIcon } from '@/shared/components/common/icons';
@@ -9,14 +9,9 @@ import Toggle from '@/shared/components/common/Toggle';
 import PricingModal from '@/shared/components/billing/PricingModal/PricingModal';
 import NotificationPreferencesSection from './components/NotificationPreferencesSection';
 import { sessionsService } from '@/core/services/sessionsService';
-import {
-  billingService,
-  type BillingSummary,
-  type PlanCode,
-  type BillingCycle,
-  type PortalFlow,
-} from '@/core/services/billingService';
+import { type BillingSummary } from '@/core/services/billingService';
 import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
+import { useBillingStripeActions } from '@/shared/hooks/useBillingStripeActions';
 import { usePlanCatalog } from '@/shared/hooks/usePlanCatalog';
 import { useSessionsHistory, useSessionsOverview } from '@/shared/hooks/useSessionsOverview';
 import styles from './Settings.module.css';
@@ -305,10 +300,7 @@ const Settings = (): JSX.Element => {
   const [showLoginHistory, setShowLoginHistory] = useState(false);
   const [isSigningOutSessions, setIsSigningOutSessions] = useState(false);
   const [sessionsActionError, setSessionsActionError] = useState<string | null>(null);
-  const [isBillingActionLoading, setIsBillingActionLoading] = useState(false);
-  const [billingError, setBillingError] = useState<string | null>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
-  const [selectedBillingCycle, setSelectedBillingCycle] = useState<BillingCycle>('monthly');
   const [isNotificationsSectionOpen, setIsNotificationsSectionOpen] = useState(true);
   const {
     data: billingInfo,
@@ -337,7 +329,20 @@ const Settings = (): JSX.Element => {
     error: planCatalogError,
     isLoading: isPlanCatalogLoading,
   } = usePlanCatalog();
-  const effectiveBillingError = billingError || billingSummaryError || planCatalogError;
+  const {
+    selectedCycle: selectedBillingCycle,
+    setSelectedCycle: setSelectedBillingCycle,
+    isActionLoading: isBillingActionLoading,
+    actionError: billingActionError,
+    openPortalSession,
+    managePlan,
+    startCheckout,
+  } = useBillingStripeActions({
+    billingInfo,
+    checkoutErrorMessage: t('settings.errors.startCheckout') as string,
+    openPortalErrorMessage: t('settings.errors.openBillingPortal') as string,
+  });
+  const effectiveBillingError = billingActionError || billingSummaryError || planCatalogError;
   const sessionsError = sessionsActionError || sessionsOverviewError || sessionHistoryError;
 
   // Handle privacy setting changes
@@ -400,69 +405,12 @@ const Settings = (): JSX.Element => {
     });
   };
 
-  useEffect(() => {
-    if (billingInfo?.billingCycle) {
-      setSelectedBillingCycle(billingInfo.billingCycle);
-    }
-  }, [billingInfo?.billingCycle]);
-
-  const buildReturnUrl = (): string => {
-    return window.location.href;
-  };
-
-  const openPortalSession = async (flow: PortalFlow): Promise<void> => {
-    setIsBillingActionLoading(true);
-    setBillingError(null);
-
-    const { data, error } = await billingService.createPortalSession(flow, buildReturnUrl());
-    if (error || !data?.url) {
-      setBillingError(error || (t('settings.errors.openBillingPortal') as string));
-      setIsBillingActionLoading(false);
-      return;
-    }
-
-    window.location.assign(data.url);
-  };
-
   const handleManagePlan = async (): Promise<void> => {
-    if (!billingInfo) {
-      return;
-    }
-
-    if (billingInfo.currentPlan === 'free') {
-      setIsPricingModalOpen(true);
-      return;
-    }
-
-    await openPortalSession('manage');
-  };
-
-  const handlePricingCheckout = async (
-    planCode: Exclude<PlanCode, 'free'>,
-    cycle: BillingCycle
-  ): Promise<void> => {
-    setIsBillingActionLoading(true);
-    setBillingError(null);
-
-    const successUrl = new URL(window.location.href);
-    successUrl.searchParams.set('billing', 'success');
-    const cancelUrl = new URL(window.location.href);
-    cancelUrl.searchParams.set('billing', 'cancel');
-
-    const { data, error } = await billingService.createCheckoutSession(
-      planCode,
-      cycle,
-      successUrl.toString(),
-      cancelUrl.toString()
-    );
-
-    if (error || !data?.url) {
-      setBillingError(error || (t('settings.errors.startCheckout') as string));
-      setIsBillingActionLoading(false);
-      return;
-    }
-
-    window.location.assign(data.url);
+    await managePlan({
+      onFreePlan: () => {
+        setIsPricingModalOpen(true);
+      },
+    });
   };
 
   // Handle data export
@@ -1319,7 +1267,7 @@ const Settings = (): JSX.Element => {
         selectedCycle={selectedBillingCycle}
         onCycleChange={setSelectedBillingCycle}
         onCheckout={(planCode, cycle) => {
-          void handlePricingCheckout(planCode, cycle);
+          void startCheckout(planCode, cycle);
         }}
         onPortalManage={() => {
           void openPortalSession('manage');

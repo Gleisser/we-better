@@ -57,6 +57,7 @@
       "trend": {
         "weekly": "Weekly mood pulse",
         "monthly": "Monthly mood pulse",
+        "loading": "Loading mood history...",
         "average": "Average mood: {{value}}",
         "coverage": "Mood logs: {{count}}/{{total}}",
         "weeklyEmpty": "No mood logs in the last 7 days yet.",

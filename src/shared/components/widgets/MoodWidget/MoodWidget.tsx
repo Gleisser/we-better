@@ -19,7 +19,7 @@ interface MoodDefinition {
 interface MoodHistoryPoint {
   date: Date;
   dateKey: string;
-  moodIndex: number;
+  moodIndex: number | null;
 }
 
 interface MonthlyTrendDay {
@@ -265,12 +265,11 @@ const MoodWidget = (): JSX.Element => {
     return getRecentDates(HISTORY_DAYS).map(date => {
       const dateKey = getLocalDateString(date);
       const entry = getMoodForDate(dateKey);
-      const moodId = entry?.mood_id ?? FALLBACK_MOOD_ID;
 
       return {
         date,
         dateKey,
-        moodIndex: getMoodIndexFromId(moodId),
+        moodIndex: entry ? getMoodIndexFromId(entry.mood_id) : null,
       };
     });
   }, [getMoodForDate]);
@@ -324,19 +323,32 @@ const MoodWidget = (): JSX.Element => {
 
   const pulseWeeklyTrend = useMemo(() => {
     if (!weeklyPulse) return [];
-    return weeklyPulse.current_week.days.map(point => {
-      const date = new Date(`${point.date}T00:00:00`);
+    const byDate = new Map<string, number>();
+
+    weeklyPulse.current_week.days.forEach(point => {
+      byDate.set(point.date, getMoodIndexFromId(point.mood_id));
+    });
+
+    const startDate = new Date(`${weeklyPulse.window.start_date}T00:00:00`);
+
+    return Array.from({ length: WEEK_DAYS }, (_, index) => {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + index);
+      const dateKey = getLocalDateString(date);
+
       return {
-        key: point.date,
+        key: dateKey,
         label: dayFormatter.format(date),
-        moodIndex: getMoodIndexFromId(point.mood_id),
+        moodIndex: byDate.get(dateKey) ?? null,
       };
     });
   }, [weeklyPulse, dayFormatter]);
 
   const usingPulseData = Boolean(weeklyPulse);
   const hasWeeklyPulseDays = Boolean(weeklyPulse && weeklyPulse.coverage.logged_days > 0);
+  const hasWeeklyFallbackMoods = weeklyTrend.some(point => point.moodIndex !== null);
   const displayedWeeklyTrend = usingPulseData ? pulseWeeklyTrend : weeklyTrend;
+  const hasDisplayedWeeklyMoods = displayedWeeklyTrend.some(point => point.moodIndex !== null);
 
   const weeklyAverageLabel = useMemo(() => {
     if (!weeklyPulse?.current_week.average_mood_id) return null;
@@ -415,6 +427,9 @@ const MoodWidget = (): JSX.Element => {
 
   const usingMonthlyPulseData = Boolean(monthlyPulse);
   const hasMonthlyPulseDays = Boolean(monthlyPulse && monthlyPulse.coverage.logged_days > 0);
+  const hasMonthlyFallbackMoods = monthlyTrend.some(week =>
+    week.moods.some(day => day.moodIndex !== null)
+  );
   const displayedMonthlyTrend = usingMonthlyPulseData ? pulseMonthlyTrend : monthlyTrend;
 
   const monthlyAverageLabel = useMemo(() => {
@@ -471,6 +486,18 @@ const MoodWidget = (): JSX.Element => {
     () => ({ '--accent-color': selectedMood.accent }) as CSSProperties,
     [selectedMood.accent]
   );
+  const isWeeklyTrendLoading = isDashboardOverviewManaged
+    ? (dashboardOverview.isLoading ||
+        (Boolean(dashboardOverview.data?.mood) && !weeklyPulse && !hasWeeklyFallbackMoods)) &&
+      !weeklyPulse &&
+      !hasWeeklyFallbackMoods
+    : (isLoading || isWeeklyPulseLoading) && !weeklyPulse && !hasWeeklyFallbackMoods;
+  const isMonthlyTrendLoading = isDashboardOverviewManaged
+    ? (dashboardOverview.isLoading ||
+        (Boolean(dashboardOverview.data?.mood) && !monthlyPulse && !hasMonthlyFallbackMoods)) &&
+      !monthlyPulse &&
+      !hasMonthlyFallbackMoods
+    : (isLoading || isMonthlyPulseLoading) && !monthlyPulse && !hasMonthlyFallbackMoods;
   const isBusy = isDashboardOverviewManaged
     ? dashboardOverview.isLoading
     : isLoading || isWeeklyPulseLoading || isMonthlyPulseLoading;
@@ -674,23 +701,37 @@ const MoodWidget = (): JSX.Element => {
 
         <div className={styles.trendDisplay} data-view={viewMode}>
           {viewMode === 'week' ? (
-            usingPulseData && !hasWeeklyPulseDays ? (
+            isWeeklyTrendLoading ? (
+              <div className={styles.trendLoadingState} role="status">
+                {translate('widgets.mood.trend.loading')}
+              </div>
+            ) : !hasDisplayedWeeklyMoods || (usingPulseData && !hasWeeklyPulseDays) ? (
               <div className={styles.weeklyEmptyState}>
                 {translate('widgets.mood.trend.weeklyEmpty')}
               </div>
             ) : (
               <div className={styles.trendRow}>
                 {displayedWeeklyTrend.map(point => {
-                  const emoji = getStaticEmoji(point.moodIndex);
+                  const emoji = point.moodIndex === null ? null : getStaticEmoji(point.moodIndex);
                   return (
                     <div key={point.key} className={styles.trendItem}>
-                      <div className={styles.trendEmojiLarge}>{emoji}</div>
+                      <div
+                        className={`${styles.trendEmojiLarge} ${
+                          point.moodIndex === null ? styles.trendEmojiLargeEmpty : ''
+                        }`}
+                      >
+                        {emoji}
+                      </div>
                       <span className={styles.trendLabel}>{point.label}</span>
                     </div>
                   );
                 })}
               </div>
             )
+          ) : isMonthlyTrendLoading ? (
+            <div className={styles.trendLoadingState} role="status">
+              {translate('widgets.mood.trend.loading')}
+            </div>
           ) : (
             <div className={styles.monthGrid}>
               {usingMonthlyPulseData && !hasMonthlyPulseDays ? (

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AUTH_SCOPED_QUERY_META } from '@/core/config/react-query';
 import {
   MoodEntry,
@@ -166,6 +166,40 @@ export const useMood = (
     () => moodPulseQueryKey(userId, 28, monthlyEndDate),
     [monthlyEndDate, userId]
   );
+
+  useEffect(() => {
+    if (!initialData || !userId) {
+      return;
+    }
+
+    if (!queryClient.getQueryData<MoodEntriesResponse>(currentEntriesQueryKey)) {
+      queryClient.setQueryData<MoodEntriesResponse>(currentEntriesQueryKey, {
+        entries: initialData.entries,
+        total: initialData.entries.length,
+      });
+    }
+
+    if (!queryClient.getQueryData<WeeklyMoodPulseResponse>(currentWeeklyPulseQueryKey)) {
+      queryClient.setQueryData<WeeklyMoodPulseResponse>(
+        currentWeeklyPulseQueryKey,
+        initialData.weeklyPulse
+      );
+    }
+
+    if (!queryClient.getQueryData<WeeklyMoodPulseResponse>(currentMonthlyPulseQueryKey)) {
+      queryClient.setQueryData<WeeklyMoodPulseResponse>(
+        currentMonthlyPulseQueryKey,
+        initialData.monthlyPulse
+      );
+    }
+  }, [
+    currentEntriesQueryKey,
+    currentMonthlyPulseQueryKey,
+    currentWeeklyPulseQueryKey,
+    initialData,
+    queryClient,
+    userId,
+  ]);
 
   const entriesQuery = useQuery({
     queryKey: currentEntriesQueryKey,

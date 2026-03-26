@@ -1,19 +1,28 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Sidebar from '@/shared/components/layout/Sidebar/Sidebar';
 import HeaderActions from '@/shared/components/layout/Header/HeaderActions';
 import { HeaderProvider } from '@/shared/contexts/HeaderContext';
 import { MobileNav } from '@/shared/components/navigation/MobileNav/MobileNav';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
+import { usePlanCatalog } from '@/shared/hooks/usePlanCatalog';
 import { useCommonTranslation } from '@/shared/hooks/useTranslation';
 import { useTheme, useThemeLoading } from '@/shared/hooks/useTheme';
 import styles from './WeBetterApp.module.css';
 
 const WeBetterApp = (): JSX.Element => {
+  const location = useLocation();
   const { user } = useAuth();
   const { t } = useCommonTranslation();
   const { currentTheme, themeMode } = useTheme();
   const isThemeLoading = useThemeLoading();
+  const isBillingSurface =
+    location.pathname.startsWith('/app/settings') || location.pathname.startsWith('/app/pricing');
+
+  // Keep shared billing queries warm at the app-shell level while the user is in billing surfaces.
+  useBillingSummary({ enabled: isBillingSurface });
+  usePlanCatalog({ enabled: isBillingSurface });
 
   const getGreeting = (): string => {
     const hour = new Date().getHours();

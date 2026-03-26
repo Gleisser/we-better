@@ -51,7 +51,10 @@ class DashboardOverviewService {
     return DashboardOverviewService.instance;
   }
 
-  async getOverview(accessToken?: string): Promise<{
+  async getOverview(
+    accessToken?: string,
+    endDate?: string
+  ): Promise<{
     data: DashboardOverviewResponse | null;
     error: string | null;
   }> {
@@ -61,7 +64,12 @@ class DashboardOverviewService {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch(API_BASE_URL, {
+      const url = new URL(API_BASE_URL);
+      if (endDate) {
+        url.searchParams.set('end_date', endDate);
+      }
+
+      const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
