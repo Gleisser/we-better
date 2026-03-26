@@ -1,7 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef } from 'react';
 import styles from './DreamCategories.module.css';
 import { Dream } from '../../types';
-import { useDreamProgress } from '../../hooks/useDreamProgress';
 import { useDreamBoardTranslation } from '@/shared/hooks/useTranslation';
 
 // CategoryDetails type for styling and presentation
@@ -31,7 +30,6 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
   categories,
   dreams,
   getCategoryDetails,
-  calculateCategoryProgress: _calculateCategoryProgress,
   hoveredCategory,
   setHoveredCategory,
   expandedCategory,
@@ -60,40 +58,7 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
   // Animation refs for categories
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Backend integration for progress tracking
-  const { getProgressForDream, loading: _loading, error } = useDreamProgress();
-  const [dreamProgresses, setDreamProgresses] = useState<Record<string, number>>({});
-
-  // Initialize progress values from backend when component mounts
-  useEffect(() => {
-    const loadProgressValues = async (): Promise<void> => {
-      const progressMap: Record<string, number> = {};
-
-      for (const dream of dreams) {
-        try {
-          // Get latest progress from backend
-          const latestProgress = await getProgressForDream(dream.id);
-          if (latestProgress !== undefined) {
-            progressMap[dream.id] = latestProgress;
-          } else {
-            // Use the current progress from the dream object as fallback
-            progressMap[dream.id] = dream.progress;
-          }
-        } catch (error) {
-          console.error(`Error loading progress for dream ${dream.id}:`, error);
-          progressMap[dream.id] = dream.progress;
-        }
-      }
-
-      setDreamProgresses(progressMap);
-    };
-
-    if (dreams.length > 0) {
-      loadProgressValues();
-    }
-  }, [dreams, getProgressForDream]);
-
-  // Calculate category progress using backend progress data
+  // Calculate category progress from the bootstrapped dream progress state.
   const calculateBackendCategoryProgress = (category: string): number => {
     const categoryDreams = dreams.filter(
       dream => dream.category.toLowerCase() === category.toLowerCase()
@@ -101,9 +66,7 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
     if (categoryDreams.length === 0) return 0;
 
     const totalProgress = categoryDreams.reduce((sum, dream) => {
-      // Use backend progress if available, fallback to dream.progress
-      const progress = dreamProgresses[dream.id] ?? dream.progress;
-      return sum + progress;
+      return sum + dream.progress;
     }, 0);
 
     return totalProgress / categoryDreams.length;
@@ -121,20 +84,11 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
           )}
         </div>
       </div>
-
-      {/* Show error state */}
-      {error && (
-        <div className={styles.errorState}>
-          <span>{t('dreamBoard.categories.errorLoading', { error })}</span>
-        </div>
-      )}
-
       <div className={styles.categoriesGrid}>
         {categories.map(category => {
           const categoryDetail = getCategoryDetails(category);
           const isHovered = hoveredCategory === category;
           const isExpanded = expandedCategory === category;
-          // Use backend-synced progress calculation
           const categoryProgress = calculateBackendCategoryProgress(category);
           const dreamCount = dreams.filter(
             dream => dream.category.toLowerCase() === category.toLowerCase()
@@ -216,8 +170,7 @@ const DreamCategories: React.FC<DreamCategoriesProps> = ({
                           .filter(dream => dream.category.toLowerCase() === category.toLowerCase())
                           .slice(0, 3)
                           .map(dream => {
-                            // Use backend progress if available, fallback to dream.progress
-                            const currentProgress = dreamProgresses[dream.id] ?? dream.progress;
+                            const currentProgress = dream.progress;
                             return (
                               <li key={dream.id} className={styles.quickDreamItem}>
                                 <span className={styles.quickDreamTitle}>{dream.title}</span>

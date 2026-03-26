@@ -19,44 +19,20 @@ const QuickVision: React.FC<QuickVisionProps> = ({
 }) => {
   const { t } = useDreamBoardTranslation();
 
-  const {
-    updateDreamProgress: updateProgressBackend,
-    getProgressForDream,
-    loading,
-    error,
-  } = useDreamProgress();
+  const { updateDreamProgress: updateProgressBackend, loading, error } = useDreamProgress();
   const [dreamProgresses, setDreamProgresses] = useState<Record<string, number>>({});
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Initialize progress values from backend when component mounts
+  // Keep local progress controls in sync with the page-level bootstrap payload.
   useEffect(() => {
-    const loadProgressValues = async (): Promise<void> => {
-      const progressMap: Record<string, number> = {};
-
-      for (const dream of dreams) {
-        try {
-          // Get latest progress from backend
-          const latestProgress = await getProgressForDream(dream.id);
-          if (latestProgress !== undefined) {
-            progressMap[dream.id] = latestProgress;
-          } else {
-            // Use the current progress from the dream object as fallback
-            progressMap[dream.id] = dream.progress;
-          }
-        } catch (error) {
-          console.error(`Error loading progress for dream ${dream.id}:`, error);
-          progressMap[dream.id] = dream.progress;
-        }
-      }
-
-      setDreamProgresses(progressMap);
-    };
-
-    if (dreams.length > 0) {
-      loadProgressValues();
-    }
-  }, [dreams, getProgressForDream]);
+    setDreamProgresses(
+      dreams.reduce<Record<string, number>>((progressMap, dream) => {
+        progressMap[dream.id] = dream.progress;
+        return progressMap;
+      }, {})
+    );
+  }, [dreams]);
 
   // Check if scroll indicator should be shown
   useEffect(() => {

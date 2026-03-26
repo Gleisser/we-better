@@ -14,6 +14,13 @@ import {
   deleteDayProgress,
 } from '../api/dreamChallengesApi';
 
+interface UseDreamChallengesOptions {
+  initialData?: {
+    activeChallenges: DreamChallenge[];
+    completedChallenges: DreamChallenge[];
+  };
+}
+
 interface UseDreamChallengesResult {
   // State
   challenges: DreamChallenge[];
@@ -33,10 +40,20 @@ interface UseDreamChallengesResult {
   getProgressHistory: (challengeId: string) => Promise<DreamChallengeProgress[]>;
 }
 
-export const useDreamChallenges = (): UseDreamChallengesResult => {
-  const [challenges, setChallenges] = useState<DreamChallenge[]>([]);
-  const [activeChallenges, setActiveChallenges] = useState<DreamChallenge[]>([]);
-  const [completedChallenges, setCompletedChallenges] = useState<DreamChallenge[]>([]);
+export const useDreamChallenges = (
+  options: UseDreamChallengesOptions = {}
+): UseDreamChallengesResult => {
+  const initialActiveChallenges = options.initialData?.activeChallenges ?? [];
+  const initialCompletedChallenges = options.initialData?.completedChallenges ?? [];
+  const [challenges, setChallenges] = useState<DreamChallenge[]>([
+    ...initialActiveChallenges,
+    ...initialCompletedChallenges,
+  ]);
+  const [activeChallenges, setActiveChallenges] =
+    useState<DreamChallenge[]>(initialActiveChallenges);
+  const [completedChallenges, setCompletedChallenges] = useState<DreamChallenge[]>(
+    initialCompletedChallenges
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,6 +82,19 @@ export const useDreamChallenges = (): UseDreamChallengesResult => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (!options.initialData) {
+      return;
+    }
+
+    setActiveChallenges(options.initialData.activeChallenges);
+    setCompletedChallenges(options.initialData.completedChallenges);
+    setChallenges([
+      ...options.initialData.activeChallenges,
+      ...options.initialData.completedChallenges,
+    ]);
+  }, [options.initialData]);
 
   /**
    * Create a new challenge
@@ -297,8 +327,12 @@ export const useDreamChallenges = (): UseDreamChallengesResult => {
 
   // Load challenges on mount
   useEffect(() => {
-    loadChallenges();
-  }, [loadChallenges]);
+    if (options.initialData) {
+      return;
+    }
+
+    void loadChallenges();
+  }, [loadChallenges, options.initialData]);
 
   return {
     // State

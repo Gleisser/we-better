@@ -1,16 +1,52 @@
-import { DreamBoardData } from '../types';
+import { DreamBoardData, Milestone } from '../types';
 import { supabase } from '@/core/services/supabaseClient';
 import {
   deleteDreamBoardStorageFiles,
   normalizeDreamBoardDataForPersistence,
 } from '../utils/imageStorage';
+import { DreamChallenge } from './dreamChallengesApi';
+import { DreamMilestone } from './dreamMilestonesApi';
+import { DreamWeatherResponse } from './dreamWeatherApi';
 
 // Define the API URL
 const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/dream-board`;
+const OVERVIEW_API_URL = `${API_URL}/overview`;
 
 type ApiRequestOptions = {
   onUploadProgress?: (percent: number) => void;
 };
+
+type DreamBoardOverviewApiResponse = {
+  board: DreamBoardData | null;
+  progressByContentId: Record<string, number>;
+  milestonesByContentId: Record<string, DreamMilestone[]>;
+  weather: DreamWeatherResponse | null;
+  challenges: {
+    activeChallenges: DreamChallenge[];
+    completedChallenges: DreamChallenge[];
+    latestChallengeCompletionById: Record<string, string>;
+  };
+};
+
+export type DreamBoardOverviewData = {
+  board: DreamBoardData | null;
+  progressByContentId: Record<string, number>;
+  milestonesByContentId: Record<string, Milestone[]>;
+  weather: DreamWeatherResponse | null;
+  challenges: {
+    activeChallenges: DreamChallenge[];
+    completedChallenges: DreamChallenge[];
+    latestChallengeCompletionById: Record<string, string>;
+  };
+};
+
+const convertDreamMilestoneToMilestone = (dreamMilestone: DreamMilestone): Milestone => ({
+  id: dreamMilestone.id,
+  title: dreamMilestone.title,
+  description: dreamMilestone.description,
+  completed: dreamMilestone.completed,
+  date: dreamMilestone.due_date,
+});
 
 /**
  * Get the auth token from Supabase session or storage
@@ -153,6 +189,40 @@ export const getLatestDreamBoardData = async (): Promise<DreamBoardData | null> 
     return await apiRequest<DreamBoardData>(API_URL);
   } catch (error) {
     console.error('Error getting dream board data:', error);
+    return null;
+  }
+};
+
+/**
+ * Get the dream board overview payload for the current user
+ */
+export const getDreamBoardOverview = async (): Promise<DreamBoardOverviewData | null> => {
+  try {
+    const response = await apiRequest<DreamBoardOverviewApiResponse>(OVERVIEW_API_URL);
+    if (!response) {
+      return null;
+    }
+
+    const milestonesByContentId = Object.fromEntries(
+      Object.entries(response.milestonesByContentId || {}).map(([contentId, milestones]) => [
+        contentId,
+        milestones.map(convertDreamMilestoneToMilestone),
+      ])
+    );
+
+    return {
+      board: response.board,
+      progressByContentId: response.progressByContentId || {},
+      milestonesByContentId,
+      weather: response.weather,
+      challenges: {
+        activeChallenges: response.challenges?.activeChallenges || [],
+        completedChallenges: response.challenges?.completedChallenges || [],
+        latestChallengeCompletionById: response.challenges?.latestChallengeCompletionById || {},
+      },
+    };
+  } catch (error) {
+    console.error('Error getting dream board overview:', error);
     return null;
   }
 };

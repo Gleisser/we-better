@@ -7,6 +7,7 @@ import { DreamChallenge as DreamChallengeType } from '../../api/dreamChallengesA
 interface DreamChallengeProps {
   dreams?: Dream[];
   activeChallenges: DreamChallengeType[];
+  latestChallengeCompletionById?: Record<string, string>;
   loading: boolean;
   error: string | null;
   onOpenChallengeModal?: () => void;
@@ -22,6 +23,7 @@ interface DreamChallengeProps {
 
 const DreamChallenge: React.FC<DreamChallengeProps> = ({
   activeChallenges,
+  latestChallengeCompletionById,
   loading,
   error,
   onOpenChallengeModal = () => {},
@@ -39,8 +41,21 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  // Track which challenges have been marked as complete today
-  const [markedCompletedToday, setMarkedCompletedToday] = useState<Set<string>>(new Set());
+  const [markedCompletedToday, setMarkedCompletedToday] = useState<Set<string>>(() => {
+    if (!latestChallengeCompletionById) {
+      return new Set();
+    }
+
+    const todayDateString = new Date().toDateString();
+    return new Set(
+      activeChallenges
+        .filter(challenge => {
+          const completedAt = latestChallengeCompletionById[challenge.id];
+          return completedAt && new Date(completedAt).toDateString() === todayDateString;
+        })
+        .map(challenge => challenge.id)
+    );
+  });
 
   // For swiping functionality
   const handleTouchStart = (e: TouchEvent): void => {
@@ -107,10 +122,15 @@ const DreamChallenge: React.FC<DreamChallengeProps> = ({
     }
 
     // Check today's completion status when challenges load or change
-    if (activeChallenges.length > 0) {
+    if (activeChallenges.length > 0 && !latestChallengeCompletionById) {
       checkTodayCompletionStatus();
     }
-  }, [activeChallenges.length, currentChallengeIndex, checkTodayCompletionStatus]);
+  }, [
+    activeChallenges.length,
+    currentChallengeIndex,
+    checkTodayCompletionStatus,
+    latestChallengeCompletionById,
+  ]);
 
   const navigateToChallenge = (direction: 'prev' | 'next'): void => {
     if (direction === 'prev') {

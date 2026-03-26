@@ -3,13 +3,24 @@ import DreamChallenge from './DreamChallenge';
 import ChallengeModal from './ChallengeModal';
 import { Dream } from '../../types';
 import { useDreamChallenges } from '../../hooks/useDreamChallenges';
-import { CreateDreamChallengeInput } from '../../api/dreamChallengesApi';
+import {
+  CreateDreamChallengeInput,
+  DreamChallenge as DreamChallengeRecord,
+} from '../../api/dreamChallengesApi';
 
 interface DreamChallengeContainerProps {
   dreams: Dream[];
+  initialChallengeData?: {
+    activeChallenges: DreamChallengeRecord[];
+    completedChallenges: DreamChallengeRecord[];
+    latestChallengeCompletionById: Record<string, string>;
+  };
 }
 
-const DreamChallengeContainer: React.FC<DreamChallengeContainerProps> = ({ dreams }) => {
+const DreamChallengeContainer: React.FC<DreamChallengeContainerProps> = ({
+  dreams,
+  initialChallengeData,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingChallenge, setEditingChallenge] = useState<string | null>(null);
   const {
@@ -22,7 +33,7 @@ const DreamChallengeContainer: React.FC<DreamChallengeContainerProps> = ({ dream
     activeChallenges,
     loading,
     error,
-  } = useDreamChallenges();
+  } = useDreamChallenges({ initialData: initialChallengeData });
 
   const handleOpenModal = (): void => {
     setIsModalOpen(true);
@@ -71,6 +82,7 @@ const DreamChallengeContainer: React.FC<DreamChallengeContainerProps> = ({ dream
       <DreamChallenge
         dreams={dreams}
         activeChallenges={activeChallenges}
+        latestChallengeCompletionById={initialChallengeData?.latestChallengeCompletionById}
         loading={loading}
         error={error}
         onOpenChallengeModal={handleOpenModal}
