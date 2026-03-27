@@ -1,48 +1,43 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Header from '../Header';
 import { useMenu } from '@/shared/hooks/useMenu';
 import { HEADER_CONSTANTS, MEGA_MENU_CONFIG } from '@/utils/constants/fallback/header';
-import styles from '../Header.module.css';
 
-// Mock the hooks
-vi.mock('@/hooks/useMenu', () => ({
-  useMenu: vi.fn()
+vi.mock('@/shared/hooks/useMenu', () => ({
+  useMenu: vi.fn(),
 }));
 
-// Mock framer-motion with AnimatePresence
 vi.mock('framer-motion', () => ({
   motion: {
     header: ({ children, ...props }: any) => <header {...props}>{children}</header>,
     nav: ({ children, ...props }: any) => <nav {...props}>{children}</nav>,
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   },
-  useScroll: () => ({ 
-    scrollY: { 
+  useScroll: () => ({
+    scrollY: {
       get: () => 0,
-      on: () => () => {} 
-    } 
+      on: () => () => undefined,
+    },
   }),
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-  useAnimate: () => [null, () => {}]
+  useMotionValueEvent: vi.fn(),
 }));
 
-// Mock menu components
 vi.mock('../MobileMenu', () => ({
-  default: ({ isOpen }: any) => isOpen ? <div role="dialog">Mobile Menu Content</div> : null
+  default: ({ isOpen }: any) => (isOpen ? <div role="dialog">Mobile Menu Content</div> : null),
 }));
 
 vi.mock('../MegaMenu', () => ({
-  default: ({ isOpen }: any) => isOpen ? <div>Mega Menu Content</div> : null
+  default: ({ isOpen }: any) => (isOpen ? <div>Mega Menu Content</div> : null),
 }));
 
 vi.mock('../SolutionsMegaMenu', () => ({
-  default: ({ isOpen }: any) => isOpen ? <div>Solutions Menu Content</div> : null
+  default: ({ isOpen }: any) => (isOpen ? <div>Solutions Menu Content</div> : null),
 }));
 
 vi.mock('../ResourcesMegaMenu', () => ({
-  default: ({ isOpen }: any) => isOpen ? <div>Resources Menu Content</div> : null
+  default: ({ isOpen }: any) => (isOpen ? <div>Resources Menu Content</div> : null),
 }));
 
 describe('Header', () => {
@@ -50,11 +45,10 @@ describe('Header', () => {
     vi.clearAllMocks();
   });
 
-  it('renders with fallback data when API data is not available', () => {
-    // Mock menu data with null to trigger fallback
-    (useMenu as any).mockReturnValue({
-      data: null
-    });
+  it('renders fallback data when menu data is unavailable', () => {
+    vi.mocked(useMenu).mockReturnValue({
+      data: null,
+    } as ReturnType<typeof useMenu>);
 
     render(
       <BrowserRouter>
@@ -62,30 +56,21 @@ describe('Header', () => {
       </BrowserRouter>
     );
 
-    // Check logo and navigation
-    expect(screen.getByRole('link', { name: /We Better Home/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /We Better Home/i })).not.toBeNull();
     expect(screen.getAllByRole('img', { name: /We Better/i })).toHaveLength(2);
-    expect(screen.getByRole('navigation', { name: /Main menu/i })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: /Main menu/i })).not.toBeNull();
 
-    // Check fallback menu items
     MEGA_MENU_CONFIG.forEach(item => {
-      expect(screen.getByText(item.title)).toBeInTheDocument();
+      expect(screen.getByText(item.title)).not.toBeNull();
     });
 
-    // Check hamburger menu button in mobile controls
-    const mobileControls = screen.getByLabelText('Mobile navigation controls');
-    expect(mobileControls).toBeInTheDocument();
-    expect(mobileControls.querySelector('button')).toBeInTheDocument();
-
-    // Check CTA button
-    const ctaButton = screen.getByRole('link', { name: HEADER_CONSTANTS.Cta.title });
-    expect(ctaButton).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: HEADER_CONSTANTS.Cta.title })).not.toBeNull();
   });
 
-  it('handles menu interactions correctly', () => {
-    (useMenu as any).mockReturnValue({
-      data: null
-    });
+  it('renders fallback data when the menu response shape is invalid', () => {
+    vi.mocked(useMenu).mockReturnValue({
+      data: '<!doctype html>' as unknown,
+    } as ReturnType<typeof useMenu>);
 
     render(
       <BrowserRouter>
@@ -93,19 +78,27 @@ describe('Header', () => {
       </BrowserRouter>
     );
 
-    // Test mobile menu toggle
-    const mobileControls = screen.getByLabelText('Mobile navigation controls');
-    const menuButton = mobileControls.querySelector('button');
-    fireEvent.click(menuButton!);
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-    
-    // Test mega menu hover interactions
     MEGA_MENU_CONFIG.forEach(item => {
-      const menuItem = screen.getByText(item.title);
-      expect(menuItem).toBeInTheDocument();
-      
-      fireEvent.mouseEnter(menuItem);
-      fireEvent.mouseLeave(menuItem);
+      expect(screen.getByText(item.title)).not.toBeNull();
     });
+
+    expect(screen.getByText(HEADER_CONSTANTS.Business.title)).not.toBeNull();
+    expect(screen.getByText(HEADER_CONSTANTS.Mentors.title)).not.toBeNull();
+    expect(screen.getByText(HEADER_CONSTANTS.Coaches.title)).not.toBeNull();
   });
-}); 
+
+  it('handles mobile menu interactions correctly', () => {
+    vi.mocked(useMenu).mockReturnValue({
+      data: null,
+    } as ReturnType<typeof useMenu>);
+
+    render(
+      <BrowserRouter>
+        <Header />
+      </BrowserRouter>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /toggle menu/i }));
+    expect(screen.getByRole('dialog')).not.toBeNull();
+  });
+});

@@ -25,7 +25,9 @@ const Header = (): JSX.Element => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const megamenus = data?.data.megamenus || MEGA_MENU_CONFIG;
+  const menuPayload = data?.data;
+  const megamenus = menuPayload?.megamenus || MEGA_MENU_CONFIG;
+  const menuLinks = menuPayload?.links || [];
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -53,21 +55,21 @@ const Header = (): JSX.Element => {
           isOpen: isFeaturesOpen,
           setIsOpen: setIsFeaturesOpen,
           Component: MegaMenu,
-          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.Highlight),
+          menuData: menuPayload?.megamenus?.find(menu => menu.type === MenuType.Highlight),
         };
       case MenuType.SVG:
         return {
           isOpen: isSolutionsOpen,
           setIsOpen: setIsSolutionsOpen,
           Component: SolutionsMegaMenu,
-          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.SVG),
+          menuData: menuPayload?.megamenus?.find(menu => menu.type === MenuType.SVG),
         };
       case MenuType.Blog:
         return {
           isOpen: isResourcesOpen,
           setIsOpen: setResourcesOpen,
           Component: ResourcesMegaMenu,
-          menuData: data?.data.megamenus.find(menu => menu.type === MenuType.Blog),
+          menuData: menuPayload?.megamenus?.find(menu => menu.type === MenuType.Blog),
         };
       default:
         return null;
@@ -146,12 +148,12 @@ const Header = (): JSX.Element => {
                     </li>
                   );
                 })}
-                {data?.data.links.map(link => (
+                {menuLinks.map(link => (
                   <li key={link.id}>
                     <NavItem href={link.href || '#'} title={link.title} />
                   </li>
                 ))}
-                {!data && (
+                {!menuPayload && (
                   <>
                     <li>
                       <NavItem href="#business" title={HEADER_CONSTANTS.Business.title} />
