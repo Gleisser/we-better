@@ -17,6 +17,9 @@ export type DreamBoardImageUploadResult = DreamBoardStorageReference & {
   publicUrl: string;
   mimeType: string;
   fileSizeBytes: number;
+  imageWidth?: number;
+  imageHeight?: number;
+  imagePlaceholder?: string;
 };
 
 export type DreamBoardPersistenceNormalizationResult = {
@@ -117,6 +120,72 @@ const getDreamBoardImagePublicUrl = (bucket: string, path: string): string => {
   return publicUrl;
 };
 
+const loadImageElement = async (src: string): Promise<HTMLImageElement | null> => {
+  if (typeof Image === 'undefined') {
+    return null;
+  }
+
+  return await new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error('Failed to load dream board image metadata'));
+    image.src = src;
+  });
+};
+
+const extractDreamBoardImageMetadata = async (
+  blob: Blob
+): Promise<
+  Pick<DreamBoardImageUploadResult, 'imageWidth' | 'imageHeight' | 'imagePlaceholder'>
+> => {
+  if (
+    typeof URL === 'undefined' ||
+    typeof URL.createObjectURL !== 'function' ||
+    typeof document === 'undefined'
+  ) {
+    return {};
+  }
+
+  const objectUrl = URL.createObjectURL(blob);
+
+  try {
+    const image = await loadImageElement(objectUrl);
+    if (!image) {
+      return {};
+    }
+
+    const imageWidth = image.naturalWidth || image.width || undefined;
+    const imageHeight = image.naturalHeight || image.height || undefined;
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    let imagePlaceholder: string | undefined;
+
+    if (context && imageWidth && imageHeight) {
+      const placeholderWidth = Math.min(24, imageWidth);
+      const placeholderHeight = Math.max(
+        1,
+        Math.round((placeholderWidth / imageWidth) * imageHeight)
+      );
+      canvas.width = placeholderWidth;
+      canvas.height = placeholderHeight;
+      context.drawImage(image, 0, 0, placeholderWidth, placeholderHeight);
+      imagePlaceholder = canvas.toDataURL('image/webp', 0.55);
+    }
+
+    return {
+      imageWidth,
+      imageHeight,
+      imagePlaceholder,
+    };
+  } catch (error) {
+    console.warn('Unable to extract dream board image metadata:', error);
+    return {};
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+};
+
 const uploadDreamBoardImageBlob = async ({
   blob,
   contentId,
@@ -136,6 +205,7 @@ const uploadDreamBoardImageBlob = async ({
     throw new Error('Dream board image exceeds the 5 MB upload limit');
   }
 
+  const metadata = await extractDreamBoardImageMetadata(blob);
   const userId = await getCurrentUserId();
   const safeName = sanitizeFileName(fileName);
   const extension = getStorageFileExtension(fileName, mimeType);
@@ -157,6 +227,9 @@ const uploadDreamBoardImageBlob = async ({
     publicUrl: getDreamBoardImagePublicUrl(DREAM_BOARD_STORAGE_BUCKET, path),
     mimeType,
     fileSizeBytes: blob.size,
+    imageWidth: metadata.imageWidth,
+    imageHeight: metadata.imageHeight,
+    imagePlaceholder: metadata.imagePlaceholder,
   };
 };
 
@@ -219,6 +292,9 @@ const normalizeDreamBoardContentItemForPersistence = async (
         storagePath: uploadedImage.path,
         mimeType: uploadedImage.mimeType,
         fileSizeBytes: uploadedImage.fileSizeBytes,
+        imageWidth: uploadedImage.imageWidth,
+        imageHeight: uploadedImage.imageHeight,
+        imagePlaceholder: uploadedImage.imagePlaceholder,
       },
       uploadedRef: {
         bucket: uploadedImage.bucket,

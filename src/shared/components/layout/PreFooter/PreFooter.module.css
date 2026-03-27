@@ -1,10 +1,6 @@
 .preFooterContainer {
   @apply relative py-12 bg-black overflow-hidden;
-  background: linear-gradient(
-    180deg,
-    rgba(91, 44, 134, 0.3) 0%,
-    rgba(91, 44, 134, 0) 100%
-  );
+  background: linear-gradient(180deg, rgba(91, 44, 134, 0.3) 0%, rgba(91, 44, 134, 0) 100%);
 }
 
 .preFooterContent {
@@ -64,6 +60,12 @@
   object-position: top;
 }
 
+.imagePlaceholder {
+  @apply w-full rounded-2xl border border-white/10;
+  height: 400px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+}
+
 /* Mobile styles */
 @media (max-width: 768px) {
   .preFooterContent {
@@ -91,6 +93,10 @@
 
   .imageContainer {
     height: 300px; /* Slightly smaller height for mobile */
+  }
+
+  .imagePlaceholder {
+    height: 300px;
   }
 }
 

@@ -20,6 +20,8 @@ const viteMock = {
     VITE_API_TIMEOUT: '30000',
     VITE_RATE_LIMIT_MAX_REQUESTS: '50',
     VITE_RATE_LIMIT_WINDOW: '60000',
+    VITE_SUPABASE_URL: 'https://example.supabase.co',
+    VITE_SUPABASE_ANON_KEY: 'test-anon-key',
     MODE: 'test',
     DEV: true,
     PROD: false,

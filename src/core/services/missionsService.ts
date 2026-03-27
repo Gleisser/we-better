@@ -1,9 +1,9 @@
 import { supabase } from './supabaseClient';
 import type { MissionCategoryId } from '@/features/missions/constants/categoryImageMap';
+import { createAppApiUrl } from '@/core/config/appApi';
 
-const BACKEND_API_BASE_URL = import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000';
-const MISSIONS_API_URL = `${BACKEND_API_BASE_URL}/api/missions`;
-const PROGRESS_API_URL = `${BACKEND_API_BASE_URL}/api/missions/progress`;
+const MISSIONS_API_URL = createAppApiUrl('/missions');
+const PROGRESS_API_URL = createAppApiUrl('/missions/progress');
 
 const _MISSION_BADGE_IDS = [
   'explorer',

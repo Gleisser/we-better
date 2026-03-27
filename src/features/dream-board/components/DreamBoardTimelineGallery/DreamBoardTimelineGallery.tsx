@@ -12,6 +12,7 @@ import {
   validateDreamBoardUploadFile,
 } from '../../utils/imagePersistence';
 import categoryDetails from '../constants/dreamboard';
+import DreamBoardPreviewImage from '../DreamBoardPreviewImage/DreamBoardPreviewImage';
 import styles from './DreamBoardTimelineGallery.module.css';
 
 const MAX_DREAM_BOARD_IMAGES = 7;
@@ -1049,6 +1050,11 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
               const absoluteOffset = Math.abs(offset);
               const isActive = absoluteOffset === 0;
               const isHidden = absoluteOffset > 3;
+              const imageVariant = isActive
+                ? 'card'
+                : absoluteOffset <= 1
+                  ? 'widget'
+                  : 'placeholder';
 
               return (
                 <article
@@ -1078,7 +1084,13 @@ const DreamBoardTimelineGallery: React.FC<DreamBoardTimelineGalleryProps> = ({
                   >
                     ×
                   </button>
-                  <img src={dream.imageUrl} alt={dream.title} loading="lazy" />
+                  <DreamBoardPreviewImage
+                    image={dream}
+                    alt={dream.title}
+                    variant={imageVariant}
+                    loading={isActive ? 'eager' : 'lazy'}
+                    {...(isActive ? { fetchPriority: 'high' } : {})}
+                  />
                 </article>
               );
             })}

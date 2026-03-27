@@ -48,6 +48,12 @@ const createDreamBoardData = (): DreamBoardData => ({
       categoryId: 'Travel',
       src: 'https://example.com/dream-1.jpg',
       alt: 'See Japan',
+      storageBucket: 'dream-board-images',
+      storagePath: 'dream-1.jpg',
+      imageWidth: 640,
+      imageHeight: 854,
+      imagePlaceholder:
+        'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
     },
     {
       id: 'dream-2',
@@ -109,6 +115,12 @@ describe('useLatestDreamBoardSnapshot', () => {
       title: 'See Japan',
       category: 'Travel',
       imageUrl: 'https://example.com/dream-1.jpg',
+      imageStorageBucket: 'dream-board-images',
+      imageStoragePath: 'dream-1.jpg',
+      imageWidth: 640,
+      imageHeight: 854,
+      imagePlaceholder:
+        'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
       progress: 0.75,
     });
     expect(result.current.metrics).toEqual({

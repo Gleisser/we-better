@@ -3,8 +3,6 @@
  * Handles communication with the backend for dream board content milestones
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000';
-
 export interface DreamMilestone {
   id: string;
   dream_board_content_id: string;
@@ -33,6 +31,7 @@ export interface UpdateDreamMilestoneRequest {
 }
 
 // Import supabase client for authentication
+import { createAppApiUrl } from '@/core/config/appApi';
 import { supabase } from '@/core/services/supabaseClient';
 
 // Helper to get auth token using the same method as other services
@@ -82,7 +81,7 @@ async function getAuthToken(): Promise<string | null> {
 async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = await getAuthToken();
 
-  const response = await fetch(`${API_BASE_URL}/api${endpoint}`, {
+  const response = await fetch(createAppApiUrl(endpoint), {
     ...options,
     headers: {
       'Content-Type': 'application/json',

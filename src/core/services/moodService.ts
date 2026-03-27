@@ -1,6 +1,7 @@
 import { supabase } from './supabaseClient';
+import { createAppApiUrl } from '@/core/config/appApi';
 
-const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/mood`;
+const API_URL = createAppApiUrl('/mood');
 
 export type MoodId = 'elated' | 'bright' | 'balanced' | 'low' | 'drained';
 export type MoodPulseDirection = 'up' | 'down' | 'stable' | 'insufficient_data';

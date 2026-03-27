@@ -12,6 +12,7 @@ import {
 import ShowcaseSkeleton from './ShowcaseSkeleton';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
+import { usePrefersReducedMotion } from '@/shared/hooks/utils/usePrefersReducedMotion';
 import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
 import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
 import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
@@ -27,54 +28,54 @@ interface ShowcaseCardProps {
     }>;
   };
   eager: boolean;
+  prefersReducedMotion: boolean;
 }
 
-const ShowcaseCard = ({ item, eager }: ShowcaseCardProps): JSX.Element => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [imageIndex, setImageIndex] = useState(0);
-  const imageCount = item.images.length;
-
-  useEffect(() => {
-    if (!isHovered || imageCount <= 1) {
-      setImageIndex(0);
-      return;
-    }
-
-    const intervalId = window.setInterval(() => {
-      setImageIndex(prev => (prev + 1) % imageCount);
-    }, 1000);
-
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, [imageCount, isHovered]);
-
-  const activeImage = item.images[imageIndex] ?? item.images[0];
+const ShowcaseCard = ({ item, eager, prefersReducedMotion }: ShowcaseCardProps): JSX.Element => {
+  const primaryImage = item.images[0];
+  const secondaryImage = item.images[1] ?? primaryImage;
+  const hasHoverPreview =
+    !prefersReducedMotion &&
+    Boolean(primaryImage?.src) &&
+    Boolean(secondaryImage?.src) &&
+    secondaryImage?.src !== primaryImage?.src;
   const fallbackKey = item.title
     .toLowerCase()
     .replace(/[^a-z]+/g, '') as keyof typeof LANDING_MEDIA.showcase;
-  const media =
-    createResponsiveMediaFromImage(activeImage, {
-      alt: activeImage?.alt ?? item.title,
+  const primaryMedia =
+    createResponsiveMediaFromImage(primaryImage, {
+      alt: primaryImage?.alt ?? item.title,
       sizes: '(max-width: 768px) 100vw, 25vw',
     }) ??
     LANDING_MEDIA.showcase[fallbackKey] ??
     LANDING_MEDIA.showcase.tracking;
+  const secondaryMedia =
+    createResponsiveMediaFromImage(secondaryImage, {
+      alt: secondaryImage?.alt ?? item.title,
+      sizes: '(max-width: 768px) 100vw, 25vw',
+    }) ?? primaryMedia;
 
   return (
     <div
-      className={styles.item}
+      className={`${styles.item} ${prefersReducedMotion ? styles.staticItem : ''}`}
       role="article"
       aria-label={item.title}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <div className={styles.imageContainer}>
         <ResponsiveImage
-          media={media}
-          className={styles.image}
+          media={primaryMedia}
+          className={`${styles.image} ${styles.imagePrimary}`}
           loading={eager ? 'eager' : 'lazy'}
+          fetchPriority={eager ? 'high' : undefined}
         />
+        {hasHoverPreview && (
+          <ResponsiveImage
+            media={secondaryMedia}
+            className={`${styles.image} ${styles.imageSecondary}`}
+            loading="lazy"
+            aria-hidden="true"
+          />
+        )}
       </div>
       <h3 className={styles.itemTitle}>{item.title}</h3>
       <p className={styles.itemDescription}>{item.description}</p>
@@ -85,6 +86,7 @@ const ShowcaseCard = ({ item, eager }: ShowcaseCardProps): JSX.Element => {
 const Showcase = (): JSX.Element => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const shouldFetch = useDeferredSectionQuery(sectionRef);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   // State management
   const [currentPage, setCurrentPage] = useState(0);
@@ -242,7 +244,12 @@ const Showcase = (): JSX.Element => {
             aria-label="Showcase items"
           >
             {currentItems.map((item, index: number) => (
-              <ShowcaseCard key={item.id} item={item} eager={index === 0} />
+              <ShowcaseCard
+                key={item.id}
+                item={item}
+                eager={index === 0}
+                prefersReducedMotion={prefersReducedMotion}
+              />
             ))}
           </motion.div>
         </AnimatePresence>

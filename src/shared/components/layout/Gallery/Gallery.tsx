@@ -5,11 +5,15 @@ import { API_CONFIG } from '@/core/config/api-config';
 import { GalleryIcon, MobileNavIcon, MobileNavNextIcon } from '@/shared/components/common/icons';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
+import { useElementVisibility } from '@/shared/hooks/utils/useElementVisibility';
+import { usePageVisibility } from '@/shared/hooks/utils/usePageVisibility';
+import { usePrefersReducedMotion } from '@/shared/hooks/utils/usePrefersReducedMotion';
 import { TopLevelImage } from '@/utils/types/common/image';
 import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
 import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
 import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
 import type { ResponsiveMediaSource } from '@/utils/types/responsiveMedia';
+import { subscribeToViewportFrame } from '@/shared/utils/motion/viewportFrameScheduler';
 
 const INITIAL_LOAD = 12;
 const LOAD_MORE_COUNT = 8;
@@ -119,6 +123,8 @@ const Gallery = (): JSX.Element => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const bodyMotionStageRef = useRef<HTMLDivElement | null>(null);
   const shouldFetch = useDeferredSectionQuery(sectionRef);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isPageVisible = usePageVisibility();
 
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useGallery({ enabled: shouldFetch });
@@ -174,6 +180,11 @@ const Gallery = (): JSX.Element => {
   const galleryImages = orderedImages?.length > 0 ? orderedImages : GALLERY_IMAGES;
   const visibleImages = galleryImages.slice(0, visibleCount);
   const shouldRenderGallery = !isDataLoading && !isError;
+  const isSectionVisible = useElementVisibility(sectionRef, {
+    rootMargin: '30% 0px',
+    threshold: 0.01,
+    disabled: !shouldRenderGallery,
+  });
 
   // Intersection Observer setup
   useEffect(() => {
@@ -233,24 +244,17 @@ const Gallery = (): JSX.Element => {
     }
 
     const bodyMotionStage = bodyMotionStageRef.current;
-    const prefersReducedMotion =
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (!bodyMotionStage) {
       return;
     }
 
-    if (isMobile || prefersReducedMotion) {
+    if (isMobile || prefersReducedMotion || !isSectionVisible || !isPageVisible) {
       bodyMotionStage.style.setProperty('--gallery-body-pan-progress', '1');
       return;
     }
 
-    let rafId = 0;
-
     const updateBodyPan = (): void => {
-      rafId = 0;
-
       const section = sectionRef.current;
 
       if (!section || !bodyMotionStageRef.current) {
@@ -269,26 +273,13 @@ const Gallery = (): JSX.Element => {
       );
     };
 
-    const requestBodyPanUpdate = (): void => {
-      if (rafId) {
-        return;
-      }
-
-      rafId = window.requestAnimationFrame(updateBodyPan);
-    };
-
-    requestBodyPanUpdate();
-    window.addEventListener('scroll', requestBodyPanUpdate, { passive: true });
-    window.addEventListener('resize', requestBodyPanUpdate);
+    updateBodyPan();
+    const unsubscribe = subscribeToViewportFrame(updateBodyPan);
 
     return () => {
-      if (rafId) {
-        window.cancelAnimationFrame(rafId);
-      }
-      window.removeEventListener('scroll', requestBodyPanUpdate);
-      window.removeEventListener('resize', requestBodyPanUpdate);
+      unsubscribe();
     };
-  }, [isMobile, shouldRenderGallery, visibleImages]);
+  }, [isMobile, isPageVisible, isSectionVisible, prefersReducedMotion, shouldRenderGallery]);
 
   // Navigation handlers
   const hasMore = visibleCount < galleryImages.length;

@@ -1,4 +1,5 @@
 import { DreamBoardData, Milestone } from '../types';
+import { createAppApiUrl } from '@/core/config/appApi';
 import { supabase } from '@/core/services/supabaseClient';
 import {
   deleteDreamBoardStorageFiles,
@@ -8,8 +9,7 @@ import { DreamChallenge } from './dreamChallengesApi';
 import { DreamMilestone } from './dreamMilestonesApi';
 import { DreamWeatherResponse } from './dreamWeatherApi';
 
-// Define the API URL
-const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/dream-board`;
+const API_URL = createAppApiUrl('/dream-board');
 const OVERVIEW_API_URL = `${API_URL}/overview`;
 
 type ApiRequestOptions = {
