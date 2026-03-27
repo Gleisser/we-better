@@ -1,6 +1,7 @@
 import { supabase } from './supabaseClient';
+import { createAppApiUrl } from '@/core/config/appApi';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/notifications/push-subscriptions`;
+const API_BASE_URL = createAppApiUrl('/notifications/push-subscriptions');
 const SERVICE_WORKER_PATH = '/sw-notifications.js';
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_PUSH_VAPID_PUBLIC_KEY as string | undefined;
 

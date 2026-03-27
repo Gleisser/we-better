@@ -1,6 +1,7 @@
 import { supabase } from './supabaseClient';
+import { createAppApiUrl } from '@/core/config/appApi';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/notifications/settings`;
+const API_BASE_URL = createAppApiUrl('/notifications/settings');
 
 export interface NotificationSettingsDto {
   email_notifications: boolean;

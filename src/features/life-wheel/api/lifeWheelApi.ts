@@ -1,8 +1,8 @@
 import { LifeCategory } from '../types';
+import { createAppApiUrl } from '@/core/config/appApi';
 import { supabase } from '@/core/services/supabaseClient';
 
-// Define the API URL - following the same pattern as dream board
-const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/life-wheel`;
+const API_URL = createAppApiUrl('/life-wheel');
 
 /**
  * Backend response interfaces to match the actual API

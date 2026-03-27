@@ -4,7 +4,21 @@ import {
   DreamBoardWidgetDream,
   UseLatestDreamBoardSnapshotResult,
 } from '@/features/dream-board/hooks/useLatestDreamBoardSnapshot';
+import { resetDreamBoardImageSourceFailures } from '@/features/dream-board/utils/imageVariants';
 import DreamBoardTimelineWidget from './DreamBoardTimelineWidget';
+
+const { storageFromMock } = vi.hoisted(() => ({
+  storageFromMock: vi.fn((bucket: string) => ({
+    getPublicUrl: (
+      path: string,
+      options?: { transform?: { width?: number; height?: number; quality?: number } }
+    ) => ({
+      data: {
+        publicUrl: `https://cdn.example.com/storage/v1/render/image/public/${bucket}/${path}?width=${options?.transform?.width ?? 'original'}&height=${options?.transform?.height ?? 'original'}&quality=${options?.transform?.quality ?? 'original'}`,
+      },
+    }),
+  })),
+}));
 
 const mockNavigate = vi.fn();
 
@@ -28,11 +42,27 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
+vi.mock('@/core/services/supabaseClient', () => ({
+  supabase: {
+    storage: {
+      from: storageFromMock,
+    },
+  },
+}));
+
 const createDream = (id: string, title: string, category: string): DreamBoardWidgetDream => ({
   id,
   title,
   category,
-  imageUrl: `https://example.com/${id}.jpg`,
+  imageUrl: `https://example.com/original/${id}.jpg`,
+  imageStorageBucket: 'dream-board-images',
+  imageStoragePath: `${id}.jpg`,
+  imageWidth: 640,
+  imageHeight: 854,
+  imagePlaceholder:
+    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+  imagePreviewCardUrl: `/api/dream-board/previews?variant=card&id=${id}`,
+  imagePreviewWidgetUrl: `/api/dream-board/previews?variant=widget&id=${id}`,
   updatedAt: '2026-02-26T00:00:00.000Z',
   progress: 0.5,
 });
@@ -55,6 +85,8 @@ const createSnapshot = (
 describe('DreamBoardTimelineWidget', () => {
   beforeEach(() => {
     mockNavigate.mockReset();
+    storageFromMock.mockClear();
+    resetDreamBoardImageSourceFailures();
   });
 
   it('renders button to open Dream Board page', () => {
@@ -97,16 +129,31 @@ describe('DreamBoardTimelineWidget', () => {
             createDream('dream-1', 'Dream One', 'Travel'),
             createDream('dream-2', 'Dream Two', 'Health'),
             createDream('dream-3', 'Dream Three', 'Career'),
+            createDream('dream-4', 'Dream Four', 'Finance'),
+            createDream('dream-5', 'Dream Five', 'Relationships'),
           ],
-          metrics: { imageCount: 3, categoryCount: 3, averageProgress: 0.66 },
+          metrics: { imageCount: 5, categoryCount: 5, averageProgress: 0.66 },
         })}
       />
     );
 
     expect(screen.getByText('Dream One')).not.toBeNull();
+    expect(screen.getByAltText('Dream One').getAttribute('src') ?? '').toContain(
+      '/api/dream-board/previews'
+    );
+    expect(screen.getByAltText('Dream One').getAttribute('src') ?? '').toContain('variant=widget');
+    expect(screen.getByAltText('Dream Two').getAttribute('src') ?? '').toContain(
+      '/api/dream-board/previews'
+    );
+    expect(screen.getByAltText('Dream Three').getAttribute('src') ?? '').toContain(
+      'data:image/gif'
+    );
 
     fireEvent.click(screen.getByLabelText('widgets.dreamBoardWidget.nextImage'));
     expect(screen.getByText('Dream Two')).not.toBeNull();
+    expect(screen.getByAltText('Dream Three').getAttribute('src') ?? '').toContain(
+      'variant=widget'
+    );
 
     fireEvent.keyDown(screen.getByLabelText('widgets.dreamBoardWidget.carouselAria'), {
       key: 'ArrowLeft',
@@ -119,5 +166,24 @@ describe('DreamBoardTimelineWidget', () => {
     expect(screen.queryByText('widgets.dreamBoardWidget.metrics.categories')).toBeNull();
     expect(screen.queryByText('dreamBoard.timelineGallery.addImage')).toBeNull();
     expect(screen.queryByText('×')).toBeNull();
+  });
+
+  it('falls back to the placeholder when the widget preview fails', () => {
+    render(
+      <DreamBoardTimelineWidget
+        snapshotOverride={createSnapshot({
+          dreams: [createDream('dream-1', 'Dream One', 'Travel')],
+          metrics: { imageCount: 1, categoryCount: 1, averageProgress: 0.5 },
+        })}
+      />
+    );
+
+    const image = screen.getByAltText('Dream One');
+
+    expect(image.getAttribute('src') ?? '').toContain('/api/dream-board/previews');
+
+    fireEvent.error(image);
+
+    expect(image.getAttribute('src') ?? '').toContain('data:image/gif');
   });
 });

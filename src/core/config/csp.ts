@@ -1,4 +1,4 @@
-const DEFAULT_BACKEND_ORIGIN = 'http://localhost:3000';
+const DEFAULT_BACKEND_SOURCE = "'self'";
 
 const APP_HOST_SOURCES = ['https://webetter.ai', 'https://*.webetter.ai', 'https://*.vercel.app'];
 const IMAGE_CDN_SOURCES = [
@@ -37,11 +37,9 @@ function uniqueSources(sources: Array<string | undefined>): string[] {
   return [...new Set(sources.filter((source): source is string => Boolean(source)))];
 }
 
-const backendOrigin = resolveOrigin(
-  import.meta.env.VITE_API_BACKEND_URL || import.meta.env.VITE_API_BASE_URL,
-  DEFAULT_BACKEND_ORIGIN
-);
-const imageOrigin = resolveOrigin(import.meta.env.VITE_IMAGE_BASE_URL, backendOrigin);
+const backendOrigin = resolveOrigin(import.meta.env.VITE_API_BACKEND_URL, DEFAULT_BACKEND_SOURCE);
+const contentApiOrigin = resolveOrigin(import.meta.env.VITE_API_BASE_URL, backendOrigin);
+const imageOrigin = resolveOrigin(import.meta.env.VITE_IMAGE_BASE_URL, contentApiOrigin);
 const supabaseOrigin = resolveOrigin(import.meta.env.VITE_SUPABASE_URL, '');
 const supabaseRealtimeOrigin = resolveRealtimeOrigin(import.meta.env.VITE_SUPABASE_URL);
 
@@ -81,6 +79,7 @@ export const CSP_POLICY = {
     ...APP_HOST_SOURCES,
     ...SUPABASE_WILDCARD_SOURCES,
     backendOrigin,
+    contentApiOrigin,
     imageOrigin,
     supabaseOrigin,
     supabaseRealtimeOrigin,

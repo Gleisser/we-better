@@ -2,11 +2,10 @@ import { supabase } from './supabaseClient';
 import type { Affirmation } from './affirmationService';
 import type { MoodEntry, WeeklyMoodPulseResponse } from './moodService';
 import type { Quote } from './quoteService';
+import { createAppApiUrl } from '@/core/config/appApi';
 import type { LifeCategory } from '@/features/life-wheel/types';
 
-const API_BASE_URL = `${
-  import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'
-}/api/dashboard/overview`;
+const API_BASE_URL = createAppApiUrl('/dashboard/overview');
 
 export interface DashboardOverviewResponse {
   inspiration: {
@@ -64,12 +63,11 @@ class DashboardOverviewService {
         throw new Error('Not authenticated');
       }
 
-      const url = new URL(API_BASE_URL);
-      if (endDate) {
-        url.searchParams.set('end_date', endDate);
-      }
+      const url = endDate
+        ? `${API_BASE_URL}?end_date=${encodeURIComponent(endDate)}`
+        : API_BASE_URL;
 
-      const response = await fetch(url.toString(), {
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

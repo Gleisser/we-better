@@ -7,6 +7,7 @@ import { API_CONFIG } from '@/core/config/api-config';
 import { ButtonArrowIcon } from '@/shared/components/common/icons';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
+import { useElementVisibility } from '@/shared/hooks/utils/useElementVisibility';
 import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
 import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
 import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
@@ -14,6 +15,10 @@ import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia'
 const PreFooter = (): JSX.Element => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const shouldFetch = useDeferredSectionQuery(sectionRef);
+  const shouldRenderImage = useElementVisibility(sectionRef, {
+    rootMargin: '200px 0px',
+    threshold: 0.01,
+  });
 
   // Initialize hooks
   const { data, isLoading: isDataLoading } = usePrefooter({ enabled: shouldFetch });
@@ -114,7 +119,11 @@ const PreFooter = (): JSX.Element => {
 
         {/* Right Column */}
         <div className={styles.rightColumn} role="presentation">
-          <ResponsiveImage media={imageMedia} className={styles.image} loading="lazy" />
+          {shouldRenderImage ? (
+            <ResponsiveImage media={imageMedia} className={styles.image} loading="lazy" />
+          ) : (
+            <div className={styles.imagePlaceholder} aria-hidden="true" />
+          )}
         </div>
       </div>
     </section>

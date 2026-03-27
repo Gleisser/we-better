@@ -5,6 +5,9 @@ import { useHighlight } from '@/shared/hooks/useHighlight';
 import HighlightsSkeleton from './HighlightsSkeleton';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
+import { useElementVisibility } from '@/shared/hooks/utils/useElementVisibility';
+import { usePageVisibility } from '@/shared/hooks/utils/usePageVisibility';
+import { usePrefersReducedMotion } from '@/shared/hooks/utils/usePrefersReducedMotion';
 import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
 import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
 import type { ResponsiveMediaSource } from '@/utils/types/responsiveMedia';
@@ -17,23 +20,36 @@ const FALLBACK_HIGHLIGHT_MEDIA: Record<string, ResponsiveMediaSource> = {
   Finances: LANDING_MEDIA.highlights.finances,
 };
 
+const isUnsafeHighlightMedia = (media: ResponsiveMediaSource | null): boolean => {
+  const source = media?.src?.toLowerCase() ?? '';
+
+  return source.includes('localhost:1337') || source.endsWith('.gif') || source.includes('.gif?');
+};
+
 const resolveHighlightMedia = (
   highlight:
     | (typeof HIGHLIGHTS_FALLBACK)[number]
     | NonNullable<ReturnType<typeof useHighlight>['data']>['data']['slides'][number]
-): ResponsiveMediaSource =>
-  createResponsiveMediaFromImage(highlight.image, {
+): ResponsiveMediaSource => {
+  const resolvedMedia = createResponsiveMediaFromImage(highlight.image, {
     alt: highlight.title,
     sizes: '(max-width: 768px) 100vw, 960px',
-  }) ??
-  FALLBACK_HIGHLIGHT_MEDIA[highlight.title] ??
-  LANDING_MEDIA.highlights.goals;
+  });
+
+  if (resolvedMedia && !isUnsafeHighlightMedia(resolvedMedia)) {
+    return resolvedMedia;
+  }
+
+  return FALLBACK_HIGHLIGHT_MEDIA[highlight.title] ?? LANDING_MEDIA.highlights.goals;
+};
 
 const Highlights = (): JSX.Element => {
   // Refs
   const sectionRef = useRef<HTMLElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const shouldFetch = useDeferredSectionQuery(sectionRef);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isPageVisible = usePageVisibility();
 
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useHighlight({ enabled: shouldFetch });
@@ -45,7 +61,6 @@ const Highlights = (): JSX.Element => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showFallback, setShowFallback] = useState(false);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
-  const [isSectionVisible, setIsSectionVisible] = useState(false);
 
   // Determine data source with priority for fallback
   const highlights =
@@ -53,6 +68,11 @@ const Highlights = (): JSX.Element => {
 
   const highlightMedia = useMemo(() => highlights.map(resolveHighlightMedia), [highlights]);
   const shouldRenderContent = !(isDataLoading && !showFallback) && !(isError && !showFallback);
+  const isSectionVisible = useElementVisibility(sliderRef, {
+    rootMargin: '250px 0px',
+    threshold: 0.01,
+    disabled: !shouldRenderContent,
+  });
 
   // Faster fallback strategy
   useEffect(() => {
@@ -69,42 +89,6 @@ const Highlights = (): JSX.Element => {
     return () => clearTimeout(timer);
   }, [isDataLoading, error, data]);
 
-  // Setup section observer
-  useEffect(() => {
-    if (!shouldRenderContent || isSectionVisible) {
-      return;
-    }
-
-    const target = sliderRef.current ?? sectionRef.current;
-
-    if (!target) {
-      return;
-    }
-
-    let sectionObserver: IntersectionObserver | null = null;
-
-    sectionObserver = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            setIsSectionVisible(true);
-            sectionObserver?.disconnect();
-          }
-        });
-      },
-      {
-        rootMargin: '250px 0px',
-        threshold: 0.01,
-      }
-    );
-
-    sectionObserver.observe(target);
-
-    return () => {
-      sectionObserver?.disconnect();
-    };
-  }, [isSectionVisible, shouldRenderContent]);
-
   // Load only the active and next slide once the section is near the viewport
   useEffect(() => {
     if (!isSectionVisible) {
@@ -120,14 +104,24 @@ const Highlights = (): JSX.Element => {
     });
   }, [activeIndex, highlights.length, isSectionVisible]);
 
-  // Handle slider rotation
+  const shouldAutoplay =
+    shouldRenderContent &&
+    highlights.length > 1 &&
+    isSectionVisible &&
+    isPageVisible &&
+    !prefersReducedMotion;
+
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (!shouldAutoplay) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
       setActiveIndex(current => (current + 1) % highlights.length);
     }, 2000);
 
-    return () => clearInterval(interval);
-  }, [highlights.length]);
+    return () => window.clearTimeout(timeoutId);
+  }, [activeIndex, highlights.length, shouldAutoplay]);
   // Show loading state
   if (isDataLoading && !showFallback) {
     return <HighlightsSkeleton />;

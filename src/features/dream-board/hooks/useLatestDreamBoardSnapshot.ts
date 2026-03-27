@@ -19,6 +19,13 @@ export type DreamBoardWidgetDream = {
   title: string;
   category: string;
   imageUrl: string;
+  imageStorageBucket?: string;
+  imageStoragePath?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  imagePlaceholder?: string;
+  imagePreviewCardUrl?: string;
+  imagePreviewWidgetUrl?: string;
   updatedAt: string;
   progress: number;
 };
@@ -121,6 +128,13 @@ const loadLatestDreamBoardSnapshot = async (): Promise<DreamBoardSnapshotData> =
       title,
       category,
       imageUrl,
+      imageStorageBucket: content.storageBucket,
+      imageStoragePath: content.storagePath,
+      imageWidth: content.imageWidth,
+      imageHeight: content.imageHeight,
+      imagePlaceholder: content.imagePlaceholder,
+      imagePreviewCardUrl: content.imagePreviewCardUrl,
+      imagePreviewWidgetUrl: content.imagePreviewWidgetUrl,
       updatedAt: boardUpdatedAt,
       progress: progressByContentId.get(content.id) ?? 0,
     };

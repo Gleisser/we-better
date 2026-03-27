@@ -1,9 +1,10 @@
 import '@testing-library/jest-dom/vitest';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Showcase from '../Showcase';
 import { useShowcase } from '@/shared/hooks/useShowcase';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { usePrefersReducedMotion } from '@/shared/hooks/utils/usePrefersReducedMotion';
 
 vi.mock('@/shared/hooks/useShowcase', () => ({
   useShowcase: vi.fn(),
@@ -11,6 +12,10 @@ vi.mock('@/shared/hooks/useShowcase', () => ({
 
 vi.mock('@/shared/hooks/utils/useErrorHandler', () => ({
   useErrorHandler: vi.fn(),
+}));
+
+vi.mock('@/shared/hooks/utils/usePrefersReducedMotion', () => ({
+  usePrefersReducedMotion: vi.fn(),
 }));
 
 vi.mock('framer-motion', () => ({
@@ -35,6 +40,7 @@ vi.mock('framer-motion', () => ({
 
 const mockedUseShowcase = vi.mocked(useShowcase);
 const mockedUseErrorHandler = vi.mocked(useErrorHandler);
+const mockedUsePrefersReducedMotion = vi.mocked(usePrefersReducedMotion);
 
 describe('Showcase', () => {
   beforeEach(() => {
@@ -72,6 +78,7 @@ describe('Showcase', () => {
       isError: false,
       error: null,
     } as ReturnType<typeof useErrorHandler>);
+    mockedUsePrefersReducedMotion.mockReturnValue(false);
 
     Object.defineProperty(window, 'innerWidth', {
       configurable: true,
@@ -94,26 +101,39 @@ describe('Showcase', () => {
   });
 
   it('renders visible showcase cards with native image loading', () => {
-    render(<Showcase />);
+    const { container } = render(<Showcase />);
 
-    const images = screen.getAllByRole('img');
+    const images = Array.from(container.querySelectorAll('img'));
+    expect(images).toHaveLength(3);
     expect(images[0]).toHaveAttribute('loading', 'eager');
-    expect(images[1]).toHaveAttribute('loading', 'lazy');
     expect(images[0].getAttribute('src') ?? '').toContain('/belt-one-1.jpg');
+    expect(images[1]).toHaveAttribute('loading', 'lazy');
+    expect(images[1]).toHaveAttribute('aria-hidden', 'true');
+    expect(images[1].getAttribute('src') ?? '').toContain('/belt-one-2.jpg');
+    expect(images[2].getAttribute('src') ?? '').toContain('/belt-two-1.jpg');
   });
 
-  it('keeps hover rotation scoped to the hovered card', () => {
-    render(<Showcase />);
+  it('keeps hover previews css-driven without interval rotation', () => {
+    const setIntervalSpy = vi.spyOn(window, 'setInterval');
+    const { container } = render(<Showcase />);
 
     const [firstCard] = screen.getAllByRole('article');
     fireEvent.mouseEnter(firstCard);
 
-    act(() => {
-      vi.advanceTimersByTime(1000);
-    });
+    const images = Array.from(container.querySelectorAll('img'));
+    expect(setIntervalSpy).not.toHaveBeenCalled();
+    expect(images[0].getAttribute('src') ?? '').toContain('/belt-one-1.jpg');
+    expect(images[1].getAttribute('src') ?? '').toContain('/belt-one-2.jpg');
+    expect(images[2].getAttribute('src') ?? '').toContain('/belt-two-1.jpg');
+    setIntervalSpy.mockRestore();
+  });
 
-    const images = screen.getAllByRole('img');
-    expect(images[0].getAttribute('src') ?? '').toContain('/belt-one-2.jpg');
-    expect(images[1].getAttribute('src') ?? '').toContain('/belt-two-1.jpg');
+  it('removes hover preview layers when reduced motion is enabled', () => {
+    mockedUsePrefersReducedMotion.mockReturnValue(true);
+
+    const { container } = render(<Showcase />);
+
+    expect(container.querySelectorAll('img')).toHaveLength(2);
+    expect(screen.getAllByRole('img')).toHaveLength(2);
   });
 });

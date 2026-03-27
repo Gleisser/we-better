@@ -7,6 +7,7 @@ import { TestimonyItem } from '@/utils/types/testimony';
 import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
+import { useElementVisibility } from '@/shared/hooks/utils/useElementVisibility';
 import ResponsiveImage from '@/shared/components/common/ResponsiveImage/ResponsiveImage';
 import { LANDING_MEDIA } from '@/utils/constants/media/landingMedia';
 import { createResponsiveMediaFromImage } from '@/utils/helpers/responsiveMedia';
@@ -20,6 +21,10 @@ const FALLBACK_TESTIMONY_MEDIA = [
 const Testimonies = (): JSX.Element => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const shouldFetch = useDeferredSectionQuery(sectionRef);
+  const shouldRenderAvatars = useElementVisibility(sectionRef, {
+    rootMargin: '200px 0px',
+    threshold: 0.01,
+  });
 
   // Initialize hooks
   const { data, isLoading: isDataLoading } = useTestimony({ enabled: shouldFetch });
@@ -88,27 +93,31 @@ const Testimonies = (): JSX.Element => {
             <div key={item.id} className={styles.testimonialCard} role="article">
               <p className={styles.testimonialText}>"{item.testimony}"</p>
               <div className={styles.author}>
-                <ResponsiveImage
-                  media={
-                    isAPI
-                      ? (createResponsiveMediaFromImage(
-                          {
-                            ...item.profilePic,
-                            src: API_CONFIG.imageBaseURL + item.profilePic.url,
-                            alt: item.username,
-                          },
-                          {
-                            alt: item.username,
-                            sizes: '(max-width: 768px) 72px, 96px',
-                          }
-                        ) ??
-                        FALLBACK_TESTIMONY_MEDIA[item.id - 1] ??
-                        FALLBACK_TESTIMONY_MEDIA[0])
-                      : (FALLBACK_TESTIMONY_MEDIA[item.id - 1] ?? FALLBACK_TESTIMONY_MEDIA[0])
-                  }
-                  className={styles.avatar}
-                  loading="lazy"
-                />
+                {shouldRenderAvatars ? (
+                  <ResponsiveImage
+                    media={
+                      isAPI
+                        ? (createResponsiveMediaFromImage(
+                            {
+                              ...item.profilePic,
+                              src: API_CONFIG.imageBaseURL + item.profilePic.url,
+                              alt: item.username,
+                            },
+                            {
+                              alt: item.username,
+                              sizes: '(max-width: 768px) 72px, 96px',
+                            }
+                          ) ??
+                          FALLBACK_TESTIMONY_MEDIA[item.id - 1] ??
+                          FALLBACK_TESTIMONY_MEDIA[0])
+                        : (FALLBACK_TESTIMONY_MEDIA[item.id - 1] ?? FALLBACK_TESTIMONY_MEDIA[0])
+                    }
+                    className={styles.avatar}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className={styles.avatarPlaceholder} aria-hidden="true" />
+                )}
                 <span className={styles.authorName}>{item.username}</span>
               </div>
             </div>

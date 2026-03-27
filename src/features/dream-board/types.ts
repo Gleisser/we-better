@@ -59,6 +59,11 @@ export interface Dream {
   imageStoragePath?: string;
   imageMimeType?: string;
   imageFileSizeBytes?: number;
+  imageWidth?: number;
+  imageHeight?: number;
+  imagePlaceholder?: string;
+  imagePreviewCardUrl?: string;
+  imagePreviewWidgetUrl?: string;
   milestones: Milestone[];
   isShared: boolean;
   sharedWith?: string[]; // user IDs
@@ -144,6 +149,11 @@ export interface DreamBoardContent {
   storagePath?: string;
   mimeType?: string;
   fileSizeBytes?: number;
+  imageWidth?: number;
+  imageHeight?: number;
+  imagePlaceholder?: string;
+  imagePreviewCardUrl?: string;
+  imagePreviewWidgetUrl?: string;
 
   // AI specific properties
   prompt?: string;

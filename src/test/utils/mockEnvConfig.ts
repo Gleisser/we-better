@@ -1,6 +1,6 @@
 export const ENV_CONFIG = {
   API: {
-    URL: 'http://localhost:3000/api',
+    URL: '/api',
     imageBaseURL: 'http://localhost:1337',
   },
 };

@@ -34,6 +34,11 @@
   filter: brightness(0) invert(1);
 }
 
+.logoPlaceholder {
+  @apply w-full h-10 rounded-xl;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+}
+
 .largeLogo {
   @apply h-16;
   transform: scale(1.5);

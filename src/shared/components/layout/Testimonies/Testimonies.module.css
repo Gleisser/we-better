@@ -43,6 +43,11 @@
   @apply w-10 h-10 rounded-full;
 }
 
+.avatarPlaceholder {
+  @apply w-10 h-10 rounded-full;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+}
+
 .authorName {
   @apply text-sm text-white/70;
 }
@@ -70,6 +75,10 @@
 
   .avatar {
     @apply w-12 h-12; /* Slightly larger avatar on mobile */
+  }
+
+  .avatarPlaceholder {
+    @apply w-12 h-12 rounded-full;
   }
 
   .authorName {

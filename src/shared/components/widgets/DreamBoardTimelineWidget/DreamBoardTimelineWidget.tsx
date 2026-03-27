@@ -9,6 +9,7 @@ import {
   getDreamCategoryTranslationKey,
   normalizeDreamCategoryKey,
 } from '@/features/dream-board/utils/categoryUtils';
+import DreamBoardPreviewImage from '@/features/dream-board/components/DreamBoardPreviewImage/DreamBoardPreviewImage';
 import styles from './DreamBoardTimelineWidget.module.css';
 
 type DreamBoardTimelineWidgetProps = {
@@ -226,6 +227,7 @@ const DreamBoardTimelineWidget: React.FC<DreamBoardTimelineWidgetProps> = ({
                 const absoluteOffset = Math.abs(offset);
                 const isActive = absoluteOffset === 0;
                 const isHidden = absoluteOffset > 3;
+                const imageVariant = absoluteOffset <= 1 ? 'widget' : 'placeholder';
 
                 return (
                   <article
@@ -245,7 +247,13 @@ const DreamBoardTimelineWidget: React.FC<DreamBoardTimelineWidgetProps> = ({
                     tabIndex={-1}
                     aria-label={`${dream.title} - ${counterText}`}
                   >
-                    <img src={dream.imageUrl} alt={dream.title} loading="lazy" />
+                    <DreamBoardPreviewImage
+                      image={dream}
+                      alt={dream.title}
+                      variant={imageVariant}
+                      loading={isActive ? 'eager' : 'lazy'}
+                      {...(isActive ? { fetchPriority: 'high' } : {})}
+                    />
                   </article>
                 );
               })}

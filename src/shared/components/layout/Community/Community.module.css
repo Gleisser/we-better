@@ -1,20 +1,12 @@
 .communityContainer {
   @apply relative py-12 overflow-hidden;
-  background: linear-gradient(
-    180deg,
-    rgba(91, 44, 134, 0.5) 0%,
-    rgba(91, 44, 134, 0) 100%
-  );
+  background: linear-gradient(180deg, rgba(91, 44, 134, 0.5) 0%, rgba(91, 44, 134, 0) 100%);
 }
 
 .communityContainer::after {
-  content: "";
+  content: '';
   @apply absolute bottom-0 left-0 right-0 h-32;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 1) 100%
-  );
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%);
 }
 
 .communityContent {
@@ -66,9 +58,17 @@
 }
 
 .profileColumn {
-  @apply flex-1 relative transition-transform duration-300;
+  @apply flex-1 relative;
   height: 900px;
   min-width: 120px;
+}
+
+.profileColumnRise {
+  animation: community-drift-rise 11s ease-in-out infinite alternate;
+}
+
+.profileColumnFall {
+  animation: community-drift-fall 12.5s ease-in-out infinite alternate;
 }
 
 .profileImage {
@@ -76,6 +76,33 @@
   object-position: center 0%;
   transform: scale(0.7);
   mask-image: linear-gradient(to bottom, black, black 90%, transparent);
+}
+
+.profilePlaceholder {
+  @apply w-full h-full rounded-lg;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03));
+  transform: scale(0.7);
+  mask-image: linear-gradient(to bottom, black, black 90%, transparent);
+}
+
+@keyframes community-drift-rise {
+  0% {
+    transform: translateY(-200px);
+  }
+
+  100% {
+    transform: translateY(120px);
+  }
+}
+
+@keyframes community-drift-fall {
+  0% {
+    transform: translateY(-40px);
+  }
+
+  100% {
+    transform: translateY(180px);
+  }
 }
 
 /* Mobile styles */
@@ -151,6 +178,20 @@
     transform: scale(1.1);
     object-position: center;
     mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  }
+
+  .profilePlaceholder {
+    @apply w-full h-full rounded-lg;
+    transform: scale(1.1);
+    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profileColumnRise,
+  .profileColumnFall {
+    animation: none;
+    transform: translateY(0);
   }
 }
 

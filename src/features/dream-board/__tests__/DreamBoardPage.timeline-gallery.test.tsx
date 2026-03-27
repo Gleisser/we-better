@@ -10,6 +10,20 @@ import {
 import { createMilestoneForContent } from '../services/milestonesService';
 import { validateDreamBoardUploadFile } from '../utils/imagePersistence';
 import { uploadDreamBoardImageFile } from '../utils/imageStorage';
+import { resetDreamBoardImageSourceFailures } from '../utils/imageVariants';
+
+const { storageFromMock } = vi.hoisted(() => ({
+  storageFromMock: vi.fn((bucket: string) => ({
+    getPublicUrl: (
+      path: string,
+      options?: { transform?: { width?: number; height?: number; quality?: number } }
+    ) => ({
+      data: {
+        publicUrl: `https://cdn.example.com/storage/v1/render/image/public/${bucket}/${path}?width=${options?.transform?.width ?? 'original'}&height=${options?.transform?.height ?? 'original'}&quality=${options?.transform?.quality ?? 'original'}`,
+      },
+    }),
+  })),
+}));
 
 const mockUpdateProgressBackend = vi.fn(async () => 0.5);
 const mockGetProgressForDream = vi.fn(async () => undefined);
@@ -26,6 +40,14 @@ vi.mock('@/shared/hooks/useTranslation', () => ({
 vi.mock('../api/dreamBoardApi', () => ({
   getDreamBoardOverview: vi.fn(),
   saveDreamBoardData: vi.fn(),
+}));
+
+vi.mock('@/core/services/supabaseClient', () => ({
+  supabase: {
+    storage: {
+      from: storageFromMock,
+    },
+  },
 }));
 
 vi.mock('../utils/imagePersistence', async () => {
@@ -176,6 +198,8 @@ beforeEach(() => {
   mockedCreateMilestoneForContent.mockClear();
   mockedValidateDreamBoardUploadFile.mockClear();
   mockedUploadDreamBoardImageFile.mockClear();
+  storageFromMock.mockClear();
+  resetDreamBoardImageSourceFailures();
 
   mockedGetDreamBoardOverview.mockResolvedValue(createDreamBoardOverview(null));
   mockedSaveDreamBoardData.mockResolvedValue(createDreamBoardData(1));
@@ -254,6 +278,29 @@ describe('DreamBoardPage timeline gallery flow', () => {
           Node.DOCUMENT_POSITION_FOLLOWING
       )
     ).toBe(true);
+  });
+
+  it('falls back to the placeholder when the signed dream-board preview fails', async () => {
+    const board = createDreamBoardData(1);
+    board.content[0] = {
+      ...board.content[0],
+      src: 'https://example.com/original/dream-1.jpg',
+      storageBucket: 'dream-board-images',
+      storagePath: 'dream-1.jpg',
+      imagePreviewCardUrl: '/api/dream-board/previews?variant=card&id=dream-1',
+      imagePreviewWidgetUrl: '/api/dream-board/previews?variant=widget&id=dream-1',
+    };
+    mockedGetDreamBoardOverview.mockResolvedValue(createDreamBoardOverview(board));
+
+    render(<DreamBoardPage />);
+
+    const image = await screen.findByAltText('Dream 1');
+
+    expect(image.getAttribute('src') ?? '').toContain('/api/dream-board/previews');
+
+    fireEvent.error(image);
+
+    expect(image.getAttribute('src') ?? '').toContain('data:image/gif');
   });
 
   it('opens upload form and saves title/category/milestones for a new image', async () => {

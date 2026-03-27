@@ -6,6 +6,7 @@ import { renderHighlightedText } from '@/utils/helpers/textFormatting';
 import { PARTNERS_FALLBACK } from '@/utils/constants/fallback';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
+import { useElementVisibility } from '@/shared/hooks/utils/useElementVisibility';
 import { Brand } from '@/utils/types/features-response';
 
 const defaultTitle = (
@@ -17,6 +18,10 @@ const defaultTitle = (
 const Partners = (): JSX.Element => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const shouldFetch = useDeferredSectionQuery(sectionRef);
+  const shouldRenderLogos = useElementVisibility(sectionRef, {
+    rootMargin: '200px 0px',
+    threshold: 0.01,
+  });
 
   // Initialize hooks
   const { data, isLoading: isDataLoading } = usePartner({ enabled: shouldFetch });
@@ -71,13 +76,17 @@ const Partners = (): JSX.Element => {
         <div className={styles.logoGrid} role="region" aria-label="Partner logos">
           {partners.brands.map((brand: Brand) => (
             <div key={brand.id} className={styles.logoContainer} role="article">
-              <img
-                src={isAPI ? API_CONFIG.imageBaseURL + brand.logo.img.url : brand.logo.img.url}
-                alt={`${brand.name} logo`}
-                className={`${styles.logo} ${brand.name === 'Dedium' ? styles.largeLogo : ''}`}
-                loading="lazy"
-                decoding="async"
-              />
+              {shouldRenderLogos ? (
+                <img
+                  src={isAPI ? API_CONFIG.imageBaseURL + brand.logo.img.url : brand.logo.img.url}
+                  alt={`${brand.name} logo`}
+                  className={`${styles.logo} ${brand.name === 'Dedium' ? styles.largeLogo : ''}`}
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <div className={styles.logoPlaceholder} aria-hidden="true" />
+              )}
             </div>
           ))}
         </div>

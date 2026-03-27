@@ -21,6 +21,10 @@ describe('Highlights', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => 'visible',
+    });
     mockedUseHighlight.mockReturnValue({
       data: null,
       isLoading: false,
@@ -48,18 +52,27 @@ describe('Highlights', () => {
   });
 
   it('loads only the active and adjacent highlight slides after section visibility', () => {
+    const setIntervalSpy = vi.spyOn(window, 'setInterval');
     const { container } = render(<Highlights />);
 
     const images = Array.from(container.querySelectorAll('img'));
-    expect(images[0]?.getAttribute('src') ?? '').not.toContain('data:image/gif');
-    expect(images[1]).not.toBeUndefined();
+    const loadedImages = images.filter(
+      image => !(image.getAttribute('src') ?? '').includes('data:image/gif')
+    );
+    const getActiveSlideAlt = (): string | null =>
+      container.querySelector('[role="tabpanel"][aria-hidden="false"] img')?.getAttribute('alt') ??
+      null;
+
+    expect(loadedImages).toHaveLength(2);
+    expect(getActiveSlideAlt()).toContain('Goals');
 
     act(() => {
       vi.advanceTimersByTime(2000);
     });
 
-    const updatedImages = Array.from(container.querySelectorAll('img'));
-    expect(updatedImages[0]).not.toBeUndefined();
+    expect(getActiveSlideAlt()).toContain('Relationships');
+    expect(setIntervalSpy).not.toHaveBeenCalled();
+    setIntervalSpy.mockRestore();
   });
 
   it('attaches the observer after the skeleton swaps to fallback content', () => {
@@ -80,5 +93,24 @@ describe('Highlights', () => {
 
     const images = Array.from(container.querySelectorAll('img'));
     expect(images[0]?.getAttribute('src') ?? '').not.toContain('data:image/gif');
+  });
+
+  it('pauses autoplay when the page is hidden', () => {
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => 'hidden',
+    });
+
+    const { container } = render(<Highlights />);
+    const getActiveSlideAlt = (): string | null =>
+      container.querySelector('[role="tabpanel"][aria-hidden="false"] img')?.getAttribute('alt') ??
+      null;
+
+    act(() => {
+      document.dispatchEvent(new Event('visibilitychange'));
+      vi.advanceTimersByTime(4000);
+    });
+
+    expect(getActiveSlideAlt()).toContain('Goals');
   });
 });

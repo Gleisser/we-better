@@ -35,7 +35,8 @@ describe('Community', () => {
     } as ReturnType<typeof useErrorHandler>);
   });
 
-  it('renders community profiles with native lazy loading', () => {
+  it('renders community profiles with native lazy loading and no scroll listener', () => {
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
     const { container } = render(<Community />);
 
     const images = Array.from(container.querySelectorAll('img'));
@@ -45,5 +46,9 @@ describe('Community', () => {
       expect(image.getAttribute('src') ?? '').toContain('/assets/images/community/');
       expect(image.getAttribute('src') ?? '').not.toContain('.gif');
     });
+    expect(addEventListenerSpy.mock.calls.some(([eventName]) => eventName === 'scroll')).toBe(
+      false
+    );
+    addEventListenerSpy.mockRestore();
   });
 });

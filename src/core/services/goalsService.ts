@@ -4,9 +4,9 @@
  */
 
 import { supabase } from './supabaseClient';
+import { createAppApiUrl } from '@/core/config/appApi';
 
-// Define the API URL
-const API_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/goals`;
+const API_URL = createAppApiUrl('/goals');
 
 // Goal categories matching the backend
 export type GoalCategory = 'learning' | 'fitness' | 'career' | 'personal';

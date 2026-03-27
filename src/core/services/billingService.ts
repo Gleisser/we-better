@@ -1,6 +1,7 @@
 import { supabase } from './supabaseClient';
+import { createAppApiUrl } from '@/core/config/appApi';
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BACKEND_URL || 'http://localhost:3000'}/api/billing`;
+const API_BASE_URL = createAppApiUrl('/billing');
 
 export type PlanCode = 'free' | 'premium' | 'pro';
 export type BillingCycle = 'monthly' | 'yearly';

@@ -243,6 +243,11 @@ const DreamBoardPage: React.FC = () => {
       imageStoragePath: contentItem.storagePath,
       imageMimeType: contentItem.mimeType,
       imageFileSizeBytes: contentItem.fileSizeBytes,
+      imageWidth: contentItem.imageWidth,
+      imageHeight: contentItem.imageHeight,
+      imagePlaceholder: contentItem.imagePlaceholder,
+      imagePreviewCardUrl: contentItem.imagePreviewCardUrl,
+      imagePreviewWidgetUrl: contentItem.imagePreviewWidgetUrl,
       milestones: [],
       isShared: false,
       // Preserve position data from dream board
@@ -271,6 +276,9 @@ const DreamBoardPage: React.FC = () => {
         storagePath: dream.imageStoragePath,
         mimeType: dream.imageMimeType,
         fileSizeBytes: dream.imageFileSizeBytes,
+        imageWidth: dream.imageWidth,
+        imageHeight: dream.imageHeight,
+        imagePlaceholder: dream.imagePlaceholder,
       }));
 
       return {
@@ -438,6 +446,9 @@ const DreamBoardPage: React.FC = () => {
         imageStoragePath: uploadedImage.path,
         imageMimeType: uploadedImage.mimeType,
         imageFileSizeBytes: uploadedImage.fileSizeBytes,
+        imageWidth: uploadedImage.imageWidth,
+        imageHeight: uploadedImage.imageHeight,
+        imagePlaceholder: uploadedImage.imagePlaceholder,
         milestones: uploadMilestones,
         isShared: false,
       };

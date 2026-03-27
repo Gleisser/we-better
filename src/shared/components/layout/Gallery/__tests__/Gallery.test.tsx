@@ -4,6 +4,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Gallery from '../Gallery';
 import { useGallery } from '@/shared/hooks/useGallery';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
+import { useElementVisibility } from '@/shared/hooks/utils/useElementVisibility';
+import { usePageVisibility } from '@/shared/hooks/utils/usePageVisibility';
+import { usePrefersReducedMotion } from '@/shared/hooks/utils/usePrefersReducedMotion';
+import { subscribeToViewportFrame } from '@/shared/utils/motion/viewportFrameScheduler';
 
 vi.mock('@/shared/hooks/useGallery', () => ({
   useGallery: vi.fn(),
@@ -13,8 +17,28 @@ vi.mock('@/shared/hooks/utils/useErrorHandler', () => ({
   useErrorHandler: vi.fn(),
 }));
 
+vi.mock('@/shared/hooks/utils/useElementVisibility', () => ({
+  useElementVisibility: vi.fn(),
+}));
+
+vi.mock('@/shared/hooks/utils/usePageVisibility', () => ({
+  usePageVisibility: vi.fn(),
+}));
+
+vi.mock('@/shared/hooks/utils/usePrefersReducedMotion', () => ({
+  usePrefersReducedMotion: vi.fn(),
+}));
+
+vi.mock('@/shared/utils/motion/viewportFrameScheduler', () => ({
+  subscribeToViewportFrame: vi.fn(),
+}));
+
 const mockedUseGallery = vi.mocked(useGallery);
 const mockedUseErrorHandler = vi.mocked(useErrorHandler);
+const mockedUseElementVisibility = vi.mocked(useElementVisibility);
+const mockedUsePageVisibility = vi.mocked(usePageVisibility);
+const mockedUsePrefersReducedMotion = vi.mocked(usePrefersReducedMotion);
+const mockedSubscribeToViewportFrame = vi.mocked(subscribeToViewportFrame);
 
 const observe = vi.fn();
 const disconnect = vi.fn();
@@ -30,6 +54,10 @@ describe('Gallery', () => {
       isError: false,
       error: null,
     } as ReturnType<typeof useErrorHandler>);
+    mockedUseElementVisibility.mockReturnValue(true);
+    mockedUsePageVisibility.mockReturnValue(true);
+    mockedUsePrefersReducedMotion.mockReturnValue(false);
+    mockedSubscribeToViewportFrame.mockImplementation(() => vi.fn());
 
     window.IntersectionObserver = vi.fn(() => ({
       observe,
@@ -49,6 +77,7 @@ describe('Gallery', () => {
   });
 
   it('uses intersection loading for masonry images without gif sources', () => {
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
     const { container } = render(<Gallery />);
 
     const firstImage = container.querySelector('img[data-src]');
@@ -61,6 +90,11 @@ describe('Gallery', () => {
     );
     expect(firstImage?.getAttribute('data-src') ?? '').not.toContain('.gif');
     expect(observe).toHaveBeenCalled();
+    expect(mockedSubscribeToViewportFrame).toHaveBeenCalledTimes(1);
+    expect(addEventListenerSpy.mock.calls.some(([eventName]) => eventName === 'scroll')).toBe(
+      false
+    );
+    addEventListenerSpy.mockRestore();
   });
 
   it('loads only the active mobile image directly', () => {
@@ -116,5 +150,15 @@ describe('Gallery', () => {
     render(<Gallery />);
 
     expect(screen.getAllByAltText('Body card')).toHaveLength(1);
+  });
+
+  it('stops the body-pan subscription when motion is gated', () => {
+    mockedUsePageVisibility.mockReturnValue(false);
+
+    const { container } = render(<Gallery />);
+
+    const bodyMotionLayer = container.querySelector('[data-body-motion="true"]') as HTMLElement;
+    expect(mockedSubscribeToViewportFrame).not.toHaveBeenCalled();
+    expect(bodyMotionLayer.style.getPropertyValue('--gallery-body-pan-progress')).toBe('1');
   });
 });
