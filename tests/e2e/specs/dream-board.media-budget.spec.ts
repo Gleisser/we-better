@@ -17,8 +17,8 @@ test.describe('Dream Board media budget', () => {
 
     await signIn(page);
 
-    const imageResponseBodies: Array<Promise<ObservedImageResponse | null>> = [];
-    const handleResponse = (response: Response): void => {
+    const observedResponses = new Map<string, Promise<ObservedImageResponse | null>>();
+    const observeResponse = (response: Response): void => {
       const isPreviewResponse = response.url().includes('/api/dream-board/previews');
       const isImageResponse = response.request().resourceType() === 'image';
 
@@ -26,7 +26,13 @@ test.describe('Dream Board media budget', () => {
         return;
       }
 
-      imageResponseBodies.push(
+      const responseKey = `${response.request().method()}:${response.url()}`;
+      if (observedResponses.has(responseKey)) {
+        return;
+      }
+
+      observedResponses.set(
+        responseKey,
         response
           .body()
           .then(buffer => ({
@@ -35,14 +41,30 @@ test.describe('Dream Board media budget', () => {
             ok: response.ok(),
             status: response.status(),
           }))
-          .catch(() => null)
+          .catch(async () => {
+            const contentLengthHeader = await response.headerValue('content-length');
+            const contentLength = Number(contentLengthHeader ?? 0);
+
+            return {
+              url: response.url(),
+              bodyLength: Number.isFinite(contentLength) ? contentLength : 0,
+              ok: response.ok(),
+              status: response.status(),
+            };
+          })
       );
     };
 
-    page.on('response', handleResponse);
+    page.on('response', observeResponse);
+    const firstPreviewResponsePromise = page.waitForResponse(
+      response => response.url().includes('/api/dream-board/previews'),
+      { timeout: 15000 }
+    );
 
     await page.goto('/app/dream-board');
     await expect(page).toHaveURL(/\/app\/dream-board$/);
+    const firstPreviewResponse = await firstPreviewResponsePromise;
+    observeResponse(firstPreviewResponse);
     await page.waitForFunction(() => {
       const imageSources = Array.from(document.querySelectorAll('article img')).map(
         image => (image as HTMLImageElement).currentSrc || image.getAttribute('src') || ''
@@ -50,9 +72,9 @@ test.describe('Dream Board media budget', () => {
 
       return imageSources.some(source => source.includes('/api/dream-board/previews'));
     });
-    await page.waitForTimeout(750);
+    await page.waitForTimeout(250);
 
-    page.off('response', handleResponse);
+    page.off('response', observeResponse);
 
     const mountedImageUrls = new Set(
       await page.evaluate(() =>
@@ -62,7 +84,7 @@ test.describe('Dream Board media budget', () => {
       )
     );
 
-    const settledResponses = (await Promise.all(imageResponseBodies)).filter(
+    const settledResponses = (await Promise.all(observedResponses.values())).filter(
       (entry): entry is ObservedImageResponse => Boolean(entry)
     );
     const previewResponses = settledResponses.filter(response =>
