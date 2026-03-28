@@ -220,7 +220,11 @@ const CardsWidget = (): JSX.Element => {
   const categoryTheme = useMemo(() => buildCategoryTheme(t), [t]);
   const dashboardOverview = useDashboardOverview();
   const isDashboardOverviewManaged = dashboardOverview !== null;
-  const dashboardHasAffirmedToday = dashboardOverview?.data?.inspiration.hasAffirmedToday ?? false;
+  const dashboardAffirmations = useMemo(
+    () => dashboardOverview?.data?.inspiration?.affirmations ?? [],
+    [dashboardOverview?.data?.inspiration?.affirmations]
+  );
+  const dashboardHasAffirmedToday = dashboardOverview?.data?.inspiration?.hasAffirmedToday ?? false;
   const shouldLoadBookmarks = useIdleActivation({
     minimumDelay: 1500,
     timeout: 2500,
@@ -291,7 +295,7 @@ const CardsWidget = (): JSX.Element => {
 
   useEffect(() => {
     const activeAffirmationDeck = isDashboardOverviewManaged
-      ? (dashboardOverview?.data?.inspiration.affirmations ?? [])
+      ? dashboardAffirmations
       : (affirmationDeck ?? []);
 
     if (!activeAffirmationDeck.length) {
@@ -378,7 +382,7 @@ const CardsWidget = (): JSX.Element => {
   }, [
     affirmationDeck,
     categoryTheme,
-    dashboardOverview?.data?.inspiration.affirmations,
+    dashboardAffirmations,
     isDashboardOverviewManaged,
     personalAffirmation,
     t,

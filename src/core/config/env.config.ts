@@ -2,7 +2,7 @@ import { resolveAppApiBaseUrl } from './appApi';
 
 export const ENV_CONFIG = {
   API: {
-    URL: resolveAppApiBaseUrl(import.meta.env.VITE_API_BACKEND_URL),
+    URL: resolveAppApiBaseUrl(),
     TIMEOUT: Number(import.meta.env.VITE_API_TIMEOUT) || 45000,
   },
   RATE_LIMIT: {

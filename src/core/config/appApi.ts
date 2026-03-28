@@ -29,13 +29,13 @@ const appendQueryValue = (
   key: string,
   value: AppApiQueryValue
 ): void => {
-  if (value === null) {
+  if (value === null || value === undefined) {
     return;
   }
 
   if (Array.isArray(value)) {
     value.forEach(item => {
-      if (item !== null) {
+      if (item !== null && item !== undefined) {
         searchParams.append(key, String(item));
       }
     });

@@ -165,7 +165,7 @@ const QuoteWidget = (): JSX.Element => {
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5);
   const dashboardOverview = useDashboardOverview();
   const isDashboardOverviewManaged = dashboardOverview !== null;
-  const dashboardQuotes = dashboardOverview?.data?.inspiration.quotes;
+  const dashboardQuotes = dashboardOverview?.data?.inspiration?.quotes;
   const shouldLoadBookmarkState = useIdleActivation({
     minimumDelay: 1500,
     timeout: 2500,

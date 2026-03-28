@@ -27,6 +27,40 @@ export interface DashboardOverviewResponse {
   };
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const isDashboardOverviewResponse = (value: unknown): value is DashboardOverviewResponse => {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const inspiration = value.inspiration;
+  const lifeWheel = value.lifeWheel;
+  const mood = value.mood;
+
+  if (
+    !isRecord(inspiration) ||
+    !Array.isArray(inspiration.quotes) ||
+    !Array.isArray(inspiration.affirmations) ||
+    typeof inspiration.hasAffirmedToday !== 'boolean'
+  ) {
+    return false;
+  }
+
+  if (!isRecord(lifeWheel)) {
+    return false;
+  }
+
+  if (lifeWheel.entry !== undefined && lifeWheel.entry !== null) {
+    if (!isRecord(lifeWheel.entry) || !Array.isArray(lifeWheel.entry.categories)) {
+      return false;
+    }
+  }
+
+  return isRecord(mood) && Array.isArray(mood.entries);
+};
+
 const getAuthToken = async (): Promise<string | null> => {
   try {
     const { data } = await supabase.auth.getSession();
@@ -85,8 +119,12 @@ class DashboardOverviewService {
         throw new Error(errorMessage);
       }
 
+      if (!isDashboardOverviewResponse(payload)) {
+        throw new Error('Malformed dashboard overview response');
+      }
+
       return {
-        data: payload as unknown as DashboardOverviewResponse,
+        data: payload,
         error: null,
       };
     } catch (error) {

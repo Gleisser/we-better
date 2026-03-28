@@ -147,6 +147,10 @@ const RadialLifeChartWidget = (): JSX.Element => {
   const { user } = useAuth();
   const dashboardOverview = useDashboardOverview();
   const isDashboardOverviewManaged = dashboardOverview !== null;
+  const dashboardLifeWheelCategories = useMemo(
+    () => dashboardOverview?.data?.lifeWheel?.entry?.categories ?? [],
+    [dashboardOverview?.data?.lifeWheel?.entry?.categories]
+  );
 
   const {
     data: latestLifeWheel,
@@ -167,13 +171,9 @@ const RadialLifeChartWidget = (): JSX.Element => {
   const rawCategories = useMemo(
     () =>
       isDashboardOverviewManaged
-        ? (dashboardOverview?.data?.lifeWheel.entry?.categories ?? [])
+        ? dashboardLifeWheelCategories
         : (latestLifeWheel?.entry?.categories ?? []),
-    [
-      dashboardOverview?.data?.lifeWheel.entry?.categories,
-      isDashboardOverviewManaged,
-      latestLifeWheel,
-    ]
+    [dashboardLifeWheelCategories, isDashboardOverviewManaged, latestLifeWheel]
   );
 
   const translateCategory = useCallback(
