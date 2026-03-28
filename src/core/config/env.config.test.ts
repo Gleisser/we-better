@@ -12,12 +12,12 @@ describe('ENV_CONFIG', () => {
     expect(ENV_CONFIG.API.URL).toBe('/api');
   });
 
-  it('uses the configured backend origin for generic api client requests', async () => {
+  it('keeps browser runtime api requests same-origin even when a backend origin is configured', async () => {
     vi.stubEnv('VITE_API_BACKEND_URL', 'https://api.webetter.ai/');
     vi.resetModules();
 
     const { ENV_CONFIG } = await import('./env.config');
 
-    expect(ENV_CONFIG.API.URL).toBe('https://api.webetter.ai/api');
+    expect(ENV_CONFIG.API.URL).toBe('/api');
   });
 });

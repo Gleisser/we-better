@@ -11,6 +11,21 @@ export interface AppShellBootstrapResponse {
   unreadNotificationCount: number;
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const isAppShellBootstrapResponse = (value: unknown): value is AppShellBootstrapResponse => {
+  if (!isRecord(value) || typeof value.unreadNotificationCount !== 'number') {
+    return false;
+  }
+
+  if (value.profile === null || value.profile === undefined) {
+    return true;
+  }
+
+  return isRecord(value.profile);
+};
+
 const getAuthToken = async (): Promise<string | null> => {
   try {
     const { data } = await supabase.auth.getSession();
@@ -62,8 +77,12 @@ class AppShellService {
         throw new Error(errorMessage);
       }
 
+      if (!isAppShellBootstrapResponse(payload)) {
+        throw new Error('Malformed app shell response');
+      }
+
       return {
-        data: payload as unknown as AppShellBootstrapResponse,
+        data: payload,
         error: null,
       };
     } catch (error) {
