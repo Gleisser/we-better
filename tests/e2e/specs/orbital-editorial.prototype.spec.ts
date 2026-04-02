@@ -56,7 +56,9 @@ test.describe('Orbital editorial prototype', () => {
     await expect(page).toHaveTitle(/Orbital Editorial/i);
     await expect(page.locator('[data-orbital-stage="hero"]')).toBeVisible();
     await expect(page.locator('[data-chapter-id]')).toHaveCount(6);
-    await expect(page.getByRole('link', { name: /enter the system/i })).toBeVisible();
+    await expect(
+      page.locator('[data-orbital-stage="hero"] [data-hero-cta="primary"]')
+    ).toBeVisible();
   });
 
   test('keeps the orbital hero centered and readable on desktop', async ({ page }) => {
@@ -82,5 +84,27 @@ test.describe('Orbital editorial prototype', () => {
       expect(box.left).toBeGreaterThanOrEqual(-8);
       expect(box.right).toBeLessThanOrEqual(1448);
     }
+  });
+
+  test('shows the four proof chapters with one primary surface each', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1024 });
+    await gotoPrototype(page);
+
+    const proofSelectors = [
+      '[data-proof="life-wheel"] img',
+      '[data-proof="dashboard"] img',
+      '[data-proof="habits"] video',
+      '[data-proof="dream-board"] video',
+    ];
+
+    for (const selector of proofSelectors) {
+      await page.locator(selector).scrollIntoViewIfNeeded();
+      await expect(page.locator(selector)).toBeVisible();
+    }
+
+    await expect(page.locator('[data-proof-primary]')).toHaveCount(4);
+    await expect(
+      page.locator('[data-chapter-id="recommit"] [data-hero-cta="closing"]')
+    ).toBeVisible();
   });
 });
