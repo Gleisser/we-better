@@ -16,6 +16,29 @@ const gotoPrototype = async (page: Page): Promise<void> => {
   await page.waitForLoadState('networkidle').catch(() => {});
 };
 
+const readBounds = async (page: Page, selector: string): Promise<DOMRectJSON> => {
+  return page.locator(selector).evaluate((element): DOMRectJSON => {
+    const rect = element.getBoundingClientRect();
+    return {
+      left: rect.left,
+      right: rect.right,
+      top: rect.top,
+      bottom: rect.bottom,
+      width: rect.width,
+      height: rect.height,
+    };
+  });
+};
+
+type DOMRectJSON = {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+  width: number;
+  height: number;
+};
+
 test.describe('Orbital editorial prototype', () => {
   test('is discoverable from the playground index', async ({ page }) => {
     await page.goto(playgroundUrl, { waitUntil: 'domcontentloaded' });
@@ -34,5 +57,30 @@ test.describe('Orbital editorial prototype', () => {
     await expect(page.locator('[data-orbital-stage="hero"]')).toBeVisible();
     await expect(page.locator('[data-chapter-id]')).toHaveCount(6);
     await expect(page.getByRole('link', { name: /enter the system/i })).toBeVisible();
+  });
+
+  test('keeps the orbital hero centered and readable on desktop', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1024 });
+    await gotoPrototype(page);
+
+    const selectors = [
+      '[data-hero-copy-beat="north"]',
+      '[data-hero-copy-beat="east"]',
+      '[data-hero-copy-beat="south"]',
+      '[data-orbit-core]',
+      '[data-impact-ring]',
+      '[data-orbit-node="mood"]',
+      '[data-orbit-node="habits"]',
+      '[data-orbit-node="balance"]',
+      '[data-orbit-node="dream"]',
+      '[data-hero-cta="primary"]',
+    ];
+
+    for (const selector of selectors) {
+      await expect(page.locator(selector)).toBeVisible();
+      const box = await readBounds(page, selector);
+      expect(box.left).toBeGreaterThanOrEqual(-8);
+      expect(box.right).toBeLessThanOrEqual(1448);
+    }
   });
 });
