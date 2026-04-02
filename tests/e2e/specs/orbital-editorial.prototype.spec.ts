@@ -107,4 +107,19 @@ test.describe('Orbital editorial prototype', () => {
       page.locator('[data-chapter-id="recommit"] [data-hero-cta="closing"]')
     ).toBeVisible();
   });
+
+  test('updates active chapter state and keeps the orbit in-bounds on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await gotoPrototype(page);
+
+    await page.locator('[data-chapter-id="momentum"]').scrollIntoViewIfNeeded();
+
+    await expect
+      .poll(async () => page.locator('body').getAttribute('data-active-chapter'))
+      .toBe('momentum');
+
+    const orbit = await readBounds(page, '[data-orbit-core]');
+    expect(orbit.left).toBeGreaterThanOrEqual(-8);
+    expect(orbit.right).toBeLessThanOrEqual(398);
+  });
 });
