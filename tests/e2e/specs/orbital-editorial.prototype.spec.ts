@@ -39,42 +39,40 @@ type DOMRectJSON = {
   height: number;
 };
 
-test.describe('Orbital editorial prototype', () => {
+test.describe('Transformation bento prototype', () => {
   test('is discoverable from the playground index', async ({ page }) => {
     await page.goto(playgroundUrl, { waitUntil: 'domcontentloaded' });
-    const orbitalCard = page.locator('.concept-card--orbital');
+    const orbitalCard = page.locator('.concept-card--bento');
 
     await expect(orbitalCard).toBeVisible();
-    await expect(orbitalCard.getByRole('heading', { name: /orbital editorial/i })).toBeVisible();
+    await expect(orbitalCard.getByRole('heading', { name: /transformation bento/i })).toBeVisible();
     await expect(
-      orbitalCard.getByRole('link', { name: /open orbital editorial prototype/i })
+      orbitalCard.getByRole('link', { name: /open transformation bento prototype/i })
     ).toHaveAttribute('href', './concepts/orbital-editorial.html');
   });
 
-  test('renders the prototype shell and chapter anchors', async ({ page }) => {
+  test('renders the transformation bento hero and chapter anchors', async ({ page }) => {
     await gotoPrototype(page);
-    await expect(page).toHaveTitle(/Orbital Editorial/i);
+    await expect(page).toHaveTitle(/Transformation Bento/i);
     await expect(page.locator('[data-orbital-stage="hero"]')).toBeVisible();
+    await expect(page.locator('[data-bento-board]')).toBeVisible();
     await expect(page.locator('[data-chapter-id]')).toHaveCount(6);
     await expect(
       page.locator('[data-orbital-stage="hero"] [data-hero-cta="primary"]')
     ).toBeVisible();
   });
 
-  test('keeps the orbital hero centered and readable on desktop', async ({ page }) => {
+  test('keeps the bento hero staged and readable on desktop', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1024 });
     await gotoPrototype(page);
 
     const selectors = [
-      '[data-hero-copy-beat="north"]',
-      '[data-hero-copy-beat="east"]',
-      '[data-hero-copy-beat="south"]',
-      '[data-orbit-core]',
-      '[data-impact-ring]',
-      '[data-orbit-node="mood"]',
-      '[data-orbit-node="habits"]',
-      '[data-orbit-node="balance"]',
-      '[data-orbit-node="dream"]',
+      '[data-bento-board]',
+      '[data-bento-tile="device"]',
+      '[data-bento-tile="manifesto"]',
+      '[data-bento-tile="portrait"]',
+      '[data-bento-tile="world"]',
+      '[data-bento-tile="renew"]',
       '[data-hero-cta="primary"]',
     ];
 
@@ -108,7 +106,9 @@ test.describe('Orbital editorial prototype', () => {
     ).toBeVisible();
   });
 
-  test('updates active chapter state and keeps the orbit in-bounds on mobile', async ({ page }) => {
+  test('updates active chapter state and keeps the bento board in-bounds on mobile', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await gotoPrototype(page);
 
@@ -118,7 +118,7 @@ test.describe('Orbital editorial prototype', () => {
       .poll(async () => page.locator('body').getAttribute('data-active-chapter'))
       .toBe('momentum');
 
-    const orbit = await readBounds(page, '[data-orbit-core]');
+    const orbit = await readBounds(page, '[data-bento-board]');
     expect(orbit.left).toBeGreaterThanOrEqual(-8);
     expect(orbit.right).toBeLessThanOrEqual(398);
   });
