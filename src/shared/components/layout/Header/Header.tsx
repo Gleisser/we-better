@@ -156,13 +156,13 @@ const Header = (): JSX.Element => {
                 {!menuPayload && (
                   <>
                     <li>
-                      <NavItem href="#business" title={HEADER_CONSTANTS.Business.title} />
+                      <NavItem href="#features-title" title={HEADER_CONSTANTS.Business.title} />
                     </li>
                     <li>
-                      <NavItem href="#mentors" title={HEADER_CONSTANTS.Mentors.title} />
+                      <NavItem href="#community-title" title={HEADER_CONSTANTS.Mentors.title} />
                     </li>
                     <li>
-                      <NavItem href="#coaches" title={HEADER_CONSTANTS.Coaches.title} />
+                      <NavItem href="#prefooter-title" title={HEADER_CONSTANTS.Coaches.title} />
                     </li>
                   </>
                 )}

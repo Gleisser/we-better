@@ -82,9 +82,15 @@ describe('Header', () => {
       expect(screen.getByText(item.title)).not.toBeNull();
     });
 
-    expect(screen.getByText(HEADER_CONSTANTS.Business.title)).not.toBeNull();
-    expect(screen.getByText(HEADER_CONSTANTS.Mentors.title)).not.toBeNull();
-    expect(screen.getByText(HEADER_CONSTANTS.Coaches.title)).not.toBeNull();
+    expect(
+      screen.getByRole('link', { name: HEADER_CONSTANTS.Business.title }).getAttribute('href')
+    ).toBe('#features-title');
+    expect(
+      screen.getByRole('link', { name: HEADER_CONSTANTS.Mentors.title }).getAttribute('href')
+    ).toBe('#community-title');
+    expect(
+      screen.getByRole('link', { name: HEADER_CONSTANTS.Coaches.title }).getAttribute('href')
+    ).toBe('#prefooter-title');
   });
 
   it('handles mobile menu interactions correctly', () => {

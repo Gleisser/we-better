@@ -18,6 +18,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
+    "capture:habits-demo": "node ./scripts/capture-habits-widget-demo.mjs",
     "optimize-svgs": "svgo -f public/assets/images/logo --config svgo.config.cjs",
     "test:e2e": "playwright test",
     "test:e2e:orbital-editorial": "playwright test -c playwright.orbital-editorial.config.ts",

@@ -1,18 +1,22 @@
-import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 interface CtaButtonProps {
   text?: string;
+  'aria-label'?: string;
 }
 
-const CtaButton = ({ text = 'Get Started' }: CtaButtonProps): JSX.Element => {
+const CtaButton = ({
+  text = 'Get Started',
+  'aria-label': ariaLabel,
+}: CtaButtonProps): JSX.Element => {
   return (
-    <motion.button
+    <Link
+      to="/auth/signup"
       className="bg-white text-[#6f42c1] px-8 py-3 rounded-full font-medium hover:bg-white/90 transition-colors"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      aria-label={ariaLabel ?? text}
     >
       {text}
-    </motion.button>
+    </Link>
   );
 };
 
