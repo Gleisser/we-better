@@ -15,6 +15,7 @@ const SignUp = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isConfirmationSent, setIsConfirmationSent] = useState(false);
+  const isGoogleAuthEnabled = authService.isGoogleAuthEnabled();
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -54,6 +55,11 @@ const SignUp = (): JSX.Element => {
   };
 
   const handleGoogleSignIn = async (): Promise<void> => {
+    if (!isGoogleAuthEnabled) {
+      setError(authService.getGoogleAuthUnavailableMessage());
+      return;
+    }
+
     setError('');
     setIsLoading(true);
 
@@ -225,18 +231,6 @@ const SignUp = (): JSX.Element => {
                 </div>
               </div>
 
-              <div className={styles.inputGroup}>
-                <label htmlFor="name">Name</label>
-                <input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder="Enter your name"
-                  required
-                />
-              </div>
-
               <button type="submit" className={styles.submitButton} disabled={isLoading}>
                 {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>
@@ -245,14 +239,14 @@ const SignUp = (): JSX.Element => {
                 type="button"
                 className={styles.googleButton}
                 onClick={handleGoogleSignIn}
-                disabled={isLoading}
+                disabled={isLoading || !isGoogleAuthEnabled}
               >
                 <img
                   src="/assets/images/icons/google_logo.png"
                   alt=""
                   className={styles.googleIcon}
                 />
-                Sign Up with Google
+                {authService.getGoogleAuthButtonLabel()}
               </button>
             </form>
 

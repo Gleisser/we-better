@@ -127,6 +127,7 @@ export const HabitForm = ({
           <div className={styles.backdrop} onClick={onClose} />
           <motion.div
             className={styles.container}
+            data-testid="habit-form"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
@@ -154,6 +155,7 @@ export const HabitForm = ({
                   onChange={e => setName(e.target.value)}
                   className={styles.input}
                   placeholder={t('widgets.habits.form.placeholder') as string}
+                  data-testid="habit-form-name-input"
                   required
                 />
               </div>
@@ -168,6 +170,7 @@ export const HabitForm = ({
                       className={`${styles.categoryButton} ${
                         category === key ? styles.selected : ''
                       }`}
+                      data-testid={`habit-form-category-${key}`}
                       onClick={() => setCategory(key as HabitCategory)}
                     >
                       <span className={styles.categoryIcon}>{config.icon}</span>
@@ -180,7 +183,11 @@ export const HabitForm = ({
               </div>
 
               <div className={styles.actions}>
-                <button type="submit" className={styles.submitButton}>
+                <button
+                  type="submit"
+                  className={styles.submitButton}
+                  data-testid="habit-form-submit-button"
+                >
                   {mode === 'create'
                     ? t('widgets.habits.form.createButton')
                     : t('widgets.habits.form.saveButton')}

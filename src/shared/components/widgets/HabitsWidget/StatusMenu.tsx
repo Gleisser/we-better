@@ -52,6 +52,7 @@ export const StatusMenu: React.FC<StatusMenuProps> = ({
             ref={menuRef}
             className={`${styles.menu} ${isMobile ? styles.mobileMenu : ''}`}
             style={menuStyle}
+            data-testid="habit-status-menu"
             initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.95, y: -10 }}
             animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1, y: 0 }}
             exit={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.95, y: -10 }}
@@ -61,6 +62,7 @@ export const StatusMenu: React.FC<StatusMenuProps> = ({
                 <button
                   key={status}
                   className={styles.option}
+                  data-testid={`habit-status-option-${status}`}
                   onClick={() => {
                     onSelect(status as HabitStatus);
                     onClose();

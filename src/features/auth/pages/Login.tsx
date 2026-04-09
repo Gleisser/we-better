@@ -10,6 +10,7 @@ const Login = (): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const isGoogleAuthEnabled = authService.isGoogleAuthEnabled();
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -35,9 +36,24 @@ const Login = (): JSX.Element => {
     }
   };
 
-  const handleGoogleSignIn = (): void => {
-    // TODO: Implement Google sign-in later
-    setError('Google sign-in will be available soon');
+  const handleGoogleSignIn = async (): Promise<void> => {
+    if (!isGoogleAuthEnabled) {
+      setError(authService.getGoogleAuthUnavailableMessage());
+      return;
+    }
+
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const { error: authError } = await authService.signInWithGoogle();
+      if (authError) {
+        throw authError;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to sign in with Google');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -123,14 +139,14 @@ const Login = (): JSX.Element => {
                 type="button"
                 className={styles.googleButton}
                 onClick={handleGoogleSignIn}
-                disabled={true} // Disabled until implemented
+                disabled={isLoading || !isGoogleAuthEnabled}
               >
                 <img
                   src="/assets/images/icons/google_logo.png"
                   alt=""
                   className={styles.googleIcon}
                 />
-                Sign In with Google (Coming Soon)
+                {authService.getGoogleAuthButtonLabel()}
               </button>
             </form>
 

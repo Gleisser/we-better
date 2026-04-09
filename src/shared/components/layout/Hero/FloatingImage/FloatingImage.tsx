@@ -88,7 +88,7 @@ const FloatingImage = forwardRef<HTMLImageElement, FloatingImageProps>(
 
     return (
       <motion.div
-        className={cn('absolute z-10', className)}
+        className={cn('absolute z-10 pointer-events-none select-none', className)}
         style={{ x: translateX, y: translateY, rotate }}
         initial={{ opacity: 0, x: x[0], y: y[0], scale: 0.8 }}
         animate={{ opacity: 1, x: x[0], y: y[0], scale: 1 }}

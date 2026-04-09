@@ -184,13 +184,13 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps): JSX
           </div>
 
           {/* Regular menu items */}
-          <a href="#teams" className={styles.menuItem}>
+          <a href="#features-title" className={styles.menuItem}>
             For Business
           </a>
-          <a href="#developers" className={styles.menuItem}>
+          <a href="#community-title" className={styles.menuItem}>
             For Mentors
           </a>
-          <a href="#contact" className={styles.menuItem}>
+          <a href="#prefooter-title" className={styles.menuItem}>
             For Coaches
           </a>
         </div>

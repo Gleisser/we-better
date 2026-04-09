@@ -21,8 +21,30 @@ export interface AuthResponse {
 
 // Define your app's redirect URL for Supabase configuration
 const REDIRECT_URL = `${window.location.origin}/app`;
+const GOOGLE_AUTH_ENABLED = import.meta.env.VITE_AUTH_GOOGLE_ENABLED === 'true';
+const GOOGLE_AUTH_BUTTON_LABEL = 'Continue with Google';
+const GOOGLE_AUTH_DISABLED_LABEL = 'Google Sign-In Unavailable';
+const GOOGLE_AUTH_UNAVAILABLE_MESSAGE =
+  'Google sign-in is currently unavailable. Please use email and password.';
+
+const isUnsupportedGoogleProviderError = (message: string): boolean => {
+  const normalized = message.toLowerCase();
+  return normalized.includes('unsupported provider') || normalized.includes('validation_failed');
+};
 
 export const authService = {
+  isGoogleAuthEnabled(): boolean {
+    return GOOGLE_AUTH_ENABLED;
+  },
+
+  getGoogleAuthButtonLabel(): string {
+    return GOOGLE_AUTH_ENABLED ? GOOGLE_AUTH_BUTTON_LABEL : GOOGLE_AUTH_DISABLED_LABEL;
+  },
+
+  getGoogleAuthUnavailableMessage(): string {
+    return GOOGLE_AUTH_UNAVAILABLE_MESSAGE;
+  },
+
   async signIn(email: string, password: string): Promise<AuthResponse> {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -80,6 +102,10 @@ export const authService = {
 
   async signInWithGoogle(): Promise<AuthResponse> {
     try {
+      if (!GOOGLE_AUTH_ENABLED) {
+        throw new Error(GOOGLE_AUTH_UNAVAILABLE_MESSAGE);
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -87,7 +113,12 @@ export const authService = {
         },
       });
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        if (isUnsupportedGoogleProviderError(error.message)) {
+          throw new Error(GOOGLE_AUTH_UNAVAILABLE_MESSAGE);
+        }
+        throw new Error(error.message);
+      }
 
       return {
         user: null, // Will be populated after redirect

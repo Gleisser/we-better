@@ -233,6 +233,7 @@ const HabitsWidget = (): JSX.Element => {
   return (
     <div
       className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}
+      data-testid="habits-widget"
       style={
         {
           '--gradient-start': theme.gradientStart,
@@ -251,6 +252,7 @@ const HabitsWidget = (): JSX.Element => {
               className={styles.addButton}
               onClick={() => setShowHabitForm(true)}
               aria-label={t('widgets.habits.addNew') as string}
+              data-testid="habits-widget-add-button"
             >
               <PlusIcon className={styles.actionIcon} />
             </button>
@@ -264,6 +266,7 @@ const HabitsWidget = (): JSX.Element => {
                 ? t('widgets.habits.expandWidget')
                 : t('widgets.habits.collapseWidget')) as string
             }
+            data-testid="habits-widget-collapse-button"
           >
             <ChevronDownIcon className={styles.collapseIcon} />
           </button>
@@ -324,7 +327,11 @@ const HabitsWidget = (): JSX.Element => {
           {!isLoading && !error && filteredHabits.length === 0 && (
             <div className={styles.emptyState}>
               <p>{t('widgets.habits.emptyState')}</p>
-              <button className={styles.createButton} onClick={() => setShowHabitForm(true)}>
+              <button
+                className={styles.createButton}
+                onClick={() => setShowHabitForm(true)}
+                data-testid="habits-widget-empty-create-button"
+              >
                 {t('widgets.habits.createHabit')}
               </button>
             </div>
@@ -335,6 +342,7 @@ const HabitsWidget = (): JSX.Element => {
               <motion.div
                 key={habit.id}
                 className={`${styles.habitCard} ${collapsedHabits.has(habit.id) ? styles.collapsed : ''}`}
+                data-testid={`habit-card-${habit.id}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 style={
@@ -358,17 +366,22 @@ const HabitsWidget = (): JSX.Element => {
                         ? t('widgets.habits.expandHabit')
                         : t('widgets.habits.collapseHabit')) as string
                     }
+                    data-testid={`habit-toggle-${habit.id}`}
                   >
                     <ChevronDownIcon className={styles.toggleIcon} />
                   </button>
                 </div>
 
-                <div className={styles.weekProgress}>
+                <div
+                  className={styles.weekProgress}
+                  data-testid={`habit-week-progress-${habit.id}`}
+                >
                   {weekDates.map(date => (
                     <div
                       key={date.toString()}
                       className={styles.dayColumn}
                       data-tooltip={t('widgets.habits.setStatusTooltip')}
+                      data-testid={`habit-day-column-${habit.id}-${format(date, 'yyyy-MM-dd')}`}
                       role="button"
                       aria-label={
                         t('widgets.habits.setStatusFor', {
@@ -390,6 +403,9 @@ const HabitsWidget = (): JSX.Element => {
                         onClick={e => handleDayClick(e, date, habit)}
                         data-status={getDateStatus(habit, date)}
                         data-day={format(date, 'd')}
+                        data-date={format(date, 'yyyy-MM-dd')}
+                        data-habit-id={habit.id}
+                        data-testid={`habit-day-check-${habit.id}-${format(date, 'yyyy-MM-dd')}`}
                       >
                         {(() => {
                           const status = getDateStatus(habit, date);
