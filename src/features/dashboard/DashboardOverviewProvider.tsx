@@ -33,8 +33,13 @@ export const DashboardOverviewProvider = ({ children }: { children: ReactNode })
     gcTime: 1000 * 60 * 30,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    retry: 1,
+    retryDelay: 750,
     meta: AUTH_SCOPED_QUERY_META,
   });
+
+  const shouldUseLeafFallbackQueries =
+    Boolean(userId) && overviewQuery.error instanceof Error && !overviewQuery.data;
 
   const value = useMemo<DashboardOverviewContextValue>(
     () => ({
@@ -46,6 +51,10 @@ export const DashboardOverviewProvider = ({ children }: { children: ReactNode })
     }),
     [authLoading, overviewQuery.data, overviewQuery.error, overviewQuery.isLoading, userId]
   );
+
+  if (shouldUseLeafFallbackQueries) {
+    return <>{children}</>;
+  }
 
   return (
     <DashboardOverviewContext.Provider value={value}>{children}</DashboardOverviewContext.Provider>
