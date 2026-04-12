@@ -129,7 +129,9 @@
       "getNewQuote": "Buscar nova frase",
       "copyQuote": "Copiar frase",
       "tryAgain": "Tentar novamente",
-      "failedToLoad": "Falha ao carregar as frases"
+      "failedToLoad": "Falha ao carregar as frases",
+      "syncing": "Sincronizando sua frase do dia...",
+      "retrying": "Ainda estamos tentando carregar sua frase do dia. Vamos tentar novamente em instantes."
     },
     "affirmation": {
       "title": "Afirmação do dia",
@@ -138,6 +140,8 @@
       "dailyIntentionLocked": "Intenção do dia registrada",
       "loadingAffirmations": "Carregando afirmações...",
       "failedToLoad": "Falha ao carregar as afirmações desta categoria",
+      "syncing": "Sincronizando suas afirmações...",
+      "retrying": "Ainda estamos tentando carregar suas afirmações. Vamos tentar novamente em instantes.",
       "tryAgain": "Tentar novamente",
       "create": "Criar",
       "edit": "Editar",

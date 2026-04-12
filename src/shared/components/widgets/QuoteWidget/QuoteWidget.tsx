@@ -159,13 +159,19 @@ const LoadingSkeleton = (): JSX.Element => (
   </div>
 );
 
+const FALLBACK_RETRY_DELAY_MS = 4000;
+
 const QuoteWidget = (): JSX.Element => {
   const { t } = useDashboardTranslation();
   const { theme } = useTimeBasedTheme();
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5);
   const dashboardOverview = useDashboardOverview();
   const isDashboardOverviewManaged = dashboardOverview !== null;
+  const isDashboardInspirationDegraded = dashboardOverview?.isInspirationDegraded ?? false;
   const dashboardQuotes = dashboardOverview?.data?.inspiration?.quotes;
+  const shouldUseFallbackQuotePool =
+    !isDashboardOverviewManaged ||
+    (isDashboardInspirationDegraded && (dashboardQuotes?.length ?? 0) === 0);
   const shouldLoadBookmarkState = useIdleActivation({
     minimumDelay: 1500,
     timeout: 2500,
@@ -226,7 +232,7 @@ const QuoteWidget = (): JSX.Element => {
     error: quotePoolError,
     refetch: refetchQuotePool,
   } = useQuotePool({
-    enabled: !isDashboardOverviewManaged,
+    enabled: shouldUseFallbackQuotePool,
   });
   const {
     addBookmark,
@@ -238,7 +244,7 @@ const QuoteWidget = (): JSX.Element => {
   });
 
   useEffect(() => {
-    if (isDashboardOverviewManaged) {
+    if (isDashboardOverviewManaged && !shouldUseFallbackQuotePool) {
       if (!dashboardQuotes) {
         return;
       }
@@ -254,7 +260,34 @@ const QuoteWidget = (): JSX.Element => {
         previousQuotes === fetchedQuotes ? previousQuotes : fetchedQuotes
       );
     }
-  }, [dashboardQuotes, fetchedQuotes, isDashboardOverviewManaged]);
+  }, [dashboardQuotes, fetchedQuotes, isDashboardOverviewManaged, shouldUseFallbackQuotePool]);
+
+  useEffect(() => {
+    if (!isDashboardOverviewManaged || !isDashboardInspirationDegraded) {
+      return;
+    }
+
+    if (!shouldUseFallbackQuotePool || Array.isArray(fetchedQuotes) && fetchedQuotes.length > 0) {
+      return;
+    }
+
+    if (isQuotePoolLoading) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void refetchQuotePool({ throwOnError: false });
+    }, FALLBACK_RETRY_DELAY_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    fetchedQuotes,
+    isDashboardInspirationDegraded,
+    isDashboardOverviewManaged,
+    isQuotePoolLoading,
+    refetchQuotePool,
+    shouldUseFallbackQuotePool,
+  ]);
 
   useEffect(() => {
     if (!quote && quotePool.length > 0) {
@@ -262,8 +295,15 @@ const QuoteWidget = (): JSX.Element => {
     }
   }, [quote, quotePool]);
 
+  const isRetryingDegradedQuote =
+    isDashboardOverviewManaged &&
+    isDashboardInspirationDegraded &&
+    !quote &&
+    shouldUseFallbackQuotePool;
   const fetchError =
-    isDashboardOverviewManaged && dashboardOverview.error
+    isRetryingDegradedQuote
+      ? null
+      : isDashboardOverviewManaged && dashboardOverview.error
       ? dashboardOverview.error.message
       : isQuotePoolError && quotePoolError
         ? quotePoolError instanceof Error
@@ -272,9 +312,16 @@ const QuoteWidget = (): JSX.Element => {
         : null;
 
   const isInitialLoading =
-    (isDashboardOverviewManaged ? dashboardOverview.isLoading : isQuotePoolLoading) && !quote;
+    (
+      isDashboardOverviewManaged && !shouldUseFallbackQuotePool
+        ? dashboardOverview.isLoading
+        : isQuotePoolLoading
+    ) && !quote;
   const showLoadingSkeleton = isInitialLoading && !fetchError;
   const isNextQuoteBusy = isFetchingNextQuote || isInitialLoading;
+  const quoteStatusMessage = isQuotePoolError
+    ? (t('widgets.quote.retrying') as string)
+    : (t('widgets.quote.syncing') as string);
 
   const resolvedTheme = quote ? quoteService.determineQuoteTheme(quote.categories) : QUOTE.theme;
   const activeQuoteText = quote?.text ?? QUOTE.text;
@@ -777,6 +824,19 @@ const QuoteWidget = (): JSX.Element => {
               <div className={styles.error}>
                 <div className={styles.errorIcon}>⚠️</div>
                 <div className={styles.errorMessage}>{fetchError}</div>
+                <button
+                  className={styles.retryButton}
+                  onClick={() => {
+                    void refetchQuotePool({ throwOnError: false });
+                  }}
+                >
+                  {t('widgets.common.retry')}
+                </button>
+              </div>
+            ) : isRetryingDegradedQuote ? (
+              <div className={styles.error} role="status" aria-live="polite">
+                <div className={styles.errorIcon}>⏳</div>
+                <div className={styles.errorMessage}>{quoteStatusMessage}</div>
                 <button
                   className={styles.retryButton}
                   onClick={() => {

@@ -213,6 +213,7 @@ const createCardBackground = (accent: string): string => {
 
 const CARD_OUT_DURATION = 600;
 const CELEBRATION_PARTICLES = 12;
+const FALLBACK_RETRY_DELAY_MS = 4000;
 const celebrationPalette = ['#f472b6', '#a855f7', '#38bdf8', '#facc15', '#4ade80', '#f97316'];
 
 const CardsWidget = (): JSX.Element => {
@@ -220,10 +221,14 @@ const CardsWidget = (): JSX.Element => {
   const categoryTheme = useMemo(() => buildCategoryTheme(t), [t]);
   const dashboardOverview = useDashboardOverview();
   const isDashboardOverviewManaged = dashboardOverview !== null;
+  const isDashboardInspirationDegraded = dashboardOverview?.isInspirationDegraded ?? false;
   const dashboardAffirmations = useMemo(
     () => dashboardOverview?.data?.inspiration?.affirmations ?? [],
     [dashboardOverview?.data?.inspiration?.affirmations]
   );
+  const shouldUseFallbackAffirmationDeck =
+    !isDashboardOverviewManaged ||
+    (isDashboardInspirationDegraded && dashboardAffirmations.length === 0);
   const dashboardHasAffirmedToday = dashboardOverview?.data?.inspiration?.hasAffirmedToday ?? false;
   const shouldLoadBookmarks = useIdleActivation({
     minimumDelay: 1500,
@@ -274,7 +279,8 @@ const CardsWidget = (): JSX.Element => {
     data: affirmationDeck,
     isLoading: isDeckLoading,
     error: deckError,
-  } = useDashboardAffirmationDeck({ enabled: !isDashboardOverviewManaged });
+    refetch: refetchAffirmationDeck,
+  } = useDashboardAffirmationDeck({ enabled: shouldUseFallbackAffirmationDeck });
   const [showReminderSettings, setShowReminderSettings] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
@@ -294,11 +300,16 @@ const CardsWidget = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    const activeAffirmationDeck = isDashboardOverviewManaged
-      ? dashboardAffirmations
-      : (affirmationDeck ?? []);
+    const activeAffirmationDeck =
+      isDashboardOverviewManaged && !shouldUseFallbackAffirmationDeck
+        ? dashboardAffirmations
+        : (affirmationDeck ?? []);
 
     if (!activeAffirmationDeck.length) {
+      if (isDashboardOverviewManaged && isDashboardInspirationDegraded) {
+        setCards([]);
+        setError(null);
+      }
       return;
     }
 
@@ -383,13 +394,19 @@ const CardsWidget = (): JSX.Element => {
     affirmationDeck,
     categoryTheme,
     dashboardAffirmations,
+    isDashboardInspirationDegraded,
     isDashboardOverviewManaged,
     personalAffirmation,
+    shouldUseFallbackAffirmationDeck,
     t,
   ]);
 
   useEffect(() => {
     if (isDashboardOverviewManaged) {
+      if (isDashboardInspirationDegraded) {
+        return;
+      }
+
       if (!dashboardOverview?.error) {
         return;
       }
@@ -407,7 +424,41 @@ const CardsWidget = (): JSX.Element => {
     console.error('Failed to load affirmations for CardsWidget:', deckError);
     setCards([]);
     setError(t('widgets.affirmation.failedToLoad') as string);
-  }, [currentLanguage, dashboardOverview?.error, deckError, isDashboardOverviewManaged, t]);
+  }, [
+    currentLanguage,
+    dashboardOverview?.error,
+    deckError,
+    isDashboardInspirationDegraded,
+    isDashboardOverviewManaged,
+    t,
+  ]);
+
+  useEffect(() => {
+    if (!isDashboardOverviewManaged || !isDashboardInspirationDegraded) {
+      return;
+    }
+
+    if (!shouldUseFallbackAffirmationDeck || (affirmationDeck?.length ?? 0) > 0) {
+      return;
+    }
+
+    if (isDeckLoading) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void refetchAffirmationDeck({ throwOnError: false });
+    }, FALLBACK_RETRY_DELAY_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    affirmationDeck,
+    isDashboardInspirationDegraded,
+    isDashboardOverviewManaged,
+    isDeckLoading,
+    refetchAffirmationDeck,
+    shouldUseFallbackAffirmationDeck,
+  ]);
 
   useEffect(() => {
     setAffirmedTodayOverride(null);
@@ -604,7 +655,15 @@ const CardsWidget = (): JSX.Element => {
 
   const nextIndex = cards.length > 0 ? (currentIndex + 1) % cards.length : -1;
   const activeCardId = cards.length > 0 ? cards[currentIndex]?.id : undefined;
-  const loading = isDashboardOverviewManaged ? dashboardOverview.isLoading : isDeckLoading;
+  const isRetryingDegradedAffirmations =
+    isDashboardOverviewManaged &&
+    isDashboardInspirationDegraded &&
+    cards.length === 0 &&
+    shouldUseFallbackAffirmationDeck;
+  const loading =
+    ((isDashboardOverviewManaged && !shouldUseFallbackAffirmationDeck)
+      ? dashboardOverview.isLoading
+      : isDeckLoading) && cards.length === 0;
   const resolvedHasAffirmedToday =
     affirmedTodayOverride ??
     (isDashboardOverviewManaged ? dashboardHasAffirmedToday : hasAffirmedToday);
@@ -725,6 +784,9 @@ const CardsWidget = (): JSX.Element => {
   const affirmSubLabel = resolvedHasAffirmedToday
     ? (t('widgets.affirmation.dailyIntentionLocked') as string)
     : (t('widgets.cardsWidget.celebratorySubtext') as string);
+  const affirmationStatusMessage = deckError
+    ? (t('widgets.affirmation.retrying') as string)
+    : (t('widgets.affirmation.syncing') as string);
 
   return (
     <section className={styles.container} aria-label={t('widgets.cardsWidget.ariaLabel') as string}>
@@ -747,6 +809,10 @@ const CardsWidget = (): JSX.Element => {
         {loading ? (
           <div className={styles.status} role="status">
             {t('widgets.affirmation.loadingAffirmations') as string}
+          </div>
+        ) : isRetryingDegradedAffirmations ? (
+          <div className={styles.status} role="status" aria-live="polite">
+            {affirmationStatusMessage}
           </div>
         ) : error ? (
           <div className={styles.status} role="alert">

@@ -48,6 +48,7 @@ export const DashboardOverviewProvider = ({ children }: { children: ReactNode })
         (!userId && authLoading) ||
         (Boolean(userId) && overviewQuery.isLoading && !overviewQuery.data),
       error: overviewQuery.error instanceof Error ? overviewQuery.error : null,
+      isInspirationDegraded: overviewQuery.data?.inspiration.status === 'degraded',
     }),
     [authLoading, overviewQuery.data, overviewQuery.error, overviewQuery.isLoading, userId]
   );

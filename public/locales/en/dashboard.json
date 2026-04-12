@@ -129,7 +129,9 @@
       "getNewQuote": "Get new quote",
       "copyQuote": "Copy quote",
       "tryAgain": "Try Again",
-      "failedToLoad": "Failed to load quotes"
+      "failedToLoad": "Failed to load quotes",
+      "syncing": "Syncing your daily quote...",
+      "retrying": "We are still trying to load your daily quote. We will retry shortly."
     },
     "affirmation": {
       "title": "Daily Affirmation",
@@ -138,6 +140,8 @@
       "dailyIntentionLocked": "Daily intention locked in",
       "loadingAffirmations": "Loading affirmations...",
       "failedToLoad": "Failed to load affirmations for this category",
+      "syncing": "Syncing your affirmations...",
+      "retrying": "We are still trying to load your affirmations. We will retry shortly.",
       "tryAgain": "Try Again",
       "create": "Create",
       "edit": "Edit",

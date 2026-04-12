@@ -34,7 +34,13 @@ const OverviewProbe = (): JSX.Element => {
 
   return (
     <div data-testid="overview-mode">
-      {dashboardOverview === null ? 'fallback' : dashboardOverview.isLoading ? 'loading' : 'managed'}
+      {dashboardOverview === null
+        ? 'fallback'
+        : dashboardOverview.isLoading
+          ? 'loading'
+          : dashboardOverview.isInspirationDegraded
+            ? 'managed-degraded'
+            : 'managed'}
     </div>
   );
 };
@@ -76,6 +82,7 @@ describe('DashboardOverviewProvider', () => {
           quotes: [],
           affirmations: [],
           hasAffirmedToday: false,
+          status: 'ready',
         },
         lifeWheel: {},
         mood: {
@@ -122,6 +129,63 @@ describe('DashboardOverviewProvider', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('overview-mode').textContent).toBe('managed');
+    });
+  });
+
+  it('keeps the managed overview context when inspiration is degraded', async () => {
+    mockedDashboardOverviewService.getOverview.mockResolvedValue({
+      data: {
+        inspiration: {
+          quotes: [],
+          affirmations: [],
+          hasAffirmedToday: false,
+          status: 'degraded',
+        },
+        lifeWheel: {},
+        mood: {
+          entries: [],
+          weeklyPulse: {
+            window: { start_date: '2026-04-01', end_date: '2026-04-07', days: 7 },
+            coverage: { logged_days: 0, missing_days: 7 },
+            current_week: {
+              average_score: null,
+              average_mood_id: null,
+              days: [],
+            },
+            comparison: {
+              previous_average_score: null,
+              delta_score: null,
+              direction: 'insufficient_data',
+            },
+          },
+          monthlyPulse: {
+            window: { start_date: '2026-03-11', end_date: '2026-04-07', days: 28 },
+            coverage: { logged_days: 0, missing_days: 28 },
+            current_week: {
+              average_score: null,
+              average_mood_id: null,
+              days: [],
+            },
+            comparison: {
+              previous_average_score: null,
+              delta_score: null,
+              direction: 'insufficient_data',
+            },
+          },
+        },
+      },
+      error: null,
+    });
+
+    render(
+      <DashboardOverviewProvider>
+        <OverviewProbe />
+      </DashboardOverviewProvider>,
+      { wrapper: createWrapper() }
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('overview-mode').textContent).toBe('managed-degraded');
     });
   });
 });

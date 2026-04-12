@@ -12,6 +12,7 @@ export interface DashboardOverviewResponse {
     quotes: Quote[];
     affirmations: Affirmation[];
     hasAffirmedToday: boolean;
+    status: 'ready' | 'degraded';
   };
   lifeWheel: {
     entry?: {
@@ -43,7 +44,8 @@ const isDashboardOverviewResponse = (value: unknown): value is DashboardOverview
     !isRecord(inspiration) ||
     !Array.isArray(inspiration.quotes) ||
     !Array.isArray(inspiration.affirmations) ||
-    typeof inspiration.hasAffirmedToday !== 'boolean'
+    typeof inspiration.hasAffirmedToday !== 'boolean' ||
+    (inspiration.status !== 'ready' && inspiration.status !== 'degraded')
   ) {
     return false;
   }
