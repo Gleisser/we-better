@@ -18,6 +18,7 @@ vi.mock('@gsap/react', () => ({
 vi.mock('gsap', () => ({
   gsap: {
     registerPlugin: vi.fn(),
+    set: vi.fn(),
     timeline: () => {
       const api = {
         call(callback: () => void) {
@@ -50,13 +51,11 @@ const MotionHarness = ({
 describe('useOnboardingMotion', () => {
   it('jumps directly to reduced-motion-chat when prefers-reduced-motion is enabled', () => {
     const onPhaseChange = vi.fn();
-    window.matchMedia = vi
-      .fn()
-      .mockReturnValue({
-        matches: true,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      }) as never;
+    window.matchMedia = vi.fn().mockReturnValue({
+      matches: true,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }) as never;
 
     render(<MotionHarness onPhaseChange={onPhaseChange} />);
 

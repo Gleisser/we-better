@@ -1,54 +1,46 @@
 .stage {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100%;
-  padding: 24px;
-}
-
-.stage::before {
-  content: '';
-  position: absolute;
-  inset: 10% 12%;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(96, 165, 250, 0.18), transparent 70%);
-  filter: blur(28px);
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 .container {
   position: relative;
   width: min(100%, 820px);
-  min-height: 70vh;
+  min-height: min(72vh, 760px);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 34px;
   background:
-    linear-gradient(180deg, rgba(255, 250, 245, 0.98), rgba(248, 250, 252, 0.96)),
-    radial-gradient(circle at top, rgba(125, 211, 252, 0.18), transparent 42%);
+    linear-gradient(180deg, rgba(255, 250, 245, 0.99), rgba(248, 250, 252, 0.96)),
+    radial-gradient(circle at top, rgba(125, 211, 252, 0.16), transparent 44%);
   box-shadow:
-    0 32px 80px rgba(15, 23, 42, 0.26),
+    0 36px 90px rgba(15, 23, 42, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .loadingShell {
   position: absolute;
-  inset: 24px;
-  border-radius: 24px;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
   background: linear-gradient(
     90deg,
-    rgba(226, 232, 240, 0.7),
-    rgba(255, 255, 255, 0.92),
-    rgba(226, 232, 240, 0.7)
+    rgba(226, 232, 240, 0.58),
+    rgba(255, 255, 255, 0.88),
+    rgba(226, 232, 240, 0.58)
   );
-  opacity: 0.88;
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 .embedSlot {
   position: relative;
   z-index: 1;
-  min-height: 70vh;
-  padding: 12px;
+  min-height: min(72vh, 760px);
+  padding: 16px;
 }
 
 .fallback {
@@ -56,7 +48,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 12px;
-  min-height: 70vh;
+  min-height: min(72vh, 760px);
   padding: 40px;
 }
 
@@ -101,17 +93,21 @@
 }
 
 @media (max-width: 1024px) {
-  .stage {
-    padding: 16px;
-  }
-
   .container,
   .embedSlot,
   .fallback {
-    min-height: 75vh;
+    min-height: min(76vh, 800px);
   }
 
   .fallback {
     padding: 28px;
+  }
+
+  .container {
+    border-radius: 28px;
+  }
+
+  .embedSlot {
+    padding: 12px;
   }
 }

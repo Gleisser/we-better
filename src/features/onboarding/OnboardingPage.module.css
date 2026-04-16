@@ -1,21 +1,91 @@
 .page {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
-  gap: 24px;
-  min-height: calc(100vh - 48px);
-  padding: 24px;
-  background:
-    radial-gradient(circle at top, rgba(251, 191, 36, 0.14), transparent 28%),
-    radial-gradient(circle at 20% 0%, rgba(244, 114, 182, 0.14), transparent 30%),
-    linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  min-height: 100svh;
+  overflow: hidden;
   isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(251, 191, 36, 0.12), transparent 34%),
+    radial-gradient(circle at 18% 18%, rgba(244, 114, 182, 0.12), transparent 30%),
+    linear-gradient(180deg, #060816 0%, #0f172a 52%, #111827 100%);
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04), transparent 38%),
+    radial-gradient(circle at bottom, rgba(15, 23, 42, 0.12), rgba(15, 23, 42, 0.6));
+  z-index: 0;
+  pointer-events: none;
+}
+
+.page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8, 15, 31, 0.08), rgba(8, 15, 31, 0.44)),
+    linear-gradient(90deg, rgba(8, 15, 31, 0.22), rgba(8, 15, 31, 0) 38%, rgba(8, 15, 31, 0.18));
+  z-index: 0;
+  pointer-events: none;
+}
+
+.page :global([data-hero-scene]) {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.page :global([data-hero-copy]) {
+  transition:
+    opacity 420ms ease,
+    transform 520ms ease,
+    filter 520ms ease,
+    visibility 0s linear 520ms;
+}
+
+.page :global([data-stage-shell]) {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 3vw, 36px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(26px) scale(0.985);
+  transition:
+    opacity 600ms ease,
+    transform 700ms ease,
+    visibility 0s linear 700ms;
+}
+
+.page[data-phase='transitioning'] :global([data-hero-copy]),
+.page[data-phase='chat'] :global([data-hero-copy]),
+.page[data-phase='reduced-motion-chat'] :global([data-hero-copy]) {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(18px);
+  filter: blur(4px);
+}
+
+.page[data-phase='transitioning'] :global([data-stage-shell]),
+.page[data-phase='chat'] :global([data-stage-shell]),
+.page[data-phase='reduced-motion-chat'] :global([data-stage-shell]) {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.page[data-phase='transitioning'] :global([data-hero-scene]) {
+  filter: blur(6px);
 }
 
 @media (max-width: 1024px) {
-  .page {
-    grid-template-columns: 1fr;
-    min-height: auto;
+  .page :global([data-stage-shell]) {
     padding: 16px;
   }
 }

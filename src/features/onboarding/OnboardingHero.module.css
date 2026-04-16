@@ -1,13 +1,12 @@
 .hero {
   position: relative;
   display: flex;
-  min-height: 100%;
+  min-height: 100svh;
   overflow: hidden;
-  border-radius: 32px;
   background:
     linear-gradient(180deg, rgba(15, 23, 42, 0.22), rgba(15, 23, 42, 0.52)),
     radial-gradient(circle at top, rgba(244, 114, 182, 0.24), transparent 44%);
-  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
 .heroImage {
@@ -16,6 +15,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(1.02);
+  filter: saturate(1.02);
+  will-change: transform, filter;
 }
 
 .overlay {
@@ -34,7 +36,7 @@
 
 .chrome {
   position: absolute;
-  inset: 24px 24px auto 24px;
+  inset: clamp(16px, 2.4vw, 28px) clamp(16px, 2.4vw, 28px) auto;
   z-index: 1;
   display: flex;
   align-items: center;
@@ -43,11 +45,15 @@
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: #f8fafc;
   font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-shadow: 0 8px 24px rgba(15, 23, 42, 0.38);
 }
 
 .skipButton {
@@ -55,9 +61,10 @@
   padding: 14px 18px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(15, 23, 42, 0.38);
   color: #f8fafc;
   font-weight: 700;
+  backdrop-filter: blur(16px);
   cursor: pointer;
 }
 
@@ -73,11 +80,12 @@
   flex: 1;
   flex-direction: column;
   justify-content: center;
-  width: min(100%, 760px);
+  width: min(100%, 820px);
   margin: 0 auto;
-  padding: 104px 32px 48px;
+  padding: clamp(120px, 18vh, 180px) clamp(20px, 4vw, 48px) 48px;
   text-align: center;
   text-shadow: 0 12px 24px rgba(15, 23, 42, 0.3);
+  will-change: opacity, transform, filter;
 }
 
 .eyebrow {
@@ -104,7 +112,7 @@
   width: min(100%, 560px);
   margin: 0 auto;
   color: rgba(226, 232, 240, 0.9);
-  font-size: 1rem;
+  font-size: clamp(1rem, 2vw, 1.1rem);
   line-height: 1.7;
 }
 
@@ -116,11 +124,11 @@
 
 @media (max-width: 1024px) {
   .chrome {
-    inset: 16px 16px auto 16px;
+    inset: 16px 16px auto;
   }
 
   .copy {
-    padding: 96px 24px 36px;
+    padding: 96px 20px 36px;
   }
 
   .skipButton {

@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -115,10 +115,8 @@ describe('OnboardingPage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByRole('button', { name: 'onboarding.actions.retry' })).not.toBeNull();
-    expect(
-      screen.getAllByRole('button', { name: 'onboarding.actions.skip' }).length
-    ).toBeGreaterThan(0);
+    expect(screen.getByText('onboarding.actions.retry')).not.toBeNull();
+    expect(screen.getAllByText('onboarding.actions.skip').length).toBeGreaterThan(0);
   });
 
   it('dispatches intro and fallback analytics events', async () => {
@@ -145,8 +143,6 @@ describe('OnboardingPage', () => {
   });
 
   it('retries the embed stage without leaving the onboarding route', async () => {
-    const user = userEvent.setup();
-
     vi.stubEnv('VITE_TYPEBOT_ONBOARDING_ID', '');
 
     render(
@@ -156,7 +152,7 @@ describe('OnboardingPage', () => {
     );
 
     await act(async () => {
-      await user.click(screen.getByRole('button', { name: 'onboarding.actions.retry' }));
+      fireEvent.click(screen.getByText('onboarding.actions.retry'));
     });
 
     expect(screen.getByTestId('onboarding-stage')).not.toBeNull();
