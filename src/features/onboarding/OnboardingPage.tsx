@@ -53,6 +53,7 @@ const OnboardingPage = (): JSX.Element => {
   const typebotOnboardingId = getTypebotOnboardingId().trim();
   const typebotApiHost = getTypebotApiHost();
   const typebotCompletionSignal = getTypebotCompletionSignal().toLowerCase();
+  const isEmbedConfigured = typebotOnboardingId.length > 0;
 
   useOnboardingMotion(rootRef, setPhase);
 
@@ -61,6 +62,29 @@ const OnboardingPage = (): JSX.Element => {
       userId: user?.id ?? null,
     });
   }, [user?.id]);
+
+  useEffect(() => {
+    trackOnboardingEvent('onboarding_intro_shown', {
+      userId: user?.id ?? null,
+    });
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!isEmbedConfigured) {
+      trackOnboardingEvent('onboarding_fallback_shown', {
+        userId: user?.id ?? null,
+      });
+    }
+  }, [isEmbedConfigured, user?.id]);
+
+  useEffect(() => {
+    if (phase === 'chat' || phase === 'reduced-motion-chat') {
+      trackOnboardingEvent('onboarding_stage_shown', {
+        phase,
+        userId: user?.id ?? null,
+      });
+    }
+  }, [phase, user?.id]);
 
   const prefilledVariables = useMemo(
     () => ({
@@ -140,8 +164,6 @@ const OnboardingPage = (): JSX.Element => {
     setEmbedAttempt(current => current + 1);
     setErrorMessage(null);
   }, []);
-
-  const isEmbedConfigured = typebotOnboardingId.length > 0;
 
   return (
     <div

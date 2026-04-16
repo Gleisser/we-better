@@ -121,6 +121,47 @@ describe('OnboardingPage', () => {
     ).toBeGreaterThan(0);
   });
 
+  it('dispatches intro and fallback analytics events', async () => {
+    const events: string[] = [];
+    const listener = ((event: CustomEvent) => {
+      events.push(event.detail.eventName);
+    }) as EventListener;
+
+    window.addEventListener('we-better:onboarding-analytics', listener);
+    vi.stubEnv('VITE_TYPEBOT_ONBOARDING_ID', '');
+
+    render(
+      <MemoryRouter>
+        <OnboardingPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(events).toContain('onboarding_intro_shown');
+      expect(events).toContain('onboarding_fallback_shown');
+    });
+
+    window.removeEventListener('we-better:onboarding-analytics', listener);
+  });
+
+  it('retries the embed stage without leaving the onboarding route', async () => {
+    const user = userEvent.setup();
+
+    vi.stubEnv('VITE_TYPEBOT_ONBOARDING_ID', '');
+
+    render(
+      <MemoryRouter>
+        <OnboardingPage />
+      </MemoryRouter>
+    );
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'onboarding.actions.retry' }));
+    });
+
+    expect(screen.getByTestId('onboarding-stage')).not.toBeNull();
+  });
+
   it('marks onboarding as skipped and redirects to the dashboard', async () => {
     const user = userEvent.setup();
     const skipOnboarding = vi.fn().mockResolvedValue(true);

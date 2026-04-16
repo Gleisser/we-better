@@ -1,9 +1,15 @@
 .page {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
   gap: 24px;
   min-height: calc(100vh - 48px);
   padding: 24px;
+  background:
+    radial-gradient(circle at top, rgba(251, 191, 36, 0.14), transparent 28%),
+    radial-gradient(circle at 20% 0%, rgba(244, 114, 182, 0.14), transparent 30%),
+    linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  isolation: isolate;
 }
 
 @media (max-width: 1024px) {
@@ -11,13 +17,5 @@
     grid-template-columns: 1fr;
     min-height: auto;
     padding: 16px;
-  }
-
-  .introPanel {
-    padding: 24px;
-  }
-
-  .embedPanel {
-    min-height: 75vh;
   }
 }
