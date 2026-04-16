@@ -49,6 +49,11 @@ describe('OnboardingPage', () => {
     vi.stubEnv('VITE_TYPEBOT_ONBOARDING_ID', 'typebot-onboarding');
     vi.stubEnv('VITE_TYPEBOT_ONBOARDING_COMPLETION_SIGNAL', 'onboarding-complete');
     vi.stubEnv('VITE_TYPEBOT_API_HOST', 'https://typebot.io');
+    window.matchMedia = vi.fn().mockReturnValue({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }) as never;
 
     useAuthMock.mockReturnValue({
       user: {

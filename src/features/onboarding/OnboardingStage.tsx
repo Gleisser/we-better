@@ -25,7 +25,12 @@ const OnboardingStage = ({
   onRetry,
   onSkip,
 }: OnboardingStageProps): JSX.Element => (
-  <section className={styles.stage} data-testid="onboarding-stage" data-phase={phase}>
+  <section
+    className={styles.stage}
+    data-phase={phase}
+    data-stage-shell=""
+    data-testid="onboarding-stage"
+  >
     <div className={styles.container}>
       {showFallback ? (
         <div className={styles.fallback} role="status">

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Standard } from '@typebot.io/react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -7,6 +7,7 @@ import OnboardingHero from './OnboardingHero';
 import OnboardingStage from './OnboardingStage';
 import { trackOnboardingEvent } from './analytics';
 import { PHASE_ATTRIBUTE, type OnboardingPhase } from './onboardingPresentation';
+import { useOnboardingMotion } from './useOnboardingMotion';
 import styles from './OnboardingPage.module.css';
 
 const getTypebotApiHost = (): string =>
@@ -44,13 +45,16 @@ const OnboardingPage = (): JSX.Element => {
   const navigate = useNavigate();
   const { user, skipOnboarding, completeOnboarding } = useAuth();
   const { t, currentLanguage } = useTranslation('onboarding');
-  const [phase] = useState<OnboardingPhase>('intro');
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [phase, setPhase] = useState<OnboardingPhase>('intro');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [embedAttempt, setEmbedAttempt] = useState(0);
   const typebotOnboardingId = getTypebotOnboardingId().trim();
   const typebotApiHost = getTypebotApiHost();
   const typebotCompletionSignal = getTypebotCompletionSignal().toLowerCase();
+
+  useOnboardingMotion(rootRef, setPhase);
 
   useEffect(() => {
     trackOnboardingEvent('onboarding_shown', {
@@ -140,7 +144,12 @@ const OnboardingPage = (): JSX.Element => {
   const isEmbedConfigured = typebotOnboardingId.length > 0;
 
   return (
-    <div className={styles.page} data-testid="onboarding-page" {...{ [PHASE_ATTRIBUTE]: phase }}>
+    <div
+      ref={rootRef}
+      className={styles.page}
+      data-testid="onboarding-page"
+      {...{ [PHASE_ATTRIBUTE]: phase }}
+    >
       <OnboardingHero
         eyebrow={t('onboarding.hero.eyebrow')}
         title={t('onboarding.hero.title')}

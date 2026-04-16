@@ -19,7 +19,7 @@ const OnboardingHero = ({
   title,
   onSkip,
 }: OnboardingHeroProps): JSX.Element => (
-  <section className={styles.hero} data-testid="onboarding-hero">
+  <section className={styles.hero} data-hero-scene="" data-testid="onboarding-hero">
     <img
       alt=""
       aria-hidden="true"
@@ -35,7 +35,7 @@ const OnboardingHero = ({
       </button>
     </div>
 
-    <div className={styles.copy}>
+    <div className={styles.copy} data-hero-copy="">
       <span className={styles.eyebrow}>{eyebrow}</span>
       <h1 className={styles.title}>{title}</h1>
       <p className={styles.body}>{body}</p>
