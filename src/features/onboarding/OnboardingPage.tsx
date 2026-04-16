@@ -3,6 +3,8 @@ import { Standard } from '@typebot.io/react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useTranslation } from '@/shared/hooks/useTranslation';
+import OnboardingHero from './OnboardingHero';
+import OnboardingStage from './OnboardingStage';
 import { trackOnboardingEvent } from './analytics';
 import { PHASE_ATTRIBUTE, type OnboardingPhase } from './onboardingPresentation';
 import styles from './OnboardingPage.module.css';
@@ -45,6 +47,7 @@ const OnboardingPage = (): JSX.Element => {
   const [phase] = useState<OnboardingPhase>('intro');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [embedAttempt, setEmbedAttempt] = useState(0);
   const typebotOnboardingId = getTypebotOnboardingId().trim();
   const typebotApiHost = getTypebotApiHost();
   const typebotCompletionSignal = getTypebotCompletionSignal().toLowerCase();
@@ -129,43 +132,41 @@ const OnboardingPage = (): JSX.Element => {
     [handleComplete, typebotCompletionSignal]
   );
 
+  const handleRetry = useCallback(() => {
+    setEmbedAttempt(current => current + 1);
+    setErrorMessage(null);
+  }, []);
+
   const isEmbedConfigured = typebotOnboardingId.length > 0;
 
   return (
     <div className={styles.page} data-testid="onboarding-page" {...{ [PHASE_ATTRIBUTE]: phase }}>
-      <section className={styles.introPanel} data-testid="onboarding-hero">
-        <span className={styles.eyebrow}>{t('onboarding.hero.eyebrow')}</span>
-        <h1 className={styles.title}>{t('onboarding.hero.title')}</h1>
-        <p className={styles.body}>{t('onboarding.hero.body')}</p>
+      <OnboardingHero
+        eyebrow={t('onboarding.hero.eyebrow')}
+        title={t('onboarding.hero.title')}
+        body={t('onboarding.hero.body')}
+        skipLabel={t('onboarding.actions.skip')}
+        isSubmitting={isSubmitting}
+        errorMessage={errorMessage}
+        onSkip={() => {
+          void handleSkip();
+        }}
+      />
 
-        <div className={styles.metaRow}>
-          <span className={styles.metaPill}>{t('onboarding.meta.firstAccess')}</span>
-          <span className={styles.metaPill}>{t('onboarding.meta.guidedSetup')}</span>
-        </div>
-
-        <div className={styles.actions}>
-          <button
-            type="button"
-            className={styles.secondaryButton}
-            onClick={() => {
-              void handleSkip();
-            }}
-            disabled={isSubmitting}
-          >
-            {t('onboarding.actions.skip')}
-          </button>
-        </div>
-
-        {errorMessage ? (
-          <p className={styles.errorMessage} role="alert">
-            {errorMessage}
-          </p>
-        ) : null}
-      </section>
-
-      <section className={styles.embedPanel}>
-        {isEmbedConfigured ? (
+      <OnboardingStage
+        phase={phase}
+        showFallback={!isEmbedConfigured}
+        fallbackTitle={t('onboarding.status.embedUnavailableTitle')}
+        fallbackBody={t('onboarding.status.embedUnavailableBody')}
+        retryLabel={t('onboarding.actions.retry')}
+        skipLabel={t('onboarding.actions.skip')}
+        onRetry={handleRetry}
+        onSkip={() => {
+          void handleSkip();
+        }}
+        embed={
           <Standard
+            key={embedAttempt}
             typebot={typebotOnboardingId}
             apiHost={typebotApiHost}
             prefilledVariables={prefilledVariables}
@@ -174,13 +175,8 @@ const OnboardingPage = (): JSX.Element => {
             }}
             style={{ width: '100%', height: '100%' }}
           />
-        ) : (
-          <div className={styles.embedFallback} role="status">
-            <h2>{t('onboarding.status.embedUnavailableTitle')}</h2>
-            <p>{t('onboarding.status.embedUnavailableBody')}</p>
-          </div>
-        )}
-      </section>
+        }
+      />
     </div>
   );
 };

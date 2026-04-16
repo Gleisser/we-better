@@ -1,0 +1,107 @@
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 24px;
+}
+
+.container {
+  position: relative;
+  width: min(100%, 820px);
+  min-height: 70vh;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 32px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 245, 0.98), rgba(248, 250, 252, 0.96)),
+    radial-gradient(circle at top, rgba(125, 211, 252, 0.18), transparent 42%);
+  box-shadow:
+    0 32px 80px rgba(15, 23, 42, 0.26),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.loadingShell {
+  position: absolute;
+  inset: 24px;
+  border-radius: 24px;
+  background: linear-gradient(
+    90deg,
+    rgba(226, 232, 240, 0.7),
+    rgba(255, 255, 255, 0.92),
+    rgba(226, 232, 240, 0.7)
+  );
+}
+
+.embedSlot {
+  position: relative;
+  z-index: 1;
+  min-height: 70vh;
+  padding: 12px;
+}
+
+.fallback {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  min-height: 70vh;
+  padding: 40px;
+}
+
+.fallbackTitle {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.75rem;
+}
+
+.fallbackBody {
+  margin: 0;
+  color: rgba(15, 23, 42, 0.76);
+  line-height: 1.7;
+}
+
+.fallbackActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-width: 168px;
+  padding: 14px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primaryButton {
+  border: none;
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+.secondaryButton {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.72);
+  color: #0f172a;
+}
+
+@media (max-width: 1024px) {
+  .stage {
+    padding: 16px;
+  }
+
+  .container,
+  .embedSlot,
+  .fallback {
+    min-height: 75vh;
+  }
+
+  .fallback {
+    padding: 28px;
+  }
+}

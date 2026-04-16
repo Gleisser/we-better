@@ -90,6 +90,32 @@ describe('OnboardingPage', () => {
     });
   });
 
+  it('renders the premium stage shell with a loading state before the embed becomes primary', () => {
+    render(
+      <MemoryRouter>
+        <OnboardingPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId('onboarding-stage')).not.toBeNull();
+    expect(screen.getByTestId('onboarding-stage-loading')).not.toBeNull();
+  });
+
+  it('shows retry and skip actions when the embed is unavailable', () => {
+    vi.stubEnv('VITE_TYPEBOT_ONBOARDING_ID', '');
+
+    render(
+      <MemoryRouter>
+        <OnboardingPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole('button', { name: 'onboarding.actions.retry' })).not.toBeNull();
+    expect(
+      screen.getAllByRole('button', { name: 'onboarding.actions.skip' }).length
+    ).toBeGreaterThan(0);
+  });
+
   it('marks onboarding as skipped and redirects to the dashboard', async () => {
     const user = userEvent.setup();
     const skipOnboarding = vi.fn().mockResolvedValue(true);
