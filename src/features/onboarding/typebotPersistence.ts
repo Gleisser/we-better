@@ -2,7 +2,7 @@ import {
   type OnboardingMicroPreference,
   type StructuredOnboardingSeed,
 } from '@/types/onboarding';
-import { isOnboardingFocusArea, microPreferenceOptions } from './structuredCatalog';
+import { getDreamOptions, isOnboardingFocusArea, microPreferenceOptions } from './structuredCatalog';
 
 const toTrimmedString = (value: unknown): string | null => {
   if (typeof value !== 'string') {
@@ -19,12 +19,28 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isOnboardingMicroPreference = (value: unknown): value is OnboardingMicroPreference =>
   microPreferenceOptions.includes(value as OnboardingMicroPreference);
 
-const normalizeMicroPreferences = (value: unknown): OnboardingMicroPreference[] => {
+const normalizeMicroPreferences = (value: unknown): OnboardingMicroPreference[] | null => {
   if (!Array.isArray(value)) {
     return [];
   }
 
-  return value.filter(isOnboardingMicroPreference).slice(0, 2);
+  if (value.length > 2) {
+    return null;
+  }
+
+  const normalized = value.map(entry =>
+    isOnboardingMicroPreference(entry) ? entry : null
+  );
+
+  if (normalized.some(entry => entry === null)) {
+    return null;
+  }
+
+  if (new Set(normalized).size !== normalized.length) {
+    return null;
+  }
+
+  return normalized;
 };
 
 const normalizeRegenerationCount = (value: unknown): number | null => {
@@ -47,6 +63,21 @@ const normalizeUsedRegeneration = (value: unknown): boolean | null => {
   return value;
 };
 
+const isConsistentRegenerationState = (
+  regenerationCount: number,
+  usedRegeneration: boolean
+): boolean =>
+  (usedRegeneration && regenerationCount > 0) || (!usedRegeneration && regenerationCount === 0);
+
+const resolveCatalogDream = (
+  focusArea: Parameters<typeof getDreamOptions>[0],
+  selectedDreamKey: string
+) => {
+  const dream = getDreamOptions(focusArea).find(option => option.key === selectedDreamKey);
+
+  return dream ?? null;
+};
+
 export const extractStructuredOnboardingSeed = (
   value: unknown,
   expectedSignal: string
@@ -62,26 +93,31 @@ export const extractStructuredOnboardingSeed = (
 
   const focusArea = toTrimmedString(value.focusArea);
   const selectedDreamKey = toTrimmedString(value.selectedDreamKey);
-  const selectedDreamLabel = toTrimmedString(value.selectedDreamLabel);
   const regenerationCount = normalizeRegenerationCount(value.regenerationCount);
   const usedRegeneration = normalizeUsedRegeneration(value.usedRegeneration);
+  const microPreferences = normalizeMicroPreferences(value.microPreferences);
 
   if (
     !focusArea ||
     !isOnboardingFocusArea(focusArea) ||
     !selectedDreamKey ||
-    !selectedDreamLabel ||
     regenerationCount === null ||
-    usedRegeneration === null
+    usedRegeneration === null ||
+    microPreferences === null
   ) {
+    return null;
+  }
+
+  const selectedDream = resolveCatalogDream(focusArea, selectedDreamKey);
+  if (!selectedDream || !isConsistentRegenerationState(regenerationCount, usedRegeneration)) {
     return null;
   }
 
   return {
     focusArea,
     selectedDreamKey,
-    selectedDreamLabel,
-    microPreferences: normalizeMicroPreferences(value.microPreferences),
+    selectedDreamLabel: selectedDream.label,
+    microPreferences,
     regenerationCount,
     usedRegeneration,
   };
