@@ -32,4 +32,12 @@ describe('structuredCatalog', () => {
     expect(isOnboardingFocusArea('health')).toBe(true);
     expect(isOnboardingFocusArea('career')).toBe(false);
   });
+
+  it('does not leak mutable shared state across catalog reads', () => {
+    const firstRead = getDreamOptions('health');
+    firstRead.pop();
+
+    expect(firstRead).toHaveLength(4);
+    expect(getDreamOptions('health')).toHaveLength(5);
+  });
 });

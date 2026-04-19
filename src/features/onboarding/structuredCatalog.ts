@@ -14,7 +14,9 @@ export const microPreferenceOptions: OnboardingMicroPreference[] = [
 export const isOnboardingFocusArea = (value: unknown): value is OnboardingFocusArea =>
   value === 'health' || value === 'relationships' || value === 'finances';
 
-const dreamCatalogByFocus: Record<OnboardingFocusArea, OnboardingDreamOption[]> = {
+const dreamCatalogByFocus: Readonly<
+  Record<OnboardingFocusArea, readonly OnboardingDreamOption[]>
+> = {
   health: [
     {
       key: 'sleep-with-consistency',
@@ -129,4 +131,4 @@ const dreamCatalogByFocus: Record<OnboardingFocusArea, OnboardingDreamOption[]> 
 };
 
 export const getDreamOptions = (focusArea: OnboardingFocusArea): OnboardingDreamOption[] =>
-  dreamCatalogByFocus[focusArea];
+  dreamCatalogByFocus[focusArea].map(option => ({ ...option }));
