@@ -29,5 +29,33 @@ export interface StructuredOnboardingSeed {
   regenerationCount: number;
 }
 
+export interface OnboardingControlOption {
+  value: string;
+  label: string;
+}
+
+export interface OnboardingControl {
+  id: string;
+  label: string;
+  kind: 'slider' | 'chips';
+  value: string;
+  options: OnboardingControlOption[];
+}
+
+export interface OnboardingStarterPlan {
+  focusArea: OnboardingFocusArea;
+  dream: {
+    key: string;
+    label: string;
+  };
+  goal: {
+    title: string;
+  };
+  habit: {
+    title: string;
+  };
+  controls: OnboardingControl[];
+}
+
 export const requiresOnboarding = (onboarding?: OnboardingState | null): boolean =>
   Boolean(onboarding?.required && !onboarding.skippedAt && !onboarding.completedAt);
