@@ -57,4 +57,21 @@ describe('extractStructuredOnboardingSeed', () => {
       )
     ).toBeNull();
   });
+
+  it('rejects non-boolean usedRegeneration values', () => {
+    expect(
+      extractStructuredOnboardingSeed(
+        {
+          signal: 'onboarding-complete',
+          focusArea: 'health',
+          selectedDreamKey: 'sleep-with-consistency',
+          selectedDreamLabel: 'Dormir com mais consistência',
+          microPreferences: ['lighter'],
+          regenerationCount: 2,
+          usedRegeneration: 'true',
+        },
+        'onboarding-complete'
+      )
+    ).toBeNull();
+  });
 });

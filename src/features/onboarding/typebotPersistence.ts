@@ -39,6 +39,14 @@ const normalizeRegenerationCount = (value: unknown): number | null => {
   return value;
 };
 
+const normalizeUsedRegeneration = (value: unknown): boolean | null => {
+  if (typeof value !== 'boolean') {
+    return null;
+  }
+
+  return value;
+};
+
 export const extractStructuredOnboardingSeed = (
   value: unknown,
   expectedSignal: string
@@ -56,14 +64,15 @@ export const extractStructuredOnboardingSeed = (
   const selectedDreamKey = toTrimmedString(value.selectedDreamKey);
   const selectedDreamLabel = toTrimmedString(value.selectedDreamLabel);
   const regenerationCount = normalizeRegenerationCount(value.regenerationCount);
-  const usedRegeneration = Boolean(value.usedRegeneration);
+  const usedRegeneration = normalizeUsedRegeneration(value.usedRegeneration);
 
   if (
     !focusArea ||
     !isOnboardingFocusArea(focusArea) ||
     !selectedDreamKey ||
     !selectedDreamLabel ||
-    regenerationCount === null
+    regenerationCount === null ||
+    usedRegeneration === null
   ) {
     return null;
   }
