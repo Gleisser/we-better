@@ -21,6 +21,24 @@ describe('starterPlan', () => {
     ]);
   });
 
+  it('derives connected relationship copy for a relationships dream', () => {
+    const plan = createStarterPlan({
+      focusArea: 'relationships',
+      selectedDreamKey: 'strengthen-my-relationship',
+      selectedDreamLabel: 'Fortalecer meu relacionamento',
+      usedRegeneration: false,
+      microPreferences: [],
+      regenerationCount: 0,
+    });
+
+    expect(plan.goal.title).toContain('ritmo');
+    expect(plan.habit.title).toContain('gesto');
+    expect(plan.controls.map(control => control.id)).toEqual([
+      'connectionRhythm',
+      'gestureType',
+    ]);
+  });
+
   it('recomputes goal and habit copy when a control changes', () => {
     const plan = createStarterPlan({
       focusArea: 'finances',
@@ -38,5 +56,19 @@ describe('starterPlan', () => {
     expect(updated.controls.find(control => control.id === 'weeklyCommitment')?.value).toBe(
       'focused'
     );
+  });
+
+  it('returns the original plan unchanged for invalid control updates', () => {
+    const plan = createStarterPlan({
+      focusArea: 'health',
+      selectedDreamKey: 'sleep-with-consistency',
+      selectedDreamLabel: 'Dormir com mais consistência',
+      usedRegeneration: false,
+      microPreferences: [],
+      regenerationCount: 0,
+    });
+
+    expect(applyStarterPlanControl(plan, 'missing-control', 'focused')).toBe(plan);
+    expect(applyStarterPlanControl(plan, 'pace', 'invalid')).toBe(plan);
   });
 });

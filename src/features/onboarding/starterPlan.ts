@@ -91,6 +91,34 @@ const buildFinanceControls = (): OnboardingControl[] => [
   },
 ];
 
+const fallbackGoalTitleByFocus: Record<OnboardingFocusArea, string> = {
+  health: 'Criar uma rotina de cuidado mais estável.',
+  relationships: 'Criar um ritmo de conexão mais intencional.',
+  finances: 'Criar uma rotina financeira mais estável.',
+};
+
+const fallbackHabitTitleByFocus: Record<OnboardingFocusArea, string> = {
+  health: 'Fazer um pequeno ritual de cuidado de forma consistente.',
+  relationships: 'Reservar um gesto simples de conexão.',
+  finances: 'Separar alguns minutos por semana para revisar gastos e próximos passos.',
+};
+
+const getControl = (
+  controls: OnboardingControl[],
+  controlId: string
+): OnboardingControl | null => controls.find(control => control.id === controlId) ?? null;
+
+const isDeclaredControlValue = (control: OnboardingControl, nextValue: string): boolean =>
+  control.options.some(option => option.value === nextValue);
+
+const getValidControlValue = (control: OnboardingControl | null): string | null => {
+  if (!control) {
+    return null;
+  }
+
+  return control.options.some(option => option.value === control.value) ? control.value : null;
+};
+
 const buildControls = (focusArea: OnboardingFocusArea): OnboardingControl[] => {
   switch (focusArea) {
     case 'health':
@@ -107,30 +135,72 @@ const buildGoalTitle = (
   dreamLabel: string,
   controls: OnboardingControl[]
 ): string => {
-  const controlMap = Object.fromEntries(controls.map(control => [control.id, control.value]));
-
   switch (focusArea) {
-    case 'health':
-      return `Transformar "${dreamLabel}" em uma rotina ${controlMap.frequency} com ritmo ${controlMap.pace}.`;
-    case 'relationships':
-      return `Criar um ritmo ${controlMap.connectionRhythm} de conexão para "${dreamLabel}".`;
-    case 'finances':
-      return `Avançar em "${dreamLabel}" com compromisso ${controlMap.weeklyCommitment} e plano ${controlMap.planningStyle}.`;
+    case 'health': {
+      const pace = getValidControlValue(getControl(controls, 'pace'));
+      const frequency = getValidControlValue(getControl(controls, 'frequency'));
+
+      if (!pace || !frequency) {
+        return fallbackGoalTitleByFocus.health;
+      }
+
+      return `Transformar "${dreamLabel}" em uma rotina ${frequency} com ritmo ${pace}.`;
+    }
+    case 'relationships': {
+      const connectionRhythm = getValidControlValue(getControl(controls, 'connectionRhythm'));
+
+      if (!connectionRhythm) {
+        return fallbackGoalTitleByFocus.relationships;
+      }
+
+      return `Criar um ritmo ${connectionRhythm} de conexão para "${dreamLabel}".`;
+    }
+    case 'finances': {
+      const weeklyCommitment = getValidControlValue(getControl(controls, 'weeklyCommitment'));
+      const planningStyle = getValidControlValue(getControl(controls, 'planningStyle'));
+
+      if (!weeklyCommitment || !planningStyle) {
+        return fallbackGoalTitleByFocus.finances;
+      }
+
+      return `Avançar em "${dreamLabel}" com compromisso ${weeklyCommitment} e plano ${planningStyle}.`;
+    }
   }
 };
 
 const buildHabitTitle = (focusArea: OnboardingFocusArea, controls: OnboardingControl[]): string => {
-  const controlMap = Object.fromEntries(controls.map(control => [control.id, control.value]));
-
   switch (focusArea) {
-    case 'health':
-      return `Fazer um ritual de cuidado no período da ${controlMap.timeOfDay} ${controlMap.frequency}.`;
-    case 'relationships':
-      return `Reservar um gesto de ${controlMap.gestureType} em um ritmo ${controlMap.connectionRhythm}.`;
-    case 'finances':
-      return controlMap.weeklyCommitment === 'focused'
+    case 'health': {
+      const timeOfDay = getValidControlValue(getControl(controls, 'timeOfDay'));
+      const frequency = getValidControlValue(getControl(controls, 'frequency'));
+
+      if (!timeOfDay || !frequency) {
+        return fallbackHabitTitleByFocus.health;
+      }
+
+      return `Fazer um ritual de cuidado no período da ${timeOfDay} ${frequency}.`;
+    }
+    case 'relationships': {
+      const gestureType = getValidControlValue(getControl(controls, 'gestureType'));
+      const connectionRhythm = getValidControlValue(getControl(controls, 'connectionRhythm'));
+
+      if (!gestureType || !connectionRhythm) {
+        return fallbackHabitTitleByFocus.relationships;
+      }
+
+      return `Reservar um gesto de ${gestureType} em um ritmo ${connectionRhythm}.`;
+    }
+    case 'finances': {
+      const weeklyCommitment = getValidControlValue(getControl(controls, 'weeklyCommitment'));
+
+      if (!weeklyCommitment) {
+        return fallbackHabitTitleByFocus.finances;
+      }
+
+      return weeklyCommitment === 'focused'
         ? 'Separar 15 minutos por semana para revisar gastos e próximos passos.'
         : 'Separar 10 minutos por semana para revisar gastos e próximos passos.';
+    }
   }
 };
 
@@ -158,6 +228,12 @@ export const applyStarterPlanControl = (
   controlId: string,
   nextValue: string
 ): OnboardingStarterPlan => {
+  const targetControl = getControl(plan.controls, controlId);
+
+  if (!targetControl || !isDeclaredControlValue(targetControl, nextValue) || targetControl.value === nextValue) {
+    return plan;
+  }
+
   const controls = plan.controls.map(control =>
     control.id === controlId ? { ...control, value: nextValue } : control
   );
