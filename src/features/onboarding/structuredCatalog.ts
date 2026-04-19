@@ -4,12 +4,12 @@ import type {
   OnboardingMicroPreference,
 } from '@/types/onboarding';
 
-export const microPreferenceOptions: OnboardingMicroPreference[] = [
+export const microPreferenceOptions: readonly OnboardingMicroPreference[] = Object.freeze([
   'more-ambitious',
   'lighter',
   'faster',
   'more-transformative',
-];
+]);
 
 export const isOnboardingFocusArea = (value: unknown): value is OnboardingFocusArea =>
   value === 'health' || value === 'relationships' || value === 'finances';

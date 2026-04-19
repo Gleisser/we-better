@@ -40,4 +40,18 @@ describe('structuredCatalog', () => {
     expect(firstRead).toHaveLength(4);
     expect(getDreamOptions('health')).toHaveLength(5);
   });
+
+  it('keeps micro-preference options readonly for consumers', () => {
+    const mutableOptions = microPreferenceOptions as string[];
+
+    expect(() => {
+      mutableOptions[0] = 'lighter';
+    }).toThrow();
+    expect(microPreferenceOptions).toEqual([
+      'more-ambitious',
+      'lighter',
+      'faster',
+      'more-transformative',
+    ]);
+  });
 });
