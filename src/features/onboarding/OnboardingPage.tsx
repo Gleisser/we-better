@@ -158,17 +158,21 @@ const OnboardingPage = (): JSX.Element => {
 
   const handleStructuredCompletion = useCallback(
     (payload: unknown) => {
-      const seed = extractStructuredOnboardingSeed(payload, typebotCompletionSignal);
+      const seed = extractStructuredOnboardingSeed(
+        payload,
+        typebotCompletionSignal,
+        currentLanguage
+      );
       if (!seed) {
         return false;
       }
 
-      setStarterPlan(createStarterPlan(seed));
+      setStarterPlan(createStarterPlan(seed, currentLanguage));
       setNativeStep('personalization');
       setErrorMessage(null);
       return true;
     },
-    [typebotCompletionSignal]
+    [currentLanguage, typebotCompletionSignal]
   );
 
   const handleScriptExecutionSuccess = useCallback(
@@ -240,14 +244,17 @@ const OnboardingPage = (): JSX.Element => {
   useEffect(() => {
     const handleMessage = (event: MessageEvent): void => {
       if (event.data && typeof event.data === 'object') {
-        if (event.data.from === 'typebot-custom' || event.data.signal === 'onboarding-complete') {
+        const candidateSignal =
+          typeof event.data.signal === 'string' ? event.data.signal.trim().toLowerCase() : null;
+
+        if (candidateSignal === typebotCompletionSignal) {
           void handleScriptExecutionSuccess(event.data);
         }
       }
     };
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [handleScriptExecutionSuccess]);
+  }, [handleScriptExecutionSuccess, typebotCompletionSignal]);
 
   const handleRetry = useCallback(() => {
     setEmbedAttempt(current => current + 1);
@@ -319,6 +326,10 @@ const OnboardingPage = (): JSX.Element => {
           ) : starterPlan ? (
             <OnboardingPersonalization
               plan={starterPlan}
+              dreamLabel={t('onboarding.native.dream')}
+              goalLabel={t('onboarding.native.goal')}
+              habitLabel={t('onboarding.native.habit')}
+              continueLabel={t('onboarding.actions.continue')}
               onControlChange={handleControlChange}
               onContinue={() => setNativeStep('review')}
             />

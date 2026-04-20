@@ -1,3 +1,4 @@
+import type { SupportedLanguage } from '@/core/i18n';
 import {
   type OnboardingMicroPreference,
   type StructuredOnboardingSeed,
@@ -78,9 +79,45 @@ const resolveCatalogDream = (
   return dream ?? null;
 };
 
+const englishDreamLabelByKey: Record<string, string> = {
+  'sleep-with-consistency': 'Sleep more consistently',
+  'build-weekly-movement': 'Get back to moving every week',
+  'eat-with-more-intention': 'Eat with more intention',
+  'reduce-daily-stress': 'Reduce daily stress',
+  'feel-stronger-in-my-body': 'Feel stronger in my body',
+  'be-more-present-with-family': 'Be more present with my family',
+  'strengthen-my-relationship': 'Strengthen my relationship',
+  'reconnect-with-friends': 'Reconnect with important friends',
+  'communicate-with-more-clarity': 'Communicate with more clarity',
+  'create-more-quality-moments': 'Create more quality moments',
+  'build-an-emergency-fund': 'Build my emergency fund',
+  'gain-control-of-my-spending': 'Gain more control over my spending',
+  'save-for-an-important-goal': 'Save for an important goal',
+  'organize-my-financial-routine': 'Organize my financial routine',
+  'feel-more-peace-about-money': 'Feel more peace around money',
+};
+
+const resolveDreamLabel = (
+  preferredLabel: unknown,
+  selectedDream: NonNullable<ReturnType<typeof resolveCatalogDream>>,
+  locale: SupportedLanguage
+): string => {
+  const payloadLabel = toTrimmedString(preferredLabel);
+  if (payloadLabel) {
+    return payloadLabel;
+  }
+
+  if (locale === 'en') {
+    return englishDreamLabelByKey[selectedDream.key] ?? selectedDream.label;
+  }
+
+  return selectedDream.label;
+};
+
 export const extractStructuredOnboardingSeed = (
   value: unknown,
-  expectedSignal: string
+  expectedSignal: string,
+  locale: SupportedLanguage
 ): StructuredOnboardingSeed | null => {
   if (!isRecord(value)) {
     return null;
@@ -116,7 +153,7 @@ export const extractStructuredOnboardingSeed = (
   return {
     focusArea,
     selectedDreamKey,
-    selectedDreamLabel: selectedDream.label,
+    selectedDreamLabel: resolveDreamLabel(value.selectedDreamLabel, selectedDream, locale),
     microPreferences,
     regenerationCount,
     usedRegeneration,

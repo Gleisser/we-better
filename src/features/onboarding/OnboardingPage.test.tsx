@@ -6,9 +6,29 @@ import OnboardingPage from './OnboardingPage';
 
 const navigateMock = vi.fn();
 const useAuthMock = vi.fn();
+let currentLanguage = 'en';
 const standardPropsRef: {
   current: Record<string, unknown> | null;
 } = { current: null };
+
+const translationMap: Record<string, Record<string, string>> = {
+  en: {
+    'onboarding.actions.skip': 'Skip for now',
+    'onboarding.actions.retry': 'Try again',
+    'onboarding.actions.continue': 'Continue setup',
+    'onboarding.native.dream': 'Dream label',
+    'onboarding.native.goal': 'Goal label',
+    'onboarding.native.habit': 'Habit label',
+  },
+  pt: {
+    'onboarding.actions.skip': 'Pular por agora',
+    'onboarding.actions.retry': 'Tentar novamente',
+    'onboarding.actions.continue': 'Continuar',
+    'onboarding.native.dream': 'Sonho',
+    'onboarding.native.goal': 'Meta',
+    'onboarding.native.habit': 'Hábito',
+  },
+};
 
 vi.mock('@typebot.io/react', () => ({
   Standard: (props: Record<string, unknown>) => {
@@ -32,17 +52,18 @@ vi.mock('@/shared/hooks/useAuth', () => ({
 
 vi.mock('@/shared/hooks/useTranslation', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string) => translationMap[currentLanguage]?.[key] ?? key,
     changeLanguage: vi.fn(),
-    currentLanguage: 'en',
+    currentLanguage,
     isLoading: false,
     isReady: true,
-    i18n: { language: 'en' },
+    i18n: { language: currentLanguage },
   }),
 }));
 
 describe('OnboardingPage', () => {
   beforeEach(() => {
+    currentLanguage = 'en';
     navigateMock.mockReset();
     standardPropsRef.current = null;
     vi.unstubAllEnvs();
@@ -245,6 +266,8 @@ describe('OnboardingPage', () => {
     });
 
     expect(screen.getByTestId('onboarding-personalization')).toBeInTheDocument();
+    expect(screen.getByText('Dream label')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Continue setup' })).toBeInTheDocument();
     expect(screen.getByTestId('starter-dream-preview')).toHaveTextContent(
       'Dormir com mais consistência'
     );
@@ -274,8 +297,39 @@ describe('OnboardingPage', () => {
       });
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Focado' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Focused' }));
 
-    expect(screen.getByTestId('starter-habit-preview')).toHaveTextContent('15 minutos');
+    expect(screen.getByTestId('starter-habit-preview')).toHaveTextContent('15 minutes');
+  });
+
+  it('uses the configured completion signal for postMessage fallback handoff', async () => {
+    vi.stubEnv('VITE_TYPEBOT_ONBOARDING_COMPLETION_SIGNAL', 'custom-complete');
+
+    render(
+      <MemoryRouter>
+        <OnboardingPage />
+      </MemoryRouter>
+    );
+
+    await act(async () => {
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: {
+            signal: 'custom-complete',
+            focusArea: 'health',
+            selectedDreamKey: 'sleep-with-consistency',
+            selectedDreamLabel: 'Sleep more consistently',
+            microPreferences: ['lighter'],
+            regenerationCount: 1,
+            usedRegeneration: true,
+          },
+        })
+      );
+    });
+
+    expect(screen.getByTestId('onboarding-personalization')).toBeInTheDocument();
+    expect(screen.getByTestId('starter-dream-preview')).toHaveTextContent(
+      'Sleep more consistently'
+    );
   });
 });

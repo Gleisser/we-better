@@ -1,9 +1,12 @@
-import { useTranslation } from '@/shared/hooks/useTranslation';
 import type { OnboardingStarterPlan } from '@/types/onboarding';
 import styles from './OnboardingPersonalization.module.css';
 
 type OnboardingPersonalizationProps = {
   plan: OnboardingStarterPlan;
+  dreamLabel: string;
+  goalLabel: string;
+  habitLabel: string;
+  continueLabel: string;
   onControlChange: (controlId: string, nextValue: string) => void;
   onContinue: () => void;
 };
@@ -12,24 +15,25 @@ const getSliderIndex = (value: string, values: string[]): number => values.index
 
 export const OnboardingPersonalization = ({
   plan,
+  dreamLabel,
+  goalLabel,
+  habitLabel,
+  continueLabel,
   onControlChange,
   onContinue,
-}: OnboardingPersonalizationProps) => {
-  const { t } = useTranslation('onboarding');
-
-  return (
+}: OnboardingPersonalizationProps) => (
     <section className={styles.panel} data-testid="onboarding-personalization">
       <div className={styles.previewGrid}>
         <article data-testid="starter-dream-preview" className={styles.card}>
-          <span className={styles.label}>{t('onboarding.native.dream')}</span>
+          <span className={styles.label}>{dreamLabel}</span>
           <strong>{plan.dream.label}</strong>
         </article>
         <article data-testid="starter-goal-preview" className={styles.card}>
-          <span className={styles.label}>{t('onboarding.native.goal')}</span>
+          <span className={styles.label}>{goalLabel}</span>
           <strong>{plan.goal.title}</strong>
         </article>
         <article data-testid="starter-habit-preview" className={styles.card}>
-          <span className={styles.label}>{t('onboarding.native.habit')}</span>
+          <span className={styles.label}>{habitLabel}</span>
           <strong>{plan.habit.title}</strong>
         </article>
       </div>
@@ -90,8 +94,7 @@ export const OnboardingPersonalization = ({
       )}
 
       <button type="button" className={styles.primaryButton} onClick={onContinue}>
-        {t('onboarding.actions.continue')}
+        {continueLabel}
       </button>
     </section>
   );
-};

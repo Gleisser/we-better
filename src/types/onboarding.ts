@@ -1,3 +1,5 @@
+import type { SupportedLanguage } from '@/core/i18n';
+
 export interface OnboardingState {
   required: boolean;
   skippedAt?: string | null;
@@ -43,6 +45,7 @@ export interface OnboardingControl {
 }
 
 export interface OnboardingStarterPlan {
+  locale: SupportedLanguage;
   focusArea: OnboardingFocusArea;
   dream: {
     key: string;
