@@ -220,4 +220,62 @@ describe('OnboardingPage', () => {
       expect(navigateMock).toHaveBeenCalledWith('/app/dashboard', { replace: true });
     });
   });
+
+  it('switches from the Typebot embed to native personalization when a structured payload arrives', async () => {
+    render(
+      <MemoryRouter>
+        <OnboardingPage />
+      </MemoryRouter>
+    );
+
+    const callback = standardPropsRef.current?.onScriptExecutionSuccess as
+      | ((value: unknown) => void | Promise<void>)
+      | undefined;
+
+    await act(async () => {
+      await callback?.({
+        signal: 'onboarding-complete',
+        focusArea: 'health',
+        selectedDreamKey: 'sleep-with-consistency',
+        selectedDreamLabel: 'Dormir com mais consistência',
+        microPreferences: ['lighter'],
+        regenerationCount: 1,
+        usedRegeneration: true,
+      });
+    });
+
+    expect(screen.getByTestId('onboarding-personalization')).toBeInTheDocument();
+    expect(screen.getByTestId('starter-dream-preview')).toHaveTextContent(
+      'Dormir com mais consistência'
+    );
+    expect(screen.queryByTestId('typebot-standard')).toBeNull();
+  });
+
+  it('updates the preview when a personalization control changes', async () => {
+    render(
+      <MemoryRouter>
+        <OnboardingPage />
+      </MemoryRouter>
+    );
+
+    const callback = standardPropsRef.current?.onScriptExecutionSuccess as
+      | ((value: unknown) => void | Promise<void>)
+      | undefined;
+
+    await act(async () => {
+      await callback?.({
+        signal: 'onboarding-complete',
+        focusArea: 'finances',
+        selectedDreamKey: 'build-an-emergency-fund',
+        selectedDreamLabel: 'Montar minha reserva de emergência',
+        microPreferences: [],
+        regenerationCount: 0,
+        usedRegeneration: false,
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Focado' }));
+
+    expect(screen.getByTestId('starter-habit-preview')).toHaveTextContent('15 minutos');
+  });
 });
