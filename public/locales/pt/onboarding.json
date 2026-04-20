@@ -17,9 +17,9 @@
       "correct": "Corrigir"
     },
     "native": {
-      "dream": "Dream",
-      "goal": "Goal",
-      "habit": "Habit"
+      "dream": "Sonho",
+      "goal": "Meta",
+      "habit": "Hábito"
     },
     "status": {
       "skipFailed": "Não foi possível salvar sua escolha de pular. Tente novamente.",

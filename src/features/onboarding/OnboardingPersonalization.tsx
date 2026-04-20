@@ -36,7 +36,7 @@ export const OnboardingPersonalization = ({
 
       {plan.controls.map(control =>
         control.kind === 'slider' ? (
-          <label key={control.id} className={styles.control}>
+          <div key={control.id} className={styles.control}>
             <span>{control.label}</span>
             <input
               type="range"
@@ -53,7 +53,21 @@ export const OnboardingPersonalization = ({
                 }
               }}
             />
-          </label>
+            <div className={styles.chips}>
+              {control.options.map(option => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={
+                    option.value === control.value ? styles.chipActive : styles.chip
+                  }
+                  onClick={() => onControlChange(control.id, option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
         ) : (
           <div key={control.id} className={styles.control}>
             <span>{control.label}</span>
