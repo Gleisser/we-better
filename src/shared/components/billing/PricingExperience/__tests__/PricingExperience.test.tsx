@@ -29,6 +29,11 @@ vi.mock('framer-motion', () => {
 vi.mock('@/shared/hooks/useTranslation', () => ({
   useCommonTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>): string => {
+      return key;
+    },
+  }),
+  useSettingsTranslation: () => ({
+    t: (key: string, options?: Record<string, unknown>): string => {
       const map: Record<string, string> = {
         'settings.billing.plans.free': 'Free Plan',
         'settings.billing.plans.premium': 'Premium Plan',

@@ -66,12 +66,14 @@ const stableTranslator = (key: string, options?: Record<string, unknown>): strin
   return translated;
 };
 
-vi.mock('@/shared/hooks/useTranslation', () => ({
-  useDreamBoardTranslation: () => ({
-    t: stableTranslator,
-    currentLanguage: activeLanguage,
-  }),
-}));
+vi.mock('@/shared/hooks/useTranslation', () => {
+  return {
+    useDreamBoardTranslation: () => ({
+      t: (...args: any[]) => stableTranslator(args[0], args[1]),
+      currentLanguage: activeLanguage,
+    }),
+  };
+});
 
 describe('DreamBoardTimelineGallery', () => {
   beforeEach(() => {

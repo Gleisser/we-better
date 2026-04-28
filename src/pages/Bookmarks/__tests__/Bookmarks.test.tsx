@@ -46,6 +46,11 @@ vi.mock('@/shared/hooks/useBookmarkedAffirmations', () => ({
 vi.mock('@/shared/hooks/useTranslation', () => ({
   useCommonTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>): string => {
+      return key;
+    },
+  }),
+  useBookmarksTranslation: () => ({
+    t: (key: string, options?: Record<string, unknown>): string => {
       const translations: Record<string, string> = {
         'common.actions.loading': 'Loading',
         'bookmarks.title': 'Bookmarks',

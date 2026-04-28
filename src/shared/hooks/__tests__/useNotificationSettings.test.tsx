@@ -112,12 +112,13 @@ describe('useNotificationSettings', () => {
 
     await waitFor(() => expect(result.current.settings.push_notifications).toBe(false));
 
+    let success: boolean = false;
     await act(async () => {
-      const success = await result.current.updateSettings({ push_notifications: true });
-      expect(success).toBe(true);
+      success = await result.current.updateSettings({ push_notifications: true });
     });
 
-    expect(result.current.settings.push_notifications).toBe(true);
+    expect(success).toBe(true);
+    await waitFor(() => expect(result.current.settings.push_notifications).toBe(true));
     expect(mockedNotificationSettingsService.updateSettings).toHaveBeenCalledWith({
       push_notifications: true,
     });
