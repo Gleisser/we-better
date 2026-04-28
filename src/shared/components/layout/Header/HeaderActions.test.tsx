@@ -49,6 +49,11 @@ vi.mock('@/shared/hooks/useAuth', () => ({
 
 vi.mock('@/shared/hooks/useNotificationsFeed', () => ({
   useNotificationsFeed: (...args: unknown[]) => mockUseNotificationsFeed(...args),
+  DEFAULT_NOTIFICATIONS_FEED_PAGE_SIZE: 8,
+}));
+
+vi.mock('react-router-dom', () => ({
+  useLocation: () => ({ pathname: '/some-path' }),
 }));
 
 vi.mock('@/shared/components/layout/NotificationsPopup/NotificationsPopup', () => ({
