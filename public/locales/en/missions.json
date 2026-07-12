@@ -1,4 +1,44 @@
 {
+  "guidedTour": {
+    "launch": "How it works",
+    "eyebrow": "Missions guide",
+    "close": "End guide",
+    "progress": "{{current}} of {{total}}",
+    "skipStep": "Skip this part",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Choose my mission",
+    "steps": {
+      "welcome": {
+        "title": "Intention becomes action here",
+        "description": "Missions are small weekly experiences that care for one life area without overwhelming your routine. Choose one and move at your pace."
+      },
+      "categories": {
+        "title": "Choose where your energy can help",
+        "description": "Browse areas of life. Each category ring shows progress, and selecting one immediately updates the missions available to you."
+      },
+      "weeklyFocus": {
+        "title": "Your weekly focus at a glance",
+        "description": "This panel summarizes progress, active missions, and the recommended next step. Use “Why?” to understand the intention behind the suggestion."
+      },
+      "filters": {
+        "title": "Separate next steps from wins",
+        "description": "In progress gathers what you can start or continue. Completed keeps your wins visible so you can recognize how far you have come."
+      },
+      "cards": {
+        "title": "Each card is a possible action",
+        "description": "Read the invitation, notice the effort, and choose a mission that fits this week. You do not need to start everything at once."
+      },
+      "action": {
+        "title": "Start with a tap, finish with intention",
+        "description": "Tap to begin. Once you complete the mission, press and hold the glowing control to record your win mindfully."
+      },
+      "finish": {
+        "title": "One mission is already movement",
+        "description": "Choose the most doable action for this week. Whenever you need a refresher, “How it works” will remain available."
+      }
+    }
+  },
   "missions": {
     "title": "Missions",
     "subtitle": "Choose a life category and complete focused weekly missions.",

@@ -1,4 +1,56 @@
 {
+  "tour": {
+    "launch": "Como usar",
+    "eyebrow": "Tour pelo seu espaço",
+    "close": "Encerrar guia",
+    "progress": "{{current}} de {{total}}",
+    "skipStep": "Pular esta parte",
+    "back": "Voltar",
+    "next": "Próximo",
+    "finish": "Começar minha jornada",
+    "steps": {
+      "welcome": {
+        "title": "Seu espaço, no seu ritmo",
+        "description": "Em poucos passos, você vai descobrir como transformar intenção em pequenas ações diárias. Pode pular qualquer parte ou encerrar quando quiser."
+      },
+      "navigation": {
+        "title": "Tudo começa por aqui",
+        "description": "Use este menu para voltar ao Dashboard, avaliar sua Roda da Vida, construir seu Dream Board, explorar Missões e ajustar suas preferências."
+      },
+      "quote": {
+        "title": "Uma pausa para inspirar",
+        "description": "A Frase do Dia traz uma nova perspectiva. Você pode salvar, compartilhar, reagir ou buscar outra frase quando precisar de um novo impulso."
+      },
+      "cards": {
+        "title": "Afirmações que são suas",
+        "description": "Gire os cartões, escolha sua intenção do dia, grave com a sua voz, programe lembretes e crie uma afirmação pessoal."
+      },
+      "radial": {
+        "title": "Veja sua vida por inteiro",
+        "description": "O gráfico resume o equilíbrio entre as áreas importantes da sua vida. Abra a análise detalhada para avaliar cada área e acompanhar sua evolução."
+      },
+      "mood": {
+        "title": "Dê nome ao que você sente",
+        "description": "Registre seu humor com honestidade e acompanhe os padrões da semana ou do mês. Não existe resposta certa — este é um espaço de percepção."
+      },
+      "dreamBoard": {
+        "title": "Sonhos que ganham forma",
+        "description": "Seu Dream Board reúne imagens e marcos do futuro que você quer construir. Aqui você acompanha o que está tomando forma e abre o quadro completo."
+      },
+      "habits": {
+        "title": "Constância, não perfeição",
+        "description": "Crie hábitos possíveis, marque o que fez hoje e acompanhe sua sequência. Pequenos avanços contam — inclusive recomeçar."
+      },
+      "goals": {
+        "title": "Metas com próximos passos",
+        "description": "Transforme objetivos maiores em ações claras, acompanhe o progresso e mantenha à vista o que merece sua energia agora."
+      },
+      "finish": {
+        "title": "Você já sabe por onde começar",
+        "description": "Escolha uma ação pequena para hoje. Quando quiser rever este caminho, use o botão “Como usar” no topo do Dashboard."
+      }
+    }
+  },
   "floating": {
     "aiAssistant": "Assistente de IA"
   },

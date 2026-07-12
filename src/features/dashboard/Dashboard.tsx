@@ -3,6 +3,7 @@ import styles from './Dashboard.module.css';
 import { DashboardOverviewProvider } from './DashboardOverviewProvider';
 import DashboardGrid from '@/shared/components/layout/DashboardGrid/DashboardGrid';
 import { useIdleActivation } from '@/shared/hooks/utils/useIdleActivation';
+import DashboardTour from './DashboardTour';
 
 const loadAIAssistantButton = (): Promise<
   typeof import('@/shared/components/common/AIAssistantButton/AIAssistantButton')
@@ -19,6 +20,7 @@ const Dashboard = (): JSX.Element => {
   return (
     <DashboardOverviewProvider>
       <div className={styles.container}>
+        <DashboardTour />
         <DashboardGrid />
         {shouldRenderAIAssistant ? (
           <Suspense fallback={null}>

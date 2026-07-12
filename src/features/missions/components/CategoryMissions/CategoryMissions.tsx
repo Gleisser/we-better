@@ -680,6 +680,7 @@ const CategoryMissions = ({
       >
         <motion.div
           className={styles.heroRibbon}
+          data-tour="mission-weekly-focus"
           style={{
             background: `linear-gradient(120deg, ${category.color.from}, ${category.color.to})`,
           }}
@@ -782,7 +783,12 @@ const CategoryMissions = ({
           </p>
         </div>
 
-        <div className={styles.tabBar} role="tablist" aria-label={category.name}>
+        <div
+          className={styles.tabBar}
+          role="tablist"
+          aria-label={category.name}
+          data-tour="mission-filters"
+        >
           <button
             type="button"
             role="tab"
@@ -809,7 +815,7 @@ const CategoryMissions = ({
             <p className={styles.categoryEmptyDescription}>{emptyStateContent.description}</p>
           </div>
         ) : (
-          <div className={styles.missionGrid}>
+          <div className={styles.missionGrid} data-tour="mission-cards">
             {visibleMissions.map(mission => {
               const palette = difficultyPalettes[mission.difficulty];
               const badgeId =
@@ -896,7 +902,7 @@ const CategoryMissions = ({
                         {mission.isStretch ? mission.stretchGoal : mission.description}
                       </p>
 
-                      <div className={styles.missionCta}>
+                      <div className={styles.missionCta} data-tour="mission-card-action">
                         <GamifiedCTAButton
                           primaryLabel={translations.cta.start}
                           secondaryLabel={translations.cta.inProgress}

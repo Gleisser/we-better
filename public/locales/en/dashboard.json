@@ -1,4 +1,56 @@
 {
+  "tour": {
+    "launch": "How it works",
+    "eyebrow": "Tour your space",
+    "close": "End guide",
+    "progress": "{{current}} of {{total}}",
+    "skipStep": "Skip this part",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Start my journey",
+    "steps": {
+      "welcome": {
+        "title": "Your space, at your pace",
+        "description": "In a few short steps, you will see how to turn intention into small daily actions. Skip any part or end the guide whenever you like."
+      },
+      "navigation": {
+        "title": "Everything starts here",
+        "description": "Use this menu to return to the Dashboard, assess your Life Wheel, build your Dream Board, explore Missions, and adjust your preferences."
+      },
+      "quote": {
+        "title": "A moment of inspiration",
+        "description": "The Quote of the Day offers a fresh perspective. Save, share, react, or find another quote whenever you need a new spark."
+      },
+      "cards": {
+        "title": "Affirmations that feel yours",
+        "description": "Turn the cards, choose your daily intention, record it in your own voice, schedule reminders, and create a personal affirmation."
+      },
+      "radial": {
+        "title": "See your whole life",
+        "description": "This chart summarizes balance across the important areas of your life. Open the detailed analysis to assess each area and follow your growth."
+      },
+      "mood": {
+        "title": "Name what you feel",
+        "description": "Log your mood honestly and notice weekly or monthly patterns. There is no right answer — this is a space for awareness."
+      },
+      "dreamBoard": {
+        "title": "Give your dreams a shape",
+        "description": "Your Dream Board gathers images and milestones for the future you want to build. Follow what is taking shape here or open the full board."
+      },
+      "habits": {
+        "title": "Consistency, not perfection",
+        "description": "Create realistic habits, check in on what you did today, and follow your streak. Small steps count — including starting again."
+      },
+      "goals": {
+        "title": "Goals with next steps",
+        "description": "Turn bigger intentions into clear actions, track progress, and keep what deserves your energy in sight."
+      },
+      "finish": {
+        "title": "You know where to begin",
+        "description": "Choose one small action for today. Whenever you want to revisit this path, use the “How it works” button at the top of the Dashboard."
+      }
+    }
+  },
   "floating": {
     "aiAssistant": "AI Assistant"
   },

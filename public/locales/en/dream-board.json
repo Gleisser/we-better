@@ -1,4 +1,48 @@
 {
+  "guidedTour": {
+    "launch": "How it works",
+    "eyebrow": "Dream Board guide",
+    "close": "End guide",
+    "progress": "{{current}} of {{total}}",
+    "skipStep": "Skip this part",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Shape my future",
+    "steps": {
+      "welcome": {
+        "title": "Give an image to the life you want",
+        "description": "The Dream Board turns abstract wishes into a vision you can revisit, organize, and follow. Let’s explore each part."
+      },
+      "start": {
+        "title": "Begin with an image that matters",
+        "description": "Add images that represent experiences, not only objects. Include a title, category, and the first milestones if you are ready."
+      },
+      "tabs": {
+        "title": "Three ways to see your dreams",
+        "description": "Vision Board is your creative space; Experience offers an immersive view; Insights reveals patterns across your dreams and priorities."
+      },
+      "quickVision": {
+        "title": "Keep your dreams in sight",
+        "description": "Quick Vision gathers what matters most. Expand it to browse and update progress as each dream begins to take shape."
+      },
+      "categories": {
+        "title": "Balance across areas of life",
+        "description": "Use categories to filter the board and notice where you have plenty of energy — or where an important dream still needs room."
+      },
+      "progress": {
+        "title": "Milestones make the path tangible",
+        "description": "Record steps, dates, and wins for each dream. Progress does not have to be linear: update what moved and adjust the path when needed."
+      },
+      "tools": {
+        "title": "Signals and challenges that build momentum",
+        "description": "These tools show the overall climate of your board and suggest practical challenges that bring your vision into daily life."
+      },
+      "finish": {
+        "title": "Your vision can evolve with you",
+        "description": "Start with one meaningful dream and return to update its images and milestones. “How it works” will always be here when you need it."
+      }
+    }
+  },
   "dreamBoard": {
     "title": "Dream Board",
     "tabs": {

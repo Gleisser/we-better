@@ -631,7 +631,7 @@ const EnhancedLifeWheel = ({
       {/* Main content container - no background image needed since the parent has it */}
       <div className={styles.glassCard}>
         {/* Navigation tabs */}
-        <div className={styles.tabsContainer}>
+        <div className={styles.tabsContainer} data-tour="life-wheel-tabs">
           <button
             className={`${styles.tab} ${activeTab === 'current' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('current')}
@@ -639,12 +639,14 @@ const EnhancedLifeWheel = ({
             {t('widgets.lifeWheel.tabs.current')}
           </button>
           <button
+            data-tour="life-wheel-history-tab"
             className={`${styles.tab} ${activeTab === 'history' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('history')}
           >
             {t('widgets.lifeWheel.tabs.history')}
           </button>
           <button
+            data-tour="life-wheel-insights-tab"
             className={`${styles.tab} ${activeTab === 'insights' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('insights')}
           >
@@ -664,6 +666,7 @@ const EnhancedLifeWheel = ({
               className={styles.tabContent}
             >
               <div
+                data-tour="life-wheel-chart"
                 style={{
                   width: '100%',
                   height: '600px',
@@ -703,7 +706,7 @@ const EnhancedLifeWheel = ({
                 />
               </div>
 
-              <div className={styles.categoriesList}>
+              <div className={styles.categoriesList} data-tour="life-wheel-scores">
                 {categories.map(category => (
                   <div
                     key={category.id}
@@ -766,6 +769,7 @@ const EnhancedLifeWheel = ({
               {!readOnly && (
                 <div className={styles.actionButtons}>
                   <button
+                    data-tour="life-wheel-save"
                     onClick={handleSave}
                     className={styles.completeButton}
                     disabled={isSaving}

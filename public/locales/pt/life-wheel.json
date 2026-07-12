@@ -1,1 +1,46 @@
-{}
+{
+  "guidedTour": {
+    "launch": "Como usar",
+    "eyebrow": "Guia da Roda da Vida",
+    "close": "Encerrar guia",
+    "progress": "{{current}} de {{total}}",
+    "skipStep": "Pular esta parte",
+    "back": "Voltar",
+    "next": "Próximo",
+    "finish": "Fazer minha avaliação",
+    "steps": {
+      "welcome": {
+        "title": "Um retrato honesto do seu momento",
+        "description": "A Roda da Vida ajuda você a enxergar equilíbrio e escolher onde colocar energia. Ela não é uma nota sobre você, mas um ponto de partida."
+      },
+      "tabs": {
+        "title": "Avalie, acompanhe e compreenda",
+        "description": "Use Avaliação atual para registrar o momento, Histórico para rever mudanças e Insights para comparar períodos e encontrar padrões."
+      },
+      "chart": {
+        "title": "Veja o equilíbrio tomando forma",
+        "description": "O gráfico responde aos valores de cada área. Áreas mais próximas do centro pedem atenção; áreas abertas mostram onde você percebe mais satisfação."
+      },
+      "scores": {
+        "title": "Responda pelo que é verdadeiro hoje",
+        "description": "Ajuste cada controle de 1 a 10 pensando no presente, não no cenário ideal. Passe pelas áreas com calma e confie na sua primeira percepção."
+      },
+      "save": {
+        "title": "Registre este ponto no caminho",
+        "description": "Salve a avaliação para criar uma referência no histórico. Você pode atualizar o registro de hoje se sua percepção mudar."
+      },
+      "history": {
+        "title": "Reveja sua evolução",
+        "description": "No Histórico, escolha datas, compare avaliações e reproduza a linha do tempo para observar mudanças que seriam difíceis de perceber no dia a dia."
+      },
+      "insights": {
+        "title": "Transforme dados em direção",
+        "description": "Insights compara dois momentos, destaca avanços e quedas e ajuda você a escolher uma área de foco sem tentar mudar tudo de uma vez."
+      },
+      "finish": {
+        "title": "Consciência antes da mudança",
+        "description": "Faça sua primeira avaliação com gentileza e escolha apenas uma área para observar. Use “Como usar” sempre que quiser rever este processo."
+      }
+    }
+  }
+}
