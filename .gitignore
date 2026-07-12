@@ -135,3 +135,5 @@ dist
 /playwright/.cache/
 AGENTS.MD
 /scripts
+/prototype-playground
+.superpowers

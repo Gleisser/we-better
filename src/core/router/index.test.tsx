@@ -74,6 +74,10 @@ vi.mock('@/pages/Pricing/Pricing', () => ({
   default: () => <div>Pricing page</div>,
 }));
 
+vi.mock('@/features/onboarding/OnboardingPage', () => ({
+  default: () => <div>Onboarding page</div>,
+}));
+
 vi.mock('@/pages/QuoteIconSpike', () => ({
   default: () => <div>Quote icon spike</div>,
 }));
@@ -216,5 +220,17 @@ describe('router namespace loading', () => {
     await waitFor(() => {
       expect(screen.getByText('Dashboard page')).not.toBeNull();
     });
+  });
+
+  it('loads the onboarding route through the protected app namespace', async () => {
+    const [{ routes }] = await Promise.all([import('./index')]);
+
+    const router = createMemoryRouter(routes, {
+      initialEntries: ['/app/onboarding'],
+    });
+
+    render(<RouterProvider router={router} />);
+
+    expect(await screen.findByText('Onboarding page')).not.toBeNull();
   });
 });

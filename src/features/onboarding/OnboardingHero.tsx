@@ -3,10 +3,7 @@ import styles from './OnboardingHero.module.css';
 type OnboardingHeroProps = {
   body: string;
   eyebrow: string;
-  isSubmitting: boolean;
-  skipLabel: string;
   title: string;
-  onSkip: () => void;
   errorMessage?: string | null;
 };
 
@@ -14,10 +11,7 @@ const OnboardingHero = ({
   body,
   eyebrow,
   errorMessage,
-  isSubmitting,
-  skipLabel,
   title,
-  onSkip,
 }: OnboardingHeroProps): JSX.Element => (
   <section className={styles.hero} data-hero-scene="" data-testid="onboarding-hero">
     <img
@@ -27,13 +21,6 @@ const OnboardingHero = ({
       src="/assets/images/onboarding/we-better-ritual-hero.webp"
     />
     <div className={styles.overlay} />
-
-    <div className={styles.chrome}>
-      <span className={styles.logo}>We Better</span>
-      <button type="button" className={styles.skipButton} onClick={onSkip} disabled={isSubmitting}>
-        {skipLabel}
-      </button>
-    </div>
 
     <div className={styles.copy} data-hero-copy="">
       <span className={styles.eyebrow}>{eyebrow}</span>

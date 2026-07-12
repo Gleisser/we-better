@@ -9,10 +9,7 @@ import type {
 type PlanLocale = Extract<SupportedLanguage, 'en' | 'pt'>;
 
 type LocalizedPlanCopy = {
-  controls: Record<
-    OnboardingFocusArea,
-    OnboardingControl[]
-  >;
+  controls: Record<OnboardingFocusArea, OnboardingControl[]>;
   fallbackGoalTitleByFocus: Record<OnboardingFocusArea, string>;
   fallbackHabitTitleByFocus: Record<OnboardingFocusArea, string>;
 };
@@ -217,10 +214,8 @@ const localizedPlanCopy: Record<PlanLocale, LocalizedPlanCopy> = {
   },
 };
 
-const getControl = (
-  controls: OnboardingControl[],
-  controlId: string
-): OnboardingControl | null => controls.find(control => control.id === controlId) ?? null;
+const getControl = (controls: OnboardingControl[], controlId: string): OnboardingControl | null =>
+  controls.find(control => control.id === controlId) ?? null;
 
 const isDeclaredControlValue = (control: OnboardingControl, nextValue: string): boolean =>
   control.options.some(option => option.value === nextValue);
@@ -233,10 +228,7 @@ const getValidControlValue = (control: OnboardingControl | null): string | null 
   return control.options.some(option => option.value === control.value) ? control.value : null;
 };
 
-const buildControls = (
-  focusArea: OnboardingFocusArea,
-  locale: PlanLocale
-): OnboardingControl[] =>
+const buildControls = (focusArea: OnboardingFocusArea, locale: PlanLocale): OnboardingControl[] =>
   localizedPlanCopy[locale].controls[focusArea].map(control => ({
     ...control,
     options: control.options.map(option => ({ ...option })),
@@ -245,6 +237,7 @@ const buildControls = (
 const buildGoalTitle = (
   focusArea: OnboardingFocusArea,
   dreamLabel: string,
+  baseGoalLabel: string,
   controls: OnboardingControl[],
   locale: PlanLocale
 ): string => {
@@ -256,7 +249,13 @@ const buildGoalTitle = (
       const frequency = getValidControlValue(getControl(controls, 'frequency'));
 
       if (!pace || !frequency) {
-        return copy.fallbackGoalTitleByFocus.health;
+        return baseGoalLabel || copy.fallbackGoalTitleByFocus.health;
+      }
+
+      if (baseGoalLabel) {
+        return locale === 'pt'
+          ? `${baseGoalLabel} com ritmo ${pace} e frequência ${frequency}.`
+          : `${baseGoalLabel} with a ${pace} pace and a ${frequency} rhythm.`;
       }
 
       return locale === 'pt'
@@ -267,7 +266,13 @@ const buildGoalTitle = (
       const connectionRhythm = getValidControlValue(getControl(controls, 'connectionRhythm'));
 
       if (!connectionRhythm) {
-        return copy.fallbackGoalTitleByFocus.relationships;
+        return baseGoalLabel || copy.fallbackGoalTitleByFocus.relationships;
+      }
+
+      if (baseGoalLabel) {
+        return locale === 'pt'
+          ? `${baseGoalLabel} com ritmo ${connectionRhythm}.`
+          : `${baseGoalLabel} with a ${connectionRhythm} rhythm.`;
       }
 
       return locale === 'pt'
@@ -279,7 +284,13 @@ const buildGoalTitle = (
       const planningStyle = getValidControlValue(getControl(controls, 'planningStyle'));
 
       if (!weeklyCommitment || !planningStyle) {
-        return copy.fallbackGoalTitleByFocus.finances;
+        return baseGoalLabel || copy.fallbackGoalTitleByFocus.finances;
+      }
+
+      if (baseGoalLabel) {
+        return locale === 'pt'
+          ? `${baseGoalLabel} com compromisso ${weeklyCommitment} e plano ${planningStyle}.`
+          : `${baseGoalLabel} with a ${weeklyCommitment} commitment and a ${planningStyle} plan.`;
       }
 
       return locale === 'pt'
@@ -291,6 +302,7 @@ const buildGoalTitle = (
 
 const buildHabitTitle = (
   focusArea: OnboardingFocusArea,
+  baseHabitLabel: string,
   controls: OnboardingControl[],
   locale: PlanLocale
 ): string => {
@@ -302,7 +314,13 @@ const buildHabitTitle = (
       const frequency = getValidControlValue(getControl(controls, 'frequency'));
 
       if (!timeOfDay || !frequency) {
-        return copy.fallbackHabitTitleByFocus.health;
+        return baseHabitLabel || copy.fallbackHabitTitleByFocus.health;
+      }
+
+      if (baseHabitLabel) {
+        return locale === 'pt'
+          ? `${baseHabitLabel} no período da ${timeOfDay} ${frequency}.`
+          : `${baseHabitLabel} in the ${timeOfDay} ${frequency}.`;
       }
 
       return locale === 'pt'
@@ -314,7 +332,13 @@ const buildHabitTitle = (
       const connectionRhythm = getValidControlValue(getControl(controls, 'connectionRhythm'));
 
       if (!gestureType || !connectionRhythm) {
-        return copy.fallbackHabitTitleByFocus.relationships;
+        return baseHabitLabel || copy.fallbackHabitTitleByFocus.relationships;
+      }
+
+      if (baseHabitLabel) {
+        return locale === 'pt'
+          ? `${baseHabitLabel} com gesto de ${gestureType} e ritmo ${connectionRhythm}.`
+          : `${baseHabitLabel} with a ${gestureType} gesture on a ${connectionRhythm} rhythm.`;
       }
 
       return locale === 'pt'
@@ -325,7 +349,19 @@ const buildHabitTitle = (
       const weeklyCommitment = getValidControlValue(getControl(controls, 'weeklyCommitment'));
 
       if (!weeklyCommitment) {
-        return copy.fallbackHabitTitleByFocus.finances;
+        return baseHabitLabel || copy.fallbackHabitTitleByFocus.finances;
+      }
+
+      if (baseHabitLabel) {
+        if (locale === 'pt') {
+          return weeklyCommitment === 'focused'
+            ? `${baseHabitLabel} com 15 minutos por semana.`
+            : `${baseHabitLabel} com 10 minutos por semana.`;
+        }
+
+        return weeklyCommitment === 'focused'
+          ? `${baseHabitLabel} with 15 minutes each week.`
+          : `${baseHabitLabel} with 10 minutes each week.`;
       }
 
       if (locale === 'pt') {
@@ -347,19 +383,34 @@ export const createStarterPlan = (
 ): OnboardingStarterPlan => {
   const planLocale = normalizePlanLocale(locale);
   const controls = buildControls(seed.focusArea, planLocale);
+  const selectedDream = seed.selectedDream;
+  const selectedGoalLabel = seed.selectedGoal?.label ?? '';
+  const selectedHabitLabel = seed.selectedHabit?.label ?? '';
 
   return {
     locale: planLocale,
     focusArea: seed.focusArea,
     dream: {
-      key: seed.selectedDreamKey,
-      label: seed.selectedDreamLabel,
+      key: selectedDream.key,
+      label: selectedDream.label,
+      shortReason: selectedDream.shortReason,
     },
     goal: {
-      title: buildGoalTitle(seed.focusArea, seed.selectedDreamLabel, controls, planLocale),
+      key: seed.selectedGoal?.key,
+      label:
+        selectedGoalLabel ||
+        buildGoalTitle(seed.focusArea, selectedDream.label, '', controls, planLocale),
+      title:
+        selectedGoalLabel ||
+        buildGoalTitle(seed.focusArea, selectedDream.label, '', controls, planLocale),
+      shortReason: seed.selectedGoal?.shortReason,
     },
     habit: {
-      title: buildHabitTitle(seed.focusArea, controls, planLocale),
+      key: seed.selectedHabit?.key,
+      label: selectedHabitLabel || buildHabitTitle(seed.focusArea, '', controls, planLocale),
+      title: selectedHabitLabel || buildHabitTitle(seed.focusArea, '', controls, planLocale),
+      shortReason: seed.selectedHabit?.shortReason,
+      goalKey: seed.selectedHabit?.goalKey,
     },
     controls,
   };
@@ -388,10 +439,23 @@ export const applyStarterPlanControl = (
     ...plan,
     controls,
     goal: {
-      title: buildGoalTitle(plan.focusArea, plan.dream.label, controls, normalizePlanLocale(plan.locale)),
+      ...plan.goal,
+      title: buildGoalTitle(
+        plan.focusArea,
+        plan.dream.label,
+        plan.goal.label,
+        controls,
+        normalizePlanLocale(plan.locale)
+      ),
     },
     habit: {
-      title: buildHabitTitle(plan.focusArea, controls, normalizePlanLocale(plan.locale)),
+      ...plan.habit,
+      title: buildHabitTitle(
+        plan.focusArea,
+        plan.habit.label,
+        controls,
+        normalizePlanLocale(plan.locale)
+      ),
     },
   };
 };

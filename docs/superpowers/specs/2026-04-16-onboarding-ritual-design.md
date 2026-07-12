@@ -38,6 +38,7 @@ The image is used as an emotional portal, not as a persistent poster behind the 
 - No scroll-based storytelling or Lenis integration
 - No attempt to persist dreams, goals, or habits from the redesign work
 - No app-wide shell redesign outside `/app/onboarding`
+- No generic, purple gradiente UI design
 
 ## Experience Overview
 

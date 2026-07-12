@@ -2,9 +2,16 @@ import { createContext, useEffect, useState, useCallback, useRef, useMemo } from
 import { appShellService } from '@/core/services/appShellService';
 import { authService } from '@/core/services/authService';
 import { notificationsService } from '@/core/services/notificationsService';
+import { onboardingService } from '@/core/services/onboardingService';
+import {
+  deriveOnboardingState,
+  markOnboardingCompletedLocally,
+  markOnboardingSkippedLocally,
+} from '@/core/services/onboardingStateStore';
 import { supabase } from '@/core/services/supabaseClient';
 import { sessionsService } from '@/core/services/sessionsService';
 import { clearAuthScopedQueries } from '@/core/config/react-query';
+import type { OnboardingState } from '@/types/onboarding';
 import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
 type IdleCallbackHandle = number;
@@ -48,6 +55,7 @@ export interface User {
  */
 export interface AuthContextType {
   user: User | null;
+  onboarding?: OnboardingState | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   isAuthResolved?: boolean;
@@ -57,6 +65,8 @@ export interface AuthContextType {
   refreshUnreadNotificationCount?: () => Promise<number>;
   decrementUnreadNotificationCount?: (amount?: number) => void;
   clearUnreadNotificationCount?: () => void;
+  skipOnboarding?: () => Promise<boolean>;
+  completeOnboarding?: () => Promise<boolean>;
   logout: () => Promise<void>;
 }
 
@@ -66,6 +76,7 @@ export interface AuthContextType {
  */
 export const AuthContext = createContext<AuthContextType>({
   user: null,
+  onboarding: null,
   isLoading: true,
   isAuthenticated: false,
   isAuthResolved: false,
@@ -75,6 +86,8 @@ export const AuthContext = createContext<AuthContextType>({
   refreshUnreadNotificationCount: async () => 0,
   decrementUnreadNotificationCount: () => {},
   clearUnreadNotificationCount: () => {},
+  skipOnboarding: async () => false,
+  completeOnboarding: async () => false,
   logout: async () => {},
 });
 
@@ -159,6 +172,7 @@ const readCachedAuthSnapshot = (): CachedAuthSnapshot => {
 export const AuthProvider = ({ children }: { children: React.ReactNode }): React.ReactNode => {
   const initialAuthSnapshotRef = useRef<CachedAuthSnapshot>(readCachedAuthSnapshot());
   const [user, setUser] = useState<User | null>(initialAuthSnapshotRef.current.user);
+  const [onboarding, setOnboarding] = useState<OnboardingState | null>(null);
   const [isLoading, setIsLoading] = useState(!initialAuthSnapshotRef.current.user);
   const [isAuthResolved, setIsAuthResolved] = useState(
     Boolean(initialAuthSnapshotRef.current.user)
@@ -262,6 +276,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
     trackedSessionKeyRef.current = null;
     setSessionAccessToken(null);
     clearUnreadNotificationCount();
+    setOnboarding(null);
     setUser(null);
   }, [clearUnreadNotificationCount]);
 
@@ -299,6 +314,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
 
       try {
         const supabaseUser = session.user as SupabaseUser;
+        const onboardingIdentity = {
+          id: supabaseUser.id,
+          email: supabaseUser.email ?? null,
+          createdAt: supabaseUser.created_at ?? null,
+          lastSignInAt: supabaseUser.last_sign_in_at ?? null,
+        };
 
         const bootstrapResult = await appShellService.getBootstrap(
           session.access_token ?? undefined
@@ -309,6 +330,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
         }
 
         setUnreadNotificationCount(bootstrapResult.data?.unreadNotificationCount ?? 0);
+        setOnboarding(
+          deriveOnboardingState(onboardingIdentity, bootstrapResult.data?.onboarding ?? null)
+        );
         setUser(buildResolvedUser(supabaseUser, bootstrapResult.data?.profile ?? null));
       } catch (error) {
         hydratedSessionKeyRef.current = null;
@@ -375,9 +399,59 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
     }
   }, [clearAuthenticatedState]);
 
+  const skipOnboarding = useCallback(async (): Promise<boolean> => {
+    if (!user?.id) {
+      return false;
+    }
+
+    const { data, error } = await onboardingService.skip();
+    const fallbackState = markOnboardingSkippedLocally({
+      id: user.id,
+      email: user.email ?? null,
+    });
+
+    if (error) {
+      console.error('Skip onboarding failed:', error);
+      setOnboarding(fallbackState);
+      return true;
+    }
+
+    setOnboarding(data ?? fallbackState);
+
+    return true;
+  }, [user?.email, user?.id]);
+
+  const completeOnboarding = useCallback(async (): Promise<boolean> => {
+    if (!user?.id) {
+      return false;
+    }
+
+    const { data, error } = await onboardingService.complete();
+    const fallbackState = markOnboardingCompletedLocally({
+      id: user.id,
+      email: user.email ?? null,
+    });
+
+    if (error) {
+      console.error('Complete onboarding failed:', error);
+      setOnboarding(fallbackState);
+      return true;
+    }
+
+    setOnboarding(
+      data ?? {
+        ...fallbackState,
+        skippedAt: onboarding?.skippedAt ?? fallbackState.skippedAt,
+      }
+    );
+
+    return true;
+  }, [onboarding?.skippedAt, user?.email, user?.id]);
+
   const contextValue = useMemo(
     () => ({
       user,
+      onboarding,
       isLoading,
       isAuthenticated: !!user,
       isAuthResolved,
@@ -387,10 +461,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
       refreshUnreadNotificationCount,
       decrementUnreadNotificationCount,
       clearUnreadNotificationCount,
+      skipOnboarding,
+      completeOnboarding,
       logout,
     }),
     [
       user,
+      onboarding,
       isLoading,
       isAuthResolved,
       isLoggingOut,
@@ -399,6 +476,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): React
       refreshUnreadNotificationCount,
       decrementUnreadNotificationCount,
       clearUnreadNotificationCount,
+      skipOnboarding,
+      completeOnboarding,
       logout,
     ]
   );

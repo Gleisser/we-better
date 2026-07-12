@@ -14,6 +14,9 @@ import styles from './OnboardingPage.module.css';
 import { WeBetterLogo } from '@/components/ui/WeBetterLogo';
 import { applyStarterPlanControl, createStarterPlan } from './starterPlan';
 import { extractStructuredOnboardingSeed } from './typebotPersistence';
+import { OnboardingReview } from './OnboardingReview';
+import { persistStarterPlan } from './persistStarterPlan';
+import { getDreamOptions } from './structuredCatalog';
 
 const getTypebotApiHost = (): string =>
   import.meta.env.VITE_TYPEBOT_API_HOST || 'https://viewer.typebot.io';
@@ -48,11 +51,35 @@ const normalizeScriptResult = (value: unknown): string | null => {
   return null;
 };
 
+const mapObservedFocusAreaLabel = (label: string | null): string | null => {
+  if (!label) {
+    return null;
+  }
+
+  const normalized = label.trim().toLowerCase();
+  if (normalized === 'saúde' || normalized === 'saude') return 'health';
+  if (normalized === 'relacionamentos') return 'relationships';
+  if (normalized === 'finanças' || normalized === 'financas') return 'finances';
+  return null;
+};
+
+const isKnownDreamLabel = (label: string): boolean =>
+  ['health', 'relationships', 'finances'].some(focusArea =>
+    getDreamOptions(focusArea).some(option => option.label === label)
+  );
+
 const OnboardingPage = (): JSX.Element => {
   const navigate = useNavigate();
   const { user, skipOnboarding, completeOnboarding } = useAuth();
   const { t, currentLanguage } = useTranslation('onboarding');
   const rootRef = useRef<HTMLDivElement>(null);
+  const observedSelectionsRef = useRef<{
+    focusAreaLabel: string | null;
+    dreamLabel: string | null;
+  }>({
+    focusAreaLabel: null,
+    dreamLabel: null,
+  });
   const [phase, setPhase] = useState<OnboardingPhase>('intro');
   const [nativeStep, setNativeStep] = useState<NativeStep>('typebot');
   const [starterPlan, setStarterPlan] = useState<OnboardingStarterPlan | null>(null);
@@ -161,7 +188,8 @@ const OnboardingPage = (): JSX.Element => {
       const seed = extractStructuredOnboardingSeed(
         payload,
         typebotCompletionSignal,
-        currentLanguage
+        currentLanguage,
+        observedSelectionsRef.current
       );
       if (!seed) {
         return false;
@@ -169,6 +197,9 @@ const OnboardingPage = (): JSX.Element => {
 
       setStarterPlan(createStarterPlan(seed, currentLanguage));
       setNativeStep('personalization');
+      setPhase(currentPhase =>
+        currentPhase === 'reduced-motion-chat' ? 'reduced-motion-chat' : 'chat'
+      );
       setErrorMessage(null);
       return true;
     },
@@ -198,10 +229,8 @@ const OnboardingPage = (): JSX.Element => {
       if (!normalizedSignal || normalizedSignal !== typebotCompletionSignal) {
         return;
       }
-
-      await handleComplete();
     },
-    [handleComplete, handleStructuredCompletion, typebotCompletionSignal]
+    [handleStructuredCompletion, typebotCompletionSignal]
   );
 
   useEffect(() => {
@@ -235,11 +264,49 @@ const OnboardingPage = (): JSX.Element => {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [
-    embedAttempt,
-    handleScriptExecutionSuccess,
-    isEmbedConfigured,
-  ]);
+  }, [embedAttempt, handleScriptExecutionSuccess, isEmbedConfigured]);
+
+  useEffect(() => {
+    if (!isEmbedConfigured || nativeStep !== 'typebot') {
+      return;
+    }
+
+    const handleDocumentClick = (event: MouseEvent): void => {
+      const path = event.composedPath();
+      const originatedFromTypebot = path.some(
+        entry => entry instanceof HTMLElement && entry.tagName.toLowerCase() === 'typebot-standard'
+      );
+
+      if (!originatedFromTypebot) {
+        return;
+      }
+
+      const clickedButton = path.find(entry => entry instanceof HTMLButtonElement);
+      if (!(clickedButton instanceof HTMLButtonElement)) {
+        return;
+      }
+
+      const label = clickedButton.textContent?.trim() ?? '';
+      if (!label) {
+        return;
+      }
+
+      if (mapObservedFocusAreaLabel(label)) {
+        observedSelectionsRef.current.focusAreaLabel = label;
+        return;
+      }
+
+      if (isKnownDreamLabel(label)) {
+        observedSelectionsRef.current.dreamLabel = label;
+      }
+    };
+
+    document.addEventListener('click', handleDocumentClick, true);
+
+    return () => {
+      document.removeEventListener('click', handleDocumentClick, true);
+    };
+  }, [isEmbedConfigured, nativeStep]);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent): void => {
@@ -261,12 +328,45 @@ const OnboardingPage = (): JSX.Element => {
     setNativeStep('typebot');
     setStarterPlan(null);
     setErrorMessage(null);
+    observedSelectionsRef.current = {
+      focusAreaLabel: null,
+      dreamLabel: null,
+    };
   }, []);
 
   const handleControlChange = useCallback((controlId: string, nextValue: string) => {
     setStarterPlan(current =>
       current ? applyStarterPlanControl(current, controlId, nextValue) : current
     );
+  }, []);
+
+  const handleConfirmStarterPlan = useCallback(async () => {
+    if (!starterPlan || isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+
+    try {
+      await persistStarterPlan(starterPlan);
+      await handleComplete();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : t('onboarding.status.completionFailed')
+      );
+      setIsSubmitting(false);
+    }
+  }, [handleComplete, isSubmitting, starterPlan, t]);
+
+  const handleCorrectStarterPlan = useCallback(() => {
+    setStarterPlan(null);
+    setNativeStep('typebot');
+    setEmbedAttempt(current => current + 1);
+    observedSelectionsRef.current = {
+      focusAreaLabel: null,
+      dreamLabel: null,
+    };
   }, []);
 
   return (
@@ -301,6 +401,7 @@ const OnboardingPage = (): JSX.Element => {
       />
 
       <OnboardingStage
+        forceVisible={nativeStep !== 'typebot'}
         phase={phase}
         showFallback={!isEmbedConfigured}
         fallbackTitle={t('onboarding.status.embedUnavailableTitle')}
@@ -323,15 +424,28 @@ const OnboardingPage = (): JSX.Element => {
               }}
               style={{ width: '100%', height: '600px' }}
             />
-          ) : starterPlan ? (
+          ) : nativeStep === 'personalization' && starterPlan ? (
             <OnboardingPersonalization
               plan={starterPlan}
               dreamLabel={t('onboarding.native.dream')}
               goalLabel={t('onboarding.native.goal')}
               habitLabel={t('onboarding.native.habit')}
               continueLabel={t('onboarding.actions.continue')}
+              restartLabel={t('onboarding.actions.restart')}
               onControlChange={handleControlChange}
               onContinue={() => setNativeStep('review')}
+              onRestart={handleCorrectStarterPlan}
+            />
+          ) : nativeStep === 'review' && starterPlan ? (
+            <OnboardingReview
+              plan={starterPlan}
+              onConfirm={() => {
+                void handleConfirmStarterPlan();
+              }}
+              onRestart={handleCorrectStarterPlan}
+              restartLabel={t('onboarding.actions.restart')}
+              confirmLabel={t('onboarding.actions.confirm')}
+              isSubmitting={isSubmitting}
             />
           ) : null
         }

@@ -30,6 +30,7 @@ import {
   useCategoryAffirmationPool,
   type NonPersonalAffirmationCategory,
 } from '@/features/affirmations/hooks/useCategoryAffirmationPool';
+import { Balloons } from '@/components/ui/balloons';
 
 type AffirmationCategory =
   | 'personal'
@@ -137,6 +138,7 @@ const AffirmationWidget = (): JSX.Element => {
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5); // Lower intensity for subtlety
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showReminderSettings, setShowReminderSettings] = useState(false);
+  const balloonsRef = useRef<{ launchAnimation: () => void } | null>(null);
 
   // Backend integration using useAffirmations hook
   const {
@@ -383,6 +385,10 @@ const AffirmationWidget = (): JSX.Element => {
       setIsAffirming(true);
       setShowParticles(true);
 
+      if (balloonsRef.current) {
+        balloonsRef.current.launchAnimation();
+      }
+
       // Check for new milestone (simple check based on streak)
       if (streak && (streak.current_streak + 1) % 7 === 0) {
         setIsNewMilestone(true);
@@ -596,6 +602,8 @@ const AffirmationWidget = (): JSX.Element => {
             </motion.div>
           </AnimatePresence>
         ) : null}
+
+        <Balloons ref={balloonsRef} />
 
         <motion.button
           className={`${styles.affirmButton} ${isAffirming ? styles.affirming : ''}`}

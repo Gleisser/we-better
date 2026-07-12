@@ -6,6 +6,22 @@ import OnboardingPage from './OnboardingPage';
 
 const navigateMock = vi.fn();
 const useAuthMock = vi.fn();
+const createDreamBoardMock = vi.fn();
+const createGoalMock = vi.fn();
+const createHabitMock = vi.fn();
+
+vi.mock('@/core/services/dreamBoardService', () => ({
+  createDreamBoard: (...args: unknown[]) => createDreamBoardMock(...args),
+}));
+
+vi.mock('@/core/services/goalsService', () => ({
+  createGoal: (...args: unknown[]) => createGoalMock(...args),
+}));
+
+vi.mock('@/core/services/habitsService', () => ({
+  createHabit: (...args: unknown[]) => createHabitMock(...args),
+}));
+
 let currentLanguage = 'en';
 const standardPropsRef: {
   current: Record<string, unknown> | null;
@@ -16,6 +32,8 @@ const translationMap: Record<string, Record<string, string>> = {
     'onboarding.actions.skip': 'Skip for now',
     'onboarding.actions.retry': 'Try again',
     'onboarding.actions.continue': 'Continue setup',
+    'onboarding.actions.restart': 'Restart onboarding',
+    'onboarding.actions.confirm': 'Confirm',
     'onboarding.native.dream': 'Dream label',
     'onboarding.native.goal': 'Goal label',
     'onboarding.native.habit': 'Habit label',
@@ -24,6 +42,8 @@ const translationMap: Record<string, Record<string, string>> = {
     'onboarding.actions.skip': 'Pular por agora',
     'onboarding.actions.retry': 'Tentar novamente',
     'onboarding.actions.continue': 'Continuar',
+    'onboarding.actions.restart': 'Reiniciar onboarding',
+    'onboarding.actions.confirm': 'Confirmar',
     'onboarding.native.dream': 'Sonho',
     'onboarding.native.goal': 'Meta',
     'onboarding.native.habit': 'Hábito',
@@ -65,6 +85,12 @@ describe('OnboardingPage', () => {
   beforeEach(() => {
     currentLanguage = 'en';
     navigateMock.mockReset();
+    createDreamBoardMock.mockReset();
+    createGoalMock.mockReset();
+    createHabitMock.mockReset();
+    createDreamBoardMock.mockResolvedValue({ id: 'dream-1' });
+    createGoalMock.mockResolvedValue({ id: 'goal-1' });
+    createHabitMock.mockResolvedValue({ id: 'habit-1' });
     standardPropsRef.current = null;
     vi.unstubAllEnvs();
     vi.stubEnv('VITE_TYPEBOT_ONBOARDING_ID', 'typebot-onboarding');
@@ -136,8 +162,8 @@ describe('OnboardingPage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('onboarding.actions.retry')).not.toBeNull();
-    expect(screen.getAllByText('onboarding.actions.skip').length).toBeGreaterThan(0);
+    expect(screen.getByText('Try again')).not.toBeNull();
+    expect(screen.getAllByText('Skip for now').length).toBeGreaterThan(0);
   });
 
   it('dispatches intro and fallback analytics events', async () => {
@@ -173,7 +199,7 @@ describe('OnboardingPage', () => {
     );
 
     await act(async () => {
-      fireEvent.click(screen.getByText('onboarding.actions.retry'));
+      fireEvent.click(screen.getByText('Try again'));
     });
 
     expect(screen.getByTestId('onboarding-stage')).not.toBeNull();
@@ -200,7 +226,7 @@ describe('OnboardingPage', () => {
     );
 
     await act(async () => {
-      await user.click(screen.getByRole('button', { name: 'onboarding.actions.skip' }));
+      await user.click(screen.getByRole('button', { name: 'Skip for now' }));
     });
 
     await waitFor(() => {
@@ -209,7 +235,7 @@ describe('OnboardingPage', () => {
     });
   });
 
-  it('marks onboarding as completed when the configured Typebot completion signal fires', async () => {
+  it('does not auto-complete when only the completion signal fires without a structured seed', async () => {
     const completeOnboarding = vi.fn().mockResolvedValue(true);
 
     useAuthMock.mockReturnValue({
@@ -236,10 +262,70 @@ describe('OnboardingPage', () => {
       await callback?.('onboarding-complete');
     });
 
-    await waitFor(() => {
-      expect(completeOnboarding).toHaveBeenCalledTimes(1);
-      expect(navigateMock).toHaveBeenCalledWith('/app/dashboard', { replace: true });
+    expect(completeOnboarding).not.toHaveBeenCalled();
+    expect(navigateMock).not.toHaveBeenCalled();
+    expect(screen.getByTestId('typebot-standard')).not.toBeNull();
+  });
+
+  it('keeps the user in onboarding when a plain completion signal arrives before the structured payload', async () => {
+    const completeOnboarding = vi.fn().mockResolvedValue(true);
+
+    useAuthMock.mockReturnValue({
+      user: {
+        id: 'user-123',
+        email: 'user@example.com',
+        display_name: 'Test User',
+      },
+      skipOnboarding: vi.fn().mockResolvedValue(true),
+      completeOnboarding,
     });
+
+    render(
+      <MemoryRouter>
+        <OnboardingPage />
+      </MemoryRouter>
+    );
+
+    const callback = standardPropsRef.current?.onScriptExecutionSuccess as
+      | ((value: unknown) => void | Promise<void>)
+      | undefined;
+
+    await act(async () => {
+      await callback?.('onboarding-complete');
+      await callback?.({
+        signal: 'onboarding-complete',
+        focusArea: 'health',
+        selectedDream: {
+          key: 'sleep-with-consistency',
+          label: 'Dormir com mais consistência',
+          shortReason: 'Rotina de descanso mais estável.',
+          source: 'curated',
+          focusArea: 'health',
+        },
+        selectedGoal: {
+          key: 'sleep-seven-hours',
+          label: 'Dormir pelo menos 7 horas na maior parte da semana',
+          shortReason: 'Leva o sonho para um marco concreto.',
+          source: 'generated',
+          focusArea: 'health',
+        },
+        selectedHabit: {
+          key: 'phone-off-before-bed',
+          label: 'Desligar o celular 30 minutos antes de dormir',
+          shortReason: 'Pequena ação repetível para desacelerar.',
+          source: 'generated',
+          focusArea: 'health',
+          goalKey: 'sleep-seven-hours',
+        },
+        microPreferences: [],
+        regenerationCount: 0,
+        usedRegeneration: false,
+      });
+    });
+
+    expect(completeOnboarding).not.toHaveBeenCalled();
+    expect(navigateMock).not.toHaveBeenCalled();
+    expect(screen.getByTestId('onboarding-personalization')).not.toBeNull();
   });
 
   it('switches from the Typebot embed to native personalization when a structured payload arrives', async () => {
@@ -257,18 +343,38 @@ describe('OnboardingPage', () => {
       await callback?.({
         signal: 'onboarding-complete',
         focusArea: 'health',
-        selectedDreamKey: 'sleep-with-consistency',
-        selectedDreamLabel: 'Dormir com mais consistência',
+        selectedDream: {
+          key: 'sleep-with-consistency',
+          label: 'Dormir com mais consistência',
+          shortReason: 'Rotina de descanso mais estável.',
+          source: 'curated',
+          focusArea: 'health',
+        },
+        selectedGoal: {
+          key: 'sleep-seven-hours',
+          label: 'Dormir pelo menos 7 horas na maior parte da semana',
+          shortReason: 'Leva o sonho para um marco concreto.',
+          source: 'generated',
+          focusArea: 'health',
+        },
+        selectedHabit: {
+          key: 'phone-off-before-bed',
+          label: 'Desligar o celular 30 minutos antes de dormir',
+          shortReason: 'Pequena ação repetível para desacelerar.',
+          source: 'generated',
+          focusArea: 'health',
+          goalKey: 'sleep-seven-hours',
+        },
         microPreferences: ['lighter'],
         regenerationCount: 1,
         usedRegeneration: true,
       });
     });
 
-    expect(screen.getByTestId('onboarding-personalization')).toBeInTheDocument();
-    expect(screen.getByText('Dream label')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Continue setup' })).toBeInTheDocument();
-    expect(screen.getByTestId('starter-dream-preview')).toHaveTextContent(
+    expect(screen.getByTestId('onboarding-personalization')).not.toBeNull();
+    expect(screen.getByText('Dream label')).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Continue setup' })).not.toBeNull();
+    expect(screen.getByTestId('starter-dream-preview').textContent).toContain(
       'Dormir com mais consistência'
     );
     expect(screen.queryByTestId('typebot-standard')).toBeNull();
@@ -289,8 +395,28 @@ describe('OnboardingPage', () => {
       await callback?.({
         signal: 'onboarding-complete',
         focusArea: 'finances',
-        selectedDreamKey: 'build-an-emergency-fund',
-        selectedDreamLabel: 'Montar minha reserva de emergência',
+        selectedDream: {
+          key: 'build-an-emergency-fund',
+          label: 'Montar minha reserva de emergência',
+          shortReason: 'Mais segurança para imprevistos.',
+          source: 'curated',
+          focusArea: 'finances',
+        },
+        selectedGoal: {
+          key: 'save-first-thousand',
+          label: 'Guardar os primeiros mil reais da reserva',
+          shortReason: 'Uma meta inicial clara e alcançável.',
+          source: 'generated',
+          focusArea: 'finances',
+        },
+        selectedHabit: {
+          key: 'weekly-money-checkin',
+          label: 'Fazer uma revisão rápida do dinheiro uma vez por semana',
+          shortReason: 'Cria visibilidade e constância.',
+          source: 'generated',
+          focusArea: 'finances',
+          goalKey: 'save-first-thousand',
+        },
         microPreferences: [],
         regenerationCount: 0,
         usedRegeneration: false,
@@ -299,7 +425,7 @@ describe('OnboardingPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Focused' }));
 
-    expect(screen.getByTestId('starter-habit-preview')).toHaveTextContent('15 minutes');
+    expect(screen.getByTestId('starter-habit-preview').textContent).toContain('15 minutes');
   });
 
   it('uses the configured completion signal for postMessage fallback handoff', async () => {
@@ -327,9 +453,89 @@ describe('OnboardingPage', () => {
       );
     });
 
-    expect(screen.getByTestId('onboarding-personalization')).toBeInTheDocument();
-    expect(screen.getByTestId('starter-dream-preview')).toHaveTextContent(
+    expect(screen.getByTestId('onboarding-personalization')).not.toBeNull();
+    expect(screen.getByTestId('starter-dream-preview').textContent).toContain(
       'Sleep more consistently'
     );
+  });
+
+  it('moves from personalization to review and persists the starter trio after confirmation', async () => {
+    const completeOnboarding = vi.fn().mockResolvedValue(true);
+
+    useAuthMock.mockReturnValue({
+      user: {
+        id: 'user-123',
+        email: 'user@example.com',
+        display_name: 'Test User',
+      },
+      skipOnboarding: vi.fn().mockResolvedValue(true),
+      completeOnboarding,
+    });
+
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <OnboardingPage />
+      </MemoryRouter>
+    );
+
+    const callback = standardPropsRef.current?.onScriptExecutionSuccess as
+      | ((value: unknown) => void | Promise<void>)
+      | undefined;
+
+    await act(async () => {
+      await callback?.({
+        signal: 'onboarding-complete',
+        focusArea: 'health',
+        selectedDreamKey: 'sleep-with-consistency',
+        selectedDreamLabel: 'Dormir com mais consistência',
+        microPreferences: [],
+        regenerationCount: 0,
+        usedRegeneration: false,
+      });
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Continue setup' }));
+    await user.click(screen.getByRole('button', { name: 'Confirm' }));
+
+    await waitFor(() => {
+      expect(createDreamBoardMock).toHaveBeenCalledTimes(1);
+      expect(createGoalMock).toHaveBeenCalledTimes(1);
+      expect(createHabitMock).toHaveBeenCalledTimes(1);
+      expect(completeOnboarding).toHaveBeenCalledTimes(1);
+      expect(navigateMock).toHaveBeenCalledWith('/app/dashboard', { replace: true });
+    });
+  });
+
+  it('returns to the Typebot step when the user chooses to restart onboarding', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter>
+        <OnboardingPage />
+      </MemoryRouter>
+    );
+
+    const callback = standardPropsRef.current?.onScriptExecutionSuccess as
+      | ((value: unknown) => void | Promise<void>)
+      | undefined;
+
+    await act(async () => {
+      await callback?.({
+        signal: 'onboarding-complete',
+        focusArea: 'relationships',
+        selectedDreamKey: 'be-more-present-with-family',
+        selectedDreamLabel: 'Estar mais presente com minha família',
+        microPreferences: [],
+        regenerationCount: 0,
+        usedRegeneration: false,
+      });
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Continue setup' }));
+    await user.click(screen.getByRole('button', { name: 'Restart onboarding' }));
+
+    expect(screen.getByTestId('typebot-standard')).not.toBeNull();
   });
 });

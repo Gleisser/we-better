@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient';
 import { createAppApiUrl } from '@/core/config/appApi';
+import type { OnboardingState } from '@/types/onboarding';
 
 const API_BASE_URL = createAppApiUrl('/app-shell');
 
@@ -9,6 +10,7 @@ export interface AppShellBootstrapResponse {
     avatar_url: string | null;
   } | null;
   unreadNotificationCount: number;
+  onboarding?: OnboardingState | null;
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -21,6 +23,14 @@ const isAppShellBootstrapResponse = (value: unknown): value is AppShellBootstrap
 
   if (value.profile === null || value.profile === undefined) {
     return true;
+  }
+
+  if (
+    value.onboarding !== undefined &&
+    value.onboarding !== null &&
+    (!isRecord(value.onboarding) || typeof value.onboarding.required !== 'boolean')
+  ) {
+    return false;
   }
 
   return isRecord(value.profile);

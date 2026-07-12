@@ -22,10 +22,25 @@ export interface OnboardingDreamOption {
   source: 'curated' | 'generated';
 }
 
+export interface OnboardingSelectedOption {
+  key: string;
+  focusArea: OnboardingFocusArea;
+  label: string;
+  shortReason: string;
+  source: 'curated' | 'generated';
+}
+
+export interface OnboardingSelectedHabitOption extends OnboardingSelectedOption {
+  goalKey?: string;
+}
+
 export interface StructuredOnboardingSeed {
   focusArea: OnboardingFocusArea;
-  selectedDreamKey: string;
-  selectedDreamLabel: string;
+  selectedDream: OnboardingSelectedOption;
+  selectedGoal?: OnboardingSelectedOption | null;
+  selectedHabit?: OnboardingSelectedHabitOption | null;
+  selectedDreamKey?: string;
+  selectedDreamLabel?: string;
   usedRegeneration: boolean;
   microPreferences: OnboardingMicroPreference[];
   regenerationCount: number;
@@ -50,12 +65,20 @@ export interface OnboardingStarterPlan {
   dream: {
     key: string;
     label: string;
+    shortReason?: string;
   };
   goal: {
+    key?: string;
+    label: string;
     title: string;
+    shortReason?: string;
   };
   habit: {
+    key?: string;
+    label: string;
     title: string;
+    shortReason?: string;
+    goalKey?: string;
   };
   controls: OnboardingControl[];
 }

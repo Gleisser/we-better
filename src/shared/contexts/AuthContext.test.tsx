@@ -57,6 +57,9 @@ const AuthConsumer = (): JSX.Element => {
       <div data-testid="auth-loading">{String(context.isLoading)}</div>
       <div data-testid="auth-user">{context.user?.display_name ?? 'anonymous'}</div>
       <div data-testid="auth-unread">{String(context.unreadNotificationCount ?? 0)}</div>
+      <div data-testid="auth-onboarding-required">
+        {String(context.onboarding?.required ?? false)}
+      </div>
     </div>
   );
 };
@@ -82,6 +85,11 @@ describe('AuthProvider', () => {
       data: {
         profile: { full_name: 'Profile Name', avatar_url: 'avatar.png' },
         unreadNotificationCount: 4,
+        onboarding: {
+          required: true,
+          skippedAt: null,
+          completedAt: null,
+        },
       },
       error: null,
     });
@@ -192,4 +200,74 @@ describe('AuthProvider', () => {
     expect(mockGetBootstrap).toHaveBeenCalledTimes(1);
     expect(screen.getByTestId('auth-unread').textContent).toBe('4');
   }, 7000);
+
+  it('hydrates onboarding state from the app shell bootstrap payload', async () => {
+    const subscription = { unsubscribe: vi.fn() };
+    const session = {
+      access_token: 'token-onboarding',
+      user: {
+        id: 'user-onboarding',
+        email: 'onboarding@example.com',
+        user_metadata: {
+          display_name: 'Onboarding User',
+        },
+      },
+    };
+
+    mockGetSession.mockResolvedValue({
+      data: { session },
+      error: null,
+    });
+    mockOnAuthStateChange.mockImplementation(() => ({
+      data: { subscription },
+    }));
+
+    render(
+      <AuthProvider>
+        <AuthConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() =>
+      expect(screen.getByTestId('auth-onboarding-required').textContent).toBe('true')
+    );
+  });
+
+  it('falls back to local first-access onboarding when bootstrap data is unavailable', async () => {
+    const subscription = { unsubscribe: vi.fn() };
+    const now = new Date();
+    const session = {
+      access_token: 'token-fallback',
+      user: {
+        id: 'user-fallback',
+        email: 'fresh-user@example.com',
+        created_at: new Date(now.getTime() - 60_000).toISOString(),
+        last_sign_in_at: new Date(now.getTime() - 30_000).toISOString(),
+        user_metadata: {
+          display_name: 'Fresh User',
+        },
+      },
+    };
+
+    mockGetSession.mockResolvedValue({
+      data: { session },
+      error: null,
+    });
+    mockOnAuthStateChange.mockImplementation(() => ({
+      data: { subscription },
+    }));
+    mockGetBootstrap.mockResolvedValue({
+      data: null,
+      error: 'Request failed with status 500',
+    });
+
+    render(
+      <AuthProvider>
+        <AuthConsumer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => expect(screen.getByTestId('auth-user').textContent).toBe('Fresh User'));
+    expect(screen.getByTestId('auth-onboarding-required').textContent).toBe('true');
+  });
 });

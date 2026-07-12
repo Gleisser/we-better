@@ -43,6 +43,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        '@dashboard-lab': path.resolve(__dirname, './prototype-playground/dashboard-lab/src'),
       },
     },
     server: {

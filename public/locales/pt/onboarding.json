@@ -13,6 +13,7 @@
       "skip": "Pular por agora",
       "retry": "Tentar novamente",
       "continue": "Continuar",
+      "restart": "Reiniciar onboarding",
       "confirm": "Confirmar",
       "correct": "Corrigir"
     },

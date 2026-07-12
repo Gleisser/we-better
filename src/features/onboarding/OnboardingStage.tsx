@@ -6,6 +6,7 @@ type OnboardingStageProps = {
   embed: ReactNode;
   fallbackBody?: string;
   fallbackTitle?: string;
+  forceVisible?: boolean;
   phase: OnboardingPhase;
   retryLabel: string;
   showFallback: boolean;
@@ -18,6 +19,7 @@ const OnboardingStage = ({
   embed,
   fallbackBody,
   fallbackTitle,
+  forceVisible = false,
   phase,
   retryLabel,
   showFallback,
@@ -30,6 +32,16 @@ const OnboardingStage = ({
     data-phase={phase}
     data-stage-shell=""
     data-testid="onboarding-stage"
+    style={
+      forceVisible
+        ? {
+            opacity: 1,
+            visibility: 'visible',
+            pointerEvents: 'auto',
+            transform: 'translateY(0) scale(1)',
+          }
+        : undefined
+    }
   >
     <div className={styles.container}>
       {showFallback ? (
