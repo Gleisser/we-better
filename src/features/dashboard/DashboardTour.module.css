@@ -1,0 +1,236 @@
+.launchButton {
+  @apply mb-1 ml-auto mr-8 flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-200 md:mr-8;
+  color: var(--theme-text-primary);
+  border-color: color-mix(in srgb, var(--theme-interactive-primary) 42%, transparent);
+  background: color-mix(in srgb, var(--theme-bg-elevated) 88%, transparent);
+  box-shadow: var(--theme-shadow-sm);
+}
+
+.launchButton:hover {
+  transform: translateY(-2px);
+  border-color: var(--theme-interactive-primary);
+  box-shadow: var(--theme-shadow-md);
+}
+
+.launchButton:focus-visible,
+.card button:focus-visible {
+  outline: 3px solid color-mix(in srgb, #a78bfa 70%, white);
+  outline-offset: 3px;
+}
+
+.launchButton svg {
+  @apply h-4 w-4;
+  color: #a78bfa;
+}
+
+.tourLayer {
+  @apply fixed inset-0;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.fullScrim,
+.scrimTop,
+.scrimLeft,
+.scrimRight,
+.scrimBottom {
+  @apply fixed bg-slate-950/75 backdrop-blur-[2px];
+  pointer-events: auto;
+}
+
+.fullScrim,
+.scrimTop {
+  @apply inset-x-0 top-0;
+}
+
+.fullScrim {
+  @apply bottom-0;
+}
+
+.scrimLeft,
+.scrimRight {
+  bottom: auto;
+}
+
+.scrimRight {
+  right: 0;
+}
+
+.scrimBottom {
+  @apply inset-x-0 bottom-0;
+}
+
+.spotlight {
+  @apply fixed rounded-[36px] border-2 border-violet-400;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.35),
+    0 0 36px rgba(139, 92, 246, 0.75);
+  animation: spotlightPulse 2s ease-in-out infinite;
+}
+
+.card {
+  @apply fixed flex flex-col overflow-hidden rounded-3xl border border-white/15 p-6 text-white;
+  pointer-events: auto;
+  width: min(390px, calc(100vw - 40px));
+  max-height: calc(100dvh - 40px);
+  background: linear-gradient(145deg, rgba(30, 27, 75, 0.98), rgba(15, 23, 42, 0.98));
+  box-shadow:
+    0 24px 80px rgba(2, 6, 23, 0.58),
+    0 0 0 1px rgba(139, 92, 246, 0.18);
+  animation: cardIn 260ms ease-out;
+}
+
+.scrollContent {
+  @apply relative min-h-0 flex-1 overflow-y-auto;
+  scrollbar-color: rgba(167, 139, 250, 0.55) transparent;
+  scrollbar-width: thin;
+}
+
+.scrollContent::-webkit-scrollbar {
+  width: 5px;
+}
+
+.scrollContent::-webkit-scrollbar-thumb {
+  @apply rounded-full;
+  background: rgba(167, 139, 250, 0.55);
+}
+
+.cardCentered {
+  @apply left-1/2 top-1/2;
+  transform: translate(-50%, -50%);
+}
+
+.cardGlow {
+  @apply pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full;
+  background: rgba(139, 92, 246, 0.32);
+  filter: blur(45px);
+}
+
+.cardHeader,
+.progressHeader,
+.actions {
+  @apply relative flex items-center justify-between;
+}
+
+.eyebrow {
+  @apply text-[0.68rem] font-bold uppercase tracking-[0.22em] text-violet-200;
+}
+
+.closeButton {
+  @apply flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-white/70 transition-colors hover:bg-white/10 hover:text-white;
+}
+
+.closeButton svg,
+.stepIcon svg {
+  @apply h-5 w-5;
+}
+
+.stepIcon {
+  @apply relative mt-5 flex h-11 w-11 items-center justify-center rounded-2xl text-white;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.35);
+}
+
+.card h2 {
+  @apply relative mt-4 font-plus-jakarta text-2xl font-bold leading-tight;
+}
+
+.card p {
+  @apply relative mt-2 text-sm leading-6 text-slate-300;
+}
+
+.progressHeader {
+  @apply mt-6 text-xs font-medium text-slate-400;
+}
+
+.progressHeader button {
+  @apply rounded-md px-1 py-1 font-semibold text-violet-300 hover:text-violet-200;
+}
+
+.progressTrack {
+  @apply mt-2 h-1.5 overflow-hidden rounded-full bg-white/10;
+}
+
+.progressTrack span {
+  @apply block h-full rounded-full transition-[width] duration-300;
+  background: linear-gradient(90deg, #8b5cf6, #d946ef);
+}
+
+.actions {
+  @apply z-[3] mt-4 shrink-0 gap-3 border-t border-white/10 pt-4;
+  background: linear-gradient(145deg, rgba(30, 27, 75, 0.98), rgba(15, 23, 42, 0.98));
+}
+
+.actions button {
+  @apply flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold transition-all;
+}
+
+.actions button svg {
+  @apply h-4 w-4;
+}
+
+.secondaryButton {
+  @apply border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30;
+}
+
+.primaryButton {
+  @apply ml-auto text-white hover:-translate-y-0.5;
+  background: linear-gradient(135deg, #7c3aed, #c026d3);
+  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.3);
+}
+
+@keyframes spotlightPulse {
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, 0.22),
+      0 0 48px rgba(139, 92, 246, 0.9);
+  }
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+.cardCentered.card {
+  animation: centeredCardIn 260ms ease-out;
+}
+
+@keyframes centeredCardIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 8px)) scale(0.98);
+  }
+}
+
+@media (max-width: 768px) {
+  .card:not(.cardCentered) {
+    @apply bottom-4 p-5;
+    left: 1rem !important;
+    top: auto !important;
+    width: calc(100vw - 32px) !important;
+    max-height: calc(100dvh - 2rem) !important;
+    transform: none;
+  }
+  .cardCentered {
+    @apply bottom-auto;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%);
+    max-height: calc(100dvh - 2rem) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight,
+  .card,
+  .cardCentered.card {
+    animation: none;
+  }
+  .launchButton:hover,
+  .primaryButton:hover {
+    transform: none;
+  }
+}

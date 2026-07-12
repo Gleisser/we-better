@@ -30,6 +30,7 @@ import {
 } from './services/milestonesService';
 import { deleteDreamBoardStorageFiles, uploadDreamBoardImageFile } from './utils/imageStorage';
 import { formatDreamBoardImageLimit, validateDreamBoardUploadFile } from './utils/imagePersistence';
+import DreamBoardTour from './DreamBoardTour';
 
 type CategoryDetails = {
   icon: string;
@@ -835,7 +836,10 @@ const DreamBoardPage: React.FC = () => {
   // Empty state content
   const renderEmptyState = (): JSX.Element => (
     <div className="flex min-h-[60vh] items-center justify-center p-8">
-      <div className="max-w-[650px] rounded-3xl border border-violet-500/20 bg-[linear-gradient(135deg,rgba(30,30,60,0.8),rgba(45,35,75,0.8))] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.3),0_0_0_1px_rgba(255,255,255,0.1)] backdrop-blur-[10px] md:p-12">
+      <div
+        className="max-w-[650px] rounded-3xl border border-violet-500/20 bg-[linear-gradient(135deg,rgba(30,30,60,0.8),rgba(45,35,75,0.8))] p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.3),0_0_0_1px_rgba(255,255,255,0.1)] backdrop-blur-[10px] md:p-12"
+        data-tour="dream-board-empty"
+      >
         <div className="mb-6 inline-block text-6xl motion-safe:animate-pulse">✨</div>
         <h2 className="mb-6 bg-gradient-to-br from-violet-500 to-fuchsia-500 bg-clip-text text-[1.8rem] font-bold text-transparent md:text-[2.2rem]">
           {t('dreamBoard.emptyState.firstImage.title')}
@@ -904,7 +908,7 @@ const DreamBoardPage: React.FC = () => {
           </div>
         )}
         {!hasNoDreams && (
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4" data-tour="dream-board-tabs">
             <button
               className={getTabButtonClassName('vision-board')}
               onClick={() => setActiveTab('vision-board')}
@@ -928,6 +932,7 @@ const DreamBoardPage: React.FC = () => {
             </button>
           </div>
         )}
+        <DreamBoardTour />
       </header>
 
       {/* Main Content Section */}
@@ -998,7 +1003,7 @@ const DreamBoardPage: React.FC = () => {
 
       {/* Footer Tools Section - Only show if the user has dreams */}
       {!hasNoDreams && (
-        <div className="mt-8 grid gap-4 md:gap-8 lg:grid-cols-2">
+        <div className="mt-8 grid gap-4 md:gap-8 lg:grid-cols-2" data-tour="dream-board-tools">
           <FooterTools weather={footerWeather} notifications={mockNotifications} />
           <DreamChallengeContainer
             dreams={dreams}

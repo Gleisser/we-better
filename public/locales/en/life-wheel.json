@@ -1,1 +1,46 @@
-{}
+{
+  "guidedTour": {
+    "launch": "How it works",
+    "eyebrow": "Life Wheel guide",
+    "close": "End guide",
+    "progress": "{{current}} of {{total}}",
+    "skipStep": "Skip this part",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Start my assessment",
+    "steps": {
+      "welcome": {
+        "title": "An honest picture of this moment",
+        "description": "The Life Wheel helps you see balance and choose where to place your energy. It is not a grade — it is a starting point."
+      },
+      "tabs": {
+        "title": "Assess, follow, and understand",
+        "description": "Use Current Assessment to capture today, History to revisit change, and Insights to compare periods and discover patterns."
+      },
+      "chart": {
+        "title": "Watch your balance take shape",
+        "description": "The chart responds to each life-area score. Areas near the center may need attention; wider areas show where you feel more satisfied."
+      },
+      "scores": {
+        "title": "Answer for what is true today",
+        "description": "Adjust each control from 1 to 10 based on the present, not the ideal. Move through the areas calmly and trust your first perception."
+      },
+      "save": {
+        "title": "Mark this point on your path",
+        "description": "Save the assessment to create a reference in your history. You can update today’s entry if your perception changes."
+      },
+      "history": {
+        "title": "Look back on your growth",
+        "description": "In History, select dates, compare assessments, and play the timeline to notice changes that are hard to see from day to day."
+      },
+      "insights": {
+        "title": "Turn data into direction",
+        "description": "Insights compares two moments, highlights gains and declines, and helps you choose one focus area without trying to change everything at once."
+      },
+      "finish": {
+        "title": "Awareness comes before change",
+        "description": "Take your first assessment with kindness and choose only one area to observe. Use “How it works” whenever you want to revisit the process."
+      }
+    }
+  }
+}

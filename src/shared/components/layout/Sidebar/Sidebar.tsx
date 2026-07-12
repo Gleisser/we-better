@@ -121,7 +121,10 @@ const Sidebar = (): JSX.Element => {
   };
 
   return (
-    <aside className={`${styles.sidebar} ${isCollapsed ? 'w-[72px]' : 'w-[240px]'}`}>
+    <aside
+      className={`${styles.sidebar} ${isCollapsed ? 'w-[72px]' : 'w-[240px]'}`}
+      data-tour="main-navigation"
+    >
       <div className={styles.sidebarContent}>
         {/* Collapse Button */}
         <div className={styles.topSection}>

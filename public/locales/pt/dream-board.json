@@ -1,4 +1,48 @@
 {
+  "guidedTour": {
+    "launch": "Como usar",
+    "eyebrow": "Guia do Dream Board",
+    "close": "Encerrar guia",
+    "progress": "{{current}} de {{total}}",
+    "skipStep": "Pular esta parte",
+    "back": "Voltar",
+    "next": "Próximo",
+    "finish": "Criar meu futuro",
+    "steps": {
+      "welcome": {
+        "title": "Dê uma imagem ao que você quer viver",
+        "description": "O Dream Board transforma desejos abstratos em uma visão que você pode revisitar, organizar e acompanhar. Vamos conhecer cada parte."
+      },
+      "start": {
+        "title": "Comece com uma imagem que importa",
+        "description": "Adicione imagens que representem experiências, não apenas objetos. Inclua um título, uma categoria e, se quiser, os primeiros marcos desse sonho."
+      },
+      "tabs": {
+        "title": "Três maneiras de olhar seus sonhos",
+        "description": "Quadro Visual é seu espaço de construção; Experiência cria uma exploração imersiva; Insights revela padrões entre seus sonhos e prioridades."
+      },
+      "quickVision": {
+        "title": "Seus sonhos sempre à vista",
+        "description": "A Visão Rápida reúne o essencial. Expanda para navegar e atualize o progresso conforme cada sonho começa a ganhar forma."
+      },
+      "categories": {
+        "title": "Equilíbrio entre as áreas da vida",
+        "description": "Use as categorias para filtrar o quadro e perceber onde existe muita energia — ou onde um sonho importante ainda precisa de espaço."
+      },
+      "progress": {
+        "title": "Marcos tornam o caminho concreto",
+        "description": "Registre etapas, datas e conquistas de cada sonho. O progresso não precisa ser linear: atualize o que avançou e ajuste o caminho quando necessário."
+      },
+      "tools": {
+        "title": "Sinais e desafios para manter o impulso",
+        "description": "As ferramentas mostram o clima geral do seu quadro e sugerem desafios práticos para aproximar sua visão da rotina."
+      },
+      "finish": {
+        "title": "Sua visão pode evoluir com você",
+        "description": "Comece por um sonho significativo e volte para atualizar suas imagens e marcos. O botão “Como usar” estará aqui sempre que precisar."
+      }
+    }
+  },
   "dreamBoard": {
     "title": "Quadro dos sonhos",
     "tabs": {

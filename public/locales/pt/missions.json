@@ -1,4 +1,44 @@
 {
+  "guidedTour": {
+    "launch": "Como usar",
+    "eyebrow": "Guia de Missões",
+    "close": "Encerrar guia",
+    "progress": "{{current}} de {{total}}",
+    "skipStep": "Pular esta parte",
+    "back": "Voltar",
+    "next": "Próximo",
+    "finish": "Escolher minha missão",
+    "steps": {
+      "welcome": {
+        "title": "Intenção vira ação aqui",
+        "description": "Missões são pequenas experiências semanais para cuidar de uma área da vida sem sobrecarregar sua rotina. Escolha uma e avance no seu ritmo."
+      },
+      "categories": {
+        "title": "Escolha onde sua energia faz diferença",
+        "description": "Navegue pelas áreas da vida. O anel de cada categoria mostra seu progresso, e a seleção atualiza imediatamente as missões disponíveis."
+      },
+      "weeklyFocus": {
+        "title": "Seu foco da semana em um olhar",
+        "description": "Este painel resume progresso, missões ativas e o próximo passo recomendado. Use “Por quê?” para entender a intenção por trás da sugestão."
+      },
+      "filters": {
+        "title": "Separe próximos passos de conquistas",
+        "description": "Em andamento reúne o que você pode começar ou continuar. Concluídas guarda suas vitórias para você reconhecer o caminho percorrido."
+      },
+      "cards": {
+        "title": "Cada card é uma ação possível",
+        "description": "Leia a proposta, observe o esforço e escolha uma missão compatível com sua semana. Você não precisa começar todas ao mesmo tempo."
+      },
+      "action": {
+        "title": "Comece com um toque, conclua com intenção",
+        "description": "Toque para iniciar. Quando realizar a missão, pressione e segure o controle brilhante para registrar a conquista de forma consciente."
+      },
+      "finish": {
+        "title": "Uma missão já é movimento",
+        "description": "Escolha a ação mais possível para esta semana. Quando quiser rever o fluxo, o botão “Como usar” continuará disponível."
+      }
+    }
+  },
   "missions": {
     "title": "Missões",
     "subtitle": "Escolha uma categoria da vida e conclua missões semanais com foco.",

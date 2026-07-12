@@ -69,47 +69,55 @@ const VisionBoardTab: React.FC<VisionBoardTabProps> = ({
 }) => {
   return (
     <>
-      <DreamBoardTimelineGallery
-        dreams={dreams}
-        onAddImage={onAddDreamImage}
-        onRemoveImage={onRemoveDreamImage}
-        isDreamBoardSaving={isDreamBoardSaving}
-        hasUnsavedChanges={hasUnsavedChanges}
-        errorMessage={dreamBoardErrorMessage}
-        categories={categories}
-      />
+      <div data-tour="dream-board-gallery">
+        <DreamBoardTimelineGallery
+          dreams={dreams}
+          onAddImage={onAddDreamImage}
+          onRemoveImage={onRemoveDreamImage}
+          isDreamBoardSaving={isDreamBoardSaving}
+          hasUnsavedChanges={hasUnsavedChanges}
+          errorMessage={dreamBoardErrorMessage}
+          categories={categories}
+        />
+      </div>
 
       {/* Quick Access Mini Vision Board */}
-      <QuickVision
-        dreams={dreams}
-        expandedMiniBoard={expandedMiniBoard}
-        toggleMiniBoard={toggleMiniBoard}
-        updateDreamProgress={updateDreamProgress}
-      />
+      <div data-tour="dream-board-quick-vision">
+        <QuickVision
+          dreams={dreams}
+          expandedMiniBoard={expandedMiniBoard}
+          toggleMiniBoard={toggleMiniBoard}
+          updateDreamProgress={updateDreamProgress}
+        />
+      </div>
 
       <div>
         {/* Dream Categories Dashboard */}
-        <DreamCategories
-          categories={categories}
-          dreams={dreams}
-          getCategoryDetails={getCategoryDetails}
-          calculateCategoryProgress={calculateCategoryProgress}
-          hoveredCategory={hoveredCategory}
-          setHoveredCategory={setHoveredCategory}
-          expandedCategory={expandedCategory}
-          toggleCategoryExpand={toggleCategoryExpand}
-          filterCategory={filterCategory}
-          setFilterCategory={setFilterCategory}
-        />
+        <div data-tour="dream-board-categories">
+          <DreamCategories
+            categories={categories}
+            dreams={dreams}
+            getCategoryDetails={getCategoryDetails}
+            calculateCategoryProgress={calculateCategoryProgress}
+            hoveredCategory={hoveredCategory}
+            setHoveredCategory={setHoveredCategory}
+            expandedCategory={expandedCategory}
+            toggleCategoryExpand={toggleCategoryExpand}
+            filterCategory={filterCategory}
+            setFilterCategory={setFilterCategory}
+          />
+        </div>
 
         {/* Dream Progress Component */}
-        <DreamProgress
-          dreams={dreams}
-          handleOpenMilestoneManager={handleOpenMilestoneManager}
-          getCategoryDetails={getCategoryDetails}
-          onMilestonesLoaded={handleMilestonesLoaded}
-          fetchedMilestones={fetchedMilestones}
-        />
+        <div data-tour="dream-board-progress">
+          <DreamProgress
+            dreams={dreams}
+            handleOpenMilestoneManager={handleOpenMilestoneManager}
+            getCategoryDetails={getCategoryDetails}
+            onMilestonesLoaded={handleMilestonesLoaded}
+            fetchedMilestones={fetchedMilestones}
+          />
+        </div>
       </div>
     </>
   );

@@ -63,7 +63,7 @@ export const MobileNav = (): JSX.Element => {
   const location = useLocation();
 
   return (
-    <nav className={styles.mobileNav}>
+    <nav className={styles.mobileNav} data-tour="mobile-navigation">
       {NAV_ITEMS.map(item => {
         const Icon = item.icon;
         const isActive = location.pathname === item.path;

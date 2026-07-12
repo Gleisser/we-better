@@ -14,6 +14,7 @@ import {
   type MissionsApiResponse,
 } from '@/core/services/missionsService';
 import styles from './MissionsPage.module.css';
+import MissionsTour from './MissionsTour';
 
 const categoryVisuals: Record<
   MissionCategoryId,
@@ -167,7 +168,9 @@ const MissionsPage = (): JSX.Element => {
         <p className={styles.subtitle}>{t('missions.subtitle')}</p>
       </header>
 
-      <section className={styles.categoriesSection}>
+      <MissionsTour />
+
+      <section className={styles.categoriesSection} data-tour="mission-categories">
         <MissionCategories
           categories={categories}
           selectedCategoryId={selectedCategoryId}
