@@ -76,6 +76,32 @@
   opacity: 1;
 }
 
+.onboardingShell {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(236, 72, 153, 0.18), transparent 32%),
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.2), transparent 28%),
+    linear-gradient(180deg, #020617, #111827 52%, #020617);
+}
+
+.onboardingAura {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.9), transparent 86%);
+  pointer-events: none;
+}
+
+.onboardingContent {
+  position: relative;
+  z-index: 1;
+}
+
 @media (max-width: 768px) {
   .mainContentOffset {
     margin-left: 0;

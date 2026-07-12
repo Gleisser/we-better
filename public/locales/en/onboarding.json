@@ -1,0 +1,32 @@
+{
+  "onboarding": {
+    "hero": {
+      "eyebrow": "First access",
+      "title": "Clarity for what you want to live",
+      "body": "Now let’s turn vision into direction with a guided journey for your first dream, goal, and habit."
+    },
+    "meta": {
+      "firstAccess": "New user flow",
+      "guidedSetup": "Guided setup"
+    },
+    "actions": {
+      "skip": "Skip for now",
+      "retry": "Try again",
+      "continue": "Continue",
+      "restart": "Restart onboarding",
+      "confirm": "Confirm",
+      "correct": "Correct"
+    },
+    "native": {
+      "dream": "Dream",
+      "goal": "Goal",
+      "habit": "Habit"
+    },
+    "status": {
+      "skipFailed": "We couldn’t save your skip preference. Try again.",
+      "completionFailed": "We couldn’t finish onboarding. Try again.",
+      "embedUnavailableTitle": "Onboarding flow unavailable",
+      "embedUnavailableBody": "Configure the Typebot onboarding environment variables to load the guided setup here."
+    }
+  }
+}

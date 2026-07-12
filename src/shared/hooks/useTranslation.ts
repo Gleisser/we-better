@@ -145,6 +145,20 @@ export const useAuthTranslation = (): {
 };
 
 /**
+ * Hook specifically for onboarding translations
+ */
+export const useOnboardingTranslation = (): {
+  t: (key: string, options?: Record<string, unknown>) => string;
+  changeLanguage: (lng: SupportedLanguage) => Promise<void>;
+  currentLanguage: SupportedLanguage;
+  isLoading: boolean;
+  isReady: boolean;
+  i18n: i18n;
+} => {
+  return useTranslation('onboarding');
+};
+
+/**
  * Hook specifically for error translations
  */
 export const useErrorTranslation = (): {

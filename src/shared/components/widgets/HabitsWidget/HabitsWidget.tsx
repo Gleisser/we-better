@@ -338,123 +338,129 @@ const HabitsWidget = (): JSX.Element => {
           )}
 
           <div className={styles.habitsList}>
-            {filteredHabits.map(habit => (
-              <motion.div
-                key={habit.id}
-                className={`${styles.habitCard} ${collapsedHabits.has(habit.id) ? styles.collapsed : ''}`}
-                data-testid={`habit-card-${habit.id}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                style={
-                  {
-                    '--category-color-rgb':
-                      CATEGORY_CONFIG[habit.category as keyof typeof CATEGORY_CONFIG].colorRGB,
-                  } as React.CSSProperties
-                }
-              >
-                <div className={styles.habitHeader}>
-                  <div className={styles.habitMainInfo}>
-                    <span className={styles.habitIcon}>{CATEGORY_CONFIG[habit.category].icon}</span>
-                    <span className={styles.habitName}>{habit.name}</span>
-                    <span className={styles.streakBadge}>🔥 {habit.streak}</span>
-                  </div>
-                  <button
-                    className={styles.toggleButton}
-                    onClick={() => toggleHabit(habit.id)}
-                    aria-label={
-                      (collapsedHabits.has(habit.id)
-                        ? t('widgets.habits.expandHabit')
-                        : t('widgets.habits.collapseHabit')) as string
-                    }
-                    data-testid={`habit-toggle-${habit.id}`}
-                  >
-                    <ChevronDownIcon className={styles.toggleIcon} />
-                  </button>
-                </div>
-
-                <div
-                  className={styles.weekProgress}
-                  data-testid={`habit-week-progress-${habit.id}`}
+            {filteredHabits.map(habit => {
+              const habitConfig =
+                CATEGORY_CONFIG[habit.category as keyof typeof CATEGORY_CONFIG] ||
+                CATEGORY_CONFIG.custom;
+              return (
+                <motion.div
+                  key={habit.id}
+                  className={`${styles.habitCard} ${collapsedHabits.has(habit.id) ? styles.collapsed : ''}`}
+                  data-testid={`habit-card-${habit.id}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  style={
+                    {
+                      '--category-color-rgb': habitConfig.colorRGB,
+                    } as React.CSSProperties
+                  }
                 >
-                  {weekDates.map(date => (
-                    <div
-                      key={date.toString()}
-                      className={styles.dayColumn}
-                      data-tooltip={t('widgets.habits.setStatusTooltip')}
-                      data-testid={`habit-day-column-${habit.id}-${format(date, 'yyyy-MM-dd')}`}
-                      role="button"
-                      aria-label={
-                        t('widgets.habits.setStatusFor', {
-                          day: format(date, 'EEEE', { locale: dateLocale }),
-                        }) as string
-                      }
-                    >
-                      <span className={styles.dayLabel}>
-                        {currentLanguage === 'pt'
-                          ? ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'][
-                              date.getDay() === 0 ? 6 : date.getDay() - 1
-                            ]
-                          : format(date, 'EEE', { locale: dateLocale })}
-                      </span>
-                      <div
-                        className={`${styles.dayCheck} ${
-                          getDateStatus(habit, date) ? styles.hasStatus : ''
-                        }`}
-                        onClick={e => handleDayClick(e, date, habit)}
-                        data-status={getDateStatus(habit, date)}
-                        data-day={format(date, 'd')}
-                        data-date={format(date, 'yyyy-MM-dd')}
-                        data-habit-id={habit.id}
-                        data-testid={`habit-day-check-${habit.id}-${format(date, 'yyyy-MM-dd')}`}
-                      >
-                        {(() => {
-                          const status = getDateStatus(habit, date);
-                          if (!status) return format(date, 'd');
-
-                          if (status === 'completed') {
-                            return <CheckmarkIcon className={styles.checkmarkIcon} />;
-                          }
-
-                          if (['partial', 'rescheduled', 'half'].includes(status)) {
-                            return format(date, 'd');
-                          }
-
-                          return (
-                            <span className={styles.statusIcon}>{STATUS_CONFIG[status].icon}</span>
-                          );
-                        })()}
-                      </div>
+                  <div className={styles.habitHeader}>
+                    <div className={styles.habitMainInfo}>
+                      <span className={styles.habitIcon}>{habitConfig.icon}</span>
+                      <span className={styles.habitName}>{habit.name}</span>
+                      <span className={styles.streakBadge}>🔥 {habit.streak}</span>
                     </div>
-                  ))}
-                </div>
+                    <button
+                      className={styles.toggleButton}
+                      onClick={() => toggleHabit(habit.id)}
+                      aria-label={
+                        (collapsedHabits.has(habit.id)
+                          ? t('widgets.habits.expandHabit')
+                          : t('widgets.habits.collapseHabit')) as string
+                      }
+                      data-testid={`habit-toggle-${habit.id}`}
+                    >
+                      <ChevronDownIcon className={styles.toggleIcon} />
+                    </button>
+                  </div>
 
-                <div className={styles.habitActions}>
-                  <button
-                    className={styles.actionButton}
-                    onClick={e => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      setActionMenuPosition({
-                        x: Math.min(rect.left, window.innerWidth - 144), // 144px = menu width
-                        y: rect.bottom,
-                      });
-                      setSelectedHabit(habit);
-                      setShowActionsMenu(true);
-                    }}
+                  <div
+                    className={styles.weekProgress}
+                    data-testid={`habit-week-progress-${habit.id}`}
                   >
-                    <DotsHorizontalIcon className={styles.actionIcon} />
-                  </button>
-                  <button
-                    className={styles.monthlyViewButton}
-                    onClick={() => {
-                      setSelectedHabit(habit);
-                      setShowMonthlyView(true);
-                    }}
-                  >
-                    <ChartIcon className={styles.actionIcon} />
-                  </button>
-                </div>
-              </motion.div>
-            ))}
+                    {weekDates.map(date => (
+                      <div
+                        key={date.toString()}
+                        className={styles.dayColumn}
+                        data-tooltip={t('widgets.habits.setStatusTooltip')}
+                        data-testid={`habit-day-column-${habit.id}-${format(date, 'yyyy-MM-dd')}`}
+                        role="button"
+                        aria-label={
+                          t('widgets.habits.setStatusFor', {
+                            day: format(date, 'EEEE', { locale: dateLocale }),
+                          }) as string
+                        }
+                      >
+                        <span className={styles.dayLabel}>
+                          {currentLanguage === 'pt'
+                            ? ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'][
+                                date.getDay() === 0 ? 6 : date.getDay() - 1
+                              ]
+                            : format(date, 'EEE', { locale: dateLocale })}
+                        </span>
+                        <div
+                          className={`${styles.dayCheck} ${
+                            getDateStatus(habit, date) ? styles.hasStatus : ''
+                          }`}
+                          onClick={e => handleDayClick(e, date, habit)}
+                          data-status={getDateStatus(habit, date)}
+                          data-day={format(date, 'd')}
+                          data-date={format(date, 'yyyy-MM-dd')}
+                          data-habit-id={habit.id}
+                          data-testid={`habit-day-check-${habit.id}-${format(date, 'yyyy-MM-dd')}`}
+                        >
+                          {(() => {
+                            const status = getDateStatus(habit, date);
+                            if (!status) return format(date, 'd');
+
+                            if (status === 'completed') {
+                              return <CheckmarkIcon className={styles.checkmarkIcon} />;
+                            }
+
+                            if (['partial', 'rescheduled', 'half'].includes(status)) {
+                              return format(date, 'd');
+                            }
+
+                            return (
+                              <span className={styles.statusIcon}>
+                                {STATUS_CONFIG[status].icon}
+                              </span>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className={styles.habitActions}>
+                    <button
+                      className={styles.actionButton}
+                      onClick={e => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setActionMenuPosition({
+                          x: Math.min(rect.left, window.innerWidth - 144), // 144px = menu width
+                          y: rect.bottom,
+                        });
+                        setSelectedHabit(habit);
+                        setShowActionsMenu(true);
+                      }}
+                    >
+                      <DotsHorizontalIcon className={styles.actionIcon} />
+                    </button>
+                    <button
+                      className={styles.monthlyViewButton}
+                      onClick={() => {
+                        setSelectedHabit(habit);
+                        setShowMonthlyView(true);
+                      }}
+                    >
+                      <ChartIcon className={styles.actionIcon} />
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </motion.div>

@@ -1,0 +1,32 @@
+{
+  "onboarding": {
+    "hero": {
+      "eyebrow": "Primeiro acesso",
+      "title": "Clareza para o que você quer viver",
+      "body": "Agora vamos transformar visão em direção com uma jornada guiada para o seu primeiro sonho, meta e hábito."
+    },
+    "meta": {
+      "firstAccess": "Fluxo para novos usuários",
+      "guidedSetup": "Configuração guiada"
+    },
+    "actions": {
+      "skip": "Pular por agora",
+      "retry": "Tentar novamente",
+      "continue": "Continuar",
+      "restart": "Reiniciar onboarding",
+      "confirm": "Confirmar",
+      "correct": "Corrigir"
+    },
+    "native": {
+      "dream": "Sonho",
+      "goal": "Meta",
+      "habit": "Hábito"
+    },
+    "status": {
+      "skipFailed": "Não foi possível salvar sua escolha de pular. Tente novamente.",
+      "completionFailed": "Não foi possível concluir o onboarding. Tente novamente.",
+      "embedUnavailableTitle": "Fluxo de onboarding indisponível",
+      "embedUnavailableBody": "Configure as variáveis de ambiente do Typebot para carregar a experiência guiada aqui."
+    }
+  }
+}

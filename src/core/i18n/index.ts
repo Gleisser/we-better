@@ -22,6 +22,7 @@ export const APP_NAMESPACES = [
   'common',
   'landing',
   'auth',
+  'onboarding',
   'dashboard',
   'life-wheel',
   'dream-board',

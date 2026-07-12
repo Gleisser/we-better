@@ -1,0 +1,105 @@
+import type { OnboardingStarterPlan } from '@/types/onboarding';
+import styles from './OnboardingPersonalization.module.css';
+
+type OnboardingPersonalizationProps = {
+  plan: OnboardingStarterPlan;
+  dreamLabel: string;
+  goalLabel: string;
+  habitLabel: string;
+  continueLabel: string;
+  restartLabel: string;
+  onControlChange: (controlId: string, nextValue: string) => void;
+  onContinue: () => void;
+  onRestart: () => void;
+};
+
+const getSliderIndex = (value: string, values: string[]): number => values.indexOf(value);
+
+export const OnboardingPersonalization = ({
+  plan,
+  dreamLabel,
+  goalLabel,
+  habitLabel,
+  continueLabel,
+  restartLabel,
+  onControlChange,
+  onContinue,
+  onRestart,
+}: OnboardingPersonalizationProps): React.JSX.Element => (
+  <section className={styles.panel} data-testid="onboarding-personalization">
+    <div className={styles.previewGrid}>
+      <article data-testid="starter-dream-preview" className={styles.card}>
+        <span className={styles.label}>{dreamLabel}</span>
+        <strong>{plan.dream.label}</strong>
+      </article>
+      <article data-testid="starter-goal-preview" className={styles.card}>
+        <span className={styles.label}>{goalLabel}</span>
+        <strong>{plan.goal.title}</strong>
+      </article>
+      <article data-testid="starter-habit-preview" className={styles.card}>
+        <span className={styles.label}>{habitLabel}</span>
+        <strong>{plan.habit.title}</strong>
+      </article>
+    </div>
+
+    {plan.controls.map(control =>
+      control.kind === 'slider' ? (
+        <div key={control.id} className={styles.control}>
+          <span>{control.label}</span>
+          <input
+            type="range"
+            min={0}
+            max={control.options.length - 1}
+            value={getSliderIndex(
+              control.value,
+              control.options.map(option => option.value)
+            )}
+            onChange={event => {
+              const nextOption = control.options[Number(event.currentTarget.value)];
+              if (nextOption) {
+                onControlChange(control.id, nextOption.value);
+              }
+            }}
+          />
+          <div className={styles.chips}>
+            {control.options.map(option => (
+              <button
+                key={option.value}
+                type="button"
+                className={option.value === control.value ? styles.chipActive : styles.chip}
+                onClick={() => onControlChange(control.id, option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div key={control.id} className={styles.control}>
+          <span>{control.label}</span>
+          <div className={styles.chips}>
+            {control.options.map(option => (
+              <button
+                key={option.value}
+                type="button"
+                className={option.value === control.value ? styles.chipActive : styles.chip}
+                onClick={() => onControlChange(control.id, option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )
+    )}
+
+    <div className={styles.chips}>
+      <button type="button" className={styles.chip} onClick={onRestart}>
+        {restartLabel}
+      </button>
+      <button type="button" className={styles.primaryButton} onClick={onContinue}>
+        {continueLabel}
+      </button>
+    </div>
+  </section>
+);

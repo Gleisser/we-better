@@ -24,6 +24,7 @@ const emailConfirmationRouteComponent = lazy(
   () => import('@/features/auth/pages/EmailConfirmation')
 );
 const dashboardRouteComponent = lazy(() => import('@/features/dashboard/Dashboard'));
+const onboardingRouteComponent = lazy(() => import('@/features/onboarding/OnboardingPage'));
 const lifeWheelRouteComponent = lazy(() => import('@/features/life-wheel/EnhancedLifeWheelPage'));
 const dreamBoardRouteComponent = lazy(() => import('@/features/dream-board/DreamBoardPage'));
 const missionsRouteComponent = lazy(() => import('@/features/missions/MissionsPage'));
@@ -152,6 +153,14 @@ export const routes: RouteObject[] = [
             element: renderLazyRoute(dashboardRouteComponent, {
               label: 'Loading dashboard...',
               namespaces: ['dashboard'],
+              variant: 'content',
+            }),
+          },
+          {
+            path: 'onboarding',
+            element: renderLazyRoute(onboardingRouteComponent, {
+              label: 'Loading onboarding...',
+              namespaces: ['onboarding'],
               variant: 'content',
             }),
           },

@@ -1,0 +1,90 @@
+.hero {
+  position: relative;
+  display: flex;
+  min-height: 100svh;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.22), rgba(15, 23, 42, 0.52)),
+    radial-gradient(circle at top, rgba(244, 114, 182, 0.24), transparent 44%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.heroImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  filter: saturate(1.02);
+  will-change: transform, filter;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(8, 15, 31, 0.08), rgba(8, 15, 31, 0.62)),
+    radial-gradient(circle at top, rgba(255, 244, 214, 0.34), transparent 38%),
+    linear-gradient(
+      90deg,
+      rgba(8, 15, 31, 0.16),
+      rgba(8, 15, 31, 0) 32%,
+      rgba(8, 15, 31, 0.22) 100%
+    );
+}
+
+.copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  width: min(100%, 820px);
+  margin: 0 auto;
+  padding: clamp(120px, 18vh, 180px) clamp(20px, 4vw, 48px) 48px;
+  text-align: center;
+  text-shadow: 0 12px 24px rgba(15, 23, 42, 0.3);
+  will-change: opacity, transform, filter;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-self: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.16);
+  color: #facc15;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 20px 0 12px;
+  color: #f8fafc;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 0.96;
+}
+
+.body {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  color: rgba(226, 232, 240, 0.9);
+  font-size: clamp(1rem, 2vw, 1.1rem);
+  line-height: 1.7;
+}
+
+.errorMessage {
+  margin: 16px auto 0;
+  color: #fecaca;
+  line-height: 1.6;
+}
+
+@media (max-width: 1024px) {
+  .copy {
+    padding: 96px 20px 36px;
+  }
+}

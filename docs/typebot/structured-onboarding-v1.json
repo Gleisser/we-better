@@ -1,0 +1,625 @@
+{
+  "version": "6",
+  "name": "We Better - Structured Onboarding V1",
+  "events": [
+    {
+      "id": "event_start",
+      "outgoingEdgeId": "edge_to_welcome",
+      "graphCoordinates": { "x": 0, "y": 0 },
+      "type": "start"
+    }
+  ],
+  "variables": [
+    { "id": "var_focusArea", "name": "focusArea" },
+    { "id": "var_selectedDreamLabel", "name": "selectedDreamLabel" },
+    { "id": "var_selectedDreamKey", "name": "selectedDreamKey" },
+    { "id": "var_microPreferences", "name": "microPreferences" },
+    { "id": "var_regenerationCount", "name": "regenerationCount" },
+    { "id": "var_usedRegeneration", "name": "usedRegeneration" },
+    { "id": "var_llmResponse", "name": "llmResponse" },
+    { "id": "var_dream1", "name": "dream1" },
+    { "id": "var_dream2", "name": "dream2" },
+    { "id": "var_dream3", "name": "dream3" }
+  ],
+  "groups": [
+    {
+      "id": "group_welcome",
+      "title": "Welcome",
+      "graphCoordinates": { "x": 300, "y": 0 },
+      "blocks": [
+        {
+          "id": "block_init_vars_1",
+          "type": "Set variable",
+          "options": {
+            "variableId": "var_regenerationCount",
+            "expressionToEvaluate": "0",
+            "isCode": false
+          }
+        },
+        {
+          "id": "block_init_vars_2",
+          "type": "Set variable",
+          "options": {
+            "variableId": "var_usedRegeneration",
+            "expressionToEvaluate": "false",
+            "isCode": false
+          }
+        },
+        {
+          "id": "block_welcome_text",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Bem-vindo ao We Better. Aqui, a gente transforma sonhos em progresso real."
+                  }
+                ]
+              },
+              {
+                "type": "p",
+                "children": [{ "text": "Em qual área da sua vida você mais quer evoluir agora?" }]
+              }
+            ]
+          }
+        },
+        {
+          "id": "block_focusArea",
+          "type": "choice input",
+          "outgoingEdgeId": "edge_to_router",
+          "options": { "variableId": "var_focusArea" },
+          "items": [
+            { "id": "item_f_saude", "content": "Saúde" },
+            { "id": "item_f_relacionamentos", "content": "Relacionamentos" },
+            { "id": "item_f_financas", "content": "Finanças" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "group_curated_router",
+      "title": "Router Focus",
+      "graphCoordinates": { "x": 700, "y": 0 },
+      "blocks": [
+        {
+          "id": "block_router",
+          "type": "Condition",
+          "items": [
+            {
+              "id": "item_r_saude",
+              "outgoingEdgeId": "edge_to_health",
+              "content": {
+                "comparisons": [
+                  {
+                    "id": "comp_saude",
+                    "variableId": "var_focusArea",
+                    "comparisonOperator": "Equal to",
+                    "value": "Saúde"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "item_r_relacionamentos",
+              "outgoingEdgeId": "edge_to_relations",
+              "content": {
+                "comparisons": [
+                  {
+                    "id": "comp_relations",
+                    "variableId": "var_focusArea",
+                    "comparisonOperator": "Equal to",
+                    "value": "Relacionamentos"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "item_r_financas",
+              "outgoingEdgeId": "edge_to_finances",
+              "content": {
+                "comparisons": [
+                  {
+                    "id": "comp_finances",
+                    "variableId": "var_focusArea",
+                    "comparisonOperator": "Equal to",
+                    "value": "Finanças"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "group_health",
+      "title": "Saúde",
+      "graphCoordinates": { "x": 1200, "y": -400 },
+      "blocks": [
+        {
+          "id": "block_health_text",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Se essa área melhorasse de verdade, o que você gostaria de conquistar?"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "block_health_choice",
+          "type": "choice input",
+          "outgoingEdgeId": "edge_health_to_check",
+          "options": { "variableId": "var_selectedDreamLabel" },
+          "items": [
+            { "id": "h_1", "content": "Dormir com mais consistência" },
+            { "id": "h_2", "content": "Voltar a me movimentar toda semana" },
+            { "id": "h_3", "content": "Comer com mais intenção" },
+            { "id": "h_4", "content": "Reduzir o estresse do dia a dia" },
+            { "id": "h_5", "content": "Me sentir mais forte no meu corpo" },
+            { "id": "h_other", "content": "Ver outras ideias" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "group_relations",
+      "title": "Relacionamentos",
+      "graphCoordinates": { "x": 1200, "y": 0 },
+      "blocks": [
+        {
+          "id": "block_relations_text",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Se essa área melhorasse de verdade, o que você gostaria de conquistar?"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "block_relations_choice",
+          "type": "choice input",
+          "outgoingEdgeId": "edge_relations_to_check",
+          "options": { "variableId": "var_selectedDreamLabel" },
+          "items": [
+            { "id": "r_1", "content": "Estar mais presente com minha família" },
+            { "id": "r_2", "content": "Fortalecer meu relacionamento" },
+            { "id": "r_3", "content": "Me reconectar com amigos importantes" },
+            { "id": "r_4", "content": "Me comunicar com mais clareza" },
+            { "id": "r_5", "content": "Criar mais momentos de qualidade" },
+            { "id": "r_other", "content": "Ver outras ideias" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "group_finances",
+      "title": "Finanças",
+      "graphCoordinates": { "x": 1200, "y": 400 },
+      "blocks": [
+        {
+          "id": "block_finances_text",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Se essa área melhorasse de verdade, o que você gostaria de conquistar?"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "block_finances_choice",
+          "type": "choice input",
+          "outgoingEdgeId": "edge_finances_to_check",
+          "options": { "variableId": "var_selectedDreamLabel" },
+          "items": [
+            { "id": "f_1", "content": "Montar minha reserva de emergência" },
+            { "id": "f_2", "content": "Ter mais controle sobre meus gastos" },
+            { "id": "f_3", "content": "Juntar dinheiro para um objetivo importante" },
+            { "id": "f_4", "content": "Organizar minha rotina financeira" },
+            { "id": "f_5", "content": "Sentir mais paz em relação ao dinheiro" },
+            { "id": "f_other", "content": "Ver outras ideias" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "group_check_custom",
+      "title": "Check Custom Idea",
+      "graphCoordinates": { "x": 1700, "y": 0 },
+      "blocks": [
+        {
+          "id": "block_check_custom",
+          "type": "Condition",
+          "items": [
+            {
+              "id": "item_c_custom1",
+              "outgoingEdgeId": "edge_to_limit",
+              "content": {
+                "comparisons": [
+                  {
+                    "id": "comp_custom1",
+                    "variableId": "var_selectedDreamLabel",
+                    "comparisonOperator": "Equal to",
+                    "value": "Ver outras ideias"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "item_c_custom2",
+              "outgoingEdgeId": "edge_to_limit2",
+              "content": {
+                "comparisons": [
+                  {
+                    "id": "comp_custom2",
+                    "variableId": "var_selectedDreamLabel",
+                    "comparisonOperator": "Equal to",
+                    "value": "Gerar mais opções"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "block_to_handoff",
+          "type": "Wait",
+          "outgoingEdgeId": "edge_to_handoff",
+          "options": { "secondsToWaitFor": "0" }
+        }
+      ]
+    },
+    {
+      "id": "group_limit_check",
+      "title": "Limits & Micro",
+      "graphCoordinates": { "x": 2200, "y": -200 },
+      "blocks": [
+        {
+          "id": "block_limit_cond",
+          "type": "Condition",
+          "items": [
+            {
+              "id": "item_limit",
+              "outgoingEdgeId": "edge_limit_reached",
+              "content": {
+                "comparisons": [
+                  {
+                    "id": "comp_limit",
+                    "variableId": "var_regenerationCount",
+                    "comparisonOperator": "Greater than",
+                    "value": "4"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "block_inc_counter_1",
+          "type": "Set variable",
+          "options": {
+            "variableId": "var_regenerationCount",
+            "expressionToEvaluate": "Number({{regenerationCount}} || 0) + 1",
+            "isCode": true,
+            "type": "Custom"
+          }
+        },
+        {
+          "id": "block_inc_counter_2",
+          "type": "Set variable",
+          "options": {
+            "variableId": "var_usedRegeneration",
+            "expressionToEvaluate": "true",
+            "isCode": false
+          }
+        },
+        {
+          "id": "block_micro_text",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  { "text": "Como você prefere que esse novo hábito seja na sua vida agora?" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "block_micro_choice",
+          "type": "choice input",
+          "outgoingEdgeId": "edge_to_mistral",
+          "options": { "variableId": "var_microPreferences" },
+          "items": [
+            { "id": "m_1", "content": "Mais ambicioso", "value": "more-ambitious" },
+            { "id": "m_2", "content": "Mais leve", "value": "lighter" },
+            { "id": "m_3", "content": "Mais rápido para iniciar", "value": "faster" },
+            { "id": "m_4", "content": "Mais transformador", "value": "more-transformative" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "group_limit_reached",
+      "title": "Limit Reached",
+      "graphCoordinates": { "x": 2700, "y": -400 },
+      "blocks": [
+        {
+          "id": "block_limit_text",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Nós já levantamos muitas ideias! Vamos voltar para a lista inicial da sua área para tomarmos uma pequena decisão."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "block_limit_return",
+          "type": "Wait",
+          "outgoingEdgeId": "edge_limit_to_router",
+          "options": { "secondsToWaitFor": "0" }
+        }
+      ]
+    },
+    {
+      "id": "group_mistral",
+      "title": "LLM Generation",
+      "graphCoordinates": { "x": 2700, "y": 0 },
+      "blocks": [
+        {
+          "id": "block_llm",
+          "type": "mistral",
+          "outgoingEdgeId": "edge_to_parser",
+          "options": {
+            "credentialsId": "cmnzupe8q000004l2vh75ht6t",
+            "action": "Create chat completion",
+            "model": "mistral-small-latest",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Você é um assistente do aplicativo 'We Better' que gera ideias de sonhos/hábitos para os usuários. IMPORTANTE E OBRIGATÓRIO: A sua resposta DEVE SER EXCLUSIVAMENTE um array de strings válido em JSON (Exemplo: [\"Ideia 1\", \"Ideia 2\", \"Ideia 3\"]). Gere estritamente 3 ideias curtas e factíveis (máximo 40 caracteres cada frase) com verbos no infinitivo referentes à área: '{{focusArea}}'. O tom deve refletir a preferência: '{{microPreferences}}'. Não responda com NENHUM OUTRO TEXTO E NADA DE MARKDOWN além de um array cru, pois a saída vai direto para JSON.parse()."
+              }
+            ],
+            "responseMapping": [{ "item": "Message content", "variableId": "var_llmResponse" }]
+          }
+        }
+      ]
+    },
+    {
+      "id": "group_parser",
+      "title": "Parse LLM",
+      "graphCoordinates": { "x": 3200, "y": 0 },
+      "blocks": [
+        {
+          "id": "block_parse_code_1",
+          "type": "Set variable",
+          "options": {
+            "variableId": "var_dream1",
+            "expressionToEvaluate": "try { const clean = {{llmResponse}}.replace(/```json/gi, '').replace(/```/g, '').trim(); return JSON.parse(clean)[0] || 'Tentar de novo 1'; } catch(e) { return 'Ideia inspiradora'; }",
+            "isCode": true,
+            "type": "Custom"
+          }
+        },
+        {
+          "id": "block_parse_code_2",
+          "type": "Set variable",
+          "options": {
+            "variableId": "var_dream2",
+            "expressionToEvaluate": "try { const clean = {{llmResponse}}.replace(/```json/gi, '').replace(/```/g, '').trim(); return JSON.parse(clean)[1] || 'Tentar de novo 2'; } catch(e) { return 'Hábito pequeno'; }",
+            "isCode": true,
+            "type": "Custom"
+          }
+        },
+        {
+          "id": "block_parse_code_3",
+          "type": "Set variable",
+          "options": {
+            "variableId": "var_dream3",
+            "expressionToEvaluate": "try { const clean = {{llmResponse}}.replace(/```json/gi, '').replace(/```/g, '').trim(); return JSON.parse(clean)[2] || 'Tentar de novo 3'; } catch(e) { return 'Passo seguro'; }",
+            "isCode": true,
+            "type": "Custom"
+          }
+        },
+        {
+          "id": "block_parser_wait",
+          "type": "Wait",
+          "outgoingEdgeId": "edge_to_llm_choices",
+          "options": { "secondsToWaitFor": "0" }
+        }
+      ]
+    },
+    {
+      "id": "group_llm_choices",
+      "title": "LLM Display",
+      "graphCoordinates": { "x": 3700, "y": 0 },
+      "blocks": [
+        {
+          "id": "block_llm_disp_text",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "type": "p",
+                "children": [
+                  { "text": "Baseado na sua preferência, que tal alguma destas direções?" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "block_llm_choices",
+          "type": "choice input",
+          "outgoingEdgeId": "edge_llm_choices_to_check",
+          "options": { "variableId": "var_selectedDreamLabel" },
+          "items": [
+            { "id": "llm_1", "content": "{{dream1}}" },
+            { "id": "llm_2", "content": "{{dream2}}" },
+            { "id": "llm_3", "content": "{{dream3}}" },
+            { "id": "llm_other", "content": "Gerar mais opções" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "group_handoff",
+      "title": "Handoff",
+      "graphCoordinates": { "x": 4200, "y": -200 },
+      "blocks": [
+        {
+          "id": "block_gen_key",
+          "type": "Set variable",
+          "options": {
+            "variableId": "var_selectedDreamKey",
+            "expressionToEvaluate": "const label = String(typeof selectedDreamLabel !== 'undefined' ? selectedDreamLabel : ''); return label.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'custom-dream';",
+            "isCode": true,
+            "type": "Custom"
+          }
+        },
+        {
+          "id": "block_postmessage",
+          "type": "Code",
+          "options": {
+            "content": "if (typeof window !== 'undefined') { const fa = '{{focusArea}}'; const sdk = '{{selectedDreamKey}}'; const sdl = '{{selectedDreamLabel}}'; const mp = '{{microPreferences}}'; const rc = '{{regenerationCount}}'; const ur = '{{usedRegeneration}}'; window.parent.postMessage({ from: 'typebot-custom', signal: 'onboarding-complete', focusArea: fa || null, selectedDreamKey: sdk || null, selectedDreamLabel: sdl || null, microPreferences: mp ? [mp] : [], regenerationCount: Number(rc) || 0, usedRegeneration: ur === 'true' }, '*'); }"
+          }
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_to_welcome",
+      "from": { "eventId": "event_start" },
+      "to": { "groupId": "group_welcome" }
+    },
+    {
+      "id": "edge_to_router",
+      "from": { "blockId": "block_focusArea" },
+      "to": { "groupId": "group_curated_router" }
+    },
+    {
+      "id": "edge_to_health",
+      "from": { "blockId": "block_router", "itemId": "item_r_saude" },
+      "to": { "groupId": "group_health" }
+    },
+    {
+      "id": "edge_to_relations",
+      "from": { "blockId": "block_router", "itemId": "item_r_relacionamentos" },
+      "to": { "groupId": "group_relations" }
+    },
+    {
+      "id": "edge_to_finances",
+      "from": { "blockId": "block_router", "itemId": "item_r_financas" },
+      "to": { "groupId": "group_finances" }
+    },
+    {
+      "id": "edge_health_to_check",
+      "from": { "blockId": "block_health_choice" },
+      "to": { "groupId": "group_check_custom" }
+    },
+    {
+      "id": "edge_relations_to_check",
+      "from": { "blockId": "block_relations_choice" },
+      "to": { "groupId": "group_check_custom" }
+    },
+    {
+      "id": "edge_finances_to_check",
+      "from": { "blockId": "block_finances_choice" },
+      "to": { "groupId": "group_check_custom" }
+    },
+    {
+      "id": "edge_to_limit",
+      "from": { "blockId": "block_check_custom", "itemId": "item_c_custom1" },
+      "to": { "groupId": "group_limit_check" }
+    },
+    {
+      "id": "edge_to_limit2",
+      "from": { "blockId": "block_check_custom", "itemId": "item_c_custom2" },
+      "to": { "groupId": "group_limit_check" }
+    },
+    {
+      "id": "edge_to_handoff",
+      "from": { "blockId": "block_to_handoff" },
+      "to": { "groupId": "group_handoff" }
+    },
+    {
+      "id": "edge_limit_reached",
+      "from": { "blockId": "block_limit_cond", "itemId": "item_limit" },
+      "to": { "groupId": "group_limit_reached" }
+    },
+    {
+      "id": "edge_limit_to_router",
+      "from": { "blockId": "block_limit_return" },
+      "to": { "groupId": "group_curated_router" }
+    },
+    {
+      "id": "edge_to_mistral",
+      "from": { "blockId": "block_micro_choice" },
+      "to": { "groupId": "group_mistral" }
+    },
+    {
+      "id": "edge_to_parser",
+      "from": { "blockId": "block_llm" },
+      "to": { "groupId": "group_parser" }
+    },
+    {
+      "id": "edge_to_llm_choices",
+      "from": { "blockId": "block_parser_wait" },
+      "to": { "groupId": "group_llm_choices" }
+    },
+    {
+      "id": "edge_llm_choices_to_check",
+      "from": { "blockId": "block_llm_choices" },
+      "to": { "groupId": "group_check_custom" }
+    }
+  ],
+  "theme": {
+    "general": {
+      "font": { "type": "Google", "family": "Inter" },
+      "background": { "type": "Color", "content": "#FFFFFF" },
+      "progressBar": { "isEnabled": false }
+    },
+    "chat": {
+      "hostAvatar": { "isEnabled": false },
+      "guestAvatar": { "isEnabled": false },
+      "hostBubbles": { "backgroundColor": "#F4F4F5", "color": "#111827" },
+      "guestBubbles": { "backgroundColor": "#6F53C1", "color": "#FFFFFF" },
+      "buttons": { "backgroundColor": "#6F53C1", "color": "#FFFFFF" }
+    }
+  },
+  "settings": {
+    "general": { "isBrandingEnabled": false },
+    "typingEmulation": { "speed": 350, "delayBetweenBubbles": 0 }
+  }
+}

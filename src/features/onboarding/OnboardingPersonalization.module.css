@@ -1,0 +1,44 @@
+.panel {
+  display: grid;
+  gap: 24px;
+}
+
+.previewGrid {
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  padding: 20px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.control {
+  display: grid;
+  gap: 12px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.chip,
+.chipActive,
+.primaryButton {
+  border-radius: 999px;
+}
+
+.chipActive {
+  background: #6f53c1;
+  color: #fff;
+}

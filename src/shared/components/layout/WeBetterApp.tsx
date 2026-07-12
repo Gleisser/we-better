@@ -19,6 +19,7 @@ const WeBetterApp = (): JSX.Element => {
   const isThemeLoading = useThemeLoading();
   const isBillingSurface =
     location.pathname.startsWith('/app/settings') || location.pathname.startsWith('/app/pricing');
+  const isOnboardingRoute = location.pathname === '/app/onboarding';
 
   // Keep shared billing queries warm at the app-shell level while the user is in billing surfaces.
   useBillingSummary({ enabled: isBillingSurface });
@@ -90,6 +91,35 @@ const WeBetterApp = (): JSX.Element => {
 
   const greetingParts = getGreetingParts();
 
+  const toaster = (
+    <Toaster
+      position="top-right"
+      reverseOrder={false}
+      containerStyle={{
+        top: 100,
+        right: 20,
+      }}
+      toastOptions={{
+        duration: 4000,
+        style: getToastStyles(),
+      }}
+    />
+  );
+
+  if (isOnboardingRoute) {
+    return (
+      <HeaderProvider>
+        <div className={styles.onboardingShell} data-theme={themeMode}>
+          <div className={styles.onboardingAura} aria-hidden="true" />
+          <main className={styles.onboardingContent}>
+            <Outlet />
+          </main>
+        </div>
+        {toaster}
+      </HeaderProvider>
+    );
+  }
+
   return (
     <HeaderProvider>
       <div
@@ -128,18 +158,7 @@ const WeBetterApp = (): JSX.Element => {
           </div>
         </main>
 
-        <Toaster
-          position="top-right"
-          reverseOrder={false}
-          containerStyle={{
-            top: 100,
-            right: 20,
-          }}
-          toastOptions={{
-            duration: 4000,
-            style: getToastStyles(),
-          }}
-        />
+        {toaster}
 
         <MobileNav />
       </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { authService } from '@/core/services/authService';
+import { markPendingOnboardingSignup } from '@/core/services/onboardingStateStore';
 import styles from './Login.module.css'; // We'll reuse the login styles for now
 
 const SignUp = (): JSX.Element => {
@@ -43,6 +44,7 @@ const SignUp = (): JSX.Element => {
       if (authError) throw authError;
 
       if (needsEmailConfirmation) {
+        markPendingOnboardingSignup(email);
         setIsConfirmationSent(true);
       } else if (user) {
         navigate('/app');

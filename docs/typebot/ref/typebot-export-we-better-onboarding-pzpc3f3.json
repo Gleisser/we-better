@@ -1,0 +1,1358 @@
+{
+  "version": "6.1",
+  "id": "cmnzs7eco000104l85pzpc3f3",
+  "name": "We Better - Onboarding",
+  "events": [
+    {
+      "id": "w5cb6dx53v5ategf8bid83ai",
+      "outgoingEdgeId": "z774ra3q15ubrhekkmga6voh",
+      "graphCoordinates": { "x": 0, "y": 0 },
+      "type": "start"
+    }
+  ],
+  "groups": [
+    {
+      "id": "vqa89bbfa69tsms94hjkvpz4",
+      "title": "Group #1",
+      "graphCoordinates": { "x": 285, "y": 47 },
+      "blocks": [
+        {
+          "id": "fx5zjluazkxvduhwbdi66ibw",
+          "type": "text",
+          "content": {
+            "richText": [
+              { "id": "v178qpg6wB", "type": "p", "children": [{ "text": "Olá, tudo bem?" }] }
+            ]
+          }
+        },
+        {
+          "id": "q22f61m21nmvbgxhfqho54je",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "5t70mawKIN",
+                "type": "p",
+                "children": [{ "text": "Como que devo chamar você?" }]
+              }
+            ]
+          }
+        },
+        {
+          "id": "fkfxxq9za178nvdrgq6l1qaw",
+          "outgoingEdgeId": "y7hbwxozlu4qa244ko384je0",
+          "type": "text input",
+          "options": { "variableId": "vmvemhye7r3jz0bb4pgs28jwe" }
+        }
+      ]
+    },
+    {
+      "id": "nve1vtub666k82r1tu6zktzo",
+      "title": "Group #2",
+      "graphCoordinates": { "x": 415.42, "y": 691.14 },
+      "blocks": [
+        {
+          "id": "ssvmhw33m0v09ihh14y13m1b",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "XcoFligsLV",
+                "type": "p",
+                "children": [{ "text": "Olá {{Name}}, que bom ter você aqui!" }]
+              }
+            ]
+          }
+        },
+        {
+          "id": "weqk0atp43qiudds5107uyxt",
+          "outgoingEdgeId": "plch197d9zw77jszxypkrmpm",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "vVycBnwVI_",
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Bem-vindo ao We Better.\n Aqui, a gente transforma sonhos em progresso real.\n Em poucos minutos, vamos criar seu primeiro plano de evolução."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "xjt0r7jwfj67sajx0nc8prvc",
+      "title": "Group #3",
+      "graphCoordinates": { "x": 832.74, "y": 676.57 },
+      "blocks": [
+        {
+          "id": "uetqtcpk20hyl0iidya4gxao",
+          "outgoingEdgeId": "d97auv14cwh0xyn8yponfdlx",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "j1rPnGQjQQ",
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Você não precisa ter tudo claro agora.\n Eu vou te ajudar passo a passo."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "gs01igdffumronfq7il5p8a4",
+      "title": "Group #4",
+      "graphCoordinates": { "x": 1251.85, "y": 283.34 },
+      "blocks": [
+        {
+          "id": "rmxywlflfv0vb6lvo7j5p7xp",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "LYKGUqVcIg",
+                "type": "p",
+                "children": [{ "text": "Em qual área da sua vida você mais quer evoluir agora?" }]
+              }
+            ]
+          }
+        },
+        {
+          "id": "o7hfcjz7qka918rdaqjnntmo",
+          "outgoingEdgeId": "j9khyhiahw9e686q6ta7nb9m",
+          "type": "choice input",
+          "items": [
+            { "id": "j8ms76q4e47lgslew0dro2rt", "content": "Saúde", "value": "" },
+            { "id": "xg6oe6jhcsohat1h80gp4tnx", "content": "Carreira" },
+            { "id": "h1l3zmdwhh70m27odio5eoj9", "content": "Estudos" },
+            { "id": "c7lxa5f16rs03g94l5n16nux", "content": "Relacionamentos" },
+            { "id": "mfvgfy0pl8pgeupf4y20jnqn", "content": "Finanças" },
+            { "id": "mvfsbput25d15gbur6gtcgf1", "content": "Saúde Mental" },
+            { "id": "wkg2xn9x6roc5p8wiz7uvk3c", "content": "Crescimento Pessoal" },
+            { "id": "g9nw6449tsklryd1ld0on51f", "content": "Físico" }
+          ],
+          "options": { "variableId": "vppdjazjcfdfvu1i6ttu0slka" }
+        }
+      ]
+    },
+    {
+      "id": "pqdf26dnhvowl297svp4vi62",
+      "title": "Group #5",
+      "graphCoordinates": { "x": 1758.01, "y": 233.76 },
+      "blocks": [
+        {
+          "id": "c1wyelb2spdc6naqoy1c8v4q",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "4Lk_Yvfshi",
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Se essa área ( {{FocusArea}} ) melhorasse de verdade, o que você gostaria de conquistar?"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "znr5d7lc40dbjescv4rxbvow",
+          "type": "text",
+          "content": {
+            "richText": [
+              { "id": "516u1YwVlo", "type": "p", "children": [{ "text": "Por exemplo:" }] },
+              { "id": "Si7BPPHVQk", "type": "p", "children": [{ "text": "“ter mais energia”" }] },
+              {
+                "id": "9aI1Mrt-Af",
+                "type": "p",
+                "children": [{ "text": "“conseguir um emprego melhor” " }]
+              },
+              { "id": "Woi4EWWyNG", "type": "p", "children": [{ "text": "“guardar dinheiro” " }] },
+              { "id": "WcCLMWejxv", "type": "p", "children": [{ "text": "“voltar a estudar” " }] },
+              {
+                "id": "gPOUb2yIh9",
+                "type": "p",
+                "children": [{ "text": "“criar uma rotina mais equilibrada”" }]
+              }
+            ]
+          }
+        },
+        {
+          "id": "wujb1a4q53wlonh2x9v9kfu0",
+          "outgoingEdgeId": "qfrm6rn0d3vgiymfzdczh5tf",
+          "type": "text input",
+          "options": { "variableId": "vp3h0fn1v8jeodktdyoo5s8ol" }
+        }
+      ]
+    },
+    {
+      "id": "koue9ar960awwm4f39jzp3se",
+      "title": "Group #6",
+      "graphCoordinates": { "x": 2250.2, "y": 888.21 },
+      "blocks": [
+        {
+          "id": "rs4rwtielazk8uyvxmes7ov5",
+          "outgoingEdgeId": "qmqn58be93o1i4k8pnzkwuvr",
+          "type": "mistral",
+          "options": {
+            "credentialsId": "cmnzupe8q000004l2vh75ht6t",
+            "action": "Create chat completion",
+            "model": "mistral-medium-latest",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Crie um resumo dessa frase em no máximo uma linha: {{DreamStatement}}"
+              }
+            ],
+            "responseMapping": [
+              { "item": "Message content", "variableId": "vna31cb7ysdmefj8n45cu1ymk" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "x01fy2o3aoom81ay99a6k1lt",
+      "title": "Group #7",
+      "graphCoordinates": { "x": 2671.09, "y": 389.87 },
+      "blocks": [
+        {
+          "id": "v3uhp1sf9nd6jdxtvgmqcbtd",
+          "outgoingEdgeId": "n21h3l97qa82d5fmaogsyx34",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "YECysovoAv",
+                "type": "p",
+                "children": [{ "text": "Entendi. Seu foco é: {{DreamSummary}}" }]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ibnj9gjkr4007ezjqyt4ved8",
+      "title": "Group #8",
+      "graphCoordinates": { "x": 2840.14, "y": 684.42 },
+      "blocks": [
+        {
+          "id": "r2qyt4btxfcogsevo8urvjrp",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "UlGLBy5Mjj",
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Sonhos dão direção.\n Metas dão clareza.\n Vamos transformar isso em algo mais específico."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "hdlsxwn9vzewqbfwxg9uqwcl",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "CrhS7c7lqe",
+                "type": "p",
+                "children": [{ "text": "O que exatamente você quer alcançar?" }]
+              },
+              { "id": "vrllhF52Dn", "type": "p", "children": [{ "text": "" }] },
+              { "id": "IE_jKpVZvb", "type": "p", "children": [{ "text": "Exemplo:" }] },
+              {
+                "id": "sSUd0pAaeu",
+                "type": "p",
+                "children": [
+                  {
+                    "text": "ruim: “quero melhorar minha saúde” melhor: “quero caminhar com mais frequência e perder 4kg”"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "am7cb8li6bif54ybn8k9s4sc",
+          "outgoingEdgeId": "wadba7anc96vuhwpojp8idky",
+          "type": "text input",
+          "options": { "variableId": "vb5uxhf9l5fsoo63zd00qzjbn" }
+        }
+      ]
+    },
+    {
+      "id": "rveiezivxnsir4vtcz4v5pi1",
+      "title": "Group #9",
+      "graphCoordinates": { "x": 3292.3, "y": 467.14 },
+      "blocks": [
+        {
+          "id": "yax2rnai5mlflegk42co5qfl",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "_G6uG5igm9",
+                "type": "p",
+                "children": [{ "text": "Como vamos saber que você está avançando?" }]
+              },
+              { "id": "GuRALJuzBD", "type": "p", "children": [{ "text": "" }] },
+              { "id": "IRHZYdx6TU", "type": "p", "children": [{ "text": "Exemplo:" }] },
+              { "id": "xvUMNIDho6", "type": "p", "children": [{ "text": "“perder 4kg” " }] },
+              { "id": "j2RIfQ-Mdg", "type": "p", "children": [{ "text": "" }] },
+              {
+                "id": "HjP4VMqcKK",
+                "type": "p",
+                "children": [{ "text": "“estudar 3 vezes por semana” " }]
+              },
+              { "id": "QfkJIEB82H", "type": "p", "children": [{ "text": "" }] },
+              { "id": "rmc5Q80hgN", "type": "p", "children": [{ "text": "“guardar R$1000” " }] },
+              { "id": "Jax-Uw7D8q", "type": "p", "children": [{ "text": "" }] },
+              { "id": "zhBQOdDq1d", "type": "p", "children": [{ "text": "“ler 2 livros”" }] }
+            ]
+          }
+        },
+        {
+          "id": "yhm9rr83tcjesvglmboms7q1",
+          "outgoingEdgeId": "dsd9duwpr92pijj512odixek",
+          "type": "text input",
+          "options": { "variableId": "vsjh2o2pk7nyc6fy96kp0jiym" }
+        }
+      ]
+    },
+    {
+      "id": "gua20re4ej9oqwfkwc9ti1s4",
+      "title": "Group #10",
+      "graphCoordinates": { "x": 3684.49, "y": 598.47 },
+      "blocks": [
+        {
+          "id": "gqwzujia3ccbcdhbhusone78",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "osNfYFSRin",
+                "type": "p",
+                "children": [{ "text": "Até quando você gostaria de alcançar isso?" }]
+              }
+            ]
+          }
+        },
+        {
+          "id": "ko15ob0lcno1uto259d0cw21",
+          "outgoingEdgeId": "kg38zf2ra7j1c1vmofywfisc",
+          "type": "date input",
+          "options": { "variableId": "vlk8v7snyddcd7zw5bdhycj0q" }
+        }
+      ]
+    },
+    {
+      "id": "v7wg5qnxzwx7z3qs8fm43k1j",
+      "title": "Group #11",
+      "graphCoordinates": { "x": 4082.3203125, "y": 651.86328125 },
+      "blocks": [
+        {
+          "id": "xleg1t6ptx3n9yuk1gjocq7m",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "9s78-sr_bl",
+                "type": "p",
+                "children": [
+                  { "text": "De 1 a 10, quão realista essa meta parece com sua rotina atual?" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "wx8201852i5fw6hali5r2y68",
+          "outgoingEdgeId": "td363meq1k8es5bdcz2s386s",
+          "type": "number input",
+          "options": {
+            "variableId": "vqic1aizjrm3pbg47ougm05ov",
+            "labels": { "placeholder": "Digite quão realista" },
+            "min": 1,
+            "max": 10,
+            "locale": "pt-BR"
+          }
+        }
+      ]
+    },
+    {
+      "id": "r3kg3l51diwadc2mc2anjsth",
+      "title": "Group #12",
+      "graphCoordinates": { "x": 4454.47, "y": 620.92 },
+      "blocks": [
+        {
+          "id": "jv68yts5y1ehk302f1sklhd7",
+          "outgoingEdgeId": "kxm3pp1osnu017f8ekefrqmr",
+          "type": "Condition",
+          "items": [
+            {
+              "id": "x7ynadnnp5yxpzjjqbp9zzbe",
+              "outgoingEdgeId": "ecefjpg8egj5mpg0asw6z590",
+              "content": {
+                "comparisons": [
+                  {
+                    "id": "w3d0hhlmpzcqm1o1ozfvq3im",
+                    "variableId": "vqic1aizjrm3pbg47ougm05ov",
+                    "comparisonOperator": "Less or equal to",
+                    "value": "7"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pcfiu9ccorxbcrik5ahr529f",
+      "title": "Group #13",
+      "graphCoordinates": { "x": 4673.39, "y": 1087.47 },
+      "blocks": [
+        {
+          "id": "mwrg2ldiekwqen0j7q73m0dv",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "gC3Ft6W-QC",
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Vamos tornar isso mais leve e sustentável.\n Uma meta boa não é a mais ambiciosa. É a que você consegue manter."
+                  }
+                ]
+              },
+              { "id": "EDBCQFkFYU", "type": "p", "children": [{ "text": "" }] }
+            ]
+          }
+        },
+        {
+          "id": "l5933hm20yzdlqhsz27kdy6d",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "IpmTK4hetF",
+                "type": "p",
+                "children": [
+                  { "text": "Quer reduzir a intensidade, aumentar o prazo ou simplificar a meta?" }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "owr4kg08m7o6heun0qlll14k",
+          "type": "choice input",
+          "items": [
+            {
+              "id": "sk0lceladwhyhikd60yzz7sm",
+              "outgoingEdgeId": "vtaptdlsn4tl2tmmwbkpncuj",
+              "content": "Sim"
+            },
+            {
+              "id": "r25qbpmscleckapcq2k85l6z",
+              "outgoingEdgeId": "lp99kaqzj3i2gmd56pzctmux",
+              "content": "Não"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ylq136bv9c488oq7fgvlfb7h",
+      "title": "Group #14",
+      "graphCoordinates": { "x": 5039.66, "y": 1037.61 },
+      "blocks": [
+        {
+          "id": "ehdvcdlzodb2cx7iu7tgd1oi",
+          "outgoingEdgeId": "s4cw56pbgj209mjauzs1np3b",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "6Z5BHSTgqP",
+                "type": "p",
+                "children": [{ "text": "Ótimo. Agora sua meta está mais forte porque ela está:" }]
+              },
+              {
+                "id": "r-upTCXX6Y",
+                "type": "p",
+                "children": [{ "text": "clara mensurável realista ligada a um prazo" }]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "crygvueve3d5n8cwk3whsn4v",
+      "title": "Group #15",
+      "graphCoordinates": { "x": 5044.7, "y": 1257.68 },
+      "blocks": [
+        {
+          "id": "omzqwgxlgdkacy3ns003k840",
+          "outgoingEdgeId": "hyvzr4ptct3rsardcuobke9g",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "ccTE5uHO-B",
+                "type": "p",
+                "children": [{ "text": "Tudo bem, você pode ajustar depois" }]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "qtppzzkftssqbq8awvdc9jt0",
+      "title": "Group #16",
+      "graphCoordinates": { "x": 5518.25, "y": 1112.85 },
+      "blocks": [
+        {
+          "id": "zuv8qkfepw77rogszkty9myj",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "ws1qeRIaly",
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Metas mostram onde você quer chegar.\n Hábitos são o que te levam até lá."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "w9h94gp7rqeg399eken98ly1",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "cToYnQ1Rws",
+                "type": "p",
+                "children": [
+                  { "text": "Qual ação pequena e repetível pode te aproximar dessa meta?" }
+                ]
+              },
+              { "id": "-ry6L4nJIm", "type": "p", "children": [{ "text": "" }] },
+              { "id": "1At84qS8R7", "type": "p", "children": [{ "text": "Exemplos:" }] },
+              { "id": "__cirpAsko", "type": "p", "children": [{ "text": "caminhar 20 minutos " }] },
+              {
+                "id": "dtJd5A0zTo",
+                "type": "p",
+                "children": [{ "text": "estudar inglês 15 minutos anotar gastos do dia " }]
+              },
+              { "id": "StzOuF2ibs", "type": "p", "children": [{ "text": "beber 2L de água " }] },
+              { "id": "DUxxqL6v9v", "type": "p", "children": [{ "text": "ler 10 páginas " }] },
+              { "id": "c_RX-bLCVc", "type": "p", "children": [{ "text": "dormir antes das 11h" }] }
+            ]
+          }
+        },
+        {
+          "id": "i39w8ezmaxkvt720xre1efox",
+          "outgoingEdgeId": "jv2zbm0ixyos31yusut8rwni",
+          "type": "text input",
+          "options": { "variableId": "vsaoy5a9afrr23cm6dzz6dfyk" }
+        }
+      ]
+    },
+    {
+      "id": "wsbsay8w12mot2plem7fa2if",
+      "title": "Group #17",
+      "graphCoordinates": { "x": 5899.428608849333, "y": 1405.0129330085315 },
+      "blocks": [
+        {
+          "id": "p3ovmheic1ehav55eomcx69l",
+          "outgoingEdgeId": "s622nl3vb7sl3zbm3e7bkz26",
+          "type": "mistral",
+          "options": {
+            "credentialsId": "cmnzupe8q000004l2vh75ht6t",
+            "action": "Create chat completion",
+            "model": "mistral-medium-latest",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Valide se o hábito atente os requisitos:\n1. É específico?\npor exemplo:\n“Vou me exercitar” é considerado fraco fraco.\n“Vou caminhar 20 minutos” é melhor.\n\n2. É frequente?\nPode ser:\ndiário\n3x por semana\n1x por semana\n\n3. É realista?\nSe a pessoa fala:\n“vou estudar 2 horas todo dia”, \n\naqui o que a pessoa disse {{Habit}}, responda com uma sugestão de Hábito melhor de forma breve, no máximo duas linhas ou com apenas com a palavra \"Perfeito\" se atender aos requisitos."
+              }
+            ],
+            "responseMapping": [
+              { "item": "Message content", "variableId": "vajlrmnzuiqvmnvuvhgnmkugr" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "olve9fp3y729bxp76hi28mxd",
+      "title": "Group #18",
+      "graphCoordinates": { "x": 6297.186876193632, "y": 1416.625922962284 },
+      "blocks": [
+        {
+          "id": "huss2fh9rzqx9qah2bdul3uu",
+          "outgoingEdgeId": "q5jlpt7nqfmnfn2ona6iypg2",
+          "type": "Condition",
+          "items": [
+            {
+              "id": "ld1a1087b5joorvl4bkqsckg",
+              "outgoingEdgeId": "x1otfsou0ikfj88bhk4hfnja",
+              "content": {
+                "comparisons": [
+                  {
+                    "id": "dybvc2ptdk1dhhfeasmf2sfy",
+                    "variableId": "vajlrmnzuiqvmnvuvhgnmkugr",
+                    "comparisonOperator": "Equal to",
+                    "value": "\"Perfeito\""
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wgravhmi7pczwb4xo589dl7d",
+      "title": "Group #19",
+      "graphCoordinates": { "x": 6774.8, "y": 1876.88 },
+      "blocks": [
+        {
+          "id": "h4md8sxhe8ni9c2wysiigd2n",
+          "outgoingEdgeId": "esmb570qfvur7w89wzhkleby",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "gkI4_X8wSd",
+                "type": "p",
+                "children": [
+                  { "bold": true, "text": "Aqui um exemplo para seu Hábito:  {{HabitValidation}}" }
+                ]
+              },
+              { "id": "oZI6VuBWW1", "type": "p", "children": [{ "text": "ou use essa fórmula" }] },
+              {
+                "id": "qMEjuNOHSi",
+                "type": "p",
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Eu vou [ação] por [tempo/frequência] em [momento/contexto]."
+                  }
+                ]
+              },
+              { "id": "OaTQIDFcQx", "type": "p", "children": [{ "text": "" }] },
+              { "id": "k-2x3qcoKL", "type": "p", "children": [{ "text": "Exemplo:" }] },
+              {
+                "id": "iujV8XuqqF",
+                "type": "p",
+                "children": [
+                  {
+                    "text": "“Eu vou caminhar 20 minutos após o café da manhã, 4x por semana.” “Eu vou estudar inglês 15 minutos antes de dormir, de segunda a sexta.” “Eu vou registrar meus gastos todo dia às 8 da noite.”"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "v9o2jprazc0tgfnipkvz9tbi",
+      "title": "Group #20",
+      "graphCoordinates": { "x": 7248.89, "y": 1239.74 },
+      "blocks": [
+        {
+          "id": "es70vwa24gtn8iw80ayc7bvm",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "B5U-z57_dT",
+                "type": "p",
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "O que mais costuma te atrapalhar quando você tenta manter uma meta?"
+                  }
+                ]
+              },
+              { "id": "1JHtkbEKh5", "type": "p", "children": [{ "text": "" }] }
+            ]
+          }
+        },
+        {
+          "id": "rm4bet6livdasplksd4ieux1",
+          "outgoingEdgeId": "upljqreqh6akbq3edpb3rt95",
+          "type": "choice input",
+          "items": [
+            { "id": "if29gy3y4jwinsm9fib2jjvg", "content": "Falta de tempo" },
+            { "id": "v6te43li3tu9d223uf6sr9ja", "content": "Falta de disciplina" },
+            { "id": "f90tczsmi1zrg5edtfvof079", "content": "Esqueço no meio do dia" },
+            { "id": "rkp8o4j2838yowaephl62d7x", "content": "Desânimo" },
+            { "id": "kph6zez9n1znrvptz2qymstp", "content": "Não sei por onde começar" },
+            { "id": "hl1mbcp32m2t6ydaclfglytl", "content": "Minha rotina muda muito" }
+          ],
+          "options": { "variableId": "vkkvxz4vq20jqawp09fg2c0fu" }
+        }
+      ]
+    },
+    {
+      "id": "b2b4jhhxwll196dgcnsj8ajc",
+      "title": "Group #21",
+      "graphCoordinates": { "x": 7683.09, "y": 1495.93 },
+      "blocks": [
+        {
+          "id": "jsp6fx0oo24qt70wch7ba6ii",
+          "outgoingEdgeId": "srtxzoebwjztkaih5rmw60fr",
+          "type": "mistral",
+          "options": {
+            "credentialsId": "cmnzupe8q000004l2vh75ht6t",
+            "action": "Create chat completion",
+            "model": "mistral-medium-latest",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Sugira ao usuário como conseguir a vencer os obstáculos para conseguir fazer hábitos saudáveis, seja breve, no máximo uma linha. Aqui o obstáculo desse usuário:  {{Obstacle}}"
+              }
+            ],
+            "responseMapping": [{ "variableId": "vnzr7eo0nmhtt8zlais2v9m71" }]
+          }
+        }
+      ]
+    },
+    {
+      "id": "wk26l761mznjcv8xpgyldzqq",
+      "title": "Group #22",
+      "graphCoordinates": { "x": 8082.7, "y": 1496.88 },
+      "blocks": [
+        {
+          "id": "tle506l2fx18bnhqb401vx3y",
+          "outgoingEdgeId": "byeutxnn724c4mvpk4wlajty",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "dL38AVxWE2",
+                "type": "p",
+                "children": [{ "text": "Aqui uma dica para te ajudar:" }]
+              },
+              { "id": "1ntqXS1XqN", "type": "p", "children": [{ "text": "{{ObstacleSolution}}" }] }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "gmh1nfqep3zj51ck34y43yl5",
+      "title": "Group #23",
+      "graphCoordinates": { "x": 8511.22, "y": 1436.15 },
+      "blocks": [
+        {
+          "id": "oigtw952r2xg1ws4j1e6onjn",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "RM1s72P3sM",
+                "type": "p",
+                "children": [{ "text": "Por que isso é importante para você agora?" }]
+              },
+              { "id": "wdxAmhmWER", "type": "p", "children": [{ "text": "" }] }
+            ]
+          }
+        },
+        {
+          "id": "gkaoyz7blkb0b4jdyxw3q4sf",
+          "outgoingEdgeId": "tiay4589dypil8n3sjnjzkl6",
+          "type": "text input",
+          "options": { "variableId": "vfre6ipr2h2nu3vjwzt4uli73" }
+        }
+      ]
+    },
+    {
+      "id": "friy69bfz8atxrrbsmx9vo65",
+      "title": "Group #24",
+      "graphCoordinates": { "x": 8895.45, "y": 1437.83 },
+      "blocks": [
+        {
+          "id": "st2s6qg8am5u4m3f9ytd3350",
+          "outgoingEdgeId": "hsk1am1xevhz2oesq76c4tq8",
+          "type": "text",
+          "content": {
+            "richText": [
+              { "id": "f3WzK7hDGS", "type": "p", "children": [{ "text": "Vamos resumir então:" }] },
+              { "id": "BdH12X5ShH", "type": "p", "children": [{ "text": "" }] },
+              { "id": "hmtdgWiwM7", "type": "p", "children": [{ "text": "Seu plano inicial" }] },
+              {
+                "id": "K28jcI2W0F",
+                "type": "p",
+                "children": [{ "bold": true, "text": "Sonho:" }, { "text": " {{DreamSummary}}" }]
+              },
+              {
+                "id": "PoXizpLMQT",
+                "type": "p",
+                "children": [
+                  { "text": "\n " },
+                  { "bold": true, "text": "Meta:" },
+                  { "text": " {{SmartS}}\n" }
+                ]
+              },
+              {
+                "id": "sdQqY77OaP",
+                "type": "p",
+                "children": [
+                  { "text": " " },
+                  { "bold": true, "text": "Hábito principal:" },
+                  { "text": " {{Habit}}\n" }
+                ]
+              },
+              {
+                "id": "78THnJwNOi",
+                "type": "p",
+                "children": [
+                  { "text": " " },
+                  { "bold": true, "text": "Maior desafio:" },
+                  { "text": "  {{Obstacle}}\n" }
+                ]
+              },
+              {
+                "id": "Gu5C59r0Sa",
+                "type": "p",
+                "children": [
+                  { "text": " " },
+                  { "bold": true, "text": "Motivação:" },
+                  { "text": " {{Motivation}}" }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "nqevcpri7l1s7uu9qpl803si",
+      "title": "Group #25",
+      "graphCoordinates": { "x": 9311.044085512707, "y": 1491.881304605387 },
+      "blocks": [
+        {
+          "id": "purs8g8izhj2ii1koto1cnra",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "1t48xkbRbH",
+                "type": "p",
+                "children": [{ "text": "Agora, mão a massa! vamos começar!" }]
+              }
+            ]
+          }
+        },
+        {
+          "id": "isgo09fdsq4zd9bdp2ldp15c",
+          "outgoingEdgeId": "gxu019ky9383v1cj53ms6ctz",
+          "type": "image",
+          "content": {
+            "url": "https://media4.giphy.com/media/pVOlzNqLIkPX91xQix/giphy.gif?cid=fe3852a3oouduo27v5y6zumnk5fnr442le7q5hqdtd3q8nok&ep=v1_gifs_search&rid=giphy.gif&ct=g"
+          }
+        }
+      ]
+    },
+    {
+      "id": "u5jnabng3mxszacz234l8rma",
+      "title": "Group #26",
+      "graphCoordinates": { "x": 1760.32, "y": 1096.72 },
+      "blocks": [
+        {
+          "id": "xlwub6mphi74mcf8avfihiv9",
+          "outgoingEdgeId": "w0s0uhmtlp29x61ctic4wnhp",
+          "type": "Condition",
+          "items": [
+            {
+              "id": "x8wivuo3z6as2lilh05k338d",
+              "outgoingEdgeId": "onyvmraop0mktpc9j0wnak21",
+              "content": {
+                "logicalOperator": "AND",
+                "comparisons": [
+                  {
+                    "id": "qor5i07wptt71g5391lb1w98",
+                    "variableId": "vp3h0fn1v8jeodktdyoo5s8ol",
+                    "comparisonOperator": "Matches regex",
+                    "value": "^(?=.{3,150}$)(?!\\d+$)(?![^A-Za-z0-9À-ÿ\\s]+$)(?!([A-Za-zÀ-ÿ]{2,})\\1+$).+$"
+                  },
+                  {
+                    "id": "oqn1yv3mfy01bojow3j99v2c",
+                    "variableId": "vp3h0fn1v8jeodktdyoo5s8ol",
+                    "comparisonOperator": "Does not contain",
+                    "value": "ignore instructions"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nlt7ajrmjhb9zpb8u3sh8qpk",
+      "title": "Group #27",
+      "graphCoordinates": { "x": 1625.43, "y": 1932.49 },
+      "blocks": [
+        {
+          "id": "mc2tijp0z8hfqpu9d151rs7n",
+          "outgoingEdgeId": "induf70bxrzyc5rh1w0zh9r2",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "16zY2mlPW8",
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Isso não parece certo, tente novamente. Responda em uma frase curta para eu conseguir te ajudar melhor."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "wk83qg862ons06tzy62oag4q",
+      "title": "Group #28",
+      "graphCoordinates": { "x": 1936.58, "y": 1494.61 },
+      "blocks": [
+        {
+          "id": "rk8wz4qllbwgznu740hid2mz",
+          "outgoingEdgeId": "oefxur9k58rxhnyqqlcbotnm",
+          "type": "Condition",
+          "items": [
+            {
+              "id": "x5qs41h7bl5f7bvyiiu2azdf",
+              "outgoingEdgeId": "donrhh2lr73vgyfvrb06g33c",
+              "content": {
+                "comparisons": [
+                  {
+                    "id": "bste3gsybilum4nu3ossjaiu",
+                    "variableId": "vxz23xg2iqke9l8cgn2ti6l3u",
+                    "comparisonOperator": "Greater than",
+                    "value": "2"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "xb94ncqhta8o023jekf04f1y",
+      "title": "Group #30",
+      "graphCoordinates": { "x": 1282.42, "y": 1206.92 },
+      "blocks": [
+        {
+          "id": "w3ve9mjlvc2y013rjj0336he",
+          "outgoingEdgeId": "vwwn11isdmkls3o3g1icepon",
+          "type": "Set variable",
+          "options": {
+            "variableId": "vxz23xg2iqke9l8cgn2ti6l3u",
+            "expressionToEvaluate": "0",
+            "isCode": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "afd1xtl7hhsrv8yt5i37m21h",
+      "title": "Group #31",
+      "graphCoordinates": { "x": 1187.52, "y": 1669.81 },
+      "blocks": [
+        {
+          "id": "btkn40w7u20zvqiy9zfxzksi",
+          "outgoingEdgeId": "sw0eiv69codanzyoh57cog57",
+          "type": "Set variable",
+          "options": {
+            "variableId": "vxz23xg2iqke9l8cgn2ti6l3u",
+            "expressionToEvaluate": "{{tentativas_dream}} + 1",
+            "isCode": true,
+            "saveErrorInVariableId": "vq9ynpw19qxy6unqyju7mpzyv",
+            "type": "Custom"
+          }
+        }
+      ]
+    },
+    {
+      "id": "aja287xxaemj9n6j6wzcbo90",
+      "title": "Group #31",
+      "graphCoordinates": { "x": 2737.6, "y": 1448.69 },
+      "blocks": [
+        {
+          "id": "v6p05v8gpz6cj2ifa2mryzly",
+          "type": "text",
+          "content": {
+            "richText": [
+              {
+                "id": "pyL57T10sU",
+                "type": "p",
+                "children": [
+                  {
+                    "text": "Sem problema. Às vezes é difícil colocar isso em palavras no começo.\n Escolha abaixo o sonho que mais combina com o que você quer viver agora:"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "ay5rc9wbfskut5z4zlgwse9i",
+          "outgoingEdgeId": "udavi6v42qduoymcx2bl1jx2",
+          "type": "choice input",
+          "items": [
+            { "id": "uoqdvk9kbpi2nv5jxhbkvog2", "content": "Cuidar melhor do meu corpo" },
+            { "id": "jprorcycz1u31noi6zyfsb7m", "content": "Me destacar mais no meu trabalho" },
+            {
+              "id": "mckxqustc06viub47qhexf5u",
+              "content": "Construir uma vida financeira mais tranquila"
+            },
+            {
+              "id": "usck0nfs24s8tdvbeo2h1crx",
+              "content": "Melhorar minha disciplina nos estudos"
+            },
+            {
+              "id": "n4dyr4h6tov1wjbg5wtvzo29",
+              "content": "Criar uma rotina que funcione de verdade"
+            },
+            {
+              "id": "ub1or7h41csusvcfbdrh5mdw",
+              "content": "Me sentir mais no controle da minha vida"
+            },
+            { "id": "xjbsnx0myixbvftu11mx3c3b", "content": "Fortalecer minha vida familiar" },
+            { "id": "snrfxwxubdrpwggi53bo8mga", "content": "Construir uma vida com mais propósito" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "zk6ypeexc4fa918gs545ofyp",
+      "title": "Group #32",
+      "graphCoordinates": { "x": 9688.37, "y": 1897.08 },
+      "blocks": [
+        {
+          "id": "sscl4n46212t13msdpz5cj90",
+          "type": "Code",
+          "options": {
+            "content": "window.parent.postMessage({\n  from: \"typebot-custom\",\n  signal: \"onboarding-complete\",\n  dream: {{DreamSummary}},\n  goal: {{SmartS}},\n  habit: {{Habit}}\n}, \"*\");"
+          }
+        }
+      ]
+    },
+    {
+      "id": "g5t79swnwrztb05zoy6yogla",
+      "title": "Group #33",
+      "graphCoordinates": { "x": 9695, "y": 1701 },
+      "blocks": [
+        {
+          "id": "k3kl61zuge7ugobtbhvb5azy",
+          "outgoingEdgeId": "sxdjeokjatq2bgl66yt80l52",
+          "type": "Wait",
+          "options": { "secondsToWaitFor": "3" }
+        }
+      ]
+    },
+    {
+      "id": "pyjq2vhg5421fke7kvpk95kg",
+      "title": "Group #32",
+      "graphCoordinates": { "x": 787.56, "y": -42.91 },
+      "blocks": [
+        {
+          "id": "ytugyi1iz5j3fp8fxooi7ngk",
+          "type": "Code",
+          "options": {
+            "content": "return {\n  signal: \"onboarding-complete\",\n  dream: \"Sonho\", \n  goal: \"Meta\",\n  habit: \"Hábito\"\n};"
+          }
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "y7hbwxozlu4qa244ko384je0",
+      "from": { "blockId": "fkfxxq9za178nvdrgq6l1qaw" },
+      "to": { "groupId": "nve1vtub666k82r1tu6zktzo" }
+    },
+    {
+      "id": "plch197d9zw77jszxypkrmpm",
+      "from": { "blockId": "weqk0atp43qiudds5107uyxt" },
+      "to": { "groupId": "xjt0r7jwfj67sajx0nc8prvc", "blockId": "uetqtcpk20hyl0iidya4gxao" }
+    },
+    {
+      "id": "d97auv14cwh0xyn8yponfdlx",
+      "from": { "blockId": "uetqtcpk20hyl0iidya4gxao" },
+      "to": { "groupId": "gs01igdffumronfq7il5p8a4" }
+    },
+    {
+      "id": "qmqn58be93o1i4k8pnzkwuvr",
+      "from": { "blockId": "rs4rwtielazk8uyvxmes7ov5" },
+      "to": { "groupId": "x01fy2o3aoom81ay99a6k1lt" }
+    },
+    {
+      "id": "n21h3l97qa82d5fmaogsyx34",
+      "from": { "blockId": "v3uhp1sf9nd6jdxtvgmqcbtd" },
+      "to": { "groupId": "ibnj9gjkr4007ezjqyt4ved8" }
+    },
+    {
+      "id": "wadba7anc96vuhwpojp8idky",
+      "from": { "blockId": "am7cb8li6bif54ybn8k9s4sc" },
+      "to": { "groupId": "rveiezivxnsir4vtcz4v5pi1", "blockId": "yax2rnai5mlflegk42co5qfl" }
+    },
+    {
+      "id": "dsd9duwpr92pijj512odixek",
+      "from": { "blockId": "yhm9rr83tcjesvglmboms7q1" },
+      "to": { "groupId": "gua20re4ej9oqwfkwc9ti1s4", "blockId": "gqwzujia3ccbcdhbhusone78" }
+    },
+    {
+      "id": "kg38zf2ra7j1c1vmofywfisc",
+      "from": { "blockId": "ko15ob0lcno1uto259d0cw21" },
+      "to": { "groupId": "v7wg5qnxzwx7z3qs8fm43k1j" }
+    },
+    {
+      "id": "td363meq1k8es5bdcz2s386s",
+      "from": { "blockId": "wx8201852i5fw6hali5r2y68" },
+      "to": { "groupId": "r3kg3l51diwadc2mc2anjsth" }
+    },
+    {
+      "id": "ecefjpg8egj5mpg0asw6z590",
+      "from": { "blockId": "jv68yts5y1ehk302f1sklhd7", "itemId": "x7ynadnnp5yxpzjjqbp9zzbe" },
+      "to": { "groupId": "pcfiu9ccorxbcrik5ahr529f" }
+    },
+    {
+      "id": "kxm3pp1osnu017f8ekefrqmr",
+      "from": { "blockId": "jv68yts5y1ehk302f1sklhd7" },
+      "to": { "groupId": "ylq136bv9c488oq7fgvlfb7h" }
+    },
+    {
+      "id": "vtaptdlsn4tl2tmmwbkpncuj",
+      "from": { "blockId": "owr4kg08m7o6heun0qlll14k", "itemId": "sk0lceladwhyhikd60yzz7sm" },
+      "to": { "groupId": "ibnj9gjkr4007ezjqyt4ved8", "blockId": "am7cb8li6bif54ybn8k9s4sc" }
+    },
+    {
+      "id": "lp99kaqzj3i2gmd56pzctmux",
+      "from": { "blockId": "owr4kg08m7o6heun0qlll14k", "itemId": "r25qbpmscleckapcq2k85l6z" },
+      "to": { "groupId": "crygvueve3d5n8cwk3whsn4v" }
+    },
+    {
+      "id": "s4cw56pbgj209mjauzs1np3b",
+      "from": { "blockId": "ehdvcdlzodb2cx7iu7tgd1oi" },
+      "to": { "groupId": "qtppzzkftssqbq8awvdc9jt0", "blockId": "zuv8qkfepw77rogszkty9myj" }
+    },
+    {
+      "id": "hyvzr4ptct3rsardcuobke9g",
+      "from": { "blockId": "omzqwgxlgdkacy3ns003k840" },
+      "to": { "groupId": "qtppzzkftssqbq8awvdc9jt0" }
+    },
+    {
+      "id": "jv2zbm0ixyos31yusut8rwni",
+      "from": { "blockId": "i39w8ezmaxkvt720xre1efox" },
+      "to": { "groupId": "wsbsay8w12mot2plem7fa2if", "blockId": "p3ovmheic1ehav55eomcx69l" }
+    },
+    {
+      "id": "s622nl3vb7sl3zbm3e7bkz26",
+      "from": { "blockId": "p3ovmheic1ehav55eomcx69l" },
+      "to": { "groupId": "olve9fp3y729bxp76hi28mxd", "blockId": "huss2fh9rzqx9qah2bdul3uu" }
+    },
+    {
+      "id": "q5jlpt7nqfmnfn2ona6iypg2",
+      "from": { "blockId": "huss2fh9rzqx9qah2bdul3uu" },
+      "to": { "groupId": "wgravhmi7pczwb4xo589dl7d" }
+    },
+    {
+      "id": "x1otfsou0ikfj88bhk4hfnja",
+      "from": { "blockId": "huss2fh9rzqx9qah2bdul3uu", "itemId": "ld1a1087b5joorvl4bkqsckg" },
+      "to": { "groupId": "v9o2jprazc0tgfnipkvz9tbi", "blockId": "es70vwa24gtn8iw80ayc7bvm" }
+    },
+    {
+      "id": "srtxzoebwjztkaih5rmw60fr",
+      "from": { "blockId": "jsp6fx0oo24qt70wch7ba6ii" },
+      "to": { "groupId": "wk26l761mznjcv8xpgyldzqq" }
+    },
+    {
+      "id": "byeutxnn724c4mvpk4wlajty",
+      "from": { "blockId": "tle506l2fx18bnhqb401vx3y" },
+      "to": { "groupId": "gmh1nfqep3zj51ck34y43yl5" }
+    },
+    {
+      "id": "tiay4589dypil8n3sjnjzkl6",
+      "from": { "blockId": "gkaoyz7blkb0b4jdyxw3q4sf" },
+      "to": { "groupId": "friy69bfz8atxrrbsmx9vo65" }
+    },
+    {
+      "id": "hsk1am1xevhz2oesq76c4tq8",
+      "from": { "blockId": "st2s6qg8am5u4m3f9ytd3350" },
+      "to": { "groupId": "nqevcpri7l1s7uu9qpl803si" }
+    },
+    {
+      "id": "esmb570qfvur7w89wzhkleby",
+      "from": { "blockId": "h4md8sxhe8ni9c2wysiigd2n" },
+      "to": { "groupId": "v9o2jprazc0tgfnipkvz9tbi", "blockId": "rm4bet6livdasplksd4ieux1" }
+    },
+    {
+      "id": "onyvmraop0mktpc9j0wnak21",
+      "from": { "blockId": "xlwub6mphi74mcf8avfihiv9", "itemId": "x8wivuo3z6as2lilh05k338d" },
+      "to": { "groupId": "koue9ar960awwm4f39jzp3se" }
+    },
+    {
+      "id": "w0s0uhmtlp29x61ctic4wnhp",
+      "from": { "blockId": "xlwub6mphi74mcf8avfihiv9" },
+      "to": { "groupId": "wk83qg862ons06tzy62oag4q", "blockId": "rk8wz4qllbwgznu740hid2mz" }
+    },
+    {
+      "id": "oefxur9k58rxhnyqqlcbotnm",
+      "from": { "blockId": "rk8wz4qllbwgznu740hid2mz" },
+      "to": { "groupId": "nlt7ajrmjhb9zpb8u3sh8qpk", "blockId": "mc2tijp0z8hfqpu9d151rs7n" }
+    },
+    {
+      "id": "qfrm6rn0d3vgiymfzdczh5tf",
+      "from": { "blockId": "wujb1a4q53wlonh2x9v9kfu0" },
+      "to": { "groupId": "u5jnabng3mxszacz234l8rma" }
+    },
+    {
+      "id": "j9khyhiahw9e686q6ta7nb9m",
+      "from": { "blockId": "o7hfcjz7qka918rdaqjnntmo" },
+      "to": { "groupId": "xb94ncqhta8o023jekf04f1y" }
+    },
+    {
+      "id": "vwwn11isdmkls3o3g1icepon",
+      "from": { "blockId": "w3ve9mjlvc2y013rjj0336he" },
+      "to": { "groupId": "pqdf26dnhvowl297svp4vi62" }
+    },
+    {
+      "id": "induf70bxrzyc5rh1w0zh9r2",
+      "from": { "blockId": "mc2tijp0z8hfqpu9d151rs7n" },
+      "to": { "groupId": "afd1xtl7hhsrv8yt5i37m21h", "blockId": "btkn40w7u20zvqiy9zfxzksi" }
+    },
+    {
+      "id": "sw0eiv69codanzyoh57cog57",
+      "from": { "blockId": "btkn40w7u20zvqiy9zfxzksi" },
+      "to": { "groupId": "pqdf26dnhvowl297svp4vi62", "blockId": "znr5d7lc40dbjescv4rxbvow" }
+    },
+    {
+      "id": "donrhh2lr73vgyfvrb06g33c",
+      "from": { "blockId": "rk8wz4qllbwgznu740hid2mz", "itemId": "x5qs41h7bl5f7bvyiiu2azdf" },
+      "to": { "groupId": "aja287xxaemj9n6j6wzcbo90", "blockId": "v6p05v8gpz6cj2ifa2mryzly" }
+    },
+    {
+      "id": "udavi6v42qduoymcx2bl1jx2",
+      "from": { "blockId": "ay5rc9wbfskut5z4zlgwse9i" },
+      "to": { "groupId": "koue9ar960awwm4f39jzp3se" }
+    },
+    {
+      "id": "upljqreqh6akbq3edpb3rt95",
+      "from": { "blockId": "rm4bet6livdasplksd4ieux1" },
+      "to": { "groupId": "b2b4jhhxwll196dgcnsj8ajc", "blockId": "jsp6fx0oo24qt70wch7ba6ii" }
+    },
+    {
+      "id": "gxu019ky9383v1cj53ms6ctz",
+      "from": { "blockId": "isgo09fdsq4zd9bdp2ldp15c" },
+      "to": { "groupId": "g5t79swnwrztb05zoy6yogla" }
+    },
+    {
+      "id": "sxdjeokjatq2bgl66yt80l52",
+      "from": { "blockId": "k3kl61zuge7ugobtbhvb5azy" },
+      "to": { "groupId": "zk6ypeexc4fa918gs545ofyp", "blockId": "sscl4n46212t13msdpz5cj90" }
+    },
+    {
+      "id": "z774ra3q15ubrhekkmga6voh",
+      "from": { "eventId": "w5cb6dx53v5ategf8bid83ai" },
+      "to": { "groupId": "vqa89bbfa69tsms94hjkvpz4" }
+    }
+  ],
+  "variables": [
+    { "id": "vq9ynpw19qxy6unqyju7mpzyv", "name": "error", "isSessionVariable": true },
+    { "id": "vxz23xg2iqke9l8cgn2ti6l3u", "name": "tentativas_dream", "isSessionVariable": true },
+    { "id": "vfre6ipr2h2nu3vjwzt4uli73", "name": "Motivation", "isSessionVariable": false },
+    { "id": "vnzr7eo0nmhtt8zlais2v9m71", "name": "ObstacleSolution", "isSessionVariable": true },
+    { "id": "vkkvxz4vq20jqawp09fg2c0fu", "name": "Obstacle", "isSessionVariable": false },
+    { "id": "vajlrmnzuiqvmnvuvhgnmkugr", "name": "HabitValidation", "isSessionVariable": true },
+    { "id": "vsaoy5a9afrr23cm6dzz6dfyk", "name": "Habit", "isSessionVariable": false },
+    { "id": "vqic1aizjrm3pbg47ougm05ov", "name": "Reaslism", "isSessionVariable": false },
+    { "id": "vlk8v7snyddcd7zw5bdhycj0q", "name": "SmartT", "isSessionVariable": false },
+    { "id": "vsjh2o2pk7nyc6fy96kp0jiym", "name": "SmartM", "isSessionVariable": false },
+    { "id": "vb5uxhf9l5fsoo63zd00qzjbn", "name": "SmartS", "isSessionVariable": false },
+    { "id": "vna31cb7ysdmefj8n45cu1ymk", "name": "DreamSummary", "isSessionVariable": true },
+    { "id": "vp3h0fn1v8jeodktdyoo5s8ol", "name": "DreamStatement", "isSessionVariable": false },
+    { "id": "vphlx41t9wxm8ivjo60ziyfix", "name": "Dream Statement", "isSessionVariable": true },
+    { "id": "vppdjazjcfdfvu1i6ttu0slka", "name": "FocusArea", "isSessionVariable": false },
+    { "id": "vmvemhye7r3jz0bb4pgs28jwe", "name": "Name", "isSessionVariable": false }
+  ],
+  "theme": {
+    "general": {
+      "font": { "type": "Google", "family": "Montserrat" },
+      "background": {
+        "type": "Image",
+        "content": "https://app.typebot.com/images/backgrounds/brightRain.jpeg"
+      },
+      "progressBar": { "isEnabled": true, "color": "#9B74B7", "thickness": 7 }
+    },
+    "chat": {
+      "hostAvatar": {
+        "isEnabled": true,
+        "url": "https://images.unsplash.com/photo-1562788869-4ed32648eb72?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MjU2MDR8MHwxfHNlYXJjaHwxN3x8bWVufGVufDB8MHx8fDE3NzYyNDE5MzV8MA&ixlib=rb-4.1.0&q=80&w=200"
+      },
+      "guestAvatar": { "isEnabled": false },
+      "hostBubbles": {
+        "border": { "thickness": 2, "color": "#C75F96", "roundeness": "large", "opacity": 0.6 }
+      },
+      "guestBubbles": {
+        "backgroundColor": "#FDDDBF",
+        "color": "#303235",
+        "border": { "color": "#4A8BB2" }
+      },
+      "buttons": { "backgroundColor": "#9B74B7", "color": "#FFFFFF" }
+    }
+  },
+  "selectedThemeTemplateId": "bright-rain",
+  "settings": {
+    "general": { "isBrandingEnabled": true },
+    "typingEmulation": { "speed": 220, "delayBetweenBubbles": 2 }
+  },
+  "createdAt": "2026-04-15T08:21:34.437Z",
+  "updatedAt": "2026-04-18T07:28:06.522Z",
+  "icon": null,
+  "folderId": null,
+  "publicId": "we-better-onboarding-pzpc3f3",
+  "customDomain": null,
+  "workspaceId": "cmnzs647g000004l4fj0xr8pp",
+  "resultsTablePreferences": null,
+  "isArchived": false,
+  "isClosed": false,
+  "whatsAppCredentialsId": null,
+  "riskLevel": null,
+  "spaceId": null
+}
