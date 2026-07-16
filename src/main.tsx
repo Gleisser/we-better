@@ -4,6 +4,9 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './core/router/index';
 import './styles/index.css';
 import './core/i18n';
+import { applyAppUrlMetadata } from './core/config/appUrl';
+
+applyAppUrlMetadata();
 
 const rootElement = document.getElementById('root');
 if (rootElement) {

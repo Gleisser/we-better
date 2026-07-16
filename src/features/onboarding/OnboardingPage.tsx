@@ -19,7 +19,7 @@ import { persistStarterPlan } from './persistStarterPlan';
 import { getDreamOptions } from './structuredCatalog';
 
 const getTypebotApiHost = (): string =>
-  import.meta.env.VITE_TYPEBOT_API_HOST || 'https://viewer.typebot.io';
+  import.meta.env.VITE_TYPEBOT_API_HOST || 'https://typebot.io';
 
 const getTypebotOnboardingId = (): string => import.meta.env.VITE_TYPEBOT_ONBOARDING_ID || '';
 

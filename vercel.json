@@ -5,16 +5,25 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; manifest-src 'self'; object-src 'none'; script-src 'self'; script-src-elem 'self'; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://plus.unsplash.com https://img.icons8.com https://via.placeholder.com https://webetter.ai https://*.webetter.ai https://*.vercel.app https://*.supabase.co; media-src 'self' blob: https://webetter.ai https://*.webetter.ai https://*.vercel.app https://*.supabase.co; connect-src 'self' https://webetter.ai https://*.webetter.ai https://*.vercel.app https://*.supabase.co wss://*.supabase.co; font-src 'self' data:; frame-src 'self'; worker-src 'self' blob:"
+          "value": "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; manifest-src 'self'; object-src 'none'; script-src 'self'; script-src-elem 'self'; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'unsafe-inline'; img-src 'self' data: blob: https://images.unsplash.com https://plus.unsplash.com https://img.icons8.com https://via.placeholder.com https://*.vercel.app https://*.supabase.co; media-src 'self' blob: https://*.vercel.app https://*.supabase.co; connect-src 'self' https://*.vercel.app https://*.supabase.co wss://*.supabase.co https://typebot.io wss://partykit.typebot.io; font-src 'self' data:; frame-src 'self'; worker-src 'self' blob:"
         }
       ]
     },
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Credentials", "value": "true" },
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+        },
         {
           "key": "Access-Control-Allow-Headers",
           "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, Origin"

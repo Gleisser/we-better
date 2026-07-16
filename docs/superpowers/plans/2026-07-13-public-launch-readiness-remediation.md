@@ -339,6 +339,8 @@ pnpm test:e2e -- --grep "privacy|cookie|two-factor"
 
 ### TASK-008 — Fix production CSP for Typebot and external services
 
+**Status:** Implemented — deployment validation pending (2026-07-17)
+
 **Problem:** The onboarding loads Typebot from an external API host, but the Vercel CSP does not allow the Typebot connection/frame origins. A second CSP definition exists in source but does not drive deployment configuration.
 
 **Known areas:**
@@ -371,9 +373,13 @@ pnpm test --run src/core/config src/features/onboarding
 pnpm build
 ```
 
+**Completion record (2026-07-17):** Added the exact Typebot API and streaming origins (`https://typebot.io` and `wss://partykit.typebot.io`) to `connect-src`; Typebot's React web component does not require a frame origin, so `frame-src 'self'` remains intact. Replaced the duplicated CSP definitions with `src/core/config/csp-policy.json` as the source of truth. `pnpm csp:sync` updates Vercel's header and `pnpm csp:check`/the CSP unit test reject drift. The Typebot fallback host now matches the approved API origin. Verified with the CSP/onboarding test suite, type check, lint, and production build. Deploy and complete a production-like onboarding session while checking browser CSP errors before marking this release gate complete.
+
 ---
 
 ### TASK-009 — Stabilize production API and add health checks
+
+**Status:** Implemented — deployment validation pending (2026-07-17)
 
 **Problem:** The configured user-service has no working `/api/health` endpoint, and an unauthenticated `/api/missions` request produced a Vercel function timeout instead of a fast authentication response.
 
@@ -409,9 +415,13 @@ curl -i https://<staging-backend>/api/ready
 pnpm test:e2e -- --grep "missions|authenticated API"
 ```
 
+**Completion record (2026-07-17):** Added lightweight `GET /api/health` liveness and dependency-aware `GET /api/ready` readiness endpoints to `user-service`. Readiness checks Supabase with a 1.5-second deadline and returns structured `503` degradation rather than timing out; both endpoints emit request IDs and disable caching. API middleware now skips cookie-session refreshes, so route-level bearer authentication can reject anonymous requests without an upstream Supabase call. Missions now requires authentication before it reads Strapi or mission progress; the frontend applies a 12-second request timeout and renders its existing recoverable error state. Added `npm run check:api` for deployment synthetic checks and unit coverage for health, readiness, middleware, and anonymous Missions. Local HTTP checks returned health `200`, readiness `200`, and anonymous Missions `401`. Deploy the user-service, configure separate staging/production origins, then run authenticated staging latency checks before release sign-off.
+
 ---
 
 ### TASK-010 — Verify and repair the public domain and deployment routing
+
+**Status:** Implemented — external provider configuration pending (2026-07-17)
 
 **Problem:** `webetter.ai` did not resolve during the audit environment check. The repository also hardcodes that domain in canonical and social metadata.
 
@@ -445,6 +455,8 @@ dig webetter.ai
 curl -I https://webetter.ai
 curl -I https://webetter.ai/app/dashboard
 ```
+
+**Completion record (2026-07-17):** Verified that `https://we-better.vercel.app/` and direct SPA navigation to `/app/dashboard` return `200`; `webetter.ai` remains unresolved and is no longer used by application metadata or CSP. Added centralized per-environment URL configuration: frontend `VITE_APP_URL`, user-service `APP_URL`, and optional `APP_ALLOWED_ORIGINS`, documented in `docs/deployment/app-urls.md`. Browser authentication redirects and canonical/social metadata use the frontend URL; server-side Supabase email redirects use `APP_URL`. Stripe Checkout and Billing Portal return URLs now reject arbitrary origins and accept only the configured app allowlist. Verified URL/CSP/auth unit tests, frontend type-check/lint/build, and user-service URL tests/build. Set the matching variables in Vercel, Supabase Auth redirect allowlists, and Stripe before release.
 
 ---
 

@@ -21,12 +21,12 @@ describe('appApi helpers', () => {
   });
 
   it('builds an absolute app api URL only when explicitly requested', () => {
-    expect(resolveAppApiBaseUrl('https://api.webetter.ai/')).toBe('https://api.webetter.ai/api');
+    expect(resolveAppApiBaseUrl('https://api.example.com/')).toBe('https://api.example.com/api');
     expect(
       createAppApiUrl('/notifications', {
-        absoluteBackendOrigin: 'https://api.webetter.ai/',
+        absoluteBackendOrigin: 'https://api.example.com/',
         query: { limit: 5 },
       })
-    ).toBe('https://api.webetter.ai/api/notifications?limit=5');
+    ).toBe('https://api.example.com/api/notifications?limit=5');
   });
 });

@@ -4,6 +4,7 @@ import { createAppApiUrl } from '@/core/config/appApi';
 
 const MISSIONS_API_URL = createAppApiUrl('/missions');
 const PROGRESS_API_URL = createAppApiUrl('/missions/progress');
+const MISSION_API_TIMEOUT_MS = 12_000;
 
 const _MISSION_BADGE_IDS = [
   'explorer',
@@ -148,16 +149,29 @@ const missionGatewayRequest = async <T>(
     throw new Error('Not authenticated');
   }
 
-  const response = await fetch(endpoint, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      'X-User-Timezone': getBrowserTimezone(),
-    },
-    credentials: 'include',
-    body: options?.body ? JSON.stringify(options.body) : undefined,
-  });
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), MISSION_API_TIMEOUT_MS);
+  let response: Response;
+  try {
+    response = await fetch(endpoint, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        'X-User-Timezone': getBrowserTimezone(),
+      },
+      credentials: 'include',
+      body: options?.body ? JSON.stringify(options.body) : undefined,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error('Mission service timed out. Please try again.');
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     if (response.status === 401) {
@@ -185,7 +199,8 @@ export const fetchMissions = async (locale: MissionLocale): Promise<MissionsApiR
 
   return missionGatewayRequest<MissionsApiResponse>(
     `${MISSIONS_API_URL}?${query.toString()}`,
-    'GET'
+    'GET',
+    { requireAuth: true }
   );
 };
 

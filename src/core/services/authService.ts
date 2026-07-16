@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { createAppUrl } from '@/core/config/appUrl';
 
 interface User {
   id: string;
@@ -20,7 +21,7 @@ export interface AuthResponse {
 }
 
 // Define your app's redirect URL for Supabase configuration
-const REDIRECT_URL = `${window.location.origin}/app`;
+const REDIRECT_URL = createAppUrl('/app');
 const GOOGLE_AUTH_ENABLED = import.meta.env.VITE_AUTH_GOOGLE_ENABLED === 'true';
 const GOOGLE_AUTH_BUTTON_LABEL = 'Continue with Google';
 const GOOGLE_AUTH_DISABLED_LABEL = 'Google Sign-In Unavailable';
@@ -220,7 +221,7 @@ export const authService = {
   async forgotPassword(email: string): Promise<{ error: Error | null }> {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
+        redirectTo: createAppUrl('/auth/reset-password'),
       });
 
       if (error) throw new Error(error.message);

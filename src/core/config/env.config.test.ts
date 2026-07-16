@@ -13,7 +13,7 @@ describe('ENV_CONFIG', () => {
   });
 
   it('keeps browser runtime api requests same-origin even when a backend origin is configured', async () => {
-    vi.stubEnv('VITE_API_BACKEND_URL', 'https://api.webetter.ai/');
+    vi.stubEnv('VITE_API_BACKEND_URL', 'https://api.example.com/');
     vi.resetModules();
 
     const { ENV_CONFIG } = await import('./env.config');
