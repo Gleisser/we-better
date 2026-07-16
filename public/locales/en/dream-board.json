@@ -47,8 +47,7 @@
     "title": "Dream Board",
     "tabs": {
       "visionBoard": "Vision Board",
-      "experience": "Experience",
-      "insights": "Insights"
+      "experience": "Experience"
     },
     "loading": {
       "dreamBoard": "Loading your dream board..."
@@ -60,11 +59,10 @@
     "emptyState": {
       "firstImage": {
         "title": "Start your Dream Board with a first image",
-        "description": "Add one image to unlock Quick Vision, category insights, and your full visual board experience.",
+        "description": "Add one image to unlock Quick Vision, categories, and your full visual board experience.",
         "features": {
           "quickVision": "Quick Vision keeps your dreams and progress visible at a glance.",
-          "categories": "Category cards reveal how each area of your future is taking shape.",
-          "insights": "Insights help you spot balance, momentum, and next steps across your dreams."
+          "categories": "Category cards reveal how each area of your future is taking shape."
         },
         "cta": "Add first image"
       }

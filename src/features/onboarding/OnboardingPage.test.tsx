@@ -81,6 +81,10 @@ vi.mock('@/shared/hooks/useTranslation', () => ({
   }),
 }));
 
+vi.mock('./useOnboardingMotion', () => ({
+  useOnboardingMotion: vi.fn(),
+}));
+
 describe('OnboardingPage', () => {
   beforeEach(() => {
     currentLanguage = 'en';

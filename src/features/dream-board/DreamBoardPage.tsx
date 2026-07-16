@@ -13,12 +13,11 @@ import {
 import { getDreamBoardOverview, saveDreamBoardData } from './api/dreamBoardApi';
 import { DreamChallenge as DreamChallengeRecord } from './api/dreamChallengesApi';
 import { DreamWeatherResponse } from './api/dreamWeatherApi';
-import { mockCategories, mockInsights, mockNotifications } from './mock-data';
 import { CosmicDreamExperience } from './components/CosmicDreamExperience/CosmicDreamExperience';
 import categoryDetails from './components/constants/dreamboard';
 import achievementBadges from './components/constants/achievements';
+import { dreamBoardCategories } from './components/constants/categories';
 import VisionBoardTab from './components/VisionBoardTab';
-import DreamInsights from './components/DreamInsights';
 import FooterTools from './components/FooterTools';
 import MilestonesPopup from './components/MilestonesPopup';
 import { DreamChallengeContainer } from './components/DreamChallenge';
@@ -438,7 +437,7 @@ const DreamBoardPage: React.FC = () => {
         id: newDreamId,
         title: upload.title,
         description: upload.caption || '',
-        category: upload.category || mockCategories[0] || 'General',
+        category: upload.category || dreamBoardCategories[0] || 'General',
         timeframe: 'mid-term',
         progress: 0,
         createdAt: new Date().toISOString(),
@@ -824,7 +823,7 @@ const DreamBoardPage: React.FC = () => {
         await handleAddDreamImage({
           file: selectedFile,
           title: defaultTitle,
-          category: mockCategories[0] || 'General',
+          category: dreamBoardCategories[0] || 'General',
           milestones: [],
         });
       } catch (error) {
@@ -853,9 +852,6 @@ const DreamBoardPage: React.FC = () => {
           </li>
           <li className="rounded-[0.55rem] border border-white/15 bg-white/10 px-3 py-2.5 text-[0.96rem] text-slate-100/95">
             {t('dreamBoard.emptyState.firstImage.features.categories')}
-          </li>
-          <li className="rounded-[0.55rem] border border-white/15 bg-white/10 px-3 py-2.5 text-[0.96rem] text-slate-100/95">
-            {t('dreamBoard.emptyState.firstImage.features.insights')}
           </li>
         </ul>
         <button
@@ -923,13 +919,6 @@ const DreamBoardPage: React.FC = () => {
             >
               {t('dreamBoard.tabs.experience')}
             </button>
-            <button
-              className={getTabButtonClassName('insights')}
-              onClick={() => setActiveTab('insights')}
-              type="button"
-            >
-              {t('dreamBoard.tabs.insights')}
-            </button>
           </div>
         )}
         <DreamBoardTour />
@@ -979,7 +968,7 @@ const DreamBoardPage: React.FC = () => {
                 toggleCategoryExpand={toggleCategoryExpand}
                 filterCategory={filterCategory}
                 setFilterCategory={setFilterCategory}
-                categories={mockCategories}
+                categories={[...dreamBoardCategories]}
                 handleMilestonesLoaded={handleMilestonesLoaded}
                 fetchedMilestones={fetchedDreamMilestones}
               />
@@ -995,8 +984,6 @@ const DreamBoardPage: React.FC = () => {
                 />
               </div>
             )}
-
-            {activeTab === 'insights' && <DreamInsights dreams={dreams} insights={mockInsights} />}
           </>
         )}
       </main>
@@ -1004,7 +991,7 @@ const DreamBoardPage: React.FC = () => {
       {/* Footer Tools Section - Only show if the user has dreams */}
       {!hasNoDreams && (
         <div className="mt-8 grid gap-4 md:gap-8 lg:grid-cols-2" data-tour="dream-board-tools">
-          <FooterTools weather={footerWeather} notifications={mockNotifications} />
+          <FooterTools weather={footerWeather} />
           <DreamChallengeContainer
             dreams={dreams}
             initialChallengeData={challengeSnapshot ?? undefined}

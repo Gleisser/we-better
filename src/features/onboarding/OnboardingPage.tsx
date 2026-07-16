@@ -3,7 +3,7 @@ import { Standard } from '@typebot.io/react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useTranslation } from '@/shared/hooks/useTranslation';
-import type { OnboardingStarterPlan } from '@/types/onboarding';
+import type { OnboardingFocusArea, OnboardingStarterPlan } from '@/types/onboarding';
 import OnboardingHero from './OnboardingHero';
 import OnboardingStage from './OnboardingStage';
 import { OnboardingPersonalization } from './OnboardingPersonalization';
@@ -51,7 +51,7 @@ const normalizeScriptResult = (value: unknown): string | null => {
   return null;
 };
 
-const mapObservedFocusAreaLabel = (label: string | null): string | null => {
+const mapObservedFocusAreaLabel = (label: string | null): OnboardingFocusArea | null => {
   if (!label) {
     return null;
   }
@@ -63,8 +63,14 @@ const mapObservedFocusAreaLabel = (label: string | null): string | null => {
   return null;
 };
 
+const OBSERVED_FOCUS_AREAS: readonly OnboardingFocusArea[] = [
+  'health',
+  'relationships',
+  'finances',
+];
+
 const isKnownDreamLabel = (label: string): boolean =>
-  ['health', 'relationships', 'finances'].some(focusArea =>
+  OBSERVED_FOCUS_AREAS.some(focusArea =>
     getDreamOptions(focusArea).some(option => option.label === label)
   );
 

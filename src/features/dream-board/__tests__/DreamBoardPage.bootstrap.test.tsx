@@ -45,10 +45,6 @@ vi.mock('../components/DreamBoardTimelineGallery', () => ({
   DreamBoardTimelineGallery: () => <div data-testid="timeline-gallery" />,
 }));
 
-vi.mock('../components/DreamInsights', () => ({
-  default: () => <div data-testid="dream-insights" />,
-}));
-
 vi.mock('../components/FooterTools', () => ({
   default: () => <div data-testid="footer-tools" />,
 }));
@@ -152,6 +148,7 @@ describe('DreamBoardPage bootstrap', () => {
     expect(mockGetProgressForDream).not.toHaveBeenCalled();
     expect(mockedGetMilestonesForContents).not.toHaveBeenCalled();
     expect(screen.getAllByText('40%').length).toBeGreaterThan(0);
+    expect(screen.queryByText('dreamBoard.tabs.insights')).toBeNull();
 
     const latestDreamChallengeProps = mockDreamChallengeContainer.mock.lastCall?.[0] as
       | {

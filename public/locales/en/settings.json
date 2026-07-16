@@ -248,6 +248,7 @@
         "deleteDescription": "Permanently remove your account and all associated data.",
         "confirmDelete": "Delete account data",
         "finalConfirm": "This action cannot be undone.",
+        "passwordPrompt": "Enter your current password to confirm deletion.",
         "deletionInitiated": "Your account deletion request has been started."
       },
       "profileVisibility": {
@@ -312,7 +313,11 @@
       "loadPlanCatalog": "Failed to load billing plan catalog.",
       "openBillingPortal": "Failed to open the billing portal.",
       "startCheckout": "Failed to start checkout.",
-      "signOutOtherSessions": "Failed to sign out other sessions."
+      "signOutOtherSessions": "Failed to sign out other sessions.",
+      "exportData": "We couldn't export your data. Please try again.",
+      "deleteAccount": "We couldn't delete your account. Check your password and try again.",
+      "activeSubscriptionDeletion": "Cancel your active subscription before deleting your account.",
+      "oauthReauthenticationDeletion": "To delete a Google account, set an account password and try again."
     },
     "actions": {
       "json": "JSON",

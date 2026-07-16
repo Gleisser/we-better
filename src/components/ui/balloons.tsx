@@ -10,10 +10,12 @@ export interface BalloonsProps {
   onLaunch?: () => void;
 }
 
-const Balloons = React.forwardRef<HTMLDivElement, BalloonsProps>(
-  ({ type = 'default', text, fontSize = 120, color = '#000000', className, onLaunch }, ref) => {
-    const containerRef = React.useRef<HTMLDivElement>(null);
+export interface BalloonsHandle {
+  launchAnimation: () => void;
+}
 
+const Balloons = React.forwardRef<BalloonsHandle, BalloonsProps>(
+  ({ type = 'default', text, fontSize = 120, color = '#000000', className, onLaunch }, ref) => {
     const launchAnimation = React.useCallback(() => {
       if (type === 'default') {
         balloons();
@@ -36,17 +38,11 @@ const Balloons = React.forwardRef<HTMLDivElement, BalloonsProps>(
       ref,
       () => ({
         launchAnimation,
-        ...(containerRef.current || {}),
       }),
       [launchAnimation]
     );
 
-    return (
-      <div
-        ref={containerRef}
-        className={['balloons-container', className].filter(Boolean).join(' ')}
-      />
-    );
+    return <div className={['balloons-container', className].filter(Boolean).join(' ')} />;
   }
 );
 Balloons.displayName = 'Balloons';

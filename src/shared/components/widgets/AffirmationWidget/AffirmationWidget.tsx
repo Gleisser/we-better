@@ -30,7 +30,7 @@ import {
   useCategoryAffirmationPool,
   type NonPersonalAffirmationCategory,
 } from '@/features/affirmations/hooks/useCategoryAffirmationPool';
-import { Balloons } from '@/components/ui/balloons';
+import { Balloons, type BalloonsHandle } from '@/components/ui/balloons';
 
 type AffirmationCategory =
   | 'personal'
@@ -138,7 +138,7 @@ const AffirmationWidget = (): JSX.Element => {
   const { elementRef, tilt, handleMouseMove, handleMouseLeave } = useTiltEffect(5); // Lower intensity for subtlety
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showReminderSettings, setShowReminderSettings] = useState(false);
-  const balloonsRef = useRef<{ launchAnimation: () => void } | null>(null);
+  const balloonsRef = useRef<BalloonsHandle | null>(null);
 
   // Backend integration using useAffirmations hook
   const {

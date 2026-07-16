@@ -1,18 +1,13 @@
 import { render, waitFor } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useRef } from 'react';
 import { useOnboardingMotion } from './useOnboardingMotion';
 import type { OnboardingPhase } from './onboardingPresentation';
 
+const mockUseGSAP = vi.hoisted(() => vi.fn());
+
 vi.mock('@gsap/react', () => ({
-  useGSAP: (callback: (...args: unknown[]) => unknown) => {
-    callback(
-      {},
-      (fn: (...args: unknown[]) => unknown) =>
-        (...args: unknown[]) =>
-          fn(...args)
-    );
-  },
+  useGSAP: mockUseGSAP,
 }));
 
 vi.mock('gsap', () => ({
@@ -49,6 +44,17 @@ const MotionHarness = ({
 };
 
 describe('useOnboardingMotion', () => {
+  beforeEach(() => {
+    mockUseGSAP.mockImplementation((callback: (...args: unknown[]) => unknown) => {
+      callback(
+        {},
+        (fn: (...args: unknown[]) => unknown) =>
+          (...args: unknown[]) =>
+            fn(...args)
+      );
+    });
+  });
+
   it('jumps directly to reduced-motion-chat when prefers-reduced-motion is enabled', () => {
     const onPhaseChange = vi.fn();
     window.matchMedia = vi.fn().mockReturnValue({
@@ -63,6 +69,23 @@ describe('useOnboardingMotion', () => {
   });
 
   it('advances intro to transitioning and chat when reduced motion is not enabled', async () => {
+    const onPhaseChange = vi.fn();
+    window.matchMedia = vi.fn().mockReturnValue({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }) as never;
+
+    render(<MotionHarness onPhaseChange={onPhaseChange} />);
+
+    await waitFor(() => expect(onPhaseChange).toHaveBeenCalledWith('transitioning'));
+    await waitFor(() => expect(onPhaseChange).toHaveBeenCalledWith('chat'));
+  });
+
+  it('uses the phase callback directly when GSAP does not provide contextSafe', async () => {
+    mockUseGSAP.mockImplementation((callback: (...args: unknown[]) => unknown) => {
+      callback({});
+    });
     const onPhaseChange = vi.fn();
     window.matchMedia = vi.fn().mockReturnValue({
       matches: false,

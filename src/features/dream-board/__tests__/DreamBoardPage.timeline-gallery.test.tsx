@@ -109,10 +109,6 @@ vi.mock('../components/DreamProgress', () => ({
   default: () => <div data-testid="dream-progress" />,
 }));
 
-vi.mock('../components/DreamInsights', () => ({
-  default: () => <div data-testid="dream-insights" />,
-}));
-
 vi.mock('../components/FooterTools', () => ({
   default: () => <div data-testid="footer-tools" />,
 }));

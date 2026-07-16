@@ -52,7 +52,8 @@
     }
   },
   "floating": {
-    "aiAssistant": "Assistente de IA"
+    "aiAssistant": "Assistente de IA",
+    "aiAssistantUnavailable": "Em breve"
   },
   "aiChat": {
     "title": "Assistente de IA",

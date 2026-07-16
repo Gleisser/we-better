@@ -1,33 +1,33 @@
-import { expect, test } from '@playwright/test';
+import { test, expect } from './e2e/utils/test-utils';
+import { HAS_AUTH_CREDENTIALS, signIn } from './e2e/utils/auth';
 
-test('structured onboarding handoff opens native personalization', async ({ page }) => {
-  await page.goto('http://localhost:5173/auth/login');
-  await page.fill('input[type="email"]', 'gleisser@mailinator.com');
-  await page.fill('input[type="password"]', 'Password2!');
-  await page.click('button[type="submit"]');
+test.describe('Structured Typebot onboarding handoff', () => {
+  test.skip(!HAS_AUTH_CREDENTIALS, 'Set E2E_AUTH_EMAIL and E2E_AUTH_PASSWORD');
 
-  await page.waitForTimeout(2000);
-  await page.goto('http://localhost:5173/app/onboarding');
-  await page.getByTestId('onboarding-page').waitFor();
+  test('opens native personalization after the Typebot completion message', async ({ page }) => {
+    await signIn(page);
+    await page.goto('/app/onboarding');
+    await page.getByTestId('onboarding-page').waitFor();
 
-  await page.evaluate(() => {
-    window.postMessage(
-      {
-        from: 'typebot-custom',
-        signal: 'onboarding-complete',
-        focusArea: 'health',
-        selectedDreamKey: 'sleep-with-consistency',
-        selectedDreamLabel: 'Dormir com mais consistência',
-        microPreferences: ['lighter'],
-        regenerationCount: 1,
-        usedRegeneration: true,
-      },
-      '*'
+    await page.evaluate(() => {
+      window.postMessage(
+        {
+          from: 'typebot-custom',
+          signal: 'onboarding-complete',
+          focusArea: 'health',
+          selectedDreamKey: 'sleep-with-consistency',
+          selectedDreamLabel: 'Dormir com mais consistência',
+          microPreferences: ['lighter'],
+          regenerationCount: 1,
+          usedRegeneration: true,
+        },
+        '*'
+      );
+    });
+
+    await expect(page.getByTestId('onboarding-personalization')).toBeVisible();
+    await expect(page.getByTestId('starter-dream-preview')).toContainText(
+      'Dormir com mais consistência'
     );
   });
-
-  await expect(page.getByTestId('onboarding-personalization')).toBeVisible();
-  await expect(page.getByTestId('starter-dream-preview')).toContainText(
-    'Dormir com mais consistência'
-  );
 });

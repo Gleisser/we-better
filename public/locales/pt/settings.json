@@ -248,6 +248,7 @@
         "deleteDescription": "Remova permanentemente sua conta e todos os dados associados.",
         "confirmDelete": "Excluir dados da conta",
         "finalConfirm": "Esta ação não pode ser desfeita.",
+        "passwordPrompt": "Para confirmar a exclusão, informe sua senha atual.",
         "deletionInitiated": "Seu pedido de exclusão de conta foi iniciado."
       },
       "profileVisibility": {
@@ -312,7 +313,11 @@
       "loadPlanCatalog": "Falha ao carregar o catálogo de planos.",
       "openBillingPortal": "Falha ao abrir o portal de cobrança.",
       "startCheckout": "Falha ao iniciar o checkout.",
-      "signOutOtherSessions": "Falha ao sair das outras sessões."
+      "signOutOtherSessions": "Falha ao sair das outras sessões.",
+      "exportData": "Não foi possível exportar seus dados. Tente novamente.",
+      "deleteAccount": "Não foi possível excluir sua conta. Verifique sua senha e tente novamente.",
+      "activeSubscriptionDeletion": "Cancele sua assinatura ativa antes de excluir a conta.",
+      "oauthReauthenticationDeletion": "Para excluir uma conta Google, defina uma senha na sua conta e tente novamente."
     },
     "actions": {
       "json": "JSON",

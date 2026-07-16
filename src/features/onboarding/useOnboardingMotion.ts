@@ -25,7 +25,7 @@ export const useOnboardingMotion = (
 
       const introDuration = (isMobile ? MOBILE_INTRO_DURATION_MS : INTRO_DURATION_MS) / 1000;
       const transitionLead = isMobile ? 0.8 : 1.1;
-      const safePhaseChange = contextSafe(onPhaseChange);
+      const safePhaseChange = contextSafe ? contextSafe(onPhaseChange) : onPhaseChange;
       const timeline = gsap.timeline({
         defaults: {
           duration: 0.75,

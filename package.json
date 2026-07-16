@@ -16,11 +16,13 @@
     "prepare": "husky",
     "preview": "vite preview",
     "test": "vitest",
+    "test:lab": "vitest run --config prototype-playground/dashboard-lab/vitest.config.ts",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "capture:habits-demo": "node ./scripts/capture-habits-widget-demo.mjs",
     "optimize-svgs": "svgo -f public/assets/images/logo --config svgo.config.cjs",
     "test:e2e": "playwright test",
+    "test:e2e:typebot": "playwright test check-typebot.spec.ts",
     "test:e2e:orbital-editorial": "playwright test -c playwright.orbital-editorial.config.ts",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug"
@@ -28,16 +30,11 @@
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@headlessui/react": "^2.2.0",
-    "@playwright/mcp": "^0.0.43",
-    "@react-spring/three": "^9.7.1",
-    "@react-three/drei": "^9.80.0",
-    "@react-three/fiber": "^8.13.4",
-    "@supabase/supabase-js": "^2.49.1",
+    "@supabase/supabase-js": "2.99.3",
     "@tanstack/react-query": "^5.62.7",
     "@tanstack/react-query-devtools": "^5.62.7",
-    "@testing-library/react": "^16.1.0",
     "@typebot.io/react": "^0.10.2",
-    "axios": "^1.7.9",
+    "axios": "^1.18.1",
     "balloons-js": "^0.0.3",
     "date-fns": "^4.1.0",
     "dexie": "^4.0.11",
@@ -45,24 +42,23 @@
     "gsap": "^3.12.7",
     "i18next": "^23.16.8",
     "i18next-browser-languagedetector": "^7.2.2",
-    "i18next-http-backend": "^2.7.3",
+    "i18next-http-backend": "^4.0.0",
     "lottie-web": "^5.13.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.5.1",
     "react-i18next": "^13.5.0",
-    "react-router-dom": "^7.0.2",
+    "react-router-dom": "^7.18.1",
     "react-toastify": "^11.0.5",
-    "three": "^0.154.0",
-    "ts-node": "^10.9.2",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
     "@playwright/test": "^1.49.1",
+    "@playwright/mcp": "^0.0.43",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.5.1",
     "@types/next": "^8.0.7",
     "@types/node": "^22.10.2",
@@ -70,7 +66,6 @@
     "@types/ps-node": "^0.1.3",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
-    "@types/three": "^0.171.0",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.31.0",
     "@vitejs/plugin-react": "^4.3.1",
@@ -93,12 +88,20 @@
     "ps-node": "^0.1.6",
     "svgo": "^3.3.2",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.3.0",
     "vite": "^5.4.2",
     "vitest": "^1.6.0"
   },
   "overrides": {
+    "@babel/runtime": "7.29.7",
     "brace-expansion": "1.1.12"
+  },
+  "pnpm": {
+    "overrides": {
+      "@babel/runtime": "7.29.7",
+      "brace-expansion": "1.1.12"
+    }
   }
 }

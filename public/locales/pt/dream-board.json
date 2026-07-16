@@ -47,8 +47,7 @@
     "title": "Quadro dos sonhos",
     "tabs": {
       "visionBoard": "Quadro visual",
-      "experience": "Experiência",
-      "insights": "Insights"
+      "experience": "Experiência"
     },
     "loading": {
       "dreamBoard": "Carregando seu quadro dos sonhos..."
@@ -60,11 +59,10 @@
     "emptyState": {
       "firstImage": {
         "title": "Comece seu quadro dos sonhos com a primeira imagem",
-        "description": "Adicione uma imagem para desbloquear a Visão Rápida, os insights por categoria e toda a experiência visual do quadro.",
+        "description": "Adicione uma imagem para desbloquear a Visão Rápida, as categorias e toda a experiência visual do quadro.",
         "features": {
           "quickVision": "A Visão Rápida mantém seus sonhos e seu progresso visíveis de imediato.",
-          "categories": "Os cartões de categoria mostram como cada área do seu futuro está tomando forma.",
-          "insights": "Os insights ajudam você a perceber equilíbrio, impulso e próximos passos entre seus sonhos."
+          "categories": "Os cartões de categoria mostram como cada área do seu futuro está tomando forma."
         },
         "cta": "Adicionar primeira imagem"
       }

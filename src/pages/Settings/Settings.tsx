@@ -5,33 +5,17 @@ import { ChevronDownIcon, SettingsIcon } from '@/shared/components/common/icons'
 import ThemeSelector from '@/shared/components/theme/ThemeSelector';
 import LanguageSelector from '@/shared/components/i18n/LanguageSelector';
 import ProfileSettings from '@/shared/components/user/ProfileSettings';
-import Toggle from '@/shared/components/common/Toggle';
 import PricingModal from '@/shared/components/billing/PricingModal/PricingModal';
 import NotificationPreferencesSection from './components/NotificationPreferencesSection';
 import { sessionsService } from '@/core/services/sessionsService';
+import { accountDataService } from '@/core/services/accountDataService';
+import { authService } from '@/core/services/authService';
 import { type BillingSummary } from '@/core/services/billingService';
 import { useBillingSummary } from '@/shared/hooks/useBillingSummary';
 import { useBillingStripeActions } from '@/shared/hooks/useBillingStripeActions';
 import { usePlanCatalog } from '@/shared/hooks/usePlanCatalog';
 import { useSessionsHistory, useSessionsOverview } from '@/shared/hooks/useSessionsOverview';
 import styles from './Settings.module.css';
-
-interface PrivacySettings {
-  profileVisibility: boolean;
-  searchIndexing: boolean;
-  analyticsOptOut: boolean;
-  marketingCommunications: boolean;
-  functionalCookies: boolean;
-  analyticsCookies: boolean;
-  marketingCookies: boolean;
-}
-
-interface SecuritySettings {
-  twoFactorEnabled: boolean;
-  smsBackup: boolean;
-  hasBackupCodes: boolean;
-  trustedDevices: number;
-}
 
 // Create custom icons
 const CreditCardIcon = ({ className }: { className?: string }): JSX.Element => (
@@ -57,17 +41,6 @@ const CrownIcon = ({ className }: { className?: string }): JSX.Element => (
   </svg>
 );
 
-const ShieldIcon = ({ className }: { className?: string }): JSX.Element => (
-  <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
-      stroke="currentColor"
-      strokeWidth="2"
-      fill="none"
-    />
-  </svg>
-);
-
 const DownloadIcon = ({ className }: { className?: string }): JSX.Element => (
   <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none">
     <path
@@ -89,13 +62,6 @@ const TrashIcon = ({ className }: { className?: string }): JSX.Element => (
   </svg>
 );
 
-const KeyIcon = ({ className }: { className?: string }): JSX.Element => (
-  <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none">
-    <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="2" />
-    <path d="M16 10l6 6M22 16l-2-2M18 14l-2-2" stroke="currentColor" strokeWidth="2" />
-  </svg>
-);
-
 const DevicesIcon = ({ className }: { className?: string }): JSX.Element => (
   <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none">
     <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" strokeWidth="2" />
@@ -108,23 +74,6 @@ const HistoryIcon = ({ className }: { className?: string }): JSX.Element => (
   <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none">
     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
     <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" />
-  </svg>
-);
-
-const QrCodeIcon = ({ className }: { className?: string }): JSX.Element => (
-  <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none">
-    <rect x="3" y="3" width="5" height="5" stroke="currentColor" strokeWidth="2" />
-    <rect x="3" y="16" width="5" height="5" stroke="currentColor" strokeWidth="2" />
-    <rect x="16" y="3" width="5" height="5" stroke="currentColor" strokeWidth="2" />
-    <path d="M21 16h-3a2 2 0 00-2 2v3" stroke="currentColor" strokeWidth="2" />
-    <path d="M21 21v.01" stroke="currentColor" strokeWidth="2" />
-    <path d="M12 7v3a2 2 0 002 2h3" stroke="currentColor" strokeWidth="2" />
-    <path d="M3 12h.01" stroke="currentColor" strokeWidth="2" />
-    <path d="M12 3h.01" stroke="currentColor" strokeWidth="2" />
-    <path d="M12 16v.01" stroke="currentColor" strokeWidth="2" />
-    <path d="M16 12h1" stroke="currentColor" strokeWidth="2" />
-    <path d="M21 12v.01" stroke="currentColor" strokeWidth="2" />
-    <path d="M12 21v-1" stroke="currentColor" strokeWidth="2" />
   </svg>
 );
 
@@ -180,10 +129,6 @@ const Settings = (): JSX.Element => {
         pushDescription: t('settings.notifications.pushDescription') as string,
       },
       privacy: {
-        securityScore: {
-          title: t('settings.privacy.securityScore.title') as string,
-          description: t('settings.privacy.securityScore.description') as string,
-        },
         dataManagement: {
           title: t('settings.privacy.dataManagement.title') as string,
           exportData: t('settings.privacy.dataManagement.exportData') as string,
@@ -193,47 +138,6 @@ const Settings = (): JSX.Element => {
           confirmDelete: t('settings.privacy.dataManagement.confirmDelete') as string,
           finalConfirm: t('settings.privacy.dataManagement.finalConfirm') as string,
           deletionInitiated: t('settings.privacy.dataManagement.deletionInitiated') as string,
-        },
-        profileVisibility: {
-          title: t('settings.privacy.profileVisibility.title') as string,
-          publicProfile: t('settings.privacy.profileVisibility.publicProfile') as string,
-          publicDescription: t('settings.privacy.profileVisibility.publicDescription') as string,
-          searchIndexing: t('settings.privacy.profileVisibility.searchIndexing') as string,
-          searchDescription: t('settings.privacy.profileVisibility.searchDescription') as string,
-          analyticsOptOut: t('settings.privacy.profileVisibility.analyticsOptOut') as string,
-          analyticsDescription: t(
-            'settings.privacy.profileVisibility.analyticsDescription'
-          ) as string,
-          marketingCommunications: t(
-            'settings.privacy.profileVisibility.marketingCommunications'
-          ) as string,
-          marketingDescription: t(
-            'settings.privacy.profileVisibility.marketingDescription'
-          ) as string,
-        },
-        cookies: {
-          title: t('settings.privacy.cookies.title') as string,
-          functional: t('settings.privacy.cookies.functional') as string,
-          functionalDescription: t('settings.privacy.cookies.functionalDescription') as string,
-          analytics: t('settings.privacy.cookies.analytics') as string,
-          analyticsDescription: t('settings.privacy.cookies.analyticsDescription') as string,
-          marketing: t('settings.privacy.cookies.marketing') as string,
-          marketingDescription: t('settings.privacy.cookies.marketingDescription') as string,
-        },
-        twoFactor: {
-          title: t('settings.privacy.twoFactor.title') as string,
-          description: t('settings.privacy.twoFactor.description') as string,
-          enabled: t('settings.privacy.twoFactor.enabled') as string,
-          enable: t('settings.privacy.twoFactor.enable') as string,
-          disable: t('settings.privacy.twoFactor.disable') as string,
-          backupCodes: t('settings.privacy.twoFactor.backupCodes') as string,
-          backupDescription: t('settings.privacy.twoFactor.backupDescription') as string,
-          generate: t('settings.privacy.twoFactor.generate') as string,
-          regenerate: t('settings.privacy.twoFactor.regenerate') as string,
-          smsBackup: t('settings.privacy.twoFactor.smsBackup') as string,
-          smsDescription: t('settings.privacy.twoFactor.smsDescription') as string,
-          setupModal: t('settings.privacy.twoFactor.setupModal') as string,
-          generatingCodes: t('settings.privacy.twoFactor.generatingCodes') as string,
         },
         accountSecurity: {
           title: t('settings.privacy.accountSecurity.title') as string,
@@ -278,30 +182,16 @@ const Settings = (): JSX.Element => {
     [t]
   );
 
-  // Privacy settings state
-  const [privacySettings, setPrivacySettings] = useState<PrivacySettings>({
-    profileVisibility: true,
-    searchIndexing: false,
-    analyticsOptOut: false,
-    marketingCommunications: true,
-    functionalCookies: true,
-    analyticsCookies: true,
-    marketingCookies: false,
-  });
-
-  // Security settings state
-  const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
-    twoFactorEnabled: false,
-    smsBackup: false,
-    hasBackupCodes: false,
-    trustedDevices: 3,
-  });
-
   const [showLoginHistory, setShowLoginHistory] = useState(false);
   const [isSigningOutSessions, setIsSigningOutSessions] = useState(false);
   const [sessionsActionError, setSessionsActionError] = useState<string | null>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   const [isNotificationsSectionOpen, setIsNotificationsSectionOpen] = useState(true);
+  const [isExportingData, setIsExportingData] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [accountActionError, setAccountActionError] = useState<string | null>(null);
   const {
     data: billingInfo,
     error: billingSummaryError,
@@ -345,47 +235,6 @@ const Settings = (): JSX.Element => {
   const effectiveBillingError = billingActionError || billingSummaryError || planCatalogError;
   const sessionsError = sessionsActionError || sessionsOverviewError || sessionHistoryError;
 
-  // Handle privacy setting changes
-  const handlePrivacyChange = (setting: keyof PrivacySettings, enabled: boolean): void => {
-    setPrivacySettings(prev => ({
-      ...prev,
-      [setting]: enabled,
-    }));
-
-    // TODO: Save to backend/localStorage
-    console.info(`Privacy ${setting} set to:`, enabled);
-  };
-
-  // Handle security setting changes
-  const handleSecurityChange = (setting: keyof SecuritySettings, enabled: boolean): void => {
-    setSecuritySettings(prev => ({
-      ...prev,
-      [setting]: enabled,
-    }));
-
-    // TODO: Save to backend/localStorage
-    console.info(`Security ${setting} set to:`, enabled);
-  };
-
-  // Calculate security score
-  const calculateSecurityScore = (): number => {
-    let score = 0;
-    if (securitySettings.twoFactorEnabled) score += 40;
-    if (securitySettings.smsBackup) score += 20;
-    if (securitySettings.hasBackupCodes) score += 20;
-    if (securitySettings.trustedDevices <= 3) score += 20;
-    return Math.min(score, 100);
-  };
-
-  const securityScore = calculateSecurityScore();
-
-  // Get security score color
-  const getSecurityScoreColor = (score: number): string => {
-    if (score >= 80) return '#10b981'; // Green
-    if (score >= 60) return '#f59e0b'; // Yellow
-    return '#ef4444'; // Red
-  };
-
   // Format date for login history
   const formatLoginDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -414,40 +263,55 @@ const Settings = (): JSX.Element => {
   };
 
   // Handle data export
-  const handleDataExport = (format: 'json' | 'csv'): void => {
-    console.info(`Exporting data in ${format} format`);
-    // TODO: Implement actual data export
-  };
-
-  // Handle account deletion
-  const handleDeleteAccount = (): void => {
-    const confirmed = window.confirm(translations.privacy.dataManagement.confirmDelete);
-    if (confirmed) {
-      const finalConfirm = window.confirm(translations.privacy.dataManagement.finalConfirm);
-      if (finalConfirm) {
-        console.info(translations.privacy.dataManagement.deletionInitiated);
-        // TODO: Implement actual account deletion
-      }
+  const handleDataExport = async (): Promise<void> => {
+    setIsExportingData(true);
+    setAccountActionError(null);
+    try {
+      const exportBlob = await accountDataService.exportJson();
+      const url = URL.createObjectURL(exportBlob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `we-better-data-${new Date().toISOString().slice(0, 10)}.json`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setAccountActionError(t('settings.errors.exportData') as string);
+    } finally {
+      setIsExportingData(false);
     }
   };
 
-  // Handle 2FA setup
-  const handleTwoFactorSetup = (): void => {
-    console.info(translations.privacy.twoFactor.setupModal);
-    // TODO: Open 2FA setup modal
+  const openDeleteDialog = (): void => {
+    const confirmed = window.confirm(translations.privacy.dataManagement.confirmDelete);
+    if (!confirmed || !window.confirm(translations.privacy.dataManagement.finalConfirm)) return;
+    setDeletePassword('');
+    setAccountActionError(null);
+    setIsDeleteDialogOpen(true);
   };
 
-  // Handle backup codes generation
-  const handleGenerateBackupCodes = (): void => {
-    console.info(translations.privacy.twoFactor.generatingCodes);
-    setSecuritySettings(prev => ({ ...prev, hasBackupCodes: true }));
-    // TODO: Generate and show backup codes
+  const handleDeleteAccount = async (): Promise<void> => {
+    if (!deletePassword || isDeletingAccount) return;
+    setIsDeletingAccount(true);
+    setAccountActionError(null);
+    try {
+      await accountDataService.reauthenticateAndDelete(deletePassword);
+      await authService.signOut();
+      window.location.assign('/');
+    } catch (error) {
+      const key =
+        error instanceof Error && error.message === 'ACTIVE_SUBSCRIPTION'
+          ? 'settings.errors.activeSubscriptionDeletion'
+          : error instanceof Error && error.message === 'OAUTH_REAUTHENTICATION_REQUIRED'
+            ? 'settings.errors.oauthReauthenticationDeletion'
+            : 'settings.errors.deleteAccount';
+      setAccountActionError(t(key) as string);
+    } finally {
+      setIsDeletingAccount(false);
+    }
   };
 
   // Handle login history view
   const handleViewLoginHistory = async (): Promise<void> => {
-    console.info(translations.privacy.accountSecurity.viewingHistory);
-
     const nextVisible = !showLoginHistory;
     setShowLoginHistory(nextVisible);
   };
@@ -460,8 +324,6 @@ const Settings = (): JSX.Element => {
     }
 
     setIsSigningOutSessions(true);
-    console.info(translations.privacy.accountSecurity.signingOutSessions);
-
     const { data, error } = await sessionsService.logoutOtherSessions();
 
     if (error || !data?.success) {
@@ -789,40 +651,6 @@ const Settings = (): JSX.Element => {
             {translations.descriptions.privacyAndSecurity}
           </p>
 
-          {/* Security Score */}
-          <div className={styles.securityScore}>
-            <div className={styles.securityScoreHeader}>
-              <div className={styles.securityScoreInfo}>
-                <ShieldIcon className={styles.securityScoreIcon} />
-                <div>
-                  <h3 className={styles.securityScoreTitle}>
-                    {translations.privacy.securityScore.title}
-                  </h3>
-                  <p className={styles.securityScoreDescription}>
-                    {translations.privacy.securityScore.description}
-                  </p>
-                </div>
-              </div>
-              <div className={styles.securityScoreValue}>
-                <span
-                  className={styles.securityScoreNumber}
-                  style={{ color: getSecurityScoreColor(securityScore) }}
-                >
-                  {securityScore}%
-                </span>
-              </div>
-            </div>
-            <div className={styles.securityScoreBar}>
-              <div
-                className={styles.securityScoreProgress}
-                style={{
-                  width: `${securityScore}%`,
-                  backgroundColor: getSecurityScoreColor(securityScore),
-                }}
-              />
-            </div>
-          </div>
-
           {/* Data Management */}
           <div className={styles.privacySubsection}>
             <h3 className={styles.subsectionTitle}>{translations.privacy.dataManagement.title}</h3>
@@ -840,17 +668,13 @@ const Settings = (): JSX.Element => {
                 <div className={styles.buttonGroup}>
                   <button
                     className={styles.actionButtonSmall}
-                    onClick={() => handleDataExport('json')}
+                    onClick={() => {
+                      void handleDataExport();
+                    }}
+                    disabled={isExportingData}
                   >
                     <DownloadIcon className={styles.buttonIcon} />
-                    {translations.actions.json}
-                  </button>
-                  <button
-                    className={styles.actionButtonSmall}
-                    onClick={() => handleDataExport('csv')}
-                  >
-                    <DownloadIcon className={styles.buttonIcon} />
-                    {translations.actions.csv}
+                    {isExportingData ? '…' : translations.actions.json}
                   </button>
                 </div>
               </div>
@@ -866,232 +690,20 @@ const Settings = (): JSX.Element => {
                 </p>
               </div>
               <div className={styles.settingControl}>
-                <button className={styles.dangerButton} onClick={handleDeleteAccount}>
+                <button
+                  className={styles.dangerButton}
+                  onClick={openDeleteDialog}
+                  disabled={isDeletingAccount}
+                >
                   <TrashIcon className={styles.buttonIcon} />
                   {translations.privacy.dataManagement.deleteAccount}
                 </button>
               </div>
             </div>
-          </div>
-
-          {/* Profile Visibility */}
-          <div className={styles.privacySubsection}>
-            <h3 className={styles.subsectionTitle}>
-              {translations.privacy.profileVisibility.title}
-            </h3>
-
-            <div className={styles.settingItem}>
-              <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>
-                  {translations.privacy.profileVisibility.publicProfile}
-                </h4>
-                <p className={styles.settingDescription}>
-                  {translations.privacy.profileVisibility.publicDescription}
-                </p>
-              </div>
-              <div className={styles.settingControl}>
-                <Toggle
-                  enabled={privacySettings.profileVisibility}
-                  onChange={enabled => handlePrivacyChange('profileVisibility', enabled)}
-                  aria-label={`Toggle ${translations.privacy.profileVisibility.publicProfile}`}
-                  size="medium"
-                />
-              </div>
-            </div>
-
-            <div className={styles.settingItem}>
-              <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>
-                  {translations.privacy.profileVisibility.searchIndexing}
-                </h4>
-                <p className={styles.settingDescription}>
-                  {translations.privacy.profileVisibility.searchDescription}
-                </p>
-              </div>
-              <div className={styles.settingControl}>
-                <Toggle
-                  enabled={privacySettings.searchIndexing}
-                  onChange={enabled => handlePrivacyChange('searchIndexing', enabled)}
-                  aria-label={`Toggle ${translations.privacy.profileVisibility.searchIndexing}`}
-                  size="medium"
-                />
-              </div>
-            </div>
-
-            <div className={styles.settingItem}>
-              <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>
-                  {translations.privacy.profileVisibility.analyticsOptOut}
-                </h4>
-                <p className={styles.settingDescription}>
-                  {translations.privacy.profileVisibility.analyticsDescription}
-                </p>
-              </div>
-              <div className={styles.settingControl}>
-                <Toggle
-                  enabled={privacySettings.analyticsOptOut}
-                  onChange={enabled => handlePrivacyChange('analyticsOptOut', enabled)}
-                  aria-label={`Toggle ${translations.privacy.profileVisibility.analyticsOptOut}`}
-                  size="medium"
-                />
-              </div>
-            </div>
-
-            <div className={styles.settingItem}>
-              <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>
-                  {translations.privacy.profileVisibility.marketingCommunications}
-                </h4>
-                <p className={styles.settingDescription}>
-                  {translations.privacy.profileVisibility.marketingDescription}
-                </p>
-              </div>
-              <div className={styles.settingControl}>
-                <Toggle
-                  enabled={privacySettings.marketingCommunications}
-                  onChange={enabled => handlePrivacyChange('marketingCommunications', enabled)}
-                  aria-label={`Toggle ${translations.privacy.profileVisibility.marketingCommunications}`}
-                  size="medium"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Cookie Preferences */}
-          <div className={styles.privacySubsection}>
-            <h3 className={styles.subsectionTitle}>{translations.privacy.cookies.title}</h3>
-
-            <div className={styles.settingItem}>
-              <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>{translations.privacy.cookies.functional}</h4>
-                <p className={styles.settingDescription}>
-                  {translations.privacy.cookies.functionalDescription}
-                </p>
-              </div>
-              <div className={styles.settingControl}>
-                <Toggle
-                  enabled={privacySettings.functionalCookies}
-                  onChange={() => {}} // Disabled
-                  aria-label={translations.privacy.cookies.functional}
-                  size="medium"
-                  disabled
-                />
-              </div>
-            </div>
-
-            <div className={styles.settingItem}>
-              <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>{translations.privacy.cookies.analytics}</h4>
-                <p className={styles.settingDescription}>
-                  {translations.privacy.cookies.analyticsDescription}
-                </p>
-              </div>
-              <div className={styles.settingControl}>
-                <Toggle
-                  enabled={privacySettings.analyticsCookies}
-                  onChange={enabled => handlePrivacyChange('analyticsCookies', enabled)}
-                  aria-label={`Toggle ${translations.privacy.cookies.analytics}`}
-                  size="medium"
-                />
-              </div>
-            </div>
-
-            <div className={styles.settingItem}>
-              <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>{translations.privacy.cookies.marketing}</h4>
-                <p className={styles.settingDescription}>
-                  {translations.privacy.cookies.marketingDescription}
-                </p>
-              </div>
-              <div className={styles.settingControl}>
-                <Toggle
-                  enabled={privacySettings.marketingCookies}
-                  onChange={enabled => handlePrivacyChange('marketingCookies', enabled)}
-                  aria-label={`Toggle ${translations.privacy.cookies.marketing}`}
-                  size="medium"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Two-Factor Authentication */}
-          <div className={styles.privacySubsection}>
-            <h3 className={styles.subsectionTitle}>{translations.privacy.twoFactor.title}</h3>
-
-            <div className={styles.settingItem}>
-              <div className={styles.settingInfo}>
-                <h4 className={styles.settingLabel}>
-                  {translations.privacy.twoFactor.title}
-                  {securitySettings.twoFactorEnabled && (
-                    <span className={styles.enabledBadge}>
-                      {translations.privacy.twoFactor.enabled}
-                    </span>
-                  )}
-                </h4>
-                <p className={styles.settingDescription}>
-                  {translations.privacy.twoFactor.description}
-                </p>
-              </div>
-              <div className={styles.settingControl}>
-                {securitySettings.twoFactorEnabled ? (
-                  <button
-                    className={styles.actionButtonSmall}
-                    onClick={() => handleSecurityChange('twoFactorEnabled', false)}
-                  >
-                    {translations.privacy.twoFactor.disable}
-                  </button>
-                ) : (
-                  <button className={styles.primaryButton} onClick={handleTwoFactorSetup}>
-                    <QrCodeIcon className={styles.buttonIcon} />
-                    {translations.privacy.twoFactor.enable}
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {securitySettings.twoFactorEnabled && (
-              <>
-                <div className={styles.settingItem}>
-                  <div className={styles.settingInfo}>
-                    <h4 className={styles.settingLabel}>
-                      {translations.privacy.twoFactor.backupCodes}
-                    </h4>
-                    <p className={styles.settingDescription}>
-                      {translations.privacy.twoFactor.backupDescription}
-                    </p>
-                  </div>
-                  <div className={styles.settingControl}>
-                    <button
-                      className={styles.actionButtonSmall}
-                      onClick={handleGenerateBackupCodes}
-                    >
-                      <KeyIcon className={styles.buttonIcon} />
-                      {securitySettings.hasBackupCodes
-                        ? translations.privacy.twoFactor.regenerate
-                        : translations.privacy.twoFactor.generate}
-                    </button>
-                  </div>
-                </div>
-
-                <div className={styles.settingItem}>
-                  <div className={styles.settingInfo}>
-                    <h4 className={styles.settingLabel}>
-                      {translations.privacy.twoFactor.smsBackup}
-                    </h4>
-                    <p className={styles.settingDescription}>
-                      {translations.privacy.twoFactor.smsDescription}
-                    </p>
-                  </div>
-                  <div className={styles.settingControl}>
-                    <Toggle
-                      enabled={securitySettings.smsBackup}
-                      onChange={enabled => handleSecurityChange('smsBackup', enabled)}
-                      aria-label={`Toggle ${translations.privacy.twoFactor.smsBackup}`}
-                      size="medium"
-                    />
-                  </div>
-                </div>
-              </>
+            {accountActionError && (
+              <p className={styles.accountActionError} role="alert">
+                {accountActionError}
+              </p>
             )}
           </div>
 
@@ -1276,6 +888,55 @@ const Settings = (): JSX.Element => {
         isBusy={isBillingActionLoading}
         error={effectiveBillingError}
       />
+      {isDeleteDialogOpen && (
+        <div className={styles.deleteDialogBackdrop} role="presentation">
+          <div
+            className={styles.deleteDialog}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+          >
+            <h2 id="delete-account-title">{translations.privacy.dataManagement.deleteAccount}</h2>
+            <p>{translations.privacy.dataManagement.finalConfirm}</p>
+            <label htmlFor="delete-account-password">
+              {t('settings.privacy.dataManagement.passwordPrompt')}
+            </label>
+            <input
+              id="delete-account-password"
+              type="password"
+              value={deletePassword}
+              onChange={event => setDeletePassword(event.target.value)}
+              autoComplete="current-password"
+              disabled={isDeletingAccount}
+            />
+            {accountActionError && (
+              <p className={styles.accountActionError} role="alert">
+                {accountActionError}
+              </p>
+            )}
+            <div className={styles.buttonGroup}>
+              <button
+                className={styles.actionButtonSmall}
+                type="button"
+                onClick={() => setIsDeleteDialogOpen(false)}
+                disabled={isDeletingAccount}
+              >
+                {translations.actions.cancel}
+              </button>
+              <button
+                className={styles.dangerButton}
+                type="button"
+                onClick={() => {
+                  void handleDeleteAccount();
+                }}
+                disabled={!deletePassword || isDeletingAccount}
+              >
+                {isDeletingAccount ? '…' : translations.actions.delete}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

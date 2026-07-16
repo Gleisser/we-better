@@ -74,11 +74,9 @@ const normalizeMicroPreferences = (value: unknown): OnboardingMicroPreference[] 
     return [];
   }
 
-  const normalized = meaningfulEntries.map(entry =>
-    isOnboardingMicroPreference(entry) ? entry : null
-  );
+  const normalized = meaningfulEntries.filter(isOnboardingMicroPreference);
 
-  if (normalized.some(entry => entry === null)) {
+  if (normalized.length !== meaningfulEntries.length) {
     return null;
   }
 

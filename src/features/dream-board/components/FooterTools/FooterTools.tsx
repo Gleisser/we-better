@@ -9,15 +9,8 @@ interface Weather {
   categoryStatus?: CategoryWeatherStatus;
 }
 
-interface Notification {
-  id: string;
-  description: string;
-  read: boolean;
-}
-
 interface FooterToolsProps {
   weather: Weather;
-  notifications: Notification[];
 }
 
 const FooterTools: React.FC<FooterToolsProps> = ({ weather }) => {

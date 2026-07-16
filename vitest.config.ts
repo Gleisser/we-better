@@ -13,7 +13,8 @@ export default defineConfig({
       VITE_PUSH_VAPID_PUBLIC_KEY: 'test-vapid-key',
       VITE_IMAGE_BASE_URL: 'http://localhost:1337',
     },
-    exclude: ['**/tests/e2e/**', '**/node_modules/**'],
+    include: ['src/**/*.{test,spec}.{ts,tsx}', 'scripts/**/*.{test,spec}.{ts,tsx}'],
+    exclude: ['**/node_modules/**', '**/prototype-playground/**', '**/tests/**'],
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
@@ -22,12 +23,12 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
     },
     alias: {
-      '@': path.resolve(__dirname, './src')
-    }
+      '@': path.resolve(__dirname, './src'),
+    },
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
-    }
-  }
-}); 
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+});
