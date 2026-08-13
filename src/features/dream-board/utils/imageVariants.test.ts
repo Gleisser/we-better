@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   getDreamBoardImageDimensions,
   getDreamBoardImageSourceChain,
@@ -7,48 +7,24 @@ import {
   resetDreamBoardImageSourceFailures,
 } from './imageVariants';
 
-const { storageFromMock } = vi.hoisted(() => ({
-  storageFromMock: vi.fn((bucket: string) => ({
-    getPublicUrl: (
-      path: string,
-      options?: { transform?: { width?: number; height?: number; quality?: number } }
-    ) => ({
-      data: {
-        publicUrl: `https://cdn.example.com/storage/v1/render/image/public/${bucket}/${path}?width=${options?.transform?.width ?? 'original'}&height=${options?.transform?.height ?? 'original'}&quality=${options?.transform?.quality ?? 'original'}`,
-      },
-    }),
-  })),
-}));
-
-vi.mock('@/core/services/supabaseClient', () => ({
-  supabase: {
-    storage: {
-      from: storageFromMock,
-    },
-  },
-}));
-
 describe('imageVariants', () => {
   beforeEach(() => {
-    storageFromMock.mockClear();
     resetDreamBoardImageSourceFailures();
   });
 
-  it('builds transformed card and widget preview urls when storage metadata exists', () => {
+  it('never derives a public URL from private storage metadata', () => {
     const sources = getDreamBoardImageSources({
-      imageUrl: 'https://example.com/original/dream-1.jpg',
+      imageUrl:
+        'https://project.supabase.co/storage/v1/object/public/dream-board-images/user/dream.jpg',
       imageStorageBucket: 'dream-board-images',
       imageStoragePath: 'dream-1.jpg',
       imagePlaceholder:
         'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
     });
 
-    expect(storageFromMock).toHaveBeenCalledWith('dream-board-images');
-    expect(sources.original).toBe('https://example.com/original/dream-1.jpg');
-    expect(sources.card).toContain('width=640');
-    expect(sources.card).toContain('height=854');
-    expect(sources.widget).toContain('width=320');
-    expect(sources.widget).toContain('height=426');
+    expect(sources.original).toBe('');
+    expect(sources.card).toBe('');
+    expect(sources.widget).toBe('');
     expect(sources.placeholder).toContain('data:image/gif');
   });
 
@@ -70,7 +46,6 @@ describe('imageVariants', () => {
       imageUrl: 'https://example.com/original/dream-2.jpg',
     });
 
-    expect(storageFromMock).not.toHaveBeenCalled();
     expect(sources).toMatchObject({
       original: 'https://example.com/original/dream-2.jpg',
       card: 'https://example.com/original/dream-2.jpg',
@@ -79,7 +54,7 @@ describe('imageVariants', () => {
     expect(sources.placeholder).toContain('data:image/gif');
   });
 
-  it('builds a stable fallback chain for transformed previews', () => {
+  it('uses only the placeholder when a private ref has no current signed preview', () => {
     const sourceChain = getDreamBoardImageSourceChain(
       {
         imageUrl: 'https://example.com/original/dream-3.jpg',
@@ -89,17 +64,14 @@ describe('imageVariants', () => {
       'card'
     );
 
-    expect(sourceChain).toEqual([
-      expect.stringContaining('width=640'),
-      expect.stringContaining('data:image/gif'),
-    ]);
+    expect(sourceChain).toEqual([expect.stringContaining('data:image/gif')]);
   });
 
   it('removes known-bad transformed urls from the fallback chain', () => {
     const sources = getDreamBoardImageSources({
-      imageUrl: 'https://example.com/original/dream-4.jpg',
       imageStorageBucket: 'dream-board-images',
       imageStoragePath: 'dream-4.jpg',
+      imagePreviewCardUrl: '/api/dream-board/previews?variant=card&expires=1',
     });
 
     markDreamBoardImageSourceFailed(sources.card);
@@ -107,9 +79,9 @@ describe('imageVariants', () => {
     expect(
       getDreamBoardImageSourceChain(
         {
-          imageUrl: 'https://example.com/original/dream-4.jpg',
           imageStorageBucket: 'dream-board-images',
           imageStoragePath: 'dream-4.jpg',
+          imagePreviewCardUrl: '/api/dream-board/previews?variant=card&expires=1',
         },
         'card'
       )

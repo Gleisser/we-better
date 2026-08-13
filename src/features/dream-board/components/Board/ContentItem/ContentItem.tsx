@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { DreamBoardContent, DreamBoardContentType } from '../../../types';
+import DreamBoardPreviewImage from '../../DreamBoardPreviewImage/DreamBoardPreviewImage';
 import styles from '../Board.module.css';
 
 interface ContentItemProps {
@@ -292,9 +293,20 @@ export const ContentItem: React.FC<ContentItemProps> = ({
         return (
           <div className={styles.polaroidContainer}>
             <div className={styles.imageWrapper}>
-              <img
-                src={content.src}
+              <DreamBoardPreviewImage
+                image={{
+                  imageUrl: content.src,
+                  imageStorageBucket: content.storageBucket,
+                  imageStoragePath: content.storagePath,
+                  imageWidth: content.imageWidth,
+                  imageHeight: content.imageHeight,
+                  imagePlaceholder: content.imagePlaceholder,
+                  imagePreviewCardUrl: content.imagePreviewCardUrl,
+                  imagePreviewWidgetUrl: content.imagePreviewWidgetUrl,
+                }}
                 alt={content.alt || 'Vision board image'}
+                variant="card"
+                loading="lazy"
                 className={styles.polaroidImage}
               />
             </div>

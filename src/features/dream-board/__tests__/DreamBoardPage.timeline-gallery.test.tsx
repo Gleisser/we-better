@@ -300,7 +300,9 @@ describe('DreamBoardPage timeline gallery flow', () => {
 
     fireEvent.error(image);
 
-    expect(image.getAttribute('src') ?? '').toContain('data:image/gif');
+    await waitFor(() => {
+      expect(image.getAttribute('src') ?? '').toContain('data:image/gif');
+    });
   });
 
   it('opens upload form and saves title/category/milestones for a new image', async () => {

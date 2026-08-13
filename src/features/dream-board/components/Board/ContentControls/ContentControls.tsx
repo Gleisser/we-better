@@ -9,6 +9,7 @@ import {
 } from '../../../utils/imagePersistence';
 import styles from './ContentControls.module.css';
 import { Milestones } from '../Milestones/Milestones';
+import DreamBoardPreviewImage from '../../DreamBoardPreviewImage/DreamBoardPreviewImage';
 
 interface ContentControlsProps {
   selectedContent: DreamBoardContent;
@@ -395,10 +396,21 @@ export const ContentControls: React.FC<ContentControlsProps> = ({
   const PositionTab = (): JSX.Element => (
     <div className={styles.tabContent}>
       <div className={styles.imagePreview}>
-        {localContent.src && (
-          <img
-            src={localContent.src}
+        {(localContent.src || localContent.storagePath) && (
+          <DreamBoardPreviewImage
+            image={{
+              imageUrl: localContent.src,
+              imageStorageBucket: localContent.storageBucket,
+              imageStoragePath: localContent.storagePath,
+              imageWidth: localContent.imageWidth,
+              imageHeight: localContent.imageHeight,
+              imagePlaceholder: localContent.imagePlaceholder,
+              imagePreviewCardUrl: localContent.imagePreviewCardUrl,
+              imagePreviewWidgetUrl: localContent.imagePreviewWidgetUrl,
+            }}
             alt={localContent.alt || 'Preview'}
+            variant="card"
+            loading="lazy"
             className={styles.previewImage}
           />
         )}

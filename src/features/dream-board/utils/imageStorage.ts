@@ -14,7 +14,6 @@ export type DreamBoardStorageReference = {
 };
 
 export type DreamBoardImageUploadResult = DreamBoardStorageReference & {
-  publicUrl: string;
   mimeType: string;
   fileSizeBytes: number;
   imageWidth?: number;
@@ -73,15 +72,6 @@ const dataUrlToBlob = (dataUrl: string): Blob => {
   return new Blob([bytes], { type: mimeType });
 };
 
-const sanitizeFileName = (fileName: string): string =>
-  fileName
-    .trim()
-    .toLowerCase()
-    .replace(/\.[^.]+$/, '')
-    .replace(/[^a-z0-9._-]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '') || 'dream-image';
-
 const getStorageFileExtension = (fileName: string, mimeType: string): string => {
   const explicitExtension = fileName.split('.').pop()?.trim().toLowerCase();
   if (explicitExtension && EXTENSION_TO_MIME_TYPE[explicitExtension]) {
@@ -112,12 +102,21 @@ const getCurrentUserId = async (): Promise<string> => {
   return userId;
 };
 
-const getDreamBoardImagePublicUrl = (bucket: string, path: string): string => {
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from(bucket).getPublicUrl(path);
+const createPrivateStorageToken = (): string => {
+  if (typeof crypto === 'undefined') {
+    throw new Error('Secure random generation is unavailable');
+  }
 
-  return publicUrl;
+  if (typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  if (typeof crypto.getRandomValues !== 'function') {
+    throw new Error('Secure random generation is unavailable');
+  }
+
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
 };
 
 const loadImageElement = async (src: string): Promise<HTMLImageElement | null> => {
@@ -207,14 +206,13 @@ const uploadDreamBoardImageBlob = async ({
 
   const metadata = await extractDreamBoardImageMetadata(blob);
   const userId = await getCurrentUserId();
-  const safeName = sanitizeFileName(fileName);
   const extension = getStorageFileExtension(fileName, mimeType);
-  const path = `${userId}/${contentId}/${Date.now()}-${safeName}.${extension}`;
+  const path = `${userId}/private-v1/${contentId}/${createPrivateStorageToken()}.${extension}`;
 
   const { error } = await supabase.storage.from(DREAM_BOARD_STORAGE_BUCKET).upload(path, blob, {
     upsert: false,
     contentType: mimeType,
-    cacheControl: '31536000',
+    cacheControl: '300',
   });
 
   if (error) {
@@ -224,7 +222,6 @@ const uploadDreamBoardImageBlob = async ({
   return {
     bucket: DREAM_BOARD_STORAGE_BUCKET,
     path,
-    publicUrl: getDreamBoardImagePublicUrl(DREAM_BOARD_STORAGE_BUCKET, path),
     mimeType,
     fileSizeBytes: blob.size,
     imageWidth: metadata.imageWidth,
@@ -269,11 +266,11 @@ const normalizeDreamBoardContentItemForPersistence = async (
   contentItem: DreamBoardContent;
   uploadedRef?: DreamBoardStorageReference;
 }> => {
-  if (contentItem.type !== DreamBoardContentType.IMAGE || !contentItem.src) {
+  if (contentItem.type !== DreamBoardContentType.IMAGE) {
     return { contentItem };
   }
 
-  if (isDreamBoardImageDataUrl(contentItem.src)) {
+  if (contentItem.src && isDreamBoardImageDataUrl(contentItem.src)) {
     const blob = dataUrlToBlob(contentItem.src);
     const mimeType = normalizeMimeType(blob.type || parseMimeTypeFromDataUrl(contentItem.src));
     const fileName = contentItem.alt || contentItem.caption || contentItem.id;
@@ -283,11 +280,16 @@ const normalizeDreamBoardContentItemForPersistence = async (
       fileName,
       mimeType,
     });
+    const {
+      src: _src,
+      imagePreviewCardUrl: _cardPreview,
+      imagePreviewWidgetUrl: _widgetPreview,
+      ...stableContentItem
+    } = contentItem;
 
     return {
       contentItem: {
-        ...contentItem,
-        src: uploadedImage.publicUrl,
+        ...stableContentItem,
         storageBucket: uploadedImage.bucket,
         storagePath: uploadedImage.path,
         mimeType: uploadedImage.mimeType,
@@ -304,11 +306,15 @@ const normalizeDreamBoardContentItemForPersistence = async (
   }
 
   if (contentItem.storageBucket && contentItem.storagePath) {
+    const {
+      src: _src,
+      imagePreviewCardUrl: _cardPreview,
+      imagePreviewWidgetUrl: _widgetPreview,
+      ...stableContentItem
+    } = contentItem;
+
     return {
-      contentItem: {
-        ...contentItem,
-        src: getDreamBoardImagePublicUrl(contentItem.storageBucket, contentItem.storagePath),
-      },
+      contentItem: stableContentItem,
     };
   }
 

@@ -84,6 +84,7 @@ const DreamBoardPage: React.FC = () => {
   const autosaveTimeoutRef = useRef<number | null>(null);
   const pendingDreamsRef = useRef<Dream[] | null>(null);
   const pendingMilestonesRef = useRef<Record<string, DreamImageMilestoneInput[]>>({});
+  const localImagePreviewUrlsRef = useRef<Record<string, string>>({});
   const hasBootstrappedOverviewRef = useRef(false);
   const firstImageInputRef = useRef<HTMLInputElement>(null);
 
@@ -423,6 +424,13 @@ const DreamBoardPage: React.FC = () => {
           ? crypto.randomUUID()
           : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
       const uploadedImage = await uploadDreamBoardImageFile(upload.file, newDreamId);
+      const localPreviewUrl =
+        typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function'
+          ? URL.createObjectURL(upload.file)
+          : uploadedImage.imagePlaceholder;
+      if (localPreviewUrl?.startsWith('blob:')) {
+        localImagePreviewUrlsRef.current[newDreamId] = localPreviewUrl;
+      }
       onProgress?.(35);
       const uploadMilestones = upload.milestones.map(milestone => ({
         id:
@@ -442,7 +450,7 @@ const DreamBoardPage: React.FC = () => {
         timeframe: 'mid-term',
         progress: 0,
         createdAt: new Date().toISOString(),
-        imageUrl: uploadedImage.publicUrl,
+        imageUrl: localPreviewUrl,
         imageStorageBucket: uploadedImage.bucket,
         imageStoragePath: uploadedImage.path,
         imageMimeType: uploadedImage.mimeType,
@@ -479,6 +487,11 @@ const DreamBoardPage: React.FC = () => {
             path: uploadedImage.path,
           },
         ]);
+        const failedPreviewUrl = localImagePreviewUrlsRef.current[newDream.id];
+        if (failedPreviewUrl) {
+          URL.revokeObjectURL(failedPreviewUrl);
+          delete localImagePreviewUrlsRef.current[newDream.id];
+        }
         delete pendingMilestonesRef.current[newDream.id];
         setDreams(prevDreams => prevDreams.filter(dream => dream.id !== newDream.id));
         pendingDreamsRef.current = null;
@@ -505,6 +518,11 @@ const DreamBoardPage: React.FC = () => {
   };
 
   const handleRemoveDreamImage = (dreamId: string): void => {
+    const localPreviewUrl = localImagePreviewUrlsRef.current[dreamId];
+    if (localPreviewUrl) {
+      URL.revokeObjectURL(localPreviewUrl);
+      delete localImagePreviewUrlsRef.current[dreamId];
+    }
     delete pendingMilestonesRef.current[dreamId];
     setFetchedDreamMilestones(previous => {
       if (!previous[dreamId]) {
@@ -575,6 +593,10 @@ const DreamBoardPage: React.FC = () => {
       if (autosaveTimeoutRef.current) {
         window.clearTimeout(autosaveTimeoutRef.current);
       }
+      Object.values(localImagePreviewUrlsRef.current).forEach(previewUrl => {
+        URL.revokeObjectURL(previewUrl);
+      });
+      localImagePreviewUrlsRef.current = {};
     };
   }, []);
 

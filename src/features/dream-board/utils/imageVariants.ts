@@ -1,5 +1,3 @@
-import { supabase } from '@/core/services/supabaseClient';
-
 export type DreamBoardImageLike = {
   imageUrl?: string;
   imageStorageBucket?: string;
@@ -25,37 +23,8 @@ const TRANSPARENT_PLACEHOLDER =
   'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 const FAILED_DREAM_BOARD_IMAGE_SOURCES = new Set<string>();
 
-const DREAM_BOARD_TRANSFORMS: Record<
-  DreamBoardPreviewVariant,
-  { width: number; height: number; quality: number; resize: 'cover' }
-> = {
-  card: {
-    width: 640,
-    height: 854,
-    quality: 60,
-    resize: 'cover',
-  },
-  widget: {
-    width: 320,
-    height: 426,
-    quality: 50,
-    resize: 'cover',
-  },
-};
-
-const getTransformedImageUrl = (
-  bucket: string,
-  path: string,
-  variant: DreamBoardPreviewVariant
-): string => {
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from(bucket).getPublicUrl(path, {
-    transform: DREAM_BOARD_TRANSFORMS[variant],
-  });
-
-  return publicUrl;
-};
+const isTransientLocalSource = (source: string): boolean =>
+  source.startsWith('blob:') || source.startsWith('data:image/');
 
 const getUniqueImageSources = (sources: Array<string | undefined>): string[] =>
   Array.from(
@@ -68,7 +37,10 @@ const getUniqueImageSources = (sources: Array<string | undefined>): string[] =>
   );
 
 export const getDreamBoardImageSources = (image: DreamBoardImageLike): DreamBoardImageSources => {
-  const original = image.imageUrl?.trim() || '';
+  const candidateOriginal = image.imageUrl?.trim() || '';
+  const hasStorageReference = Boolean(image.imageStorageBucket && image.imageStoragePath);
+  const original =
+    hasStorageReference && !isTransientLocalSource(candidateOriginal) ? '' : candidateOriginal;
   const previewCard = image.imagePreviewCardUrl?.trim() || '';
   const previewWidget = image.imagePreviewWidgetUrl?.trim() || '';
 
@@ -81,11 +53,11 @@ export const getDreamBoardImageSources = (image: DreamBoardImageLike): DreamBoar
     };
   }
 
-  if (image.imageStorageBucket && image.imageStoragePath) {
+  if (hasStorageReference) {
     return {
       original,
-      card: getTransformedImageUrl(image.imageStorageBucket, image.imageStoragePath, 'card'),
-      widget: getTransformedImageUrl(image.imageStorageBucket, image.imageStoragePath, 'widget'),
+      card: original,
+      widget: original,
       placeholder: image.imagePlaceholder || TRANSPARENT_PLACEHOLDER,
     };
   }
@@ -131,6 +103,10 @@ export const markDreamBoardImageSourceFailed = (source: string): void => {
   }
 
   FAILED_DREAM_BOARD_IMAGE_SOURCES.add(normalizedSource);
+};
+
+export const clearDreamBoardImageSourceFailure = (source: string): void => {
+  FAILED_DREAM_BOARD_IMAGE_SOURCES.delete(source.trim());
 };
 
 export const resetDreamBoardImageSourceFailures = (): void => {
