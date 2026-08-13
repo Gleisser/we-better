@@ -1,10 +1,11 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   DreamBoardWidgetDream,
   UseLatestDreamBoardSnapshotResult,
 } from '@/features/dream-board/hooks/useLatestDreamBoardSnapshot';
 import { resetDreamBoardImageSourceFailures } from '@/features/dream-board/utils/imageVariants';
+import { renewDreamBoardPreviewUrls } from '@/features/dream-board/api/dreamBoardPreviewApi';
 import DreamBoardTimelineWidget from './DreamBoardTimelineWidget';
 
 const { storageFromMock } = vi.hoisted(() => ({
@@ -36,6 +37,10 @@ vi.mock('@/shared/hooks/useTranslation', () => ({
 
 vi.mock('@/features/dream-board/hooks/useLatestDreamBoardSnapshot', () => ({
   useLatestDreamBoardSnapshot: vi.fn(),
+}));
+
+vi.mock('@/features/dream-board/api/dreamBoardPreviewApi', () => ({
+  renewDreamBoardPreviewUrls: vi.fn(),
 }));
 
 vi.mock('react-router-dom', () => ({
@@ -87,6 +92,7 @@ describe('DreamBoardTimelineWidget', () => {
     mockNavigate.mockReset();
     storageFromMock.mockClear();
     resetDreamBoardImageSourceFailures();
+    vi.mocked(renewDreamBoardPreviewUrls).mockRejectedValue(new Error('Preview expired'));
   });
 
   it('renders button to open Dream Board page', () => {
@@ -168,7 +174,7 @@ describe('DreamBoardTimelineWidget', () => {
     expect(screen.queryByText('×')).toBeNull();
   });
 
-  it('falls back to the placeholder when the widget preview fails', () => {
+  it('renews once and falls back to the placeholder when the widget preview fails', async () => {
     render(
       <DreamBoardTimelineWidget
         snapshotOverride={createSnapshot({
@@ -184,6 +190,9 @@ describe('DreamBoardTimelineWidget', () => {
 
     fireEvent.error(image);
 
-    expect(image.getAttribute('src') ?? '').toContain('data:image/gif');
+    expect(renewDreamBoardPreviewUrls).toHaveBeenCalledWith('dream-board-images', 'dream-1.jpg');
+    await waitFor(() => {
+      expect(image.getAttribute('src') ?? '').toContain('data:image/gif');
+    });
   });
 });

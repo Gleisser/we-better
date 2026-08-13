@@ -85,12 +85,17 @@ const loadLatestDreamBoardSnapshot = async (): Promise<DreamBoardSnapshotData> =
       return false;
     }
 
-    if (!content.id || typeof content.src !== 'string') {
+    if (!content.id) {
       return false;
     }
 
-    const source = content.src.trim();
-    if (!source || source.toLowerCase() === 'text') {
+    const source = content.src?.trim() || '';
+    const hasPrivateStorageSource = Boolean(
+      content.storageBucket &&
+        content.storagePath &&
+        (content.imagePreviewCardUrl || content.imagePreviewWidgetUrl)
+    );
+    if ((!source || source.toLowerCase() === 'text') && !hasPrivateStorageSource) {
       return false;
     }
 
@@ -118,7 +123,7 @@ const loadLatestDreamBoardSnapshot = async (): Promise<DreamBoardSnapshotData> =
   });
 
   const dreams = imageContent.map((content, index) => {
-    const imageUrl = typeof content.src === 'string' ? content.src.trim() : '';
+    const imageUrl = content.src?.trim() || '';
     const title =
       content.alt?.trim() || content.caption?.trim() || `${DEFAULT_TITLE_PREFIX} ${index + 1}`;
     const category = content.categoryId?.trim() || 'General';

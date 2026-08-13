@@ -137,3 +137,5 @@ AGENTS.MD
 /scripts
 /prototype-playground
 .superpowers
+.vercel
+.env*
