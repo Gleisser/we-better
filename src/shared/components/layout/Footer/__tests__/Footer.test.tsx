@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Footer from '../Footer';
 import { useFooter } from '@/shared/hooks/useFooter';
@@ -30,9 +31,15 @@ describe('Footer', () => {
   });
 
   it('renders footer navigation without image preload side effects', () => {
-    render(<Footer />);
+    render(
+      <MemoryRouter>
+        <Footer />
+      </MemoryRouter>
+    );
 
     expect(screen.getByRole('contentinfo')).toBeInTheDocument();
     expect(screen.getByRole('navigation', { name: /footer navigation/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Privacidade' })).toHaveAttribute('href', '/privacy');
+    expect(screen.queryByRole('link', { name: 'Get the App' })).toBeNull();
   });
 });

@@ -20,8 +20,10 @@ export interface AuthResponse {
   needsEmailConfirmation?: boolean;
 }
 
-// Define your app's redirect URL for Supabase configuration
-const REDIRECT_URL = createAppUrl('/app');
+// Supabase is configured for the PKCE flow. All authentication callbacks use a
+// single route so the authorization code can be validated before the app
+// navigates to an authenticated screen.
+const AUTH_CALLBACK_URL = createAppUrl('/auth/confirm');
 const GOOGLE_AUTH_ENABLED = import.meta.env.VITE_AUTH_GOOGLE_ENABLED === 'true';
 const GOOGLE_AUTH_BUTTON_LABEL = 'Continue with Google';
 const GOOGLE_AUTH_DISABLED_LABEL = 'Google Sign-In Unavailable';
@@ -31,6 +33,33 @@ const GOOGLE_AUTH_UNAVAILABLE_MESSAGE =
 const isUnsupportedGoogleProviderError = (message: string): boolean => {
   const normalized = message.toLowerCase();
   return normalized.includes('unsupported provider') || normalized.includes('validation_failed');
+};
+
+const exchangeAuthCode = async (authCode: string): Promise<AuthResponse> => {
+  if (!authCode.trim()) {
+    return { user: null, error: new Error('Missing confirmation code') };
+  }
+
+  try {
+    const { data, error } = await supabase.auth.exchangeCodeForSession(authCode);
+
+    if (error) throw new Error(error.message);
+
+    if (!data.session || !data.user) {
+      throw new Error('The authentication link did not create a valid session');
+    }
+
+    return {
+      user: data.user,
+      session: data.session,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      user: null,
+      error: error instanceof Error ? error : new Error('An unknown error occurred'),
+    };
+  }
 };
 
 export const authService = {
@@ -79,8 +108,7 @@ export const authService = {
             display_name: fullName,
             full_name: fullName,
           },
-          // Add explicit redirect URL
-          emailRedirectTo: REDIRECT_URL,
+          emailRedirectTo: AUTH_CALLBACK_URL,
         },
       });
 
@@ -110,7 +138,7 @@ export const authService = {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: REDIRECT_URL,
+          redirectTo: AUTH_CALLBACK_URL,
         },
       });
 
@@ -147,16 +175,12 @@ export const authService = {
     }
   },
 
-  async confirmEmail(): Promise<{ error: Error | null }> {
-    try {
-      // The link from the email will be handled automatically by Supabase
-      // This method would only be needed for manual verification
-      return { error: null };
-    } catch (error) {
-      return {
-        error: error instanceof Error ? error : new Error('An unknown error occurred'),
-      };
-    }
+  async confirmEmail(authCode: string): Promise<AuthResponse> {
+    return exchangeAuthCode(authCode);
+  },
+
+  async exchangeAuthCode(authCode: string): Promise<AuthResponse> {
+    return exchangeAuthCode(authCode);
   },
 
   async resendConfirmation(email: string): Promise<{ error: Error | null }> {
@@ -164,6 +188,9 @@ export const authService = {
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email,
+        options: {
+          emailRedirectTo: AUTH_CALLBACK_URL,
+        },
       });
 
       if (error) throw new Error(error.message);

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { authService } from '@/core/services/authService';
-import { supabase } from '@/core/services/supabaseClient';
 import styles from './Login.module.css';
 
 const ResetPassword = (): JSX.Element => {
@@ -19,24 +18,22 @@ const ResetPassword = (): JSX.Element => {
     const handleAuthRedirect = async (): Promise<void> => {
       try {
         setIsLoading(true);
-        // This crucial step processes the hash fragment and establishes the session
-        const { data, error } = await supabase.auth.getSession();
-
-        if (error) {
-          console.error('Failed to get session:', error);
-          setError(
-            'Failed to verify your recovery link. Please try requesting a new password reset.'
-          );
-          return;
-        }
-
-        if (!data.session) {
-          console.warn('No session found in redirect');
+        const authCode = new URLSearchParams(window.location.search).get('code');
+        if (!authCode) {
           setError(
             'Your recovery link appears to be invalid or expired. Please request a new one.'
           );
           return;
         }
+
+        const { user, error: exchangeError } = await authService.exchangeAuthCode(authCode);
+        if (exchangeError || !user) {
+          setError(
+            'Your recovery link appears to be invalid or expired. Please request a new one.'
+          );
+          return;
+        }
+
         setHashProcessed(true);
       } catch (err) {
         console.error('Error handling auth redirect:', err);

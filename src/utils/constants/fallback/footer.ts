@@ -35,12 +35,12 @@ const FOOTER_FALLBACK: Footer = {
     },
   },
   logoDescription: 'We Better Ltd',
-  copyright: '© 2024 All Rights Reserved. We Better Ltd®',
+  copyright: `© ${new Date().getFullYear()} We Better Ltd. Todos os direitos reservados.`,
   footer_links: [
     {
       id: 0,
       title: 'DMCA',
-      href: '#',
+      href: '/dmca',
       description: 'DMCA',
       image: {
         url: '/assets/images/footer/appstore.svg',
@@ -54,7 +54,7 @@ const FOOTER_FALLBACK: Footer = {
     {
       id: 1,
       title: 'Legal Notice',
-      href: '#',
+      href: '/legal-notice',
       description: 'Legal Notice',
       image: {
         url: '/assets/images/footer/appstore.svg',
@@ -68,7 +68,7 @@ const FOOTER_FALLBACK: Footer = {
     {
       id: 2,
       title: 'Terms of Service',
-      href: '#',
+      href: '/terms',
       description: 'Terms of Service',
       image: {
         url: '/assets/images/footer/appstore.svg',
@@ -82,7 +82,7 @@ const FOOTER_FALLBACK: Footer = {
     {
       id: 3,
       title: 'Cookie Policy',
-      href: '#',
+      href: '/cookies',
       description: 'Cookie Policy',
       image: {
         url: '/assets/images/footer/appstore.svg',
@@ -294,7 +294,7 @@ const FOOTER_FALLBACK: Footer = {
       menu_links: FOOTER_LINKS.Solutions.map(link => ({
         id: 0,
         title: link,
-        href: '#',
+        href: '/auth/signup',
         description: link,
         image: {
           url: '/assets/images/footer/appstore.svg',
@@ -317,7 +317,13 @@ const FOOTER_FALLBACK: Footer = {
       menu_links: FOOTER_LINKS.About.map(link => ({
         id: 0,
         title: link,
-        href: '#',
+        href:
+          {
+            FAQ: '/faq',
+            Support: '/support',
+            Privacy: '/privacy',
+            'Contact us': '/contact',
+          }[link] ?? '/',
         description: link,
         image: {
           url: '/assets/images/footer/appstore.svg',

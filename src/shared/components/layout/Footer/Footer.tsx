@@ -1,10 +1,40 @@
 import { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useFooter } from '@/shared/hooks/useFooter';
 import styles from './Footer.module.css';
 import { FOOTER_FALLBACK } from '@/utils/constants/fallback';
-import { AppStore, MenuList } from '@/utils/types/footer';
+import { MenuList } from '@/utils/types/footer';
 import { useErrorHandler } from '@/shared/hooks/utils/useErrorHandler';
 import { useDeferredSectionQuery } from '@/shared/hooks/utils/useDeferredSectionQuery';
+
+const LEGAL_LINKS = [
+  { title: 'Privacidade', href: '/privacy' },
+  { title: 'Termos', href: '/terms' },
+  { title: 'Cookies', href: '/cookies' },
+  { title: 'Suporte', href: '/support' },
+  { title: 'Contato', href: '/contact' },
+  { title: 'DMCA', href: '/dmca' },
+  { title: 'Aviso legal', href: '/legal-notice' },
+];
+
+const resolveFooterHref = (title: string, href: string): string => {
+  if (href && href !== '#') {
+    return href;
+  }
+
+  return (
+    {
+      FAQ: '/faq',
+      Support: '/support',
+      Privacy: '/privacy',
+      'Contact us': '/contact',
+      'Terms of Service': '/terms',
+      'Cookie Policy': '/cookies',
+      DMCA: '/dmca',
+      'Legal Notice': '/legal-notice',
+    }[title] ?? '/'
+  );
+};
 
 const Footer = (): JSX.Element => {
   const footerRef = useRef<HTMLElement | null>(null);
@@ -67,40 +97,29 @@ const Footer = (): JSX.Element => {
                 <ul className={styles.linkList}>
                   {menu.menu_links.map(link => (
                     <li key={link.id + link.title}>
-                      <a
-                        href={link.href}
+                      <Link
+                        to={resolveFooterHref(link.title, link.href ?? '')}
                         className={`${styles.link} focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-black rounded-md`}
                         aria-label={link.title}
                       >
                         {link.title}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
               </div>
             ))}
           </nav>
-
-          {/* App Downloads & Social */}
-          <div className={styles.rightSection}>
-            <div className={styles.getApp} role="region" aria-labelledby="app-downloads">
-              <div className={styles.categoryTitle} id="app-downloads">
-                Get the App
-              </div>
-              <div className={styles.storeButtons}>
-                {footer.app_stores.map((appStore: AppStore) => (
-                  <a
-                    key={appStore.id}
-                    href="#"
-                    className={styles.storeLink}
-                    aria-label={`Download WeBetter app from ${appStore.images[0].name} - Get access to AI tools on your mobile device`}
-                  >
-                    {/* Add your app store image or icon here */}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
+        </div>
+        <div className={styles.bottomSection}>
+          <nav className={styles.legalLinks} aria-label="Legal navigation">
+            {LEGAL_LINKS.map(link => (
+              <Link key={link.href} to={link.href} className={styles.legalLink}>
+                {link.title}
+              </Link>
+            ))}
+          </nav>
+          <p className={styles.copyright}>{footer.copyright}</p>
         </div>
       </div>
     </footer>

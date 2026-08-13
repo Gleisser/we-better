@@ -464,6 +464,8 @@ curl -I https://webetter.ai/app/dashboard
 
 ### TASK-011 — Repair the email-confirmation flow
 
+**Status:** Implemented — Supabase redirect configuration and staging email validation pending (2026-07-17)
+
 **Problem:** The confirmation page accepts an `access_token` from the URL hash, calls a no-op `confirmEmail`, and then reports success. This can produce false success and may not match the configured Supabase PKCE flow.
 
 **Known areas:**
@@ -487,9 +489,19 @@ curl -I https://webetter.ai/app/dashboard
 - Successful confirmation continues to the intended onboarding/login destination.
 - E2E tests cover success and failure paths.
 
+**Implementation record (2026-07-17):**
+
+- Standardized signup, resend, and OAuth callbacks on the PKCE route `/auth/confirm`.
+- The confirmation screen now exchanges the one-time `code` with Supabase and requires both a user and session before it reports success or navigates to onboarding.
+- Malformed, expired, and reused links show a localized failure state without exposing the provider error or granting access.
+- The legacy user-service confirmation endpoint was removed so it cannot become a conflicting second flow.
+- Supabase must allow `https://we-better.vercel.app/auth/confirm` (and each staging/development equivalent) in **Authentication → URL Configuration → Redirect URLs**. The Confirm signup email template must retain `{{ .ConfirmationURL }}`.
+
 ---
 
 ### TASK-012 — Create real legal, privacy, cookie, support, and contact pages
+
+**Status:** Implemented as legal drafts — owner approval and public contact configuration pending (2026-07-17)
 
 **Problem:** Footer links for Privacy, Terms, Cookies, Support, Contact, DMCA, and Legal Notice point to `#`, and no corresponding public routes exist.
 
@@ -514,6 +526,13 @@ curl -I https://webetter.ai/app/dashboard
 - All policy routes work on direct navigation and mobile.
 - The footer copyright year is current or dynamic.
 - Legal content has an owner and review date.
+
+**Implementation record (2026-07-17):**
+
+- Added public, direct-navigation routes for Privacy, Terms, Cookies, Support, Contact, DMCA, and Legal Notice, with product-specific text based on the implemented Supabase, Stripe, Typebot, Vercel and browser-notification flows.
+- Replaced legal footer placeholders with real routes, mapped legacy CMS `#` links to safe public destinations, removed non-existent app-store buttons, and made the fallback copyright year dynamic.
+- Each document displays its effective date and next review date. The legal notice assigns ownership to the We Better legal/privacy owner.
+- These are launch drafts, not approved legal advice. Before public launch, the business must name the legal/privacy owner, configure a monitored `VITE_SUPPORT_EMAIL`, verify the actual vendor/cookie inventory, and obtain legal approval for the controller identity, retention periods, billing/refund terms, and jurisdiction.
 
 ---
 

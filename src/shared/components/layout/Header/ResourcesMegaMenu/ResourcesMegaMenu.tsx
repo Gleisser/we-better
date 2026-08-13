@@ -2,6 +2,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ResourcesMegaMenuProps } from './types';
 import { API_CONFIG } from '@/core/config/api-config';
 import { RESOURCES_MEGA_MENU_FALLBACK } from '@/utils/constants/fallback/megamenu';
+import { Link } from 'react-router-dom';
+
+const resourceHref = (title: string): string => {
+  return (
+    {
+      'Getting Started': '/auth/signup',
+      Community: '/#community-title',
+      FAQ: '/faq',
+    }[title] ?? '/faq'
+  );
+};
 
 const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps): JSX.Element => {
   const menuItems = menuData?.menu_links || RESOURCES_MEGA_MENU_FALLBACK;
@@ -63,9 +74,9 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
               {/* Resources Links */}
               <div className="space-y-4">
                 {menuItems.map((item, index: number) => (
-                  <a
+                  <Link
                     key={index}
-                    href="#"
+                    to={resourceHref(item.title)}
                     className="group flex items-start space-x-3 p-2 -mx-2 rounded-lg hover:bg-white/5 transition-colors"
                   >
                     <div className="mt-1">
@@ -88,7 +99,7 @@ const ResourcesMegaMenu = ({ isOpen, onClose, menuData }: ResourcesMegaMenuProps
                         {item.description}
                       </p>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>

@@ -32,6 +32,9 @@ const settingsRouteComponent = lazy(() => import('@/pages/Settings/Settings'));
 const bookmarksRouteComponent = lazy(() => import('@/pages/Bookmarks/Bookmarks'));
 const notificationsRouteComponent = lazy(() => import('@/pages/Notifications/Notifications'));
 const pricingRouteComponent = lazy(() => import('@/pages/Pricing/Pricing'));
+const legalDocumentRouteComponent = lazy(() => import('@/pages/Legal/LegalDocumentPage'));
+const faqRouteComponent = lazy(() => import('@/pages/FAQ/FaqPage'));
+const privacyRouteComponent = lazy(() => import('@/pages/Privacy/PrivacyPage'));
 const quoteIconSpikeRouteComponent = lazy(() => import('@/pages/QuoteIconSpike'));
 
 interface LazyRouteOptions {
@@ -229,6 +232,24 @@ export const routes: RouteObject[] = [
     element: renderLazyRoute(emailConfirmationRouteComponent, {
       label: 'Loading confirmation...',
       namespaces: ['auth'],
+    }),
+  },
+  {
+    path: '/privacy',
+    element: renderLazyRoute(privacyRouteComponent, {
+      label: 'Loading privacy information...',
+    }),
+  },
+  ...['/terms', '/cookies', '/support', '/contact', '/dmca', '/legal-notice'].map(path => ({
+    path,
+    element: renderLazyRoute(legalDocumentRouteComponent, {
+      label: 'Loading legal information...',
+    }),
+  })),
+  {
+    path: '/faq',
+    element: renderLazyRoute(faqRouteComponent, {
+      label: 'Loading frequently asked questions...',
     }),
   },
   {

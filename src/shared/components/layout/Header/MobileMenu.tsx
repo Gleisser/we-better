@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './MobileMenu.module.css';
 import {
   SparklesIcon,
@@ -27,24 +28,28 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps): JSX
       title: 'Affirmations',
       description: 'Build a steady daily mindset practice.',
       iconAlt: 'Sparkles icon for daily affirmations',
+      href: '/auth/signup',
     },
     {
       icon: <BookmarkIcon className={styles.menuIcon} />,
       title: 'Quotes',
       description: 'Save the short reflections that resonate most.',
       iconAlt: 'Bookmark icon for saved quotes',
+      href: '/auth/signup',
     },
     {
       icon: <CheckmarkIcon className={styles.menuIcon} />,
       title: 'Habits',
       description: 'Track routines with streaks, reminders, and consistency.',
       iconAlt: 'Checkmark icon for habits',
+      href: '/auth/signup',
     },
     {
       icon: <ChartIcon className={styles.menuIcon} />,
       title: 'Goals',
       description: 'Break long-term plans into clear milestones.',
       iconAlt: 'Chart icon for goals',
+      href: '/auth/signup',
     },
   ];
 
@@ -53,16 +58,19 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps): JSX
       icon: <InfoIcon className={styles.menuIcon} />,
       title: 'Getting Started',
       description: 'Quick guidance for setting up your routine.',
+      href: '/auth/signup',
     },
     {
       icon: <UsersIcon className={styles.menuIcon} />,
       title: 'Community',
       description: 'Stay connected with people building similar habits.',
+      href: '/#community-title',
     },
     {
       icon: <FAQIcon className={styles.menuIcon} />,
       title: 'FAQ',
       description: 'Get answers to frequently asked questions.',
+      href: '/faq',
     },
   ];
 
@@ -108,13 +116,13 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps): JSX
               >
                 {solutionsItems.map((item, index) => (
                   <div key={index} className={styles.submenuItemContainer}>
-                    <div className={styles.submenuItemContent}>
+                    <Link to={item.href} className={styles.submenuItemContent}>
                       {item.icon}
                       <div className={styles.submenuItemText}>
                         <div className={styles.submenuItemTitle}>{item.title}</div>
                         <p className={styles.submenuItemDescription}>{item.description}</p>
                       </div>
-                    </div>
+                    </Link>
                     {index < solutionsItems.length - 1 && (
                       <div className={styles.submenuDivider} aria-hidden="true" />
                     )}
@@ -167,13 +175,13 @@ const MobileMenu = ({ isOpen, 'aria-hidden': ariaHidden }: MobileMenuProps): JSX
                 {/* Resources menu items */}
                 {resourcesItems.map((item, index) => (
                   <div key={index} className={styles.submenuItemContainer}>
-                    <div className={styles.submenuItemContent}>
+                    <Link to={item.href} className={styles.submenuItemContent}>
                       {item.icon}
                       <div className={styles.submenuItemText}>
                         <div className={styles.submenuItemTitle}>{item.title}</div>
                         <p className={styles.submenuItemDescription}>{item.description}</p>
                       </div>
-                    </div>
+                    </Link>
                     {index < resourcesItems.length - 1 && (
                       <div className={styles.submenuDivider} aria-hidden="true" />
                     )}

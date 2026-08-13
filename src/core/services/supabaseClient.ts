@@ -17,7 +17,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     flowType: 'pkce',
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true,
+    // Callback routes exchange the PKCE authorization code explicitly. This
+    // avoids a race where the client consumes the one-time code before the
+    // confirmation screen can validate it and show a truthful result.
+    detectSessionInUrl: false,
     storageKey: 'we-better-auth-token',
     storage: {
       getItem: key => {

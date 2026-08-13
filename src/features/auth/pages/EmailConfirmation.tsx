@@ -1,66 +1,79 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authService } from '@/core/services/authService';
+import { useAuthTranslation } from '@/shared/hooks/useTranslation';
 import styles from './Login.module.css';
 
 const EmailConfirmation = (): JSX.Element => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const { t } = useAuthTranslation();
   const [error, setError] = useState('');
   const [isProcessing, setIsProcessing] = useState(true);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   useEffect(() => {
+    let redirectTimer: ReturnType<typeof setTimeout> | undefined;
+
     const confirmEmail = async (): Promise<void> => {
       try {
-        const hash = location.hash;
-        if (!hash) {
-          throw new Error('Invalid confirmation link');
+        const authCode = searchParams.get('code');
+        if (!authCode) {
+          throw new Error('Missing confirmation code');
         }
 
-        // Extract token from hash
-        const params = new URLSearchParams(hash.substring(1));
-        const accessToken = params.get('access_token');
-
-        if (!accessToken) {
-          throw new Error('Invalid confirmation link');
+        const { user, error: confirmationError } = await authService.confirmEmail(authCode);
+        if (confirmationError || !user) {
+          throw confirmationError ?? new Error('The confirmation link is invalid');
         }
 
-        await authService.confirmEmail();
-
-        // Redirect to login after short delay
-        setTimeout(() => {
-          navigate('/auth/login', {
-            state: { message: 'Email confirmed successfully. Please log in.' },
-          });
-        }, 2000);
-      } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to confirm email');
+        setIsConfirmed(true);
+        redirectTimer = setTimeout(() => navigate('/app/onboarding', { replace: true }), 1200);
+      } catch {
+        setError(t('confirmation.invalidLink'));
       } finally {
         setIsProcessing(false);
       }
     };
 
-    confirmEmail();
-  }, [navigate, location]);
+    void confirmEmail();
+
+    return () => {
+      if (redirectTimer) {
+        clearTimeout(redirectTimer);
+      }
+    };
+  }, [navigate, searchParams, t]);
+
+  const continueToOnboarding = (): void => {
+    navigate('/app/onboarding', { replace: true });
+  };
 
   return (
     <div className={styles.confirmationContainer}>
       {isProcessing ? (
-        <h2>Confirming your email...</h2>
+        <h2>{t('confirmation.processing')}</h2>
       ) : error ? (
         <>
-          <h2>Error</h2>
+          <h2>{t('confirmation.errorTitle')}</h2>
           <p className={styles.error}>{error}</p>
-          <Link to="/auth/login" className={styles.backToLogin}>
-            Back to Login
-          </Link>
+          <button
+            type="button"
+            onClick={() => navigate('/auth/login')}
+            className={styles.backToLogin}
+          >
+            {t('confirmation.backToLogin')}
+          </button>
         </>
-      ) : (
+      ) : isConfirmed ? (
         <>
-          <h2>Email Confirmed!</h2>
-          <p>Redirecting to login...</p>
+          <h2>{t('confirmation.successTitle')}</h2>
+          <p>{t('confirmation.successDescription')}</p>
+          <button type="button" onClick={continueToOnboarding} className={styles.submitButton}>
+            {t('confirmation.continue')}
+          </button>
         </>
-      )}
+      ) : null}
     </div>
   );
 };

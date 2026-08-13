@@ -1,0 +1,101 @@
+.page {
+  @apply relative min-h-screen overflow-hidden bg-[#0b0318] px-4 py-4 text-white sm:px-6 sm:py-8 lg:px-10 lg:py-10;
+}
+
+.gridBackdrop {
+  @apply pointer-events-none absolute inset-0 opacity-70;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(158, 88, 255, 0.32), transparent 33rem),
+    linear-gradient(rgba(157, 89, 255, 0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(157, 89, 255, 0.13) 1px, transparent 1px);
+  background-size:
+    auto,
+    56px 56px,
+    56px 56px;
+}
+
+.shell {
+  @apply relative mx-auto max-w-[1420px] rounded-[2rem] border border-violet-300/35 bg-[#0c0617]/95 px-5 py-8 shadow-[0_0_80px_rgba(113,48,220,0.28)] sm:px-10 sm:py-12 lg:px-20 lg:py-16;
+}
+
+.hero {
+  @apply mx-auto max-w-4xl text-center;
+}
+
+.backLink {
+  @apply absolute left-5 top-5 text-sm font-medium text-white/60 transition-colors hover:text-violet-200 focus:outline-none focus:ring-2 focus:ring-violet-300 sm:left-10 sm:top-8;
+}
+
+.badge {
+  @apply mx-auto flex w-fit items-center gap-2 rounded-full border border-violet-300/45 bg-violet-500/15 px-4 py-2 text-sm font-semibold text-violet-100;
+}
+
+.hero h1 {
+  @apply mt-6 font-plus-jakarta text-4xl font-bold tracking-[-0.055em] text-[#eee0ff] sm:text-6xl lg:text-7xl;
+}
+
+.hero p {
+  @apply mx-auto mt-5 max-w-2xl text-base leading-7 text-white/70 sm:text-lg;
+}
+
+.faqGrid {
+  @apply mt-12 grid gap-4 lg:grid-cols-2 lg:gap-x-6 lg:gap-y-5;
+}
+
+.item {
+  @apply self-start overflow-hidden rounded-2xl border border-violet-400/35 bg-[#10071d]/90 transition-[border-color,background-color,box-shadow] duration-200;
+}
+
+.item:hover {
+  @apply border-violet-300/70 bg-[#160a28];
+}
+
+.itemOpen {
+  @apply border-violet-300/75 bg-[#150925] shadow-[0_10px_35px_rgba(0,0,0,0.22)];
+}
+
+.question {
+  @apply flex w-full items-center justify-between gap-4 px-5 py-5 text-left font-plus-jakarta text-base font-semibold leading-6 text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-violet-300 sm:px-6 sm:text-lg;
+}
+
+.question svg {
+  @apply shrink-0 text-violet-100;
+}
+
+.answer {
+  @apply px-5 pb-5 sm:px-6 sm:pb-6;
+}
+
+.answer p {
+  @apply max-w-2xl text-sm leading-7 text-white/70 sm:text-base;
+}
+
+.helpCard {
+  @apply mt-10 flex flex-col gap-5 rounded-2xl border border-violet-300/35 bg-gradient-to-r from-violet-500/20 to-fuchsia-500/10 p-6 sm:flex-row sm:items-center;
+}
+
+.helpCard > svg {
+  @apply shrink-0 text-violet-200;
+}
+
+.helpCard h2 {
+  @apply font-plus-jakarta text-lg font-semibold text-white;
+}
+
+.helpCard p {
+  @apply mt-1 text-sm text-white/65;
+}
+
+.helpCard a {
+  @apply shrink-0 rounded-full bg-violet-400 px-5 py-3 text-center text-sm font-semibold text-[#160421] transition-colors hover:bg-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-200 sm:ml-auto;
+}
+
+@media (max-width: 640px) {
+  .backLink {
+    @apply static mb-10 inline-flex;
+  }
+
+  .hero h1 {
+    @apply text-4xl;
+  }
+}
